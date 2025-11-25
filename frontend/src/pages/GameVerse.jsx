@@ -582,13 +582,13 @@ function OrbitingPlanet({
   initialAngle,
   onIslandClick,
   isLocked,
-  onPositionUpdate,
+  onRegisterRef,
 }) {
   const orbitRef = useRef();
 
   useFrame(({clock}) => {
-    const t = clock.getElapsedTime() * orbitSpeed;
-    const angle = initialAngle + t;
+    const elapsed = clock.getElapsedTime();
+    const angle = initialAngle + elapsed * orbitSpeed;
 
     if (orbitRef.current) {
       const x = Math.cos(angle) * orbitRadius;
@@ -597,13 +597,15 @@ function OrbitingPlanet({
       orbitRef.current.position.x = x;
       orbitRef.current.position.z = z;
       orbitRef.current.position.y = 0;
-
-      // Update position for locked camera
-      if (isLocked && onPositionUpdate) {
-        onPositionUpdate([x, 0, z]);
-      }
     }
   });
+
+  // Register ref when locked
+  useEffect(() => {
+    if (isLocked && onRegisterRef) {
+      onRegisterRef(orbitRef);
+    }
+  }, [isLocked, onRegisterRef]);
 
   return (
     <group ref={orbitRef}>
@@ -619,15 +621,22 @@ function OrbitingPlanet({
 }
 
 // Camera component with planet tracking
-function CameraRig({lockedPlanetPosition}) {
+function CameraRig({lockedPlanetRef}) {
   const {camera, controls} = useThree();
   const targetPos = useRef(new THREE.Vector3(0, 8, 35));
   const targetLookAt = useRef(new THREE.Vector3(0, 0, 0));
 
   useFrame(() => {
-    if (lockedPlanetPosition) {
-      // Calculate camera position relative to planet
-      const [px, py, pz] = lockedPlanetPosition;
+    // Use a higher lerp speed on mobile for tighter following
+    const isMobile = window.innerWidth < 768;
+    const lerpSpeed = isMobile ? 0.5 : 0.3;
+
+    if (lockedPlanetRef?.current) {
+      // Get planet position directly from ref - no state delay!
+      const px = lockedPlanetRef.current.position.x;
+      const py = lockedPlanetRef.current.position.y;
+      const pz = lockedPlanetRef.current.position.z;
+
       const offset = new THREE.Vector3(px, py, pz);
       const direction = offset.clone().normalize();
 
@@ -640,11 +649,10 @@ function CameraRig({lockedPlanetPosition}) {
       targetLookAt.current.set(0, 0, 0);
     }
 
-    // Smooth camera movement
-    camera.position.lerp(targetPos.current, 0.05);
+    camera.position.lerp(targetPos.current, lerpSpeed);
 
     if (controls) {
-      controls.target.lerp(targetLookAt.current, 0.05);
+      controls.target.lerp(targetLookAt.current, lerpSpeed);
       controls.update();
     }
   });
@@ -653,7 +661,7 @@ function CameraRig({lockedPlanetPosition}) {
 }
 
 // Scene component
-function Scene({onIslandClick, lockedPlanet, onPlanetPositionUpdate}) {
+function Scene({onIslandClick, lockedPlanet, onRegisterPlanetRef}) {
   return (
     <>
       <CinematicSpaceBackground />
@@ -729,12 +737,12 @@ function Scene({onIslandClick, lockedPlanet, onPlanetPositionUpdate}) {
             key={sport.id}
             sport={sport}
             orbitRadius={12}
-            orbitSpeed={0.35}
+            orbitSpeed={0.13}
             initialAngle={(index / 4) * Math.PI * 2}
             onIslandClick={onIslandClick}
             isLocked={lockedPlanet?.id === sport.id}
-            onPositionUpdate={
-              lockedPlanet?.id === sport.id ? onPlanetPositionUpdate : null
+            onRegisterRef={
+              lockedPlanet?.id === sport.id ? onRegisterPlanetRef : null
             }
           />
         ))}
@@ -746,12 +754,12 @@ function Scene({onIslandClick, lockedPlanet, onPlanetPositionUpdate}) {
             key={sport.id}
             sport={sport}
             orbitRadius={20}
-            orbitSpeed={0.25}
+            orbitSpeed={0.09}
             initialAngle={(index / 4) * Math.PI * 2}
             onIslandClick={onIslandClick}
             isLocked={lockedPlanet?.id === sport.id}
-            onPositionUpdate={
-              lockedPlanet?.id === sport.id ? onPlanetPositionUpdate : null
+            onRegisterRef={
+              lockedPlanet?.id === sport.id ? onRegisterPlanetRef : null
             }
           />
         ))}
@@ -763,12 +771,12 @@ function Scene({onIslandClick, lockedPlanet, onPlanetPositionUpdate}) {
             key={sport.id}
             sport={sport}
             orbitRadius={26}
-            orbitSpeed={0.18}
+            orbitSpeed={0.06}
             initialAngle={(index / 4) * Math.PI * 2}
             onIslandClick={onIslandClick}
             isLocked={lockedPlanet?.id === sport.id}
-            onPositionUpdate={
-              lockedPlanet?.id === sport.id ? onPlanetPositionUpdate : null
+            onRegisterRef={
+              lockedPlanet?.id === sport.id ? onRegisterPlanetRef : null
             }
           />
         ))}
@@ -780,7 +788,7 @@ export default function GameVerse() {
   const [selectedSport, setSelectedSport] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [lockedPlanet, setLockedPlanet] = useState(null);
-  const [lockedPlanetPosition, setLockedPlanetPosition] = useState(null);
+  const lockedPlanetRef = useRef(null);
 
   const handleIslandClick = (sport) => {
     setSelectedSport(sport);
@@ -798,11 +806,11 @@ export default function GameVerse() {
 
   const handleResetView = () => {
     setLockedPlanet(null);
-    setLockedPlanetPosition(null);
+    lockedPlanetRef.current = null;
   };
 
-  const handlePlanetPositionUpdate = (position) => {
-    setLockedPlanetPosition(position);
+  const handleRegisterPlanetRef = (ref) => {
+    lockedPlanetRef.current = ref.current;
   };
 
   // Split sports into left and right lists
@@ -827,28 +835,52 @@ export default function GameVerse() {
         <span className="sm:hidden">← Home</span>
       </Link>
 
-      {/* Reset View Button - Responsive */}
-      <motion.button
-        onClick={handleResetView}
-        className="absolute 
-                   top-2 right-2 sm:top-4 sm:right-4 md:top-8 md:right-8 
-                   z-10 
-                   px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 
-                   text-xs sm:text-sm md:text-base
-                   bg-black/50 backdrop-blur-md border border-[#ffb36a]/30 
-                   rounded-md md:rounded-lg text-[#ffb36a] 
-                   hover:bg-[#ffb36a]/10 transition-all duration-300 font-semibold"
-        initial={{opacity: 0, y: -50}}
-        animate={{opacity: 1, y: 0}}
-        transition={{duration: 0.5, delay: 0.8}}
-        whileHover={{scale: 1.05}}
-        whileTap={{scale: 0.95}}
-      >
-        <span className="hidden sm:inline">
-          {lockedPlanet ? "🔓 Unlock View" : "🌌 Overview"}
-        </span>
-        <span className="sm:hidden">{lockedPlanet ? "🔓" : "🌌"}</span>
-      </motion.button>
+      {/* Unlock/Reset View Button and Locked Planet Indicator (stacked) */}
+      <div className="absolute top-2 right-2 sm:top-4 sm:right-4 md:top-8 md:right-8 z-20 flex flex-col items-end space-y-2">
+        <motion.button
+          onClick={handleResetView}
+          className="px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 text-xs sm:text-sm md:text-base bg-black/50 backdrop-blur-md border border-[#ffb36a]/30 rounded-md md:rounded-lg text-[#ffb36a] hover:bg-[#ffb36a]/10 transition-all duration-300 font-semibold"
+          initial={{opacity: 0, y: -50}}
+          animate={{opacity: 1, y: 0}}
+          transition={{duration: 0.5, delay: 0.8}}
+          whileHover={{scale: 1.05}}
+          whileTap={{scale: 0.95}}
+        >
+          <span className="hidden sm:inline">
+            {lockedPlanet ? "🔓 Unlock View" : "🌌 Overview"}
+          </span>
+          <span className="sm:hidden">{lockedPlanet ? "🔓" : "🌌"}</span>
+        </motion.button>
+        {/* Locked Planet Indicator - below the button */}
+        <AnimatePresence mode="wait">
+          {lockedPlanet && (
+            <motion.div
+              key={lockedPlanet.id}
+              className="w-full max-w-xs text-center pointer-events-none"
+              initial={{opacity: 0, scale: 0.8}}
+              animate={{opacity: 1, scale: 1}}
+              exit={{opacity: 0, scale: 0.8}}
+              transition={{duration: 0.3}}
+            >
+              <div className="bg-black/80 backdrop-blur-md border-2 border-[#ffb36a] rounded-md md:rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 shadow-lg shadow-[#ffb36a]/20 mx-auto">
+                <div className="flex items-center gap-1 sm:gap-2 justify-center">
+                  <span className="text-lg sm:text-xl md:text-2xl">
+                    {lockedPlanet.icon}
+                  </span>
+                  <div className="text-left">
+                    <p className="text-[#ffb36a] text-[10px] sm:text-xs md:text-sm font-bold leading-tight">
+                      🔒 {lockedPlanet.name}
+                    </p>
+                    <p className="text-gray-400 text-[8px] sm:text-[9px] md:text-[10px]">
+                      Following
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* Left Planet List - Vertical on both mobile and desktop, positioned on left side */}
       <motion.div
@@ -962,42 +994,7 @@ export default function GameVerse() {
         ))}
       </motion.div>
 
-      {/* Locked Planet Indicator - Centered on screen for both mobile and desktop */}
-      <AnimatePresence mode="wait">
-        {lockedPlanet && (
-          <motion.div
-            key={lockedPlanet.id}
-            className="fixed 
-                       top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-                       z-30 text-center pointer-events-none"
-            initial={{opacity: 0, scale: 0.8}}
-            animate={{opacity: 1, scale: 1}}
-            exit={{opacity: 0, scale: 0.8}}
-            transition={{duration: 0.3}}
-          >
-            <div
-              className="bg-black/80 backdrop-blur-md border-2 border-[#ffb36a] 
-                           rounded-md md:rounded-lg 
-                           px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 
-                           shadow-lg shadow-[#ffb36a]/20"
-            >
-              <div className="flex items-center gap-1 sm:gap-2">
-                <span className="text-lg sm:text-xl md:text-2xl">
-                  {lockedPlanet.icon}
-                </span>
-                <div className="text-left">
-                  <p className="text-[#ffb36a] text-[10px] sm:text-xs md:text-sm font-bold leading-tight">
-                    🔒 {lockedPlanet.name}
-                  </p>
-                  <p className="text-gray-400 text-[8px] sm:text-[9px] md:text-[10px]">
-                    Following
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* (Removed duplicate locked planet indicator box from center of screen) */}
 
       {/* Title Overlay - Responsive & Perfectly Centered */}
       <div className="absolute top-0 left-0 w-full z-10 pointer-events-none">
@@ -1080,11 +1077,11 @@ export default function GameVerse() {
           powerPreference: "high-performance",
         }}
       >
-        <CameraRig lockedPlanetPosition={lockedPlanetPosition} />
+        <CameraRig lockedPlanetRef={lockedPlanetRef} />
         <Scene
           onIslandClick={handleIslandClick}
           lockedPlanet={lockedPlanet}
-          onPlanetPositionUpdate={handlePlanetPositionUpdate}
+          onRegisterPlanetRef={handleRegisterPlanetRef}
         />
         <OrbitControls
           enablePan={true}
