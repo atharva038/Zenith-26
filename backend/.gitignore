@@ -8,6 +8,14 @@ yarn.lock
 .env.local
 .env.production
 
+# Documentation (may contain secrets)
+*.md
+README.md
+SETUP_GUIDE.md
+API_FLOW_DIAGRAM.md
+IMPLEMENTATION_SUMMARY.md
+DEPLOYMENT_CHECKLIST.md
+
 # Logs
 logs/
 *.log
