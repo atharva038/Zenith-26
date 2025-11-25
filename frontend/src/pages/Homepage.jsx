@@ -36,10 +36,22 @@ const Sparkle = ({delay = 0, size = 4}) => (
 
 export default function Homepage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showLoginDropdown, setShowLoginDropdown] = useState(false);
   const stadiumRef = useRef(null);
   const textRef = useRef(null);
   const aboutCardsRef = useRef(null);
   const eventsRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (showLoginDropdown && !e.target.closest('.login-dropdown-container')) {
+        setShowLoginDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showLoginDropdown]);
 
   // Subtle mouse parallax effect for hero (reduced intensity)
   useEffect(() => {
@@ -340,22 +352,65 @@ export default function Homepage() {
           >
             SGGSIE&T Annual Sports Festival • Where Champions Rise
           </motion.p>
-          <motion.a
-            href="#register"
-            className="inline-block mt-4 px-8 py-3 rounded-full font-extrabold text-[#2c1506] no-underline transition-transform hover:scale-105"
-            style={{
-              background: "linear-gradient(90deg, #ffb36a, #ff8b1f)",
-              boxShadow:
-                "0 12px 28px rgba(255,140,40,0.18), inset 0 -2px 6px rgba(0,0,0,0.12)",
-            }}
+          
+          {/* Login Dropdown Button */}
+          <motion.div
+            className="relative inline-block mt-4 login-dropdown-container"
             initial={{opacity: 0, scale: 0.9}}
             animate={{opacity: 1, scale: 1}}
             transition={{duration: 0.6, delay: 0.6, ease: "easeOut"}}
-            whileHover={{scale: 1.05}}
-            whileTap={{scale: 0.95}}
           >
-            Register Now
-          </motion.a>
+            <motion.button
+              onClick={() => setShowLoginDropdown(!showLoginDropdown)}
+              className="px-8 py-3 rounded-full font-extrabold text-[#2c1506] transition-transform"
+              style={{
+                background: "linear-gradient(90deg, #ffb36a, #ff8b1f)",
+                boxShadow:
+                  "0 12px 28px rgba(255,140,40,0.18), inset 0 -2px 6px rgba(0,0,0,0.12)",
+              }}
+              whileHover={{scale: 1.05}}
+              whileTap={{scale: 0.95}}
+            >
+              Register Now ▼
+            </motion.button>
+
+            {/* Dropdown Menu */}
+            {showLoginDropdown && (
+              <motion.div
+                initial={{opacity: 0, y: -10}}
+                animate={{opacity: 1, y: 0}}
+                exit={{opacity: 0, y: -10}}
+                className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-gradient-to-br from-[#2a1a11] to-[#1a0f08] rounded-xl border-2 border-[#ffb36a] overflow-hidden shadow-2xl min-w-[240px] z-50"
+              >
+                <Link
+                  to="/home"
+                  onClick={() => setShowLoginDropdown(false)}
+                  className="block px-6 py-4 text-white hover:bg-[#ffb36a]/20 transition-all duration-200 border-b border-[#3a2416] no-underline"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">👥</span>
+                    <div>
+                      <div className="font-bold text-[#ffb36a]">Login as Student</div>
+                      <div className="text-xs text-gray-400">Explore the event</div>
+                    </div>
+                  </div>
+                </Link>
+                <Link
+                  to="/admin/login"
+                  onClick={() => setShowLoginDropdown(false)}
+                  className="block px-6 py-4 text-white hover:bg-[#ffb36a]/20 transition-all duration-200 no-underline"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">🔐</span>
+                    <div>
+                      <div className="font-bold text-[#ffb36a]">Login as Admin</div>
+                      <div className="text-xs text-gray-400">Manage content</div>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            )}
+          </motion.div>
         </div>
         <div
           className="absolute left-0 right-0 bottom-0 h-[22%] z-[210] pointer-events-none"
