@@ -627,9 +627,9 @@ function CameraRig({lockedPlanetRef}) {
   const targetLookAt = useRef(new THREE.Vector3(0, 0, 0));
 
   useFrame(() => {
-    // Use a higher lerp speed on mobile for tighter following
+    // Cinematic easing - slower and smoother for a more dramatic effect
     const isMobile = window.innerWidth < 768;
-    const lerpSpeed = isMobile ? 0.5 : 0.3;
+    const lerpSpeed = isMobile ? 0.08 : 0.06;
 
     if (lockedPlanetRef?.current) {
       // Get planet position directly from ref - no state delay!
@@ -885,10 +885,10 @@ export default function GameVerse() {
       {/* Left Planet List - Vertical on both mobile and desktop, positioned on left side */}
       <motion.div
         className="absolute 
-                   left-1 top-16 md:left-2 md:top-[35%] md:-translate-y-1/2
+                   left-1 top-16 md:left-2 md:top-[25%] md:-translate-y-1/2
                    z-20 
                    flex flex-col gap-1 md:gap-2 
-                   max-w-[50px] sm:max-w-[130px] md:max-w-[160px]"
+                   max-w-[120px] sm:max-w-[150px] md:max-w-[180px]"
         initial={{opacity: 0, x: -50}}
         animate={{opacity: 1, x: 0}}
         transition={{duration: 0.5, delay: 1}}
@@ -898,7 +898,7 @@ export default function GameVerse() {
             key={sport.id}
             onClick={() => handlePlanetSelect(sport)}
             className={`group relative 
-                       px-1.5 py-1.5 sm:px-2 sm:py-2 md:px-3 md:py-2.5 
+                       px-2 py-2 sm:px-3 sm:py-2.5 md:px-4 md:py-3 
                        rounded-md md:rounded-lg transition-all duration-300 
                        ${
                          lockedPlanet?.id === sport.id
@@ -911,15 +911,15 @@ export default function GameVerse() {
             whileHover={{scale: 1.05, x: 5}}
             whileTap={{scale: 0.95}}
           >
-            <div className="flex items-center gap-1 md:gap-2 backdrop-blur-md">
-              <span className="text-sm sm:text-lg md:text-xl">
+            <div className="flex items-center gap-1.5 md:gap-2.5 backdrop-blur-md">
+              <span className="text-lg sm:text-xl md:text-2xl">
                 {sport.icon}
               </span>
-              <div className="text-left flex-1 hidden sm:block">
-                <p className="text-[#ffb36a] font-semibold text-[10px] md:text-xs leading-tight">
+              <div className="text-left flex-1">
+                <p className="text-[#ffb36a] font-bold text-[9px] sm:text-xs md:text-sm leading-tight">
                   {sport.name}
                 </p>
-                <p className="text-gray-500 text-[8px] md:text-[10px]">
+                <p className="text-gray-500 text-[8px] sm:text-[9px] md:text-xs">
                   Orbit {sport.orbit}
                 </p>
               </div>
@@ -941,10 +941,10 @@ export default function GameVerse() {
       {/* Right Planet List - Vertical on both mobile and desktop, positioned on right side */}
       <motion.div
         className="absolute 
-                   right-1 top-16 md:right-2 md:top-[35%] md:-translate-y-1/2
+                   right-1 top-16 md:right-2 md:top-[25%] md:-translate-y-1/2
                    z-20 
                    flex flex-col gap-1 md:gap-2 
-                   max-w-[50px] sm:max-w-[130px] md:max-w-[160px]"
+                   max-w-[120px] sm:max-w-[150px] md:max-w-[180px]"
         initial={{opacity: 0, x: 50}}
         animate={{opacity: 1, x: 0}}
         transition={{duration: 0.5, delay: 1}}
@@ -954,7 +954,7 @@ export default function GameVerse() {
             key={sport.id}
             onClick={() => handlePlanetSelect(sport)}
             className={`group relative 
-                       px-1.5 py-1.5 sm:px-2 sm:py-2 md:px-3 md:py-2.5 
+                       px-2 py-2 sm:px-3 sm:py-2.5 md:px-4 md:py-3 
                        rounded-md md:rounded-lg transition-all duration-300 
                        ${
                          lockedPlanet?.id === sport.id
@@ -967,16 +967,16 @@ export default function GameVerse() {
             whileHover={{scale: 1.05, x: -5}}
             whileTap={{scale: 0.95}}
           >
-            <div className="flex items-center gap-1 md:gap-2 backdrop-blur-md">
-              <div className="text-right flex-1 hidden sm:block">
-                <p className="text-[#ffb36a] font-semibold text-[10px] md:text-xs leading-tight">
+            <div className="flex items-center gap-1.5 md:gap-2.5 backdrop-blur-md">
+              <div className="text-right flex-1">
+                <p className="text-[#ffb36a] font-bold text-[9px] sm:text-xs md:text-sm leading-tight">
                   {sport.name}
                 </p>
-                <p className="text-gray-500 text-[8px] md:text-[10px]">
+                <p className="text-gray-500 text-[8px] sm:text-[9px] md:text-xs">
                   Orbit {sport.orbit}
                 </p>
               </div>
-              <span className="text-sm sm:text-lg md:text-xl">
+              <span className="text-lg sm:text-xl md:text-2xl">
                 {sport.icon}
               </span>
             </div>
