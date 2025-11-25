@@ -1,543 +1,601 @@
-import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import { Link } from "react-router-dom";
-import Tilt from "react-parallax-tilt";
-import { gsap } from "gsap";
-import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import { useTheme } from "../context/ThemeContext";
+import {useState, useRef, useEffect} from "react";
+import {Link} from "react-router-dom";
+import {motion} from "framer-motion";
+import {gsap} from "gsap";
+import {ScrollTrigger} from "gsap/ScrollTrigger";
+import ThreeScene from "../components/ThreeScene";
+import VIPCarousel from "../components/VIPCarousel";
 
-const CustomCursor = () => {
-  const cursorRef = useRef(null);
-  const cursorGlowRef = useRef(null);
+// Register GSAP ScrollTrigger
+gsap.registerPlugin(ScrollTrigger);
 
-  useEffect(() => {
-    const moveCursor = (e) => {
-      gsap.to(cursorRef.current, { x: e.clientX, y: e.clientY, duration: 0.1 });
-      gsap.to(cursorGlowRef.current, {
-        x: e.clientX,
-        y: e.clientY,
-        duration: 0.3,
-      });
-    };
-    window.addEventListener("mousemove", moveCursor);
-    return () => window.removeEventListener("mousemove", moveCursor);
-  }, []);
-
-  return (
-    <>
-      <div
-        ref={cursorRef}
-        className="fixed w-2 h-2 bg-white rounded-full pointer-events-none z-[9999] mix-blend-difference"
-        style={{ transform: "translate(-50%, -50%)" }}
-      />
-      <div
-        ref={cursorGlowRef}
-        className="fixed w-8 h-8 border-2 border-neon-orange rounded-full pointer-events-none z-[9998] opacity-50"
-        style={{ transform: "translate(-50%, -50%)" }}
-      />
-    </>
-  );
-};
-
-const AnimatedBackground = ({ theme }) => (
-  <div className="fixed inset-0 -z-10 overflow-hidden">
-    <motion.div
-      className={`absolute inset-0 ${
-        theme === "dark"
-          ? "bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900"
-          : "bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50"
-      }`}
-      animate={
-        theme === "dark"
-          ? {
-              background: [
-                "linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0f172a 100%)",
-                "linear-gradient(135deg, #0f172a 0%, #831843 50%, #0f172a 100%)",
-                "linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0f172a 100%)",
-              ],
-            }
-          : {
-              background: [
-                "linear-gradient(135deg, #eff6ff 0%, #fae8ff 50%, #fce7f3 100%)",
-                "linear-gradient(135deg, #fce7f3 0%, #eff6ff 50%, #fae8ff 100%)",
-                "linear-gradient(135deg, #eff6ff 0%, #fae8ff 50%, #fce7f3 100%)",
-              ],
-            }
-      }
-      transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-    />
-    {[...Array(30)].map((_, i) => (
-      <motion.div
-        key={i}
-        className={`absolute w-1 h-1 ${
-          theme === "dark" ? "bg-neon-blue" : "bg-blue-400"
-        } rounded-full`}
-        style={{
-          left: `${Math.random() * 100}%`,
-          top: `${Math.random() * 100}%`,
-        }}
-        animate={{ y: [0, -30, 0], opacity: [0, 1, 0], scale: [0, 1.5, 0] }}
-        transition={{
-          duration: 3 + Math.random() * 2,
-          repeat: Infinity,
-          delay: Math.random() * 2,
-        }}
-      />
-    ))}
-    <div className="absolute inset-0 opacity-20">
-      {[...Array(5)].map((_, i) => (
-        <motion.div
-          key={i}
-          className={`absolute h-full w-1 ${
-            theme === "dark"
-              ? "bg-gradient-to-b from-transparent via-neon-orange to-transparent"
-              : "bg-gradient-to-b from-transparent via-orange-400 to-transparent"
-          }`}
-          style={{ left: `${20 + i * 15}%` }}
-          animate={{ opacity: [0.2, 0.5, 0.2], scaleY: [0.8, 1, 0.8] }}
-          transition={{
-            duration: 2 + i * 0.5,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-      ))}
-    </div>
-  </div>
+// Subtle Sparkle component for blink dots
+const Sparkle = ({delay = 0, size = 4}) => (
+  <motion.div
+    className="absolute rounded-full bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-200"
+    style={{
+      width: size,
+      height: size,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+    }}
+    initial={{opacity: 0, scale: 0}}
+    animate={{
+      opacity: [0, 0.6, 0],
+      scale: [0, 1, 0],
+    }}
+    transition={{
+      duration: 2,
+      delay,
+      repeat: Infinity,
+      repeatDelay: Math.random() * 3 + 1,
+      ease: "easeInOut",
+    }}
+  />
 );
 
 export default function Homepage() {
-  const shouldReduceMotion = useReducedMotion();
-  const { theme, toggleTheme } = useTheme();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const stadiumRef = useRef(null);
+  const textRef = useRef(null);
+  const aboutCardsRef = useRef(null);
+  const eventsRef = useRef(null);
+
+  // Subtle mouse parallax effect for hero (reduced intensity)
+  useEffect(() => {
+    // Disable parallax on mobile for performance
+    if (window.innerWidth < 768) return;
+
+    const handleMouseMove = (e) => {
+      const {clientX, clientY} = e;
+      const {innerWidth, innerHeight} = window;
+
+      // Calculate mouse position as percentage (-0.5 to 0.5)
+      const xPercent = (clientX / innerWidth - 0.5) * 2;
+      const yPercent = (clientY / innerHeight - 0.5) * 2;
+
+      // Stadium moves with mouse (very subtle - reduced from 20 to 12)
+      gsap.to(stadiumRef.current, {
+        x: xPercent * 12,
+        y: yPercent * 12,
+        duration: 1,
+        ease: "power2.out",
+      });
+
+      // Text moves opposite direction (subtle - reduced from 30 to 18)
+      gsap.to(textRef.current, {
+        x: -xPercent * 18,
+        y: -yPercent * 18,
+        duration: 0.8,
+        ease: "power2.out",
+      });
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
+
+  // GSAP ScrollTrigger for stats cards (subtle animation)
+  useEffect(() => {
+    if (aboutCardsRef.current) {
+      const cards = aboutCardsRef.current.querySelectorAll(".stat-card");
+
+      gsap.fromTo(
+        cards,
+        {
+          opacity: 0,
+          y: 40,
+          scale: 0.95,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: aboutCardsRef.current,
+            start: "top 75%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+    }
+
+    // Event cards subtle animation
+    if (eventsRef.current) {
+      const eventCards = eventsRef.current.querySelectorAll(".event-card");
+
+      eventCards.forEach((card, index) => {
+        gsap.fromTo(
+          card,
+          {
+            opacity: 0,
+            y: 30,
+            scale: 0.95,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.6,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: card,
+              start: "top 80%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+      });
+    }
+
+    return () => {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    };
+  }, []);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.8 }}
-      className={`relative min-h-screen ${
-        theme === "dark" ? "bg-slate-950 text-white" : "bg-white text-gray-900"
-      } overflow-x-hidden`}
-    >
-      {!shouldReduceMotion && (
-        <div className="hidden md:block">
-          <CustomCursor />
+    <div className="relative min-h-screen bg-black text-white overflow-hidden">
+      {/* Navigation */}
+      <nav className="fixed top-0 left-0 right-0 px-9 py-5 flex justify-between items-center z-[600] bg-black/10 backdrop-blur-md">
+        <span
+          className="text-[#ffb77a] font-bold text-xl tracking-wide"
+          style={{textShadow: "0 2px 12px rgba(255,140,40,0.18)"}}
+        >
+          Zenith 2026
+        </span>
+
+        {/* Desktop Menu */}
+        <div className="hidden md:flex gap-6">
+          <a
+            href="#about"
+            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
+          >
+            About
+          </a>
+          <a
+            href="#events"
+            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
+          >
+            Events
+          </a>
+          <Link
+            to="/gameverse"
+            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors flex items-center gap-1"
+          >
+            🎮 GameVerse
+          </Link>
+          <a
+            href="#vip-guests"
+            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
+          >
+            VIP Guests
+          </a>
+          <a
+            href="#gallery"
+            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
+          >
+            Gallery
+          </a>
+          <a
+            href="#register"
+            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
+          >
+            Register
+          </a>
         </div>
-      )}
-      <AnimatedBackground theme={theme} />
 
-      {/* Theme Toggle Button */}
-      <motion.button
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-        onClick={toggleTheme}
-        className={`fixed top-6 right-6 z-50 p-4 rounded-full ${
-          theme === "dark"
-            ? "bg-gradient-to-br from-blue-600 to-purple-600 text-white"
-            : "bg-gradient-to-br from-orange-400 to-pink-400 text-white"
-        } shadow-lg hover:scale-110 transition-transform duration-300`}
-        whileHover={{ rotate: 180 }}
-        whileTap={{ scale: 0.9 }}
-      >
-        {theme === "dark" ? (
-          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" />
-          </svg>
-        ) : (
-          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-          </svg>
-        )}
-      </motion.button>
-
-      {/* Zenith Lottie Logo - Top Left Corner */}
-      <motion.div
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 1, delay: 0.5 }}
-        className="fixed left-6 z-50 w-32 h-32 md:w-40 md:h-40"
-      >
-        <DotLottieReact
-          src="https://lottie.host/778d57c3-a55a-43cd-80af-2268c648ef16/GPgvLBX4u3.lottie"
-          autoplay
-          className="w-full h-full"
-        />
-      </motion.div>
-
-      <div className="relative z-10">
-        <section className="relative min-h-screen flex flex-col items-center justify-center px-6">
-          <motion.div
-            initial={{ opacity: 0, scale: 3 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
-            className="mb-12 text-center"
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="md:hidden text-[#ffb77a] z-[700]"
+        >
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            <h1
-              className={`font-orbitron text-7xl md:text-9xl font-bold text-transparent bg-clip-text ${
-                theme === "dark"
-                  ? "bg-gradient-to-r from-neon-orange via-neon-blue to-neon-orange"
-                  : "bg-gradient-to-r from-orange-500 via-blue-600 to-pink-600"
-              } bg-[length:200%_100%] animate-gradient`}
-            >
-              ZENITH
-            </h1>
-            <p
-              className={`font-orbitron text-4xl md:text-6xl mt-2 ${
-                theme === "dark" ? "text-neon-blue" : "text-blue-600"
-              }`}
-            >
-              2026
-            </p>
-          </motion.div>
-
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2, duration: 0.8 }}
-            className={`font-orbitron text-4xl md:text-6xl font-bold text-center mb-6 ${
-              theme === "dark" ? "text-white" : "text-gray-900"
-            }`}
-          >
-            Let the Game Begin ⚡
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.5, duration: 0.8 }}
-            className={`font-rajdhani text-xl md:text-2xl text-center max-w-3xl mb-12 ${
-              theme === "dark" ? "text-gray-300" : "text-gray-600"
-            }`}
-          >
-            SGGSIE&T Annual Sports Festival — Experience the spirit of
-            competition and excellence.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 1.8, duration: 0.5 }}
-            className="flex flex-wrap gap-6 justify-center"
-          >
-            <Link to="/glimpses">
-              <motion.button
-                whileHover={{ scale: 1.05, y: -5 }}
-                whileTap={{ scale: 0.95 }}
-                className={`px-8 py-4 font-rajdhani text-lg font-bold rounded-lg ${
-                  theme === "dark"
-                    ? "bg-gradient-to-r from-neon-orange to-red-600"
-                    : "bg-gradient-to-r from-orange-500 to-red-500"
-                } text-white relative overflow-hidden group`}
-              >
-                <span className="relative z-10 flex items-center gap-2">
-                  📸 View Glimpses
-                </span>
-              </motion.button>
-            </Link>
-            <Link to="/admin/login">
-              <motion.button
-                whileHover={{ scale: 1.05, y: -5 }}
-                whileTap={{ scale: 0.95 }}
-                className={`px-8 py-4 font-rajdhani text-lg font-bold rounded-lg bg-transparent ${
-                  theme === "dark"
-                    ? "text-neon-blue border-2 border-neon-blue"
-                    : "text-blue-600 border-2 border-blue-600"
-                }`}
-              >
-                <span className="flex items-center gap-2">🔐 Admin Login</span>
-              </motion.button>
-            </Link>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 2.5, duration: 1 }}
-            className="absolute bottom-10"
-          >
-            <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              className={`w-6 h-10 border-2 rounded-full flex items-start justify-center p-2 ${
-                theme === "dark" ? "border-neon-blue" : "border-blue-600"
-              }`}
-            >
-              <div
-                className={`w-1.5 h-2 rounded-full ${
-                  theme === "dark" ? "bg-neon-blue" : "bg-blue-600"
-                }`}
+            {mobileMenuOpen ? (
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
               />
-            </motion.div>
-          </motion.div>
-        </section>
+            ) : (
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            )}
+          </svg>
+        </button>
 
-        <section className="relative py-20 px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="max-w-7xl mx-auto"
-          >
-            <h2
-              className={`font-orbitron text-5xl md:text-6xl font-bold text-center mb-4 text-transparent bg-clip-text ${
-                theme === "dark"
-                  ? "bg-gradient-to-r from-neon-blue to-neon-orange"
-                  : "bg-gradient-to-r from-blue-600 to-orange-500"
-              }`}
-            >
-              Choose Your Arena
-            </h2>
-            <p
-              className={`font-rajdhani text-xl text-center mb-16 ${
-                theme === "dark" ? "text-gray-400" : "text-gray-600"
-              }`}
-            >
-              Six disciplines. Infinite glory.
-            </p>
+        {/* BACKDROP */}
+        {mobileMenuOpen && (
+          <div
+            className="fixed inset-0 bg-black/70 z-[650] md:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[
-                {
-                  name: "Cricket",
-                  icon: "🏏",
-                  color: "from-green-600 to-green-800",
-                },
-                {
-                  name: "Volleyball",
-                  icon: "🏐",
-                  color: "from-yellow-600 to-orange-600",
-                },
-                {
-                  name: "Chess",
-                  icon: "♟️",
-                  color: "from-gray-700 to-slate-900",
-                },
-                {
-                  name: "E-Games",
-                  icon: "🎮",
-                  color: "from-purple-600 to-pink-600",
-                },
-                {
-                  name: "Athletics",
-                  icon: "🏃",
-                  color: "from-red-600 to-orange-600",
-                },
-                {
-                  name: "Badminton",
-                  icon: "🏸",
-                  color: "from-blue-600 to-cyan-600",
-                },
-              ].map((sport, index) => (
-                <motion.div
-                  key={sport.name}
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.15, duration: 0.8 }}
-                >
-                  <Tilt
-                    tiltMaxAngleX={15}
-                    tiltMaxAngleY={15}
-                    glareEnable={true}
-                    glareMaxOpacity={0.3}
-                    glareColor={theme === "dark" ? "#00d4ff" : "#3b82f6"}
-                    scale={1.05}
-                  >
-                    <div
-                      className={`relative rounded-2xl p-8 border-2 transition-all duration-300 group cursor-pointer ${
-                        theme === "dark"
-                          ? "bg-slate-900/50 border-slate-700 hover:border-neon-blue"
-                          : "bg-white border-gray-200 hover:border-blue-500"
-                      } backdrop-blur-sm`}
-                    >
-                      <div
-                        className={`absolute inset-0 bg-gradient-to-br ${sport.color} opacity-0 group-hover:opacity-20 transition-opacity rounded-2xl`}
-                      />
-                      <div className="relative z-10">
-                        <div className="text-6xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                          {sport.icon}
-                        </div>
-                        <h3
-                          className={`font-orbitron text-2xl font-bold mb-2 ${
-                            theme === "dark" ? "text-white" : "text-gray-900"
-                          }`}
-                        >
-                          {sport.name}
-                        </h3>
-                        <p
-                          className={`font-rajdhani ${
-                            theme === "dark"
-                              ? "text-gray-400 group-hover:text-gray-300"
-                              : "text-gray-600 group-hover:text-gray-700"
-                          }`}
-                        >
-                          Compete for glory →
-                        </p>
-                      </div>
-                    </div>
-                  </Tilt>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </section>
-
-        <section className="relative py-20 px-6">
-          <div className="max-w-5xl mx-auto">
-            <motion.h2
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className={`font-orbitron text-5xl md:text-6xl font-bold mb-8 text-transparent bg-clip-text ${
-                theme === "dark"
-                  ? "bg-gradient-to-r from-neon-orange to-neon-blue"
-                  : "bg-gradient-to-r from-orange-500 to-blue-600"
-              }`}
-            >
-              About Zenith
-            </motion.h2>
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3, duration: 0.8 }}
-              className={`rounded-2xl p-8 md:p-12 border-2 backdrop-blur-sm ${
-                theme === "dark"
-                  ? "bg-slate-900/30 border-slate-700"
-                  : "bg-white/70 border-gray-200"
-              }`}
-            >
-              <p
-                className={`font-rajdhani text-xl md:text-2xl leading-relaxed mb-6 ${
-                  theme === "dark" ? "text-gray-300" : "text-gray-700"
-                }`}
+        {/* MOBILE MENU */}
+        {mobileMenuOpen && (
+          <div className="fixed top-16 left-0 right-0 bg-black/90 backdrop-blur-xl p-6 z-[700] border-b border-[#3a2416] animate-slideDown md:hidden">
+            <div className="flex flex-col gap-4">
+              <a
+                href="#about"
+                className="text-[#ffb77a] font-semibold"
+                onClick={() => setMobileMenuOpen(false)}
               >
+                About
+              </a>
+              <a
+                href="#events"
+                className="text-[#ffb77a] font-semibold"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Events
+              </a>
+              <Link
+                to="/gameverse"
+                className="text-[#ffb77a] font-semibold flex items-center gap-1"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                🎮 GameVerse
+              </Link>
+              <a
+                href="#vip-guests"
+                className="text-[#ffb77a] font-semibold"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                VIP Guests
+              </a>
+              <a
+                href="#gallery"
+                className="text-[#ffb77a] font-semibold"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Gallery
+              </a>
+              <a
+                href="#register"
+                className="text-[#ffb77a] font-semibold"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Register
+              </a>
+            </div>
+          </div>
+        )}
+      </nav>
+
+      <section id="hero" className="relative w-screen h-screen overflow-hidden">
+        {/* Stadium Background Image */}
+        <div
+          ref={stadiumRef}
+          className="absolute inset-0 z-[1] will-change-transform"
+          style={{
+            backgroundImage: 'url("/img/stadium.jpg")',
+            backgroundSize: "cover",
+            backgroundPosition: "center 55%",
+            filter: "brightness(0.45) saturate(0.9) contrast(0.95)",
+          }}
+        />
+        {/* Subtle blinking dots/sparkles */}
+        <div className="absolute inset-0 z-[5] pointer-events-none overflow-hidden">
+          {[...Array(12)].map((_, i) => (
+            <Sparkle key={i} delay={i * 0.4} size={Math.random() * 4 + 3} />
+          ))}
+        </div>
+        {/* Subtle overlay UNDER the Three.js scene for depth */}
+        <div
+          className="absolute inset-0 z-[10] pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.7) 100%)",
+          }}
+        />
+        {/* Three.js Scene - COMMENTED OUT FOR NOW */}
+        {/* <ThreeScene /> */}
+        {/* Very subtle vignette on top to help title readability */}
+        <div
+          className="absolute inset-0 z-[100] pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 120% 80% at 50% 30%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0.4) 100%)",
+          }}
+        />
+        <div
+          ref={textRef}
+          className="absolute top-[20%] left-0 right-0 z-[200] text-center px-5 will-change-transform"
+        >
+          <motion.h1
+            className="m-0 text-[#ffe7c3] tracking-[6px] font-bold"
+            style={{
+              fontSize: "clamp(2.4rem, 6vw, 5rem)",
+              textShadow:
+                "0 18px 40px rgba(255,120,40,0.12), 0 0 30px rgba(255,150,50,0.18)",
+            }}
+            initial={{opacity: 0, y: 30, filter: "blur(8px)"}}
+            animate={{opacity: 1, y: 0, filter: "blur(0px)"}}
+            transition={{duration: 1, ease: "easeOut"}}
+          >
+            ZENITH 2026
+          </motion.h1>
+          <motion.p
+            className="mt-3 mb-0 text-[#ffdcb3]"
+            style={{fontSize: "clamp(1rem, 2vw, 1.2rem)"}}
+            initial={{opacity: 0, y: 20}}
+            animate={{opacity: 1, y: 0}}
+            transition={{duration: 0.8, delay: 0.3, ease: "easeOut"}}
+          >
+            SGGSIE&T Annual Sports Festival • Where Champions Rise
+          </motion.p>
+          <motion.a
+            href="#register"
+            className="inline-block mt-4 px-8 py-3 rounded-full font-extrabold text-[#2c1506] no-underline transition-transform hover:scale-105"
+            style={{
+              background: "linear-gradient(90deg, #ffb36a, #ff8b1f)",
+              boxShadow:
+                "0 12px 28px rgba(255,140,40,0.18), inset 0 -2px 6px rgba(0,0,0,0.12)",
+            }}
+            initial={{opacity: 0, scale: 0.9}}
+            animate={{opacity: 1, scale: 1}}
+            transition={{duration: 0.6, delay: 0.6, ease: "easeOut"}}
+            whileHover={{scale: 1.05}}
+            whileTap={{scale: 0.95}}
+          >
+            Register Now
+          </motion.a>
+        </div>
+        <div
+          className="absolute left-0 right-0 bottom-0 h-[22%] z-[210] pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.0) 80%)",
+          }}
+        />
+      </section>
+
+      <section
+        id="about"
+        className="relative py-20 px-6 bg-gradient-to-b from-black to-[#0a0604]"
+      >
+        <div className="max-w-6xl mx-auto">
+          <motion.h2
+            className="text-5xl md:text-6xl font-bold text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f]"
+            initial={{opacity: 0, y: 30}}
+            whileInView={{opacity: 1, y: 0}}
+            viewport={{once: true, margin: "-50px"}}
+            transition={{duration: 0.7, ease: "easeOut"}}
+          >
+            About Zenith
+          </motion.h2>
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{opacity: 0, x: -30}}
+              whileInView={{opacity: 1, x: 0}}
+              viewport={{once: true, margin: "-50px"}}
+              transition={{duration: 0.7, ease: "easeOut"}}
+            >
+              <p className="text-lg text-gray-300 leading-relaxed mb-6">
                 Zenith is not just a sports festival — it's where legends are
                 born. Since its inception, Zenith has been the ultimate platform
                 for student athletes to showcase their skills, compete at the
                 highest level, and forge lifelong memories.
               </p>
-              <p
-                className={`font-rajdhani text-lg md:text-xl leading-relaxed ${
-                  theme === "dark" ? "text-gray-400" : "text-gray-600"
-                }`}
-              >
+              <p className="text-lg text-gray-300 leading-relaxed">
                 From the roaring cricket grounds to the intense chess battles,
                 from the electrifying e-sports arena to the adrenaline-pumping
                 athletics track — Zenith 2026 promises to be the most
                 spectacular edition yet.
               </p>
             </motion.div>
-          </div>
-        </section>
-
-        <section className="relative py-16 overflow-hidden">
-          <motion.h3
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className={`font-orbitron text-3xl font-bold text-center mb-12 ${
-              theme === "dark" ? "text-gray-400" : "text-gray-600"
-            }`}
-          >
-            Our Champions
-          </motion.h3>
-          <motion.div
-            animate={{ x: ["0%", "-50%"] }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="flex gap-12"
-          >
-            {[
-              "NIKE",
-              "ADIDAS",
-              "PUMA",
-              "REDBULL",
-              "MONSTER",
-              "GATORADE",
-              "NIKE",
-              "ADIDAS",
-              "PUMA",
-              "REDBULL",
-            ].map((sponsor, i) => (
-              <div
-                key={i}
-                className={`px-8 py-6 rounded-lg border-2 transition-colors whitespace-nowrap group cursor-pointer ${
-                  theme === "dark"
-                    ? "bg-slate-900/50 border-slate-700 hover:border-neon-orange"
-                    : "bg-white border-gray-200 hover:border-orange-500"
-                }`}
-              >
-                <span
-                  className={`font-orbitron text-2xl font-bold transition-colors ${
-                    theme === "dark"
-                      ? "text-gray-500 group-hover:text-white"
-                      : "text-gray-400 group-hover:text-gray-900"
-                  }`}
+            <div ref={aboutCardsRef} className="grid grid-cols-2 gap-6">
+              {[
+                {icon: "🏆", number: "6+", label: "Sports Events"},
+                {icon: "👥", number: "1000+", label: "Participants"},
+                {icon: "🎯", number: "50+", label: "Matches"},
+                {icon: "⚡", number: "3", label: "Days of Action"},
+              ].map((stat, index) => (
+                <div
+                  key={index}
+                  className="stat-card relative bg-gradient-to-br from-[#2a1a11] to-[#1a0f08] p-6 rounded-xl border border-[#3a2416] overflow-hidden"
                 >
-                  {sponsor}
-                </span>
-              </div>
-            ))}
-          </motion.div>
-        </section>
-
-        <motion.footer
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className={`relative mt-20 border-t py-12 ${
-            theme === "dark" ? "border-slate-800" : "border-gray-200"
-          }`}
-        >
-          <div
-            className={`absolute top-0 left-0 right-0 h-1 ${
-              theme === "dark"
-                ? "bg-gradient-to-r from-transparent via-neon-blue to-transparent"
-                : "bg-gradient-to-r from-transparent via-blue-500 to-transparent"
-            }`}
-          />
-          <div className="max-w-7xl mx-auto px-6 text-center">
-            <h3
-              className={`font-orbitron text-4xl font-bold text-transparent bg-clip-text mb-4 ${
-                theme === "dark"
-                  ? "bg-gradient-to-r from-neon-orange to-neon-blue"
-                  : "bg-gradient-to-r from-orange-500 to-blue-600"
-              }`}
-            >
-              ZENITH 2026
-            </h3>
-            <div className="flex gap-6 justify-center mb-8">
-              {["📘", "📷", "🐦", "▶️", "💼"].map((icon, i) => (
-                <motion.a
-                  key={i}
-                  href="#"
-                  whileHover={{ scale: 1.2, rotate: 360 }}
-                  className={`w-12 h-12 flex items-center justify-center rounded-full border-2 transition-colors ${
-                    theme === "dark"
-                      ? "bg-slate-900 border-slate-700 hover:border-neon-blue"
-                      : "bg-white border-gray-300 hover:border-blue-500"
-                  }`}
-                >
-                  <span className="text-2xl">{icon}</span>
-                </motion.a>
+                  {/* Subtle sparkles */}
+                  <div className="absolute inset-0 pointer-events-none">
+                    {[...Array(2)].map((_, i) => (
+                      <Sparkle key={i} delay={index * 0.3 + i * 0.8} size={3} />
+                    ))}
+                  </div>
+                  <div className="text-4xl mb-2">{stat.icon}</div>
+                  <div className="text-3xl font-bold text-[#ffb36a] mb-1">
+                    {stat.number}
+                  </div>
+                  <div className="text-sm text-gray-400">{stat.label}</div>
+                </div>
               ))}
             </div>
-            <p
-              className={`font-rajdhani ${
-                theme === "dark" ? "text-gray-500" : "text-gray-600"
-              }`}
-            >
-              © 2026 SGGSIE&T Zenith. All rights reserved.
-            </p>
-            <p className="font-rajdhani text-sm text-gray-600 mt-2">
-              Where Champions Rise 🏆
-            </p>
           </div>
-        </motion.footer>
-      </div>
-    </motion.div>
+        </div>
+      </section>
+
+      <section id="events" className="relative py-20 px-6 bg-[#0a0604]">
+        <div className="max-w-7xl mx-auto">
+          <motion.h2
+            className="text-5xl md:text-6xl font-bold text-center mb-4 text-transparent bg-clip-text bg-gradient-to-r from-[#ff8b1f] to-[#ffb36a]"
+            initial={{opacity: 0, y: 30}}
+            whileInView={{opacity: 1, y: 0}}
+            viewport={{once: true, margin: "-50px"}}
+            transition={{duration: 0.7, ease: "easeOut"}}
+          >
+            Choose Your Arena
+          </motion.h2>
+          <motion.p
+            className="text-center text-gray-400 text-xl mb-16"
+            initial={{opacity: 0}}
+            whileInView={{opacity: 1}}
+            viewport={{once: true}}
+            transition={{duration: 0.6, delay: 0.2, ease: "easeOut"}}
+          >
+            Six disciplines. Infinite glory.
+          </motion.p>
+
+          <div
+            ref={eventsRef}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
+            {[
+              {
+                name: "Cricket",
+                icon: "🏏",
+                color: "from-green-600 to-green-800",
+                desc: "Test your batting & bowling skills",
+              },
+              {
+                name: "Volleyball",
+                icon: "🏐",
+                color: "from-yellow-600 to-orange-600",
+                desc: "Spike your way to victory",
+              },
+              {
+                name: "Chess",
+                icon: "♟️",
+                color: "from-gray-700 to-slate-900",
+                desc: "Strategic battles of the mind",
+              },
+              {
+                name: "E-Games",
+                icon: "🎮",
+                color: "from-purple-600 to-pink-600",
+                desc: "Digital arena showdowns",
+              },
+              {
+                name: "Athletics",
+                icon: "🏃",
+                color: "from-red-600 to-orange-600",
+                desc: "Run, jump, throw - dominate",
+              },
+              {
+                name: "Badminton",
+                icon: "🏸",
+                color: "from-blue-600 to-cyan-600",
+                desc: "Shuttle your way to glory",
+              },
+            ].map((sport) => (
+              <div
+                key={sport.name}
+                className="event-card group relative bg-gradient-to-br from-[#2a1a11] to-[#1a0f08] rounded-2xl p-8 border-2 border-[#3a2416] hover:border-[#ffb36a] transition-all duration-300 cursor-pointer"
+              >
+                {/* Subtle sparkles on hover */}
+                <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  {[...Array(4)].map((_, i) => (
+                    <Sparkle key={i} delay={i * 0.15} size={4} />
+                  ))}
+                </div>
+
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${sport.color} opacity-0 group-hover:opacity-20 transition-opacity rounded-2xl`}
+                />
+                <div className="relative z-10">
+                  <div className="text-6xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                    {sport.icon}
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-2">
+                    {sport.name}
+                  </h3>
+                  <p className="text-gray-400 group-hover:text-gray-300 transition-colors">
+                    {sport.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* VIP Spotlight Section */}
+      <section
+        id="vip-guests"
+        className="relative py-20 px-6 bg-gradient-to-b from-[#0a0604] to-black overflow-hidden"
+      >
+        {/* Background Sparkles */}
+        <div className="absolute inset-0 pointer-events-none">
+          {[...Array(8)].map((_, i) => (
+            <Sparkle key={i} delay={i * 0.5} size={5} />
+          ))}
+        </div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          {/* Section Title */}
+          <motion.div
+            className="text-center mb-16"
+            initial={{opacity: 0, y: 30}}
+            whileInView={{opacity: 1, y: 0}}
+            viewport={{once: true, margin: "-50px"}}
+            transition={{duration: 0.7, ease: "easeOut"}}
+          >
+            <h2 className="text-5xl md:text-6xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f]">
+              VIP Spotlight
+            </h2>
+            <p className="text-gray-400 text-xl">
+              Legends who graced Zenith over the years
+            </p>
+          </motion.div>
+
+          {/* VIP Carousel */}
+          <motion.div
+            initial={{opacity: 0, y: 40}}
+            whileInView={{opacity: 1, y: 0}}
+            viewport={{once: true, margin: "-100px"}}
+            transition={{duration: 0.8, ease: "easeOut"}}
+          >
+            <VIPCarousel />
+          </motion.div>
+        </div>
+      </section>
+
+      <footer className="relative py-12 px-6 bg-black border-t border-[#3a2416]">
+        <div className="max-w-7xl mx-auto text-center">
+          <motion.h3
+            className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] mb-6"
+            initial={{opacity: 0, y: 20}}
+            whileInView={{opacity: 1, y: 0}}
+            viewport={{once: true}}
+            transition={{duration: 0.6, ease: "easeOut"}}
+          >
+            ZENITH 2026
+          </motion.h3>
+          <div className="flex gap-6 justify-center mb-8">
+            {["📘", "📷", "🐦", "▶️", "💼"].map((icon, i) => (
+              <motion.a
+                key={i}
+                href="#"
+                className="w-12 h-12 flex items-center justify-center rounded-full border-2 border-[#3a2416] bg-[#1a0f08] hover:border-[#ffb36a] hover:scale-110 transition-all duration-300"
+                initial={{opacity: 0, y: 20}}
+                whileInView={{opacity: 1, y: 0}}
+                viewport={{once: true}}
+                transition={{duration: 0.4, delay: i * 0.08, ease: "easeOut"}}
+              >
+                <span className="text-2xl">{icon}</span>
+              </motion.a>
+            ))}
+          </div>
+          <p className="text-gray-500 mb-2">
+            © 2026 SGGSIE&T Zenith. All rights reserved.
+          </p>
+          <p className="text-sm text-gray-600">Where Champions Rise 🏆</p>
+        </div>
+      </footer>
+    </div>
   );
 }
