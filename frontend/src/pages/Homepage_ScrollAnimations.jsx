@@ -1,15 +1,21 @@
-import {useState, useRef, useEffect} from "react";
-import {motion, useScroll, useTransform, useInView} from "framer-motion";
-import {gsap} from "gsap";
-import {ScrollTrigger} from "gsap/ScrollTrigger";
+import { useState, useRef, useEffect } from "react";
+import {
+  motion as Motion,
+  useScroll,
+  useTransform,
+  useInView,
+} from "framer-motion";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import DemoNavigation from "../components/DemoNavigation";
+import LoginModal from "../components/LoginModal";
 
 // Register GSAP ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
 
 // Sparkle component for sparkle effects
-const Sparkle = ({delay = 0, size = 6}) => (
-  <motion.div
+const Sparkle = ({ delay = 0, size = 6 }) => (
+  <Motion.div
     className="absolute rounded-full bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-200"
     style={{
       width: size,
@@ -17,7 +23,7 @@ const Sparkle = ({delay = 0, size = 6}) => (
       left: `${Math.random() * 100}%`,
       top: `${Math.random() * 100}%`,
     }}
-    initial={{opacity: 0, scale: 0}}
+    initial={{ opacity: 0, scale: 0 }}
     animate={{
       opacity: [0, 1, 0],
       scale: [0, 1.5, 0],
@@ -40,54 +46,54 @@ const AnimatedSection = ({
   id,
 }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, {once: true, margin: "-100px"});
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   const variants = {
     slideUp: {
-      hidden: {opacity: 0, y: 100},
+      hidden: { opacity: 0, y: 100 },
       visible: {
         opacity: 1,
         y: 0,
-        transition: {duration: 0.8, ease: [0.25, 0.4, 0.25, 1]},
+        transition: { duration: 0.8, ease: [0.25, 0.4, 0.25, 1] },
       },
     },
     fadeBlur: {
-      hidden: {opacity: 0, filter: "blur(10px)"},
+      hidden: { opacity: 0, filter: "blur(10px)" },
       visible: {
         opacity: 1,
         filter: "blur(0px)",
-        transition: {duration: 1, ease: "easeOut"},
+        transition: { duration: 1, ease: "easeOut" },
       },
     },
     rotate: {
-      hidden: {opacity: 0, rotateX: 45, scale: 0.8},
+      hidden: { opacity: 0, rotateX: 45, scale: 0.8 },
       visible: {
         opacity: 1,
         rotateX: 0,
         scale: 1,
-        transition: {duration: 1, ease: [0.25, 0.4, 0.25, 1]},
+        transition: { duration: 1, ease: [0.25, 0.4, 0.25, 1] },
       },
     },
     slideLeft: {
-      hidden: {opacity: 0, x: -100},
+      hidden: { opacity: 0, x: -100 },
       visible: {
         opacity: 1,
         x: 0,
-        transition: {duration: 0.8, ease: [0.25, 0.4, 0.25, 1]},
+        transition: { duration: 0.8, ease: [0.25, 0.4, 0.25, 1] },
       },
     },
     slideRight: {
-      hidden: {opacity: 0, x: 100},
+      hidden: { opacity: 0, x: 100 },
       visible: {
         opacity: 1,
         x: 0,
-        transition: {duration: 0.8, ease: [0.25, 0.4, 0.25, 1]},
+        transition: { duration: 0.8, ease: [0.25, 0.4, 0.25, 1] },
       },
     },
   };
 
   return (
-    <motion.section
+    <Motion.section
       ref={ref}
       id={id}
       className={className}
@@ -96,18 +102,19 @@ const AnimatedSection = ({
       animate={isInView ? "visible" : "hidden"}
     >
       {children}
-    </motion.section>
+    </Motion.section>
   );
 };
 
 export default function Homepage_ScrollAnimations() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
   const stadiumRef = useRef(null);
   const textRef = useRef(null);
   const aboutCardsRef = useRef(null);
   const eventsRef = useRef(null);
 
-  const {scrollYProgress} = useScroll();
+  const { scrollYProgress } = useScroll();
   const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
   const heroScale = useTransform(scrollYProgress, [0, 0.3], [1, 0.8]);
 
@@ -116,8 +123,8 @@ export default function Homepage_ScrollAnimations() {
     if (window.innerWidth < 768) return;
 
     const handleMouseMove = (e) => {
-      const {clientX, clientY} = e;
-      const {innerWidth, innerHeight} = window;
+      const { clientX, clientY } = e;
+      const { innerWidth, innerHeight } = window;
       const xPercent = (clientX / innerWidth - 0.5) * 2;
       const yPercent = (clientY / innerHeight - 0.5) * 2;
 
@@ -217,13 +224,13 @@ export default function Homepage_ScrollAnimations() {
       <nav className="fixed top-0 left-0 right-0 px-9 py-5 flex justify-between items-center z-[100] bg-black/50 backdrop-blur-md">
         <span
           className="text-[#ffb77a] font-bold text-xl tracking-wide"
-          style={{textShadow: "0 2px 12px rgba(255,140,40,0.18)"}}
+          style={{ textShadow: "0 2px 12px rgba(255,140,40,0.18)" }}
         >
           Zenith 2026
         </span>
 
         <div className="hidden md:flex gap-6">
-          {["about", "events", "gallery", "register"].map((item) => (
+          {["about", "events", "gallery"].map((item) => (
             <a
               key={item}
               href={`#${item}`}
@@ -232,6 +239,12 @@ export default function Homepage_ScrollAnimations() {
               {item.charAt(0).toUpperCase() + item.slice(1)}
             </a>
           ))}
+          <button
+            onClick={() => setLoginModalOpen(true)}
+            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
+          >
+            Register
+          </button>
         </div>
 
         <button
@@ -264,10 +277,10 @@ export default function Homepage_ScrollAnimations() {
       </nav>
 
       {/* Hero Section */}
-      <motion.section
+      <Motion.section
         id="hero"
         className="relative w-screen h-screen overflow-hidden"
-        style={{opacity: heroOpacity, scale: heroScale}}
+        style={{ opacity: heroOpacity, scale: heroScale }}
       >
         {/* Stadium Background with Parallax */}
         <div
@@ -297,54 +310,54 @@ export default function Homepage_ScrollAnimations() {
         />
 
         {/* Hero Text with Parallax */}
-        <motion.div
+        <Motion.div
           ref={textRef}
           className="absolute top-[20%] left-0 right-0 z-[200] text-center px-5 will-change-transform"
-          initial={{opacity: 0, y: 50}}
-          animate={{opacity: 1, y: 0}}
-          transition={{duration: 1, delay: 0.3}}
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.3 }}
         >
-          <motion.h1
+          <Motion.h1
             className="m-0 text-[#ffe7c3] tracking-[6px] font-bold"
             style={{
               fontSize: "clamp(2.4rem, 6vw, 5rem)",
               textShadow:
                 "0 18px 40px rgba(255,120,40,0.12), 0 0 30px rgba(255,150,50,0.18)",
             }}
-            initial={{scale: 0.8, filter: "blur(10px)"}}
-            animate={{scale: 1, filter: "blur(0px)"}}
-            transition={{duration: 1.2, delay: 0.5}}
+            initial={{ scale: 0.8, filter: "blur(10px)" }}
+            animate={{ scale: 1, filter: "blur(0px)" }}
+            transition={{ duration: 1.2, delay: 0.5 }}
           >
             ZENITH 2026
-          </motion.h1>
+          </Motion.h1>
 
-          <motion.p
+          <Motion.p
             className="mt-3 mb-0 text-[#ffdcb3]"
-            style={{fontSize: "clamp(1rem, 2vw, 1.2rem)"}}
-            initial={{opacity: 0, y: 20}}
-            animate={{opacity: 1, y: 0}}
-            transition={{duration: 0.8, delay: 0.8}}
+            style={{ fontSize: "clamp(1rem, 2vw, 1.2rem)" }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
           >
             SGGSIE&T Annual Sports Festival • Where Champions Rise
-          </motion.p>
+          </Motion.p>
 
-          <motion.a
-            href="#register"
-            className="inline-block mt-4 px-8 py-3 rounded-full font-extrabold text-[#2c1506] no-underline"
+          <Motion.button
+            onClick={() => setLoginModalOpen(true)}
+            className="inline-block mt-4 px-8 py-3 rounded-full font-extrabold text-[#2c1506] no-underline cursor-pointer"
             style={{
               background: "linear-gradient(90deg, #ffb36a, #ff8b1f)",
               boxShadow:
                 "0 12px 28px rgba(255,140,40,0.18), inset 0 -2px 6px rgba(0,0,0,0.12)",
             }}
-            initial={{opacity: 0, scale: 0.5}}
-            animate={{opacity: 1, scale: 1}}
-            transition={{duration: 0.6, delay: 1}}
-            whileHover={{scale: 1.05}}
-            whileTap={{scale: 0.95}}
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 1 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             Register Now
-          </motion.a>
-        </motion.div>
+          </Motion.button>
+        </Motion.div>
 
         <div
           className="absolute left-0 right-0 bottom-0 h-[22%] z-[210] pointer-events-none"
@@ -353,7 +366,7 @@ export default function Homepage_ScrollAnimations() {
               "linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.0) 80%)",
           }}
         />
-      </motion.section>
+      </Motion.section>
 
       {/* About Section - Slide from bottom */}
       <AnimatedSection
@@ -363,23 +376,23 @@ export default function Homepage_ScrollAnimations() {
       >
         <div className="max-w-6xl mx-auto">
           {/* Title with Fade + Blur */}
-          <motion.h2
+          <Motion.h2
             className="text-5xl md:text-6xl font-bold text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f]"
-            initial={{opacity: 0, filter: "blur(20px)"}}
-            whileInView={{opacity: 1, filter: "blur(0px)"}}
-            viewport={{once: true}}
-            transition={{duration: 1}}
+            initial={{ opacity: 0, filter: "blur(20px)" }}
+            whileInView={{ opacity: 1, filter: "blur(0px)" }}
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
           >
             About Zenith
-          </motion.h2>
+          </Motion.h2>
 
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Text content - Slide from left */}
-            <motion.div
-              initial={{opacity: 0, x: -100}}
-              whileInView={{opacity: 1, x: 0}}
-              viewport={{once: true}}
-              transition={{duration: 0.8}}
+            <Motion.div
+              initial={{ opacity: 0, x: -100 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
             >
               <p className="text-lg text-gray-300 leading-relaxed mb-6">
                 Zenith is not just a sports festival — it's where legends are
@@ -393,19 +406,19 @@ export default function Homepage_ScrollAnimations() {
                 athletics track — Zenith 2026 promises to be the most
                 spectacular edition yet.
               </p>
-            </motion.div>
+            </Motion.div>
 
             {/* Stats cards - GSAP controlled */}
             <div
               ref={aboutCardsRef}
               className="grid grid-cols-2 gap-6"
-              style={{perspective: "1000px"}}
+              style={{ perspective: "1000px" }}
             >
               {[
-                {icon: "🏆", number: "6+", label: "Sports Events"},
-                {icon: "👥", number: "1000+", label: "Participants"},
-                {icon: "🎯", number: "50+", label: "Matches"},
-                {icon: "⚡", number: "3", label: "Days of Action"},
+                { icon: "🏆", number: "6+", label: "Sports Events" },
+                { icon: "👥", number: "1000+", label: "Participants" },
+                { icon: "🎯", number: "50+", label: "Matches" },
+                { icon: "⚡", number: "3", label: "Days of Action" },
               ].map((stat, index) => (
                 <div
                   key={index}
@@ -436,30 +449,30 @@ export default function Homepage_ScrollAnimations() {
         className="relative py-20 px-6 bg-[#0a0604]"
       >
         <div className="max-w-7xl mx-auto">
-          <motion.h2
+          <Motion.h2
             className="text-5xl md:text-6xl font-bold text-center mb-4 text-transparent bg-clip-text bg-gradient-to-r from-[#ff8b1f] to-[#ffb36a]"
-            initial={{opacity: 0, rotateX: 45}}
-            whileInView={{opacity: 1, rotateX: 0}}
-            viewport={{once: true}}
-            transition={{duration: 1}}
+            initial={{ opacity: 0, rotateX: 45 }}
+            whileInView={{ opacity: 1, rotateX: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
           >
             Choose Your Arena
-          </motion.h2>
+          </Motion.h2>
 
-          <motion.p
+          <Motion.p
             className="text-center text-gray-400 text-xl mb-16"
-            initial={{opacity: 0}}
-            whileInView={{opacity: 1}}
-            viewport={{once: true}}
-            transition={{duration: 0.8, delay: 0.3}}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.3 }}
           >
             Six disciplines. Infinite glory.
-          </motion.p>
+          </Motion.p>
 
           <div
             ref={eventsRef}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-            style={{perspective: "1500px"}}
+            style={{ perspective: "1500px" }}
           >
             {[
               {
@@ -498,17 +511,17 @@ export default function Homepage_ScrollAnimations() {
                 color: "from-blue-600 to-cyan-600",
                 desc: "Shuttle your way to glory",
               },
-            ].map((sport, index) => (
-              <motion.div
+            ].map((sport) => (
+              <Motion.div
                 key={sport.name}
                 className="event-card group relative bg-gradient-to-br from-[#2a1a11] to-[#1a0f08] rounded-2xl p-8 border-2 border-[#3a2416] cursor-pointer overflow-hidden"
                 whileHover={{
                   scale: 1.05,
                   rotateY: 5,
                   borderColor: "#ffb36a",
-                  transition: {duration: 0.3},
+                  transition: { duration: 0.3 },
                 }}
-                whileTap={{scale: 0.95}}
+                whileTap={{ scale: 0.95 }}
               >
                 {/* Sparkle effect on hover */}
                 <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
@@ -522,13 +535,13 @@ export default function Homepage_ScrollAnimations() {
                 />
 
                 <div className="relative z-10">
-                  <motion.div
+                  <Motion.div
                     className="text-6xl mb-4"
-                    whileHover={{scale: 1.2, rotate: 360}}
-                    transition={{duration: 0.6}}
+                    whileHover={{ scale: 1.2, rotate: 360 }}
+                    transition={{ duration: 0.6 }}
                   >
                     {sport.icon}
-                  </motion.div>
+                  </Motion.div>
                   <h3 className="text-2xl font-bold text-white mb-2">
                     {sport.name}
                   </h3>
@@ -536,7 +549,7 @@ export default function Homepage_ScrollAnimations() {
                     {sport.desc}
                   </p>
                 </div>
-              </motion.div>
+              </Motion.div>
             ))}
           </div>
         </div>
@@ -555,26 +568,26 @@ export default function Homepage_ScrollAnimations() {
             ))}
           </div>
 
-          <motion.h3
+          <Motion.h3
             className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] mb-6"
-            initial={{opacity: 0, scale: 0.5}}
-            whileInView={{opacity: 1, scale: 1}}
-            viewport={{once: true}}
-            transition={{duration: 0.8}}
+            initial={{ opacity: 0, scale: 0.5 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
           >
             ZENITH 2026
-          </motion.h3>
+          </Motion.h3>
 
           <div className="flex gap-6 justify-center mb-8">
             {["📘", "📷", "🐦", "▶️", "💼"].map((icon, i) => (
-              <motion.a
+              <Motion.a
                 key={i}
                 href="#"
                 className="w-12 h-12 flex items-center justify-center rounded-full border-2 border-[#3a2416] bg-[#1a0f08]"
-                initial={{opacity: 0, y: 20}}
-                whileInView={{opacity: 1, y: 0}}
-                viewport={{once: true}}
-                transition={{duration: 0.5, delay: i * 0.1}}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
                 whileHover={{
                   scale: 1.2,
                   borderColor: "#ffb36a",
@@ -582,30 +595,36 @@ export default function Homepage_ScrollAnimations() {
                 }}
               >
                 <span className="text-2xl">{icon}</span>
-              </motion.a>
+              </Motion.a>
             ))}
           </div>
 
-          <motion.p
+          <Motion.p
             className="text-gray-500 mb-2"
-            initial={{opacity: 0}}
-            whileInView={{opacity: 1}}
-            viewport={{once: true}}
-            transition={{duration: 0.8}}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
           >
             © 2026 SGGSIE&T Zenith. All rights reserved.
-          </motion.p>
-          <motion.p
+          </Motion.p>
+          <Motion.p
             className="text-sm text-gray-600"
-            initial={{opacity: 0}}
-            whileInView={{opacity: 1}}
-            viewport={{once: true}}
-            transition={{duration: 0.8, delay: 0.2}}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
           >
             Where Champions Rise 🏆
-          </motion.p>
+          </Motion.p>
         </div>
       </AnimatedSection>
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+      />
     </div>
   );
 }

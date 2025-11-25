@@ -1,246 +1,244 @@
 import { useState, useEffect } from "react";
-// eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
-import { mediaAPI } from "../services/api";
+import { Link } from "react-router-dom";
+import { motion as Motion } from "framer-motion";
+import axios from "axios";
 
 export default function Glimpses() {
   const [media, setMedia] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("");
-  const [category, setCategory] = useState("");
+  const [filter, setFilter] = useState("all");
   const [selectedMedia, setSelectedMedia] = useState(null);
 
   useEffect(() => {
-    loadMedia();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter, category]);
+    fetchMedia();
+  }, []);
 
-  const loadMedia = async () => {
-    setLoading(true);
+  const fetchMedia = async () => {
     try {
-      const filters = {};
-      if (filter) filters.type = filter;
-      if (category) filters.category = category;
-
-      const response = await mediaAPI.getAll(filters);
-      if (response.success) {
-        setMedia(response.data.media);
+      const response = await axios.get("http://localhost:5000/api/media");
+      if (response.data.success) {
+        const mediaData = response.data.data.media || response.data.data || [];
+        setMedia(mediaData);
       }
-    } catch (error) {
-      console.error("Failed to load media:", error);
+    } catch (err) {
+      console.error("Failed to fetch media:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  const openModal = (item) => {
-    setSelectedMedia(item);
-  };
+  const filteredMedia = media.filter((item) => {
+    if (filter === "all") return true;
+    return item.type === filter;
+  });
 
-  const closeModal = () => {
-    setSelectedMedia(null);
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-[#ffb36a] text-2xl">Loading glimpses...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-black via-[#0a0604] to-black text-white">
+      {/* Navigation */}
+      <nav className="fixed top-0 left-0 right-0 px-9 py-5 flex justify-between items-center z-[600] bg-black/10 backdrop-blur-md">
+        <Link
+          to="/home"
+          className="text-[#ffb77a] font-bold text-xl tracking-wide"
+          style={{ textShadow: "0 2px 12px rgba(255,140,40,0.18)" }}
+        >
+          Zenith 2026
+        </Link>
+        <Link
+          to="/home"
+          className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
+        >
+          ← Back to Home
+        </Link>
+      </nav>
+
       {/* Header */}
-      <div className="bg-white/10 backdrop-blur-lg border-b border-white/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center"
+      <Motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="pt-32 pb-12 px-6 text-center"
+      >
+        <h1 className="text-5xl md:text-7xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f]">
+          📸 Glimpses of Zenith
+        </h1>
+        <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+          Relive the moments, celebrate the memories
+        </p>
+      </Motion.div>
+
+      {/* Filter Tabs */}
+      <Motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="flex justify-center gap-4 px-6 mb-12"
+      >
+        {[
+          { label: "All", value: "all", icon: "🎯" },
+          { label: "Images", value: "image", icon: "📷" },
+          { label: "Videos", value: "video", icon: "🎥" },
+        ].map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => setFilter(tab.value)}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
+              filter === tab.value
+                ? "bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] text-[#2c1506] scale-105"
+                : "bg-[#2a1a11] border border-[#3a2416] text-gray-300 hover:border-[#ffb36a]"
+            }`}
           >
-            <h1 className="font-orbitron text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-blue-500 mb-4">
-              ZENITH 2026 Glimpses
-            </h1>
-            <p className="font-rajdhani text-xl text-gray-300">
-              Relive the moments, celebrate the victories 🏆
-            </p>
-          </motion.div>
+            {tab.icon} {tab.label}
+          </button>
+        ))}
+      </Motion.div>
+
+      {/* Stats */}
+      <div className="max-w-7xl mx-auto px-6 mb-8">
+        <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto">
+          <div className="bg-gradient-to-br from-[#2a1a11] to-[#1a0f08] border border-[#3a2416] rounded-xl p-4 text-center">
+            <div className="text-3xl font-bold text-[#ffb36a]">
+              {media.length}
+            </div>
+            <div className="text-sm text-gray-400">Total</div>
+          </div>
+          <div className="bg-gradient-to-br from-[#2a1a11] to-[#1a0f08] border border-[#3a2416] rounded-xl p-4 text-center">
+            <div className="text-3xl font-bold text-blue-400">
+              {media.filter((m) => m.type === "image").length}
+            </div>
+            <div className="text-sm text-gray-400">Images</div>
+          </div>
+          <div className="bg-gradient-to-br from-[#2a1a11] to-[#1a0f08] border border-[#3a2416] rounded-xl p-4 text-center">
+            <div className="text-3xl font-bold text-purple-400">
+              {media.filter((m) => m.type === "video").length}
+            </div>
+            <div className="text-sm text-gray-400">Videos</div>
+          </div>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-wrap gap-4 justify-center mb-8">
-          <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="px-6 py-3 bg-white/10 backdrop-blur-lg border border-white/20 rounded-lg text-white font-rajdhani font-semibold focus:outline-none focus:border-blue-500 transition-colors"
-          >
-            <option value="">All Media</option>
-            <option value="image">Images</option>
-            <option value="video">Videos</option>
-          </select>
-
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="px-6 py-3 bg-white/10 backdrop-blur-lg border border-white/20 rounded-lg text-white font-rajdhani font-semibold focus:outline-none focus:border-blue-500 transition-colors"
-          >
-            <option value="">All Categories</option>
-            <option value="event">Events</option>
-            <option value="sports">Sports</option>
-            <option value="ceremony">Ceremonies</option>
-            <option value="participants">Participants</option>
-            <option value="other">Other</option>
-          </select>
-
-          <button
-            onClick={() => {
-              setFilter("");
-              setCategory("");
-            }}
-            className="px-6 py-3 bg-gradient-to-r from-orange-500 to-blue-600 text-white font-rajdhani font-bold rounded-lg hover:from-orange-600 hover:to-blue-700 transition-all"
-          >
-            Reset Filters
-          </button>
-        </div>
-
-        {/* Loading State */}
-        {loading && (
-          <div className="text-center text-white font-rajdhani text-2xl py-20">
-            Loading glimpses...
-          </div>
-        )}
-
-        {/* Gallery Grid */}
-        {!loading && (
-          <motion.div
+      {/* Media Grid */}
+      <div className="max-w-7xl mx-auto px-6 pb-20">
+        {filteredMedia.length === 0 ? (
+          <Motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+            className="text-center py-20"
           >
-            {media.map((item, index) => (
-              <motion.div
+            <div className="text-6xl mb-4">📁</div>
+            <p className="text-gray-400 text-xl">No media found</p>
+            <p className="text-gray-500 text-sm mt-2">
+              Check back later for more glimpses!
+            </p>
+          </Motion.div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredMedia.map((item, index) => (
+              <Motion.div
                 key={item._id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                whileHover={{ scale: 1.05 }}
-                onClick={() => openModal(item)}
-                className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl overflow-hidden cursor-pointer hover:border-blue-500 transition-all"
+                transition={{ duration: 0.5, delay: index * 0.05 }}
+                onClick={() => setSelectedMedia(item)}
+                className="bg-gradient-to-br from-[#2a1a11] to-[#1a0f08] rounded-xl border-2 border-[#3a2416] hover:border-[#ffb36a] overflow-hidden cursor-pointer transition-all duration-300 hover:scale-105 group"
               >
-                <div className="relative h-64">
-                  {item.type === "video" ? (
-                    <>
-                      <img
-                        src={item.thumbnail || item.secureUrl}
-                        alt={item.title}
+                {/* Media Preview */}
+                <div className="aspect-square bg-black relative overflow-hidden">
+                  {item.type === "image" ? (
+                    <img
+                      src={item.secureUrl || item.url}
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="relative w-full h-full">
+                      <video
+                        src={item.secureUrl || item.url}
                         className="w-full h-full object-cover"
+                        muted
+                        loop
+                        playsInline
                       />
-                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/50 transition-all">
                         <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                          <svg
-                            className="w-8 h-8 text-white"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                          </svg>
+                          <span className="text-3xl">▶️</span>
                         </div>
                       </div>
-                    </>
-                  ) : (
-                    <img
-                      src={item.secureUrl}
-                      alt={item.title}
-                      className="w-full h-full object-cover"
-                    />
+                    </div>
                   )}
-                </div>
-                <div className="p-4">
-                  <h3 className="text-white font-rajdhani font-bold text-lg mb-2 line-clamp-2">
-                    {item.title}
-                  </h3>
-                  <p className="text-gray-400 text-sm mb-2 line-clamp-2">
-                    {item.description || "No description"}
-                  </p>
-                  <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span className="px-2 py-1 bg-blue-500/20 rounded">
-                      {item.category}
-                    </span>
-                    <span>{new Date(item.createdAt).toLocaleDateString()}</span>
+                  {/* Type Badge */}
+                  <div className="absolute top-2 right-2 bg-black/70 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold">
+                    {item.type === "image" ? "📷" : "🎥"}
                   </div>
                 </div>
-              </motion.div>
+                {/* Info */}
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold text-white mb-1 truncate">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-gray-400">
+                    {new Date(item.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              </Motion.div>
             ))}
-          </motion.div>
-        )}
-
-        {/* Empty State */}
-        {!loading && media.length === 0 && (
-          <div className="text-center text-gray-400 font-rajdhani text-xl py-20">
-            No media found. Check back soon for exciting glimpses! 📸
           </div>
         )}
       </div>
 
-      {/* Modal */}
+      {/* Lightbox Modal */}
       {selectedMedia && (
-        <motion.div
+        <Motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={closeModal}
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setSelectedMedia(null)}
+          className="fixed inset-0 bg-black/95 backdrop-blur-sm z-[1000] flex items-center justify-center p-4"
         >
-          <motion.div
+          <button
+            onClick={() => setSelectedMedia(null)}
+            className="absolute top-6 right-6 text-white text-4xl hover:text-[#ffb36a] transition-colors z-[1001]"
+          >
+            ×
+          </button>
+          <Motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl max-w-4xl max-h-[90vh] overflow-auto"
+            className="max-w-5xl max-h-[90vh] w-full"
           >
-            <div className="p-6">
-              {selectedMedia.type === "video" ? (
-                <video
-                  src={selectedMedia.secureUrl}
-                  controls
-                  autoPlay
-                  className="w-full max-h-[60vh] rounded-lg"
-                />
-              ) : (
-                <img
-                  src={selectedMedia.secureUrl}
-                  alt={selectedMedia.title}
-                  className="w-full max-h-[60vh] object-contain rounded-lg"
-                />
+            {selectedMedia.type === "image" ? (
+              <img
+                src={selectedMedia.secureUrl || selectedMedia.url}
+                alt={selectedMedia.title}
+                className="w-full h-full object-contain rounded-lg"
+              />
+            ) : (
+              <video
+                src={selectedMedia.secureUrl || selectedMedia.url}
+                controls
+                autoPlay
+                className="w-full h-full object-contain rounded-lg"
+              />
+            )}
+            <div className="mt-4 text-center">
+              <h3 className="text-2xl font-bold text-white mb-2">
+                {selectedMedia.title}
+              </h3>
+              {selectedMedia.description && (
+                <p className="text-gray-400">{selectedMedia.description}</p>
               )}
-              <div className="mt-4">
-                <h2 className="text-white font-orbitron text-2xl font-bold mb-2">
-                  {selectedMedia.title}
-                </h2>
-                <p className="text-gray-300 font-rajdhani mb-4">
-                  {selectedMedia.description || "No description available"}
-                </p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {selectedMedia.tags?.map((tag, idx) => (
-                    <span
-                      key={idx}
-                      className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-                <div className="flex items-center justify-between text-gray-400 text-sm border-t border-white/20 pt-4">
-                  <span>Category: {selectedMedia.category}</span>
-                  <span>
-                    {new Date(selectedMedia.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-              <button
-                onClick={closeModal}
-                className="mt-4 w-full bg-gradient-to-r from-orange-500 to-blue-600 text-white font-rajdhani font-bold py-3 rounded-lg hover:from-orange-600 hover:to-blue-700 transition-all"
-              >
-                Close
-              </button>
             </div>
-          </motion.div>
-        </motion.div>
+          </Motion.div>
+        </Motion.div>
       )}
     </div>
   );

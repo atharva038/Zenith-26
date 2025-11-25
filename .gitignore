@@ -20,20 +20,6 @@ backend/.env.local
 backend/.env.production
 backend/uploads/
 
-# Documentation that may contain secrets
-*.md
-README.md
-ADMIN_PANEL_GUIDE.md
-ADMIN_QUICK_START.md
-PROJECT_SUMMARY.md
-WHAT_WE_BUILT.md
-TESTING_CHECKLIST.md
-VISUAL_GUIDE.md
-README_NEW.md
-FILE_INVENTORY.md
-frontend/*.md
-backend/*.md
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -52,6 +38,12 @@ backend/*.md
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Documentation with sensitive info
+
+backend/.env
+
+.env.example
 
 # Testing
 coverage/

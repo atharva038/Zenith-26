@@ -4,8 +4,8 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import {AnimatePresence} from "framer-motion";
-import {ThemeProvider} from "./context/ThemeContext";
+import { AnimatePresence } from "framer-motion";
+import { ThemeProvider } from "./context/ThemeContext";
 import CinematicIntro from "./components/CinematicIntro";
 import Homepage from "./pages/Homepage";
 import ParallaxDemo from "./pages/ParallaxDemo";
@@ -14,12 +14,11 @@ import GameVerse from "./pages/GameVerse";
 import Glimpses from "./pages/Glimpses";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
-import { getToken } from "./services/api";
 import "./App.css";
 
-// Protected Route Component
+// Protected Route Component for Admin
 function ProtectedRoute({ children }) {
-  const token = getToken();
+  const token = localStorage.getItem("adminToken");
   return token ? children : <Navigate to="/admin/login" replace />;
 }
 

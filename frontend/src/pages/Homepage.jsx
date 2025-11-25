@@ -1,17 +1,18 @@
-import {useState, useRef, useEffect} from "react";
-import {Link} from "react-router-dom";
-import {motion} from "framer-motion";
-import {gsap} from "gsap";
-import {ScrollTrigger} from "gsap/ScrollTrigger";
+import { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { motion as Motion } from "framer-motion";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ThreeScene from "../components/ThreeScene";
 import VIPCarousel from "../components/VIPCarousel";
+import LoginModal from "../components/LoginModal";
 
 // Register GSAP ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
 
 // Subtle Sparkle component for blink dots
-const Sparkle = ({delay = 0, size = 4}) => (
-  <motion.div
+const Sparkle = ({ delay = 0, size = 4 }) => (
+  <Motion.div
     className="absolute rounded-full bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-200"
     style={{
       width: size,
@@ -19,7 +20,7 @@ const Sparkle = ({delay = 0, size = 4}) => (
       left: `${Math.random() * 100}%`,
       top: `${Math.random() * 100}%`,
     }}
-    initial={{opacity: 0, scale: 0}}
+    initial={{ opacity: 0, scale: 0 }}
     animate={{
       opacity: [0, 0.6, 0],
       scale: [0, 1, 0],
@@ -36,22 +37,11 @@ const Sparkle = ({delay = 0, size = 4}) => (
 
 export default function Homepage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [showLoginDropdown, setShowLoginDropdown] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
   const stadiumRef = useRef(null);
   const textRef = useRef(null);
   const aboutCardsRef = useRef(null);
   const eventsRef = useRef(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (showLoginDropdown && !e.target.closest('.login-dropdown-container')) {
-        setShowLoginDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showLoginDropdown]);
 
   // Subtle mouse parallax effect for hero (reduced intensity)
   useEffect(() => {
@@ -59,8 +49,8 @@ export default function Homepage() {
     if (window.innerWidth < 768) return;
 
     const handleMouseMove = (e) => {
-      const {clientX, clientY} = e;
-      const {innerWidth, innerHeight} = window;
+      const { clientX, clientY } = e;
+      const { innerWidth, innerHeight } = window;
 
       // Calculate mouse position as percentage (-0.5 to 0.5)
       const xPercent = (clientX / innerWidth - 0.5) * 2;
@@ -122,7 +112,7 @@ export default function Homepage() {
     if (eventsRef.current) {
       const eventCards = eventsRef.current.querySelectorAll(".event-card");
 
-      eventCards.forEach((card, index) => {
+      eventCards.forEach((card) => {
         gsap.fromTo(
           card,
           {
@@ -157,7 +147,7 @@ export default function Homepage() {
       <nav className="fixed top-0 left-0 right-0 px-9 py-5 flex justify-between items-center z-[600] bg-black/10 backdrop-blur-md">
         <span
           className="text-[#ffb77a] font-bold text-xl tracking-wide"
-          style={{textShadow: "0 2px 12px rgba(255,140,40,0.18)"}}
+          style={{ textShadow: "0 2px 12px rgba(255,140,40,0.18)" }}
         >
           Zenith 2026
         </span>
@@ -194,12 +184,18 @@ export default function Homepage() {
           >
             Gallery
           </a>
-          <a
-            href="#register"
+          <Link
+            to="/glimpses"
+            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
+          >
+            📸 Glimpses
+          </Link>
+          <button
+            onClick={() => setLoginModalOpen(true)}
             className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
           >
             Register
-          </a>
+          </button>
         </div>
 
         {/* Mobile Menu Button */}
@@ -278,13 +274,22 @@ export default function Homepage() {
               >
                 Gallery
               </a>
-              <a
-                href="#register"
+              <Link
+                to="/glimpses"
                 className="text-[#ffb77a] font-semibold"
                 onClick={() => setMobileMenuOpen(false)}
               >
+                📸 Glimpses
+              </Link>
+              <button
+                className="text-[#ffb77a] font-semibold text-left"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setLoginModalOpen(true);
+                }}
+              >
                 Register
-              </a>
+              </button>
             </div>
           </div>
         )}
@@ -330,87 +335,44 @@ export default function Homepage() {
           ref={textRef}
           className="absolute top-[20%] left-0 right-0 z-[200] text-center px-5 will-change-transform"
         >
-          <motion.h1
+          <Motion.h1
             className="m-0 text-[#ffe7c3] tracking-[6px] font-bold"
             style={{
               fontSize: "clamp(2.4rem, 6vw, 5rem)",
               textShadow:
                 "0 18px 40px rgba(255,120,40,0.12), 0 0 30px rgba(255,150,50,0.18)",
             }}
-            initial={{opacity: 0, y: 30, filter: "blur(8px)"}}
-            animate={{opacity: 1, y: 0, filter: "blur(0px)"}}
-            transition={{duration: 1, ease: "easeOut"}}
+            initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 1, ease: "easeOut" }}
           >
             ZENITH 2026
-          </motion.h1>
-          <motion.p
+          </Motion.h1>
+          <Motion.p
             className="mt-3 mb-0 text-[#ffdcb3]"
-            style={{fontSize: "clamp(1rem, 2vw, 1.2rem)"}}
-            initial={{opacity: 0, y: 20}}
-            animate={{opacity: 1, y: 0}}
-            transition={{duration: 0.8, delay: 0.3, ease: "easeOut"}}
+            style={{ fontSize: "clamp(1rem, 2vw, 1.2rem)" }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
           >
             SGGSIE&T Annual Sports Festival • Where Champions Rise
-          </motion.p>
-          
-          {/* Login Dropdown Button */}
-          <motion.div
-            className="relative inline-block mt-4 login-dropdown-container"
-            initial={{opacity: 0, scale: 0.9}}
-            animate={{opacity: 1, scale: 1}}
-            transition={{duration: 0.6, delay: 0.6, ease: "easeOut"}}
+          </Motion.p>
+          <Motion.button
+            onClick={() => setLoginModalOpen(true)}
+            className="inline-block mt-4 px-8 py-3 rounded-full font-extrabold text-[#2c1506] no-underline transition-transform hover:scale-105 cursor-pointer"
+            style={{
+              background: "linear-gradient(90deg, #ffb36a, #ff8b1f)",
+              boxShadow:
+                "0 12px 28px rgba(255,140,40,0.18), inset 0 -2px 6px rgba(0,0,0,0.12)",
+            }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            <motion.button
-              onClick={() => setShowLoginDropdown(!showLoginDropdown)}
-              className="px-8 py-3 rounded-full font-extrabold text-[#2c1506] transition-transform"
-              style={{
-                background: "linear-gradient(90deg, #ffb36a, #ff8b1f)",
-                boxShadow:
-                  "0 12px 28px rgba(255,140,40,0.18), inset 0 -2px 6px rgba(0,0,0,0.12)",
-              }}
-              whileHover={{scale: 1.05}}
-              whileTap={{scale: 0.95}}
-            >
-              Register Now ▼
-            </motion.button>
-
-            {/* Dropdown Menu */}
-            {showLoginDropdown && (
-              <motion.div
-                initial={{opacity: 0, y: -10}}
-                animate={{opacity: 1, y: 0}}
-                exit={{opacity: 0, y: -10}}
-                className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-gradient-to-br from-[#2a1a11] to-[#1a0f08] rounded-xl border-2 border-[#ffb36a] overflow-hidden shadow-2xl min-w-[240px] z-50"
-              >
-                <Link
-                  to="/home"
-                  onClick={() => setShowLoginDropdown(false)}
-                  className="block px-6 py-4 text-white hover:bg-[#ffb36a]/20 transition-all duration-200 border-b border-[#3a2416] no-underline"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">👥</span>
-                    <div>
-                      <div className="font-bold text-[#ffb36a]">Login as Student</div>
-                      <div className="text-xs text-gray-400">Explore the event</div>
-                    </div>
-                  </div>
-                </Link>
-                <Link
-                  to="/admin/login"
-                  onClick={() => setShowLoginDropdown(false)}
-                  className="block px-6 py-4 text-white hover:bg-[#ffb36a]/20 transition-all duration-200 no-underline"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">🔐</span>
-                    <div>
-                      <div className="font-bold text-[#ffb36a]">Login as Admin</div>
-                      <div className="text-xs text-gray-400">Manage content</div>
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            )}
-          </motion.div>
+            Register Now
+          </Motion.button>
         </div>
         <div
           className="absolute left-0 right-0 bottom-0 h-[22%] z-[210] pointer-events-none"
@@ -426,21 +388,21 @@ export default function Homepage() {
         className="relative py-20 px-6 bg-gradient-to-b from-black to-[#0a0604]"
       >
         <div className="max-w-6xl mx-auto">
-          <motion.h2
+          <Motion.h2
             className="text-5xl md:text-6xl font-bold text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f]"
-            initial={{opacity: 0, y: 30}}
-            whileInView={{opacity: 1, y: 0}}
-            viewport={{once: true, margin: "-50px"}}
-            transition={{duration: 0.7, ease: "easeOut"}}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
           >
             About Zenith
-          </motion.h2>
+          </Motion.h2>
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{opacity: 0, x: -30}}
-              whileInView={{opacity: 1, x: 0}}
-              viewport={{once: true, margin: "-50px"}}
-              transition={{duration: 0.7, ease: "easeOut"}}
+            <Motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
             >
               <p className="text-lg text-gray-300 leading-relaxed mb-6">
                 Zenith is not just a sports festival — it's where legends are
@@ -454,13 +416,13 @@ export default function Homepage() {
                 athletics track — Zenith 2026 promises to be the most
                 spectacular edition yet.
               </p>
-            </motion.div>
+            </Motion.div>
             <div ref={aboutCardsRef} className="grid grid-cols-2 gap-6">
               {[
-                {icon: "🏆", number: "6+", label: "Sports Events"},
-                {icon: "👥", number: "1000+", label: "Participants"},
-                {icon: "🎯", number: "50+", label: "Matches"},
-                {icon: "⚡", number: "3", label: "Days of Action"},
+                { icon: "🏆", number: "6+", label: "Sports Events" },
+                { icon: "👥", number: "1000+", label: "Participants" },
+                { icon: "🎯", number: "50+", label: "Matches" },
+                { icon: "⚡", number: "3", label: "Days of Action" },
               ].map((stat, index) => (
                 <div
                   key={index}
@@ -486,24 +448,24 @@ export default function Homepage() {
 
       <section id="events" className="relative py-20 px-6 bg-[#0a0604]">
         <div className="max-w-7xl mx-auto">
-          <motion.h2
+          <Motion.h2
             className="text-5xl md:text-6xl font-bold text-center mb-4 text-transparent bg-clip-text bg-gradient-to-r from-[#ff8b1f] to-[#ffb36a]"
-            initial={{opacity: 0, y: 30}}
-            whileInView={{opacity: 1, y: 0}}
-            viewport={{once: true, margin: "-50px"}}
-            transition={{duration: 0.7, ease: "easeOut"}}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
           >
             Choose Your Arena
-          </motion.h2>
-          <motion.p
+          </Motion.h2>
+          <Motion.p
             className="text-center text-gray-400 text-xl mb-16"
-            initial={{opacity: 0}}
-            whileInView={{opacity: 1}}
-            viewport={{once: true}}
-            transition={{duration: 0.6, delay: 0.2, ease: "easeOut"}}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
           >
             Six disciplines. Infinite glory.
-          </motion.p>
+          </Motion.p>
 
           <div
             ref={eventsRef}
@@ -592,12 +554,12 @@ export default function Homepage() {
 
         <div className="max-w-7xl mx-auto relative z-10">
           {/* Section Title */}
-          <motion.div
+          <Motion.div
             className="text-center mb-16"
-            initial={{opacity: 0, y: 30}}
-            whileInView={{opacity: 1, y: 0}}
-            viewport={{once: true, margin: "-50px"}}
-            transition={{duration: 0.7, ease: "easeOut"}}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
           >
             <h2 className="text-5xl md:text-6xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f]">
               VIP Spotlight
@@ -605,44 +567,44 @@ export default function Homepage() {
             <p className="text-gray-400 text-xl">
               Legends who graced Zenith over the years
             </p>
-          </motion.div>
+          </Motion.div>
 
           {/* VIP Carousel */}
-          <motion.div
-            initial={{opacity: 0, y: 40}}
-            whileInView={{opacity: 1, y: 0}}
-            viewport={{once: true, margin: "-100px"}}
-            transition={{duration: 0.8, ease: "easeOut"}}
+          <Motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <VIPCarousel />
-          </motion.div>
+          </Motion.div>
         </div>
       </section>
 
       <footer className="relative py-12 px-6 bg-black border-t border-[#3a2416]">
         <div className="max-w-7xl mx-auto text-center">
-          <motion.h3
+          <Motion.h3
             className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] mb-6"
-            initial={{opacity: 0, y: 20}}
-            whileInView={{opacity: 1, y: 0}}
-            viewport={{once: true}}
-            transition={{duration: 0.6, ease: "easeOut"}}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
           >
             ZENITH 2026
-          </motion.h3>
+          </Motion.h3>
           <div className="flex gap-6 justify-center mb-8">
             {["📘", "📷", "🐦", "▶️", "💼"].map((icon, i) => (
-              <motion.a
+              <Motion.a
                 key={i}
                 href="#"
                 className="w-12 h-12 flex items-center justify-center rounded-full border-2 border-[#3a2416] bg-[#1a0f08] hover:border-[#ffb36a] hover:scale-110 transition-all duration-300"
-                initial={{opacity: 0, y: 20}}
-                whileInView={{opacity: 1, y: 0}}
-                viewport={{once: true}}
-                transition={{duration: 0.4, delay: i * 0.08, ease: "easeOut"}}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: i * 0.08, ease: "easeOut" }}
               >
                 <span className="text-2xl">{icon}</span>
-              </motion.a>
+              </Motion.a>
             ))}
           </div>
           <p className="text-gray-500 mb-2">
@@ -651,6 +613,12 @@ export default function Homepage() {
           <p className="text-sm text-gray-600">Where Champions Rise 🏆</p>
         </div>
       </footer>
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+      />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useRef} from "react";
 import {motion, useReducedMotion} from "framer-motion";
 import Tilt from "react-parallax-tilt";
 import {gsap} from "gsap";
