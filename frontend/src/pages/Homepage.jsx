@@ -142,7 +142,7 @@ export default function Homepage() {
   return (
     <div className="relative min-h-screen bg-black text-white overflow-hidden">
       {/* Navigation */}
-      <nav className="absolute top-0 left-0 right-0 px-9 py-5 flex justify-between items-center z-[100]">
+      <nav className="fixed top-0 left-0 right-0 px-9 py-5 flex justify-between items-center z-[600] bg-black/10 backdrop-blur-md">
         <span
           className="text-[#ffb77a] font-bold text-xl tracking-wide"
           style={{textShadow: "0 2px 12px rgba(255,140,40,0.18)"}}
@@ -150,6 +150,7 @@ export default function Homepage() {
           Zenith 2026
         </span>
 
+        {/* Desktop Menu */}
         <div className="hidden md:flex gap-6">
           <a
             href="#about"
@@ -189,9 +190,10 @@ export default function Homepage() {
           </a>
         </div>
 
+        {/* Mobile Menu Button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden text-[#ffb77a] z-[110]"
+          className="md:hidden text-[#ffb77a] z-[700]"
         >
           <svg
             className="w-6 h-6"
@@ -217,8 +219,17 @@ export default function Homepage() {
           </svg>
         </button>
 
+        {/* BACKDROP */}
         {mobileMenuOpen && (
-          <div className="absolute top-full left-0 right-0 bg-black/95 backdrop-blur-md p-6 md:hidden">
+          <div
+            className="fixed inset-0 bg-black/70 z-[650] md:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        )}
+
+        {/* MOBILE MENU */}
+        {mobileMenuOpen && (
+          <div className="fixed top-16 left-0 right-0 bg-black/90 backdrop-blur-xl p-6 z-[700] border-b border-[#3a2416] animate-slideDown md:hidden">
             <div className="flex flex-col gap-4">
               <a
                 href="#about"
@@ -279,14 +290,12 @@ export default function Homepage() {
             filter: "brightness(0.45) saturate(0.9) contrast(0.95)",
           }}
         />
-
         {/* Subtle blinking dots/sparkles */}
         <div className="absolute inset-0 z-[5] pointer-events-none overflow-hidden">
           {[...Array(12)].map((_, i) => (
             <Sparkle key={i} delay={i * 0.4} size={Math.random() * 4 + 3} />
           ))}
         </div>
-
         {/* Subtle overlay UNDER the Three.js scene for depth */}
         <div
           className="absolute inset-0 z-[10] pointer-events-none"
@@ -295,10 +304,8 @@ export default function Homepage() {
               "linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.7) 100%)",
           }}
         />
-
         {/* Three.js Scene - COMMENTED OUT FOR NOW */}
         {/* <ThreeScene /> */}
-
         {/* Very subtle vignette on top to help title readability */}
         <div
           className="absolute inset-0 z-[100] pointer-events-none"
@@ -307,7 +314,6 @@ export default function Homepage() {
               "radial-gradient(ellipse 120% 80% at 50% 30%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0.4) 100%)",
           }}
         />
-
         <div
           ref={textRef}
           className="absolute top-[20%] left-0 right-0 z-[200] text-center px-5 will-change-transform"
@@ -351,7 +357,6 @@ export default function Homepage() {
             Register Now
           </motion.a>
         </div>
-
         <div
           className="absolute left-0 right-0 bottom-0 h-[22%] z-[210] pointer-events-none"
           style={{
