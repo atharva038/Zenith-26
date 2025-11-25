@@ -1,9 +1,10 @@
-import {useEffect, useRef, useState} from "react";
-import {motion, useReducedMotion} from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { Link } from "react-router-dom";
 import Tilt from "react-parallax-tilt";
-import {gsap} from "gsap";
-import {DotLottieReact} from "@lottiefiles/dotlottie-react";
-import {useTheme} from "../context/ThemeContext";
+import { gsap } from "gsap";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { useTheme } from "../context/ThemeContext";
 
 const CustomCursor = () => {
   const cursorRef = useRef(null);
@@ -11,7 +12,7 @@ const CustomCursor = () => {
 
   useEffect(() => {
     const moveCursor = (e) => {
-      gsap.to(cursorRef.current, {x: e.clientX, y: e.clientY, duration: 0.1});
+      gsap.to(cursorRef.current, { x: e.clientX, y: e.clientY, duration: 0.1 });
       gsap.to(cursorGlowRef.current, {
         x: e.clientX,
         y: e.clientY,
@@ -27,18 +28,18 @@ const CustomCursor = () => {
       <div
         ref={cursorRef}
         className="fixed w-2 h-2 bg-white rounded-full pointer-events-none z-[9999] mix-blend-difference"
-        style={{transform: "translate(-50%, -50%)"}}
+        style={{ transform: "translate(-50%, -50%)" }}
       />
       <div
         ref={cursorGlowRef}
         className="fixed w-8 h-8 border-2 border-neon-orange rounded-full pointer-events-none z-[9998] opacity-50"
-        style={{transform: "translate(-50%, -50%)"}}
+        style={{ transform: "translate(-50%, -50%)" }}
       />
     </>
   );
 };
 
-const AnimatedBackground = ({theme}) => (
+const AnimatedBackground = ({ theme }) => (
   <div className="fixed inset-0 -z-10 overflow-hidden">
     <motion.div
       className={`absolute inset-0 ${
@@ -63,7 +64,7 @@ const AnimatedBackground = ({theme}) => (
               ],
             }
       }
-      transition={{duration: 10, repeat: Infinity, ease: "linear"}}
+      transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
     />
     {[...Array(30)].map((_, i) => (
       <motion.div
@@ -75,7 +76,7 @@ const AnimatedBackground = ({theme}) => (
           left: `${Math.random() * 100}%`,
           top: `${Math.random() * 100}%`,
         }}
-        animate={{y: [0, -30, 0], opacity: [0, 1, 0], scale: [0, 1.5, 0]}}
+        animate={{ y: [0, -30, 0], opacity: [0, 1, 0], scale: [0, 1.5, 0] }}
         transition={{
           duration: 3 + Math.random() * 2,
           repeat: Infinity,
@@ -92,8 +93,8 @@ const AnimatedBackground = ({theme}) => (
               ? "bg-gradient-to-b from-transparent via-neon-orange to-transparent"
               : "bg-gradient-to-b from-transparent via-orange-400 to-transparent"
           }`}
-          style={{left: `${20 + i * 15}%`}}
-          animate={{opacity: [0.2, 0.5, 0.2], scaleY: [0.8, 1, 0.8]}}
+          style={{ left: `${20 + i * 15}%` }}
+          animate={{ opacity: [0.2, 0.5, 0.2], scaleY: [0.8, 1, 0.8] }}
           transition={{
             duration: 2 + i * 0.5,
             repeat: Infinity,
@@ -107,14 +108,14 @@ const AnimatedBackground = ({theme}) => (
 
 export default function Homepage() {
   const shouldReduceMotion = useReducedMotion();
-  const {theme, toggleTheme} = useTheme();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <motion.div
-      initial={{opacity: 0}}
-      animate={{opacity: 1}}
-      exit={{opacity: 0}}
-      transition={{duration: 0.8}}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8 }}
       className={`relative min-h-screen ${
         theme === "dark" ? "bg-slate-950 text-white" : "bg-white text-gray-900"
       } overflow-x-hidden`}
@@ -128,17 +129,17 @@ export default function Homepage() {
 
       {/* Theme Toggle Button */}
       <motion.button
-        initial={{opacity: 0, scale: 0.8}}
-        animate={{opacity: 1, scale: 1}}
-        transition={{duration: 0.5, delay: 0.3}}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
         onClick={toggleTheme}
         className={`fixed top-6 right-6 z-50 p-4 rounded-full ${
           theme === "dark"
             ? "bg-gradient-to-br from-blue-600 to-purple-600 text-white"
             : "bg-gradient-to-br from-orange-400 to-pink-400 text-white"
         } shadow-lg hover:scale-110 transition-transform duration-300`}
-        whileHover={{rotate: 180}}
-        whileTap={{scale: 0.9}}
+        whileHover={{ rotate: 180 }}
+        whileTap={{ scale: 0.9 }}
       >
         {theme === "dark" ? (
           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -153,9 +154,9 @@ export default function Homepage() {
 
       {/* Zenith Lottie Logo - Top Left Corner */}
       <motion.div
-        initial={{opacity: 0, x: -50}}
-        animate={{opacity: 1, x: 0}}
-        transition={{duration: 1, delay: 0.5}}
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 1, delay: 0.5 }}
         className="fixed left-6 z-50 w-32 h-32 md:w-40 md:h-40"
       >
         <DotLottieReact
@@ -168,9 +169,9 @@ export default function Homepage() {
       <div className="relative z-10">
         <section className="relative min-h-screen flex flex-col items-center justify-center px-6">
           <motion.div
-            initial={{opacity: 0, scale: 3}}
-            animate={{opacity: 1, scale: 1}}
-            transition={{duration: 1.5, ease: "easeOut"}}
+            initial={{ opacity: 0, scale: 3 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
             className="mb-12 text-center"
           >
             <h1
@@ -192,9 +193,9 @@ export default function Homepage() {
           </motion.div>
 
           <motion.h2
-            initial={{opacity: 0, y: 30}}
-            animate={{opacity: 1, y: 0}}
-            transition={{delay: 1.2, duration: 0.8}}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2, duration: 0.8 }}
             className={`font-orbitron text-4xl md:text-6xl font-bold text-center mb-6 ${
               theme === "dark" ? "text-white" : "text-gray-900"
             }`}
@@ -202,9 +203,9 @@ export default function Homepage() {
             Let the Game Begin ⚡
           </motion.h2>
           <motion.p
-            initial={{opacity: 0, y: 20}}
-            animate={{opacity: 1, y: 0}}
-            transition={{delay: 1.5, duration: 0.8}}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.5, duration: 0.8 }}
             className={`font-rajdhani text-xl md:text-2xl text-center max-w-3xl mb-12 ${
               theme === "dark" ? "text-gray-300" : "text-gray-600"
             }`}
@@ -214,46 +215,50 @@ export default function Homepage() {
           </motion.p>
 
           <motion.div
-            initial={{opacity: 0, scale: 0.8}}
-            animate={{opacity: 1, scale: 1}}
-            transition={{delay: 1.8, duration: 0.5}}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 1.8, duration: 0.5 }}
             className="flex flex-wrap gap-6 justify-center"
           >
-            <motion.button
-              whileHover={{scale: 1.05, y: -5}}
-              whileTap={{scale: 0.95}}
-              className={`px-8 py-4 font-rajdhani text-lg font-bold rounded-lg ${
-                theme === "dark"
-                  ? "bg-gradient-to-r from-neon-orange to-red-600"
-                  : "bg-gradient-to-r from-orange-500 to-red-500"
-              } text-white relative overflow-hidden group`}
-            >
-              <span className="relative z-10 flex items-center gap-2">
-                🏆 Explore Events
-              </span>
-            </motion.button>
-            <motion.button
-              whileHover={{scale: 1.05, y: -5}}
-              whileTap={{scale: 0.95}}
-              className={`px-8 py-4 font-rajdhani text-lg font-bold rounded-lg bg-transparent ${
-                theme === "dark"
-                  ? "text-neon-blue border-2 border-neon-blue"
-                  : "text-blue-600 border-2 border-blue-600"
-              }`}
-            >
-              <span className="flex items-center gap-2">📸 View Gallery</span>
-            </motion.button>
+            <Link to="/glimpses">
+              <motion.button
+                whileHover={{ scale: 1.05, y: -5 }}
+                whileTap={{ scale: 0.95 }}
+                className={`px-8 py-4 font-rajdhani text-lg font-bold rounded-lg ${
+                  theme === "dark"
+                    ? "bg-gradient-to-r from-neon-orange to-red-600"
+                    : "bg-gradient-to-r from-orange-500 to-red-500"
+                } text-white relative overflow-hidden group`}
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  📸 View Glimpses
+                </span>
+              </motion.button>
+            </Link>
+            <Link to="/admin/login">
+              <motion.button
+                whileHover={{ scale: 1.05, y: -5 }}
+                whileTap={{ scale: 0.95 }}
+                className={`px-8 py-4 font-rajdhani text-lg font-bold rounded-lg bg-transparent ${
+                  theme === "dark"
+                    ? "text-neon-blue border-2 border-neon-blue"
+                    : "text-blue-600 border-2 border-blue-600"
+                }`}
+              >
+                <span className="flex items-center gap-2">🔐 Admin Login</span>
+              </motion.button>
+            </Link>
           </motion.div>
 
           <motion.div
-            initial={{opacity: 0}}
-            animate={{opacity: 1}}
-            transition={{delay: 2.5, duration: 1}}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 2.5, duration: 1 }}
             className="absolute bottom-10"
           >
             <motion.div
-              animate={{y: [0, 10, 0]}}
-              transition={{duration: 1.5, repeat: Infinity}}
+              animate={{ y: [0, 10, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
               className={`w-6 h-10 border-2 rounded-full flex items-start justify-center p-2 ${
                 theme === "dark" ? "border-neon-blue" : "border-blue-600"
               }`}
@@ -269,10 +274,10 @@ export default function Homepage() {
 
         <section className="relative py-20 px-6">
           <motion.div
-            initial={{opacity: 0, y: 50}}
-            whileInView={{opacity: 1, y: 0}}
-            viewport={{once: true}}
-            transition={{duration: 0.8}}
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
             className="max-w-7xl mx-auto"
           >
             <h2
@@ -327,10 +332,10 @@ export default function Homepage() {
               ].map((sport, index) => (
                 <motion.div
                   key={sport.name}
-                  initial={{opacity: 0, y: 50}}
-                  whileInView={{opacity: 1, y: 0}}
-                  viewport={{once: true}}
-                  transition={{delay: index * 0.15, duration: 0.8}}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.15, duration: 0.8 }}
                 >
                   <Tilt
                     tiltMaxAngleX={15}
@@ -382,10 +387,10 @@ export default function Homepage() {
         <section className="relative py-20 px-6">
           <div className="max-w-5xl mx-auto">
             <motion.h2
-              initial={{opacity: 0, x: -50}}
-              whileInView={{opacity: 1, x: 0}}
-              viewport={{once: true}}
-              transition={{duration: 0.8}}
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
               className={`font-orbitron text-5xl md:text-6xl font-bold mb-8 text-transparent bg-clip-text ${
                 theme === "dark"
                   ? "bg-gradient-to-r from-neon-orange to-neon-blue"
@@ -395,10 +400,10 @@ export default function Homepage() {
               About Zenith
             </motion.h2>
             <motion.div
-              initial={{opacity: 0, y: 30}}
-              whileInView={{opacity: 1, y: 0}}
-              viewport={{once: true}}
-              transition={{delay: 0.3, duration: 0.8}}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3, duration: 0.8 }}
               className={`rounded-2xl p-8 md:p-12 border-2 backdrop-blur-sm ${
                 theme === "dark"
                   ? "bg-slate-900/30 border-slate-700"
@@ -431,9 +436,9 @@ export default function Homepage() {
 
         <section className="relative py-16 overflow-hidden">
           <motion.h3
-            initial={{opacity: 0, y: 20}}
-            whileInView={{opacity: 1, y: 0}}
-            viewport={{once: true}}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className={`font-orbitron text-3xl font-bold text-center mb-12 ${
               theme === "dark" ? "text-gray-400" : "text-gray-600"
             }`}
@@ -441,8 +446,8 @@ export default function Homepage() {
             Our Champions
           </motion.h3>
           <motion.div
-            animate={{x: ["0%", "-50%"]}}
-            transition={{duration: 20, repeat: Infinity, ease: "linear"}}
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
             className="flex gap-12"
           >
             {[
@@ -480,9 +485,9 @@ export default function Homepage() {
         </section>
 
         <motion.footer
-          initial={{opacity: 0, y: 50}}
-          whileInView={{opacity: 1, y: 0}}
-          viewport={{once: true}}
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           className={`relative mt-20 border-t py-12 ${
             theme === "dark" ? "border-slate-800" : "border-gray-200"
           }`}
@@ -509,7 +514,7 @@ export default function Homepage() {
                 <motion.a
                   key={i}
                   href="#"
-                  whileHover={{scale: 1.2, rotate: 360}}
+                  whileHover={{ scale: 1.2, rotate: 360 }}
                   className={`w-12 h-12 flex items-center justify-center rounded-full border-2 transition-colors ${
                     theme === "dark"
                       ? "bg-slate-900 border-slate-700 hover:border-neon-blue"
