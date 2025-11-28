@@ -39,6 +39,13 @@ backend/uploads/
 .env.test.local
 .env.production.local
 
+# Documentation with sensitive info
+README.md
+
+backend/.env
+
+.env.example
+
 # Testing
 coverage/
 *.lcov

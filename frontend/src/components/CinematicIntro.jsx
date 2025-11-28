@@ -1,6 +1,6 @@
-import {useState, useEffect, useRef} from "react";
-import {useNavigate} from "react-router-dom";
-import {motion} from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function CinematicIntro() {
   const navigate = useNavigate();
@@ -60,12 +60,12 @@ export default function CinematicIntro() {
         backfaceVisibility: "hidden",
         perspective: 1000,
       }}
-      initial={{opacity: 0}}
-      animate={{opacity: fadeOut ? 0 : 1}}
-      transition={{duration: 0.8}}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: fadeOut ? 0 : 1 }}
+      transition={{ duration: 0.8 }}
     >
       {/* Ultra HD Video Background with Quality Enhancements */}
-      <video
+      <motion.video
         ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover"
         style={{
@@ -76,6 +76,9 @@ export default function CinematicIntro() {
           filter: "contrast(1.05) saturate(1.1) brightness(1.02)", // Enhance clarity
           WebkitFilter: "contrast(1.05) saturate(1.1) brightness(1.02)",
         }}
+        initial={{ scale: 1.1, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 2, ease: "easeOut" }}
         muted
         playsInline
         preload="auto"
@@ -95,24 +98,27 @@ export default function CinematicIntro() {
         />
         <source src="/video/intro.mp4" type="video/mp4" />
         Your browser does not support the video tag.
-      </video>
+      </motion.video>
 
       {/* Subtle vignette overlay (optional - enhances focus without reducing quality) */}
-      <div
+      <motion.div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
             "radial-gradient(ellipse at center, transparent 0%, transparent 60%, rgba(0,0,0,0.15) 100%)",
         }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.5, delay: 0.5 }}
       />
 
       {/* Skip Button */}
       <motion.button
         onClick={handleSkip}
         className="absolute top-8 right-8 z-50 px-6 py-3 bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] text-black font-bold rounded-full hover:scale-105 transition-transform duration-300 shadow-lg"
-        initial={{opacity: 0, y: -20}}
-        animate={{opacity: 1, y: 0}}
-        transition={{delay: 1, duration: 0.5}}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1, duration: 0.5 }}
       >
         Skip Intro →
       </motion.button>
@@ -121,18 +127,21 @@ export default function CinematicIntro() {
       {videoEnded && (
         <motion.div
           className="absolute inset-0 flex items-center justify-center"
-          initial={{opacity: 0}}
-          animate={{opacity: 1}}
-          transition={{duration: 0.5}}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          <h1
+          <motion.h1
             className="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f]"
             style={{
               textShadow: "0 0 60px rgba(255,179,106,0.5)",
             }}
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
           >
             ZENITH 2026
-          </h1>
+          </motion.h1>
         </motion.div>
       )}
     </motion.div>
