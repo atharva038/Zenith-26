@@ -3,108 +3,16 @@ import {
   motion as Motion,
   useScroll,
   useTransform,
-  useInView,
 } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import DemoNavigation from "../components/DemoNavigation";
 import LoginModal from "../components/LoginModal";
+import AnimatedSection from "../components/AnimatedSection";
+import Sparkle from "../components/Sparkle";
 
 // Register GSAP ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
-
-// Sparkle component for sparkle effects
-const Sparkle = ({ delay = 0, size = 6 }) => (
-  <Motion.div
-    className="absolute rounded-full bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-200"
-    style={{
-      width: size,
-      height: size,
-      left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 100}%`,
-    }}
-    initial={{ opacity: 0, scale: 0 }}
-    animate={{
-      opacity: [0, 1, 0],
-      scale: [0, 1.5, 0],
-      rotate: [0, 180, 360],
-    }}
-    transition={{
-      duration: 1.5,
-      delay,
-      repeat: Infinity,
-      repeatDelay: Math.random() * 2,
-    }}
-  />
-);
-
-// Animated Section wrapper component
-const AnimatedSection = ({
-  children,
-  variant = "slideUp",
-  className = "",
-  id,
-}) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
-  const variants = {
-    slideUp: {
-      hidden: { opacity: 0, y: 100 },
-      visible: {
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.8, ease: [0.25, 0.4, 0.25, 1] },
-      },
-    },
-    fadeBlur: {
-      hidden: { opacity: 0, filter: "blur(10px)" },
-      visible: {
-        opacity: 1,
-        filter: "blur(0px)",
-        transition: { duration: 1, ease: "easeOut" },
-      },
-    },
-    rotate: {
-      hidden: { opacity: 0, rotateX: 45, scale: 0.8 },
-      visible: {
-        opacity: 1,
-        rotateX: 0,
-        scale: 1,
-        transition: { duration: 1, ease: [0.25, 0.4, 0.25, 1] },
-      },
-    },
-    slideLeft: {
-      hidden: { opacity: 0, x: -100 },
-      visible: {
-        opacity: 1,
-        x: 0,
-        transition: { duration: 0.8, ease: [0.25, 0.4, 0.25, 1] },
-      },
-    },
-    slideRight: {
-      hidden: { opacity: 0, x: 100 },
-      visible: {
-        opacity: 1,
-        x: 0,
-        transition: { duration: 0.8, ease: [0.25, 0.4, 0.25, 1] },
-      },
-    },
-  };
-
-  return (
-    <Motion.section
-      ref={ref}
-      id={id}
-      className={className}
-      variants={variants[variant]}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
-    >
-      {children}
-    </Motion.section>
-  );
-};
 
 export default function Homepage_ScrollAnimations() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
