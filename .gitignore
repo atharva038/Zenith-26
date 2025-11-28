@@ -40,6 +40,7 @@ backend/uploads/
 .env.production.local
 
 # Documentation with sensitive info
+README.md
 
 backend/.env
 
