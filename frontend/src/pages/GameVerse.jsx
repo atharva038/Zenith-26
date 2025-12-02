@@ -4,6 +4,7 @@ import {Canvas, useFrame, useThree} from "@react-three/fiber";
 import {OrbitControls, Stars, PerspectiveCamera, Text} from "@react-three/drei";
 import FloatingIsland from "../components/gameverse/FloatingIsland";
 import SportModal from "../components/gameverse/SportModal";
+import GamerverseLoading from "../components/gameverse/GamerverseLoading";
 import {motion, AnimatePresence} from "framer-motion";
 import * as THREE from "three";
 
@@ -788,7 +789,17 @@ export default function GameVerse() {
   const [selectedSport, setSelectedSport] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [lockedPlanet, setLockedPlanet] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const lockedPlanetRef = useRef(null);
+
+  // Simulate loading time for scene initialization
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2500); // 2.5 seconds loading time
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleIslandClick = (sport) => {
     setSelectedSport(sport);
@@ -819,6 +830,20 @@ export default function GameVerse() {
 
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden">
+      {/* 3D Canvas Loading Animation */}
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            className="absolute inset-0 z-50"
+            initial={{opacity: 1}}
+            exit={{opacity: 0}}
+            transition={{duration: 0.8}}
+          >
+            <GamerverseLoading />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Back Button - Responsive */}
       <Link
         to="/home"

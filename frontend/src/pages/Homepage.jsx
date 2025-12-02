@@ -5,6 +5,7 @@ import {gsap} from "gsap";
 import {ScrollTrigger} from "gsap/ScrollTrigger";
 import ThreeScene from "../components/ThreeScene";
 import VIPCarousel from "../components/VIPCarousel";
+import WormholePortal from "../components/WormholePortal";
 
 // Register GSAP ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
@@ -164,12 +165,12 @@ export default function Homepage() {
           >
             Events
           </a>
-          <Link
-            to="/gameverse"
+          <a
+            href="#wormhole"
             className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors flex items-center gap-1"
           >
-            🎮 GameVerse
-          </Link>
+            � Portal
+          </a>
           <a
             href="#vip-guests"
             className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
@@ -245,13 +246,13 @@ export default function Homepage() {
               >
                 Events
               </a>
-              <Link
-                to="/gameverse"
+              <a
+                href="#wormhole"
                 className="text-[#ffb77a] font-semibold flex items-center gap-1"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                🎮 GameVerse
-              </Link>
+                � Portal
+              </a>
               <a
                 href="#vip-guests"
                 className="text-[#ffb77a] font-semibold"
@@ -521,6 +522,15 @@ export default function Homepage() {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* Wormhole Portal Section */}
+      <section
+        id="wormhole"
+        className="relative h-screen w-full bg-black overflow-hidden"
+      >
+        {/* Wormhole Portal Component */}
+        <WormholePortal />
       </section>
 
       {/* VIP Spotlight Section */}
