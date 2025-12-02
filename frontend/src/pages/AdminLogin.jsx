@@ -171,18 +171,6 @@ const AdminLogin = () => {
             </motion.button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-gray-400">
-              Don't have an account?{" "}
-              <Link
-                to="/admin/signup"
-                className="text-neon-blue hover:text-electric-cyan transition-colors font-semibold"
-              >
-                Create Account
-              </Link>
-            </p>
-          </div>
-
           <div className="mt-6 pt-6 border-t border-gray-700/50">
             <Link
               to="/home"

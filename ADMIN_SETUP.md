@@ -13,7 +13,6 @@
 
 ### Frontend
 - ✅ Admin Login Page
-- ✅ Admin Signup Page  
 - ✅ Admin Dashboard with sidebar navigation
 - ✅ Protected routes
 - ✅ Authentication context
@@ -42,7 +41,17 @@ JWT_SECRET=your_secret_key
 NODE_ENV=development
 ```
 
-4. Start the server:
+4. Create an admin account:
+```bash
+npm run create-admin
+```
+
+This will create a default admin with:
+- Email: `admin@zenith2026.com`
+- Password: `admin123`
+- ⚠️ **Change the password after first login!**
+
+5. Start the server:
 ```bash
 npm start
 ```
@@ -71,7 +80,6 @@ Frontend will run on `http://localhost:5173`
 ## 🎯 API Endpoints
 
 ### Auth Routes (`/api/auth`)
-- `POST /api/auth/signup` - Register new admin
 - `POST /api/auth/login` - Login admin
 - `GET /api/auth/profile` - Get admin profile (protected)
 - `PUT /api/auth/profile` - Update admin profile (protected)
@@ -87,7 +95,6 @@ Frontend will run on `http://localhost:5173`
 - `/home` - Homepage
 - `/gameverse` - GameVerse (Sports Universe)
 - `/admin/login` - Admin Login
-- `/admin/signup` - Admin Signup
 - `/admin/dashboard` - Admin Dashboard (protected)
 
 ## 🎨 Theme
@@ -99,11 +106,11 @@ The admin portal maintains the Zenith 2026 theme:
 
 ## 🔐 Authentication Flow
 
-1. User visits `/admin/signup` to create an account
-2. After signup, user is automatically logged in and redirected to dashboard
+1. Admin is created using `npm run create-admin` script
+2. Admin visits `/admin/login` to sign in
 3. JWT token is stored in localStorage
 4. Protected routes check for valid token
-5. User can logout from dashboard
+5. Admin can logout from dashboard
 
 ## 🛠️ Tech Stack
 
@@ -124,7 +131,13 @@ The admin portal maintains the Zenith 2026 theme:
 
 ## 📝 Default Admin Credentials
 
-After signup, you can use your created credentials. There are no default credentials.
+After running `npm run create-admin`, use:
+- **Email**: `admin@zenith2026.com`
+- **Password**: `admin123`
+
+⚠️ **Change the password after first login!**
+
+You can also create additional admins through the dashboard.
 
 ## 🔄 Development
 

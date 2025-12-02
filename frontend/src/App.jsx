@@ -14,7 +14,6 @@ import ParallaxDemo from "./pages/ParallaxDemo";
 import Homepage_ScrollAnimations from "./pages/Homepage_ScrollAnimations";
 import GameVerse from "./pages/GameVerse";
 import AdminLogin from "./pages/AdminLogin";
-import AdminSignup from "./pages/AdminSignup";
 import AdminDashboard from "./pages/AdminDashboard";
 import "./App.css";
 
@@ -36,7 +35,6 @@ function App() {
 
               {/* Admin Routes */}
               <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/admin/signup" element={<AdminSignup />} />
               <Route
                 path="/admin/dashboard"
                 element={
