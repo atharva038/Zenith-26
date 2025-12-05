@@ -47,3 +47,18 @@ export const authMiddleware = async (req, res, next) => {
     });
   }
 };
+
+// Alias for consistency with new routes
+export const verifyToken = authMiddleware;
+
+// Middleware to check if user is admin (already checked by authMiddleware)
+export const isAdmin = (req, res, next) => {
+  if (req.admin) {
+    next();
+  } else {
+    return res.status(403).json({
+      success: false,
+      message: "Access denied. Admin privileges required.",
+    });
+  }
+};

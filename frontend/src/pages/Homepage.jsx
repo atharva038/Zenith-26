@@ -183,12 +183,12 @@ export default function Homepage() {
           >
             Gallery
           </a>
-          <a
-            href="#register"
+          <Link
+            to="/register"
             className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
           >
             Register
-          </a>
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
@@ -267,13 +267,13 @@ export default function Homepage() {
               >
                 Gallery
               </a>
-              <a
-                href="#register"
+              <Link
+                to="/register"
                 className="text-[#ffb77a] font-semibold"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Register
-              </a>
+              </Link>
             </div>
           </div>
         )}
@@ -341,22 +341,23 @@ export default function Homepage() {
           >
             SGGSIE&T Annual Sports Festival • Where Champions Rise
           </motion.p>
-          <motion.a
-            href="#register"
-            className="inline-block mt-4 px-8 py-3 rounded-full font-extrabold text-[#2c1506] no-underline transition-transform hover:scale-105"
-            style={{
-              background: "linear-gradient(90deg, #ffb36a, #ff8b1f)",
-              boxShadow:
-                "0 12px 28px rgba(255,140,40,0.18), inset 0 -2px 6px rgba(0,0,0,0.12)",
-            }}
-            initial={{opacity: 0, scale: 0.9}}
-            animate={{opacity: 1, scale: 1}}
-            transition={{duration: 0.6, delay: 0.6, ease: "easeOut"}}
-            whileHover={{scale: 1.05}}
-            whileTap={{scale: 0.95}}
-          >
-            Register Now
-          </motion.a>
+          <Link to="/register">
+            <motion.button
+              className="inline-block mt-4 px-8 py-3 rounded-full font-extrabold text-[#2c1506] no-underline transition-transform hover:scale-105"
+              style={{
+                background: "linear-gradient(90deg, #ffb36a, #ff8b1f)",
+                boxShadow:
+                  "0 12px 28px rgba(255,140,40,0.18), inset 0 -2px 6px rgba(0,0,0,0.12)",
+              }}
+              initial={{opacity: 0, scale: 0.9}}
+              animate={{opacity: 1, scale: 1}}
+              transition={{duration: 0.6, delay: 0.6, ease: "easeOut"}}
+              whileHover={{scale: 1.05}}
+              whileTap={{scale: 0.95}}
+            >
+              Register Now
+            </motion.button>
+          </Link>
         </div>
         <div
           className="absolute left-0 right-0 bottom-0 h-[22%] z-[210] pointer-events-none"

@@ -1,5 +1,5 @@
 import {useState, useRef, useEffect, useMemo} from "react";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {Canvas, useFrame, useThree} from "@react-three/fiber";
 import {OrbitControls, Stars, PerspectiveCamera, Text} from "@react-three/drei";
 import FloatingIsland from "../components/gameverse/FloatingIsland";
@@ -786,6 +786,7 @@ function Scene({onIslandClick, lockedPlanet, onRegisterPlanetRef}) {
 }
 
 export default function GameVerse() {
+  const navigate = useNavigate();
   const [selectedSport, setSelectedSport] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [lockedPlanet, setLockedPlanet] = useState(null);
@@ -822,6 +823,16 @@ export default function GameVerse() {
 
   const handleRegisterPlanetRef = (ref) => {
     lockedPlanetRef.current = ref.current;
+  };
+
+  const handleRegisterClick = (sport) => {
+    // Navigate to universal registration page
+    navigate("/register");
+    setModalOpen(false);
+  };
+
+  const closeRegistration = () => {
+    // Not needed anymore - keeping for compatibility
   };
 
   // Split sports into left and right lists
@@ -1129,6 +1140,7 @@ export default function GameVerse() {
         isOpen={modalOpen}
         onClose={closeModal}
         sport={selectedSport}
+        onRegister={handleRegisterClick}
       />
     </div>
   );

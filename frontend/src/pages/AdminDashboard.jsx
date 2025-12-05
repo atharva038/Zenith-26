@@ -109,7 +109,33 @@ const AdminDashboard = () => {
               {[
                 {id: "dashboard", label: "Dashboard", icon: "📊"},
                 {id: "admins", label: "Admins", icon: "👥"},
-                {id: "events", label: "Events", icon: "🎪"},
+              ].map((item) => (
+                <motion.button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  whileHover={{x: 5}}
+                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all font-rajdhani ${
+                    activeTab === item.id
+                      ? "bg-gradient-to-r from-neon-blue/20 to-electric-cyan/20 border border-neon-blue/50 text-white"
+                      : "text-gray-400 hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  <span className="text-xl">{item.icon}</span>
+                  <span className="font-semibold">{item.label}</span>
+                </motion.button>
+              ))}
+
+              {/* Events Navigation */}
+              <motion.button
+                onClick={() => navigate("/admin/events")}
+                whileHover={{x: 5}}
+                className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all font-rajdhani text-gray-400 hover:text-white hover:bg-white/5"
+              >
+                <span className="text-xl">🎪</span>
+                <span className="font-semibold">Events</span>
+              </motion.button>
+
+              {[
                 {id: "gallery", label: "Gallery", icon: "🖼️"},
                 {id: "settings", label: "Settings", icon: "⚙️"},
               ].map((item) => (

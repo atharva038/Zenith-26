@@ -1,7 +1,13 @@
 import {motion, AnimatePresence} from "framer-motion";
 
-export default function SportModal({isOpen, onClose, sport}) {
+export default function SportModal({isOpen, onClose, sport, onRegister}) {
   if (!sport) return null;
+
+  const handleRegisterClick = () => {
+    if (onRegister) {
+      onRegister(sport);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -157,6 +163,7 @@ export default function SportModal({isOpen, onClose, sport}) {
                 {/* CTA Buttons - Responsive */}
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 pt-2 sm:pt-4">
                   <button
+                    onClick={handleRegisterClick}
                     className="flex-1 bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] 
                                     text-black font-bold 
                                     py-2.5 sm:py-3 px-4 sm:px-6 
@@ -168,6 +175,7 @@ export default function SportModal({isOpen, onClose, sport}) {
                     Register Now
                   </button>
                   <button
+                    onClick={onClose}
                     className="flex-1 border-2 border-[#ffb36a] text-[#ffb36a] 
                                     font-bold 
                                     py-2.5 sm:py-3 px-4 sm:px-6 
@@ -175,7 +183,7 @@ export default function SportModal({isOpen, onClose, sport}) {
                                     rounded-md sm:rounded-lg 
                                     hover:bg-[#ffb36a]/10 transition-colors duration-300"
                   >
-                    Learn More
+                    Close
                   </button>
                 </div>
               </div>
