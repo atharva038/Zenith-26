@@ -6,9 +6,9 @@ dotenv.config();
 
 // Admin credentials
 const ADMIN_DATA = {
-  username: "admin",
-  email: "admin@zenith2026.com",
-  password: "admin123", // This will be hashed automatically
+  username: "zenith_admin",
+  email: "zenith_admin@zenith2026.com",
+  password: "Zenith@2026", // This will be hashed automatically
   role: "superadmin",
 };
 
@@ -37,7 +37,7 @@ async function createAdmin() {
     console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     console.log("Email:", admin.email);
     console.log("Username:", admin.username);
-    console.log("Password: admin123");
+    console.log("Password:", ADMIN_DATA.password);
     console.log("Role:", admin.role);
     console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     console.log("\n⚠️  Please change the password after first login!\n");

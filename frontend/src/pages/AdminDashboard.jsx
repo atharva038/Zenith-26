@@ -135,6 +135,16 @@ const AdminDashboard = () => {
                 <span className="font-semibold">Events</span>
               </motion.button>
 
+              {/* Marathon Navigation */}
+              <motion.button
+                onClick={() => navigate("/admin/marathon")}
+                whileHover={{x: 5}}
+                className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all font-rajdhani text-gray-400 hover:text-white hover:bg-white/5"
+              >
+                <span className="text-xl">🏃</span>
+                <span className="font-semibold">Marathon</span>
+              </motion.button>
+
               {[
                 {id: "gallery", label: "Gallery", icon: "🖼️"},
                 {id: "settings", label: "Settings", icon: "⚙️"},
