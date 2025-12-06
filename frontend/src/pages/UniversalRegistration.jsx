@@ -4,6 +4,7 @@ import {toast} from "react-toastify";
 import api from "../config/api";
 
 const SPORTS_CATEGORIES = [
+  "Marathon",
   "Cricket",
   "Football",
   "Basketball",
@@ -22,6 +23,91 @@ const SPORTS_CATEGORIES = [
 ];
 
 const FIXED_ENTRY_FEE = 500; // Fixed for all sports
+
+const MARATHON_FORM_FIELDS = [
+  {
+    label: "Full Name",
+    fieldName: "fullName",
+    fieldType: "text",
+    placeholder: "Enter your full name",
+    required: true,
+  },
+  {
+    label: "Email",
+    fieldName: "email",
+    fieldType: "email",
+    placeholder: "your.email@example.com",
+    required: true,
+  },
+  {
+    label: "Phone Number",
+    fieldName: "phone",
+    fieldType: "tel",
+    placeholder: "10-digit mobile number",
+    required: true,
+  },
+  {
+    label: "Age",
+    fieldName: "age",
+    fieldType: "number",
+    placeholder: "Minimum age: 16",
+    required: true,
+    min: 16,
+    max: 100,
+  },
+  {
+    label: "Gender",
+    fieldName: "gender",
+    fieldType: "select",
+    placeholder: "",
+    required: true,
+    options: ["Male", "Female", "Other"],
+  },
+  {
+    label: "College/Organization",
+    fieldName: "college",
+    fieldType: "text",
+    placeholder: "Your institution name",
+    required: true,
+  },
+  {
+    label: "Marathon Category",
+    fieldName: "category",
+    fieldType: "select",
+    placeholder: "",
+    required: true,
+    options: ["5K", "10K", "Half Marathon"],
+  },
+  {
+    label: "T-Shirt Size",
+    fieldName: "tshirtSize",
+    fieldType: "select",
+    placeholder: "",
+    required: true,
+    options: ["S", "M", "L", "XL", "XXL"],
+  },
+  {
+    label: "Emergency Contact Name",
+    fieldName: "emergency_name",
+    fieldType: "text",
+    placeholder: "Emergency contact person",
+    required: true,
+  },
+  {
+    label: "Emergency Contact Phone",
+    fieldName: "emergency_phone",
+    fieldType: "tel",
+    placeholder: "10-digit mobile number",
+    required: true,
+  },
+  {
+    label: "Medical Conditions (Optional)",
+    fieldName: "medicalConditions",
+    fieldType: "textarea",
+    placeholder: "Any medical conditions, allergies, or health concerns",
+    required: false,
+  },
+];
 
 const DEFAULT_FORM_FIELDS = [
   {
@@ -118,8 +204,26 @@ const UniversalRegistration = () => {
 
   useEffect(() => {
     if (selectedSport) {
-      const event = events.find((e) => e.category === selectedSport);
-      setSelectedEvent(event);
+      if (selectedSport === "Marathon") {
+        // Initialize Marathon form fields
+        const initialData = {};
+        MARATHON_FORM_FIELDS.forEach((field) => {
+          initialData[field.fieldName] =
+            field.fieldType === "checkbox" ? false : "";
+        });
+        setFormData(initialData);
+        setSelectedEvent(null); // Marathon doesn't need an event
+      } else {
+        // Initialize regular sports form fields
+        const event = events.find((e) => e.category === selectedSport);
+        setSelectedEvent(event);
+        const initialData = {};
+        DEFAULT_FORM_FIELDS.forEach((field) => {
+          initialData[field.fieldName] =
+            field.fieldType === "checkbox" ? false : "";
+        });
+        setFormData(initialData);
+      }
     }
   }, [selectedSport, events]);
 
@@ -186,12 +290,16 @@ const UniversalRegistration = () => {
       return false;
     }
 
-    if (!selectedEvent) {
+    // Skip event check for Marathon
+    if (selectedSport !== "Marathon" && !selectedEvent) {
       toast.error("Selected sport event is not available");
       return false;
     }
 
-    for (const field of DEFAULT_FORM_FIELDS) {
+    // Use appropriate form fields based on sport type
+    const fieldsToValidate = selectedSport === "Marathon" ? MARATHON_FORM_FIELDS : DEFAULT_FORM_FIELDS;
+
+    for (const field of fieldsToValidate) {
       if (field.required) {
         const value = formData[field.fieldName];
         if (!value || (typeof value === "string" && !value.trim())) {
@@ -220,18 +328,20 @@ const UniversalRegistration = () => {
       }
     }
 
-    // Document validation
-    if (!documents.permissionLetter) {
-      toast.error("Please upload College Permission Letter");
-      return false;
-    }
-    if (!documents.transactionReceipt) {
-      toast.error("Please upload Transaction Receipt");
-      return false;
-    }
-    if (!documents.captainIdCard) {
-      toast.error("Please upload Captain's ID Card");
-      return false;
+    // Document validation - Skip for Marathon
+    if (selectedSport !== "Marathon") {
+      if (!documents.permissionLetter) {
+        toast.error("Please upload College Permission Letter");
+        return false;
+      }
+      if (!documents.transactionReceipt) {
+        toast.error("Please upload Transaction Receipt");
+        return false;
+      }
+      if (!documents.captainIdCard) {
+        toast.error("Please upload Captain's ID Card");
+        return false;
+      }
     }
 
     return true;
@@ -265,25 +375,53 @@ const UniversalRegistration = () => {
     try {
       setSubmitting(true);
 
-      // Create FormData for multipart/form-data upload
-      const submitData = new FormData();
-      submitData.append("eventId", selectedEvent._id);
-      submitData.append("formData", JSON.stringify(formData));
+      // Handle Marathon registration separately
+      if (selectedSport === "Marathon") {
+        const marathonData = {
+          fullName: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          age: parseInt(formData.age),
+          gender: formData.gender,
+          college: formData.college,
+          category: formData.category,
+          tshirtSize: formData.tshirtSize,
+          emergencyContact: {
+            name: formData.emergency_name,
+            phone: formData.emergency_phone,
+          },
+          medicalConditions: formData.medicalConditions || "None",
+        };
 
-      // Append document files
-      submitData.append("permissionLetter", documents.permissionLetter);
-      submitData.append("transactionReceipt", documents.transactionReceipt);
-      submitData.append("captainIdCard", documents.captainIdCard);
+        const response = await api.post("/marathon/register", marathonData);
+        
+        if (response.data.success) {
+          setRegistrationNumber(response.data.data.registrationNumber);
+          setRegistrationComplete(true);
+          toast.success("Marathon registration successful!");
+        }
+      } else {
+        // Regular sports registration
+        // Create FormData for multipart/form-data upload
+        const submitData = new FormData();
+        submitData.append("eventId", selectedEvent._id);
+        submitData.append("formData", JSON.stringify(formData));
 
-      const response = await api.post("/registrations", submitData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+        // Append document files
+        submitData.append("permissionLetter", documents.permissionLetter);
+        submitData.append("transactionReceipt", documents.transactionReceipt);
+        submitData.append("captainIdCard", documents.captainIdCard);
 
-      setRegistrationNumber(response.data.data.registrationNumber);
-      setRegistrationComplete(true);
-      toast.success("Registration successful!");
+        const response = await api.post("/registrations", submitData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        setRegistrationNumber(response.data.data.registrationNumber);
+        setRegistrationComplete(true);
+        toast.success("Registration successful!");
+      }
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "Registration failed";
@@ -329,6 +467,25 @@ const UniversalRegistration = () => {
             />
             {field.label}
           </label>
+        );
+
+      case "select":
+        return (
+          <select
+            key={index}
+            name={field.fieldName}
+            value={formData[field.fieldName] || ""}
+            onChange={(e) => handleInputChange(e, field)}
+            required={field.required}
+            className={commonClasses}
+          >
+            <option value="">Select {field.label}</option>
+            {field.options && field.options.map((option, i) => (
+              <option key={i} value={option} className="bg-purple-900">
+                {option}
+              </option>
+            ))}
+          </select>
         );
 
       default:
@@ -509,15 +666,24 @@ const UniversalRegistration = () => {
                 <option value="">-- Choose your sport --</option>
                 {SPORTS_CATEGORIES.map((sport) => {
                   const event = events.find((e) => e.category === sport);
+                  const isAvailable = sport === "Marathon" || event; // Marathon is always available
                   return (
-                    <option key={sport} value={sport} disabled={!event}>
-                      {sport} {!event && "(Not available)"}
+                    <option key={sport} value={sport} disabled={!isAvailable}>
+                      {sport} {!isAvailable && "(Not available)"}
                     </option>
                   );
                 })}
               </select>
 
-              {selectedEvent && (
+              {selectedSport === "Marathon" && (
+                <div className="mt-4 text-purple-200 text-sm">
+                  <p>✅ Event: Zenith Marathon 2026</p>
+                  <p>🏃 Categories: 5K, 10K, Half Marathon</p>
+                  <p>📅 Date: February 20, 2026</p>
+                </div>
+              )}
+
+              {selectedEvent && selectedSport !== "Marathon" && (
                 <div className="mt-4 text-purple-200 text-sm">
                   <p>✅ Event: {selectedEvent.name}</p>
                   <p>💰 Entry Fee: ₹{FIXED_ENTRY_FEE} (Fixed for all sports)</p>
@@ -530,10 +696,10 @@ const UniversalRegistration = () => {
               <>
                 <div className="bg-white/5 rounded-lg p-6">
                   <h3 className="text-xl font-bold text-white mb-4">
-                    Team Details
+                    {selectedSport === "Marathon" ? "Participant Details" : "Team Details"}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {DEFAULT_FORM_FIELDS.map((field, index) => (
+                    {(selectedSport === "Marathon" ? MARATHON_FORM_FIELDS : DEFAULT_FORM_FIELDS).map((field, index) => (
                       <div
                         key={index}
                         className={
@@ -557,11 +723,12 @@ const UniversalRegistration = () => {
                   </div>
                 </div>
 
-                {/* Event Info */}
-                <div className="bg-gradient-to-r from-purple-600/30 to-pink-600/30 rounded-lg p-6 border border-purple-400/50">
-                  <h3 className="text-white font-semibold mb-4 text-xl">
-                    💰 Payment Information
-                  </h3>
+                {/* Event Info - Only for non-Marathon sports */}
+                {selectedSport !== "Marathon" && (
+                  <div className="bg-gradient-to-r from-purple-600/30 to-pink-600/30 rounded-lg p-6 border border-purple-400/50">
+                    <h3 className="text-white font-semibold mb-4 text-xl">
+                      💰 Payment Information
+                    </h3>
                   <div className="space-y-4">
                     <div className="bg-yellow-500/20 border border-yellow-400/50 rounded-lg p-4">
                       <p className="text-2xl font-bold text-yellow-300 mb-1">
@@ -612,8 +779,10 @@ const UniversalRegistration = () => {
                     </div>
                   </div>
                 </div>
+                )}
 
-                {/* Document Upload Section */}
+                {/* Document Upload Section - Only for non-Marathon sports */}
+                {selectedSport !== "Marathon" && (
                 <div className="bg-white/5 rounded-lg p-6 border border-white/10">
                   <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                     � Required Documents
@@ -702,6 +871,7 @@ const UniversalRegistration = () => {
                     </div>
                   </div>
                 </div>
+                )}
 
                 {/* Submit Button */}
                 <div className="flex gap-4">
@@ -731,18 +901,19 @@ const UniversalRegistration = () => {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {SPORTS_CATEGORIES.map((sport) => {
               const event = events.find((e) => e.category === sport);
+              const isAvailable = sport === "Marathon" || event; // Marathon is always available
               return (
                 <div
                   key={sport}
                   className={`text-center p-3 rounded-lg ${
-                    event
+                    isAvailable
                       ? "bg-green-500/20 text-green-300 border border-green-400/30"
                       : "bg-red-500/20 text-red-300 border border-red-400/30"
                   }`}
                 >
                   <p className="text-sm font-medium">{sport}</p>
                   <p className="text-xs mt-1">
-                    {event ? "✅ Open" : "❌ Closed"}
+                    {isAvailable ? "✅ Open" : "❌ Closed"}
                   </p>
                 </div>
               );

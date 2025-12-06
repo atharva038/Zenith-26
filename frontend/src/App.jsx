@@ -23,6 +23,8 @@ import EventAnalytics from "./pages/EventAnalytics";
 import EventsPage from "./pages/EventsPage";
 import EventRegistrationPage from "./pages/EventRegistrationPage";
 import UniversalRegistration from "./pages/UniversalRegistration";
+import MarathonRegistration from "./pages/MarathonRegistration";
+import AdminMarathon from "./pages/AdminMarathon";
 import "./App.css";
 
 function App() {
@@ -48,6 +50,9 @@ function App() {
                 element={<EventRegistrationPage />}
               />
               <Route path="/register" element={<UniversalRegistration />} />
+              
+              {/* Marathon Route */}
+              <Route path="/marathon" element={<MarathonRegistration />} />
 
               {/* Admin Routes */}
               <Route path="/admin/login" element={<AdminLogin />} />
@@ -88,6 +93,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <EventAnalytics />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/marathon"
+                element={
+                  <ProtectedRoute>
+                    <AdminMarathon />
                   </ProtectedRoute>
                 }
               />
