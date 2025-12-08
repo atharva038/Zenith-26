@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, Link} from "react-router-dom";
 import {toast} from "react-toastify";
 import api from "../config/api";
 
@@ -296,7 +296,7 @@ const UniversalRegistration = () => {
 
   const renderField = (field, index) => {
     const commonClasses =
-      "w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500";
+      "w-full bg-black/50 border border-[#3a2416] rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-[#ffb77a] focus:ring-1 focus:ring-[#ffb77a] transition-all text-sm";
 
     switch (field.fieldType) {
       case "textarea":
@@ -317,7 +317,7 @@ const UniversalRegistration = () => {
         return (
           <label
             key={index}
-            className="flex items-center text-purple-200 cursor-pointer"
+            className="flex items-center text-gray-300 cursor-pointer hover:text-white transition-colors"
           >
             <input
               type="checkbox"
@@ -325,7 +325,7 @@ const UniversalRegistration = () => {
               checked={formData[field.fieldName] || false}
               onChange={(e) => handleInputChange(e, field)}
               required={field.required}
-              className="mr-2 w-4 h-4"
+              className="mr-2 w-4 h-4 rounded bg-black/50 border-[#3a2416] text-[#ffb77a] focus:ring-[#ffb77a] focus:ring-offset-0"
             />
             {field.label}
           </label>
@@ -463,48 +463,93 @@ const UniversalRegistration = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 py-12 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold text-white mb-4">
-            Zenith 2026 Registration
+    <div className="min-h-screen bg-black text-white">
+      {/* Navigation Bar - Matching Homepage */}
+      <nav className="fixed top-0 left-0 right-0 px-9 py-5 flex justify-between items-center z-50 bg-black/10 backdrop-blur-md border-b border-[#3a2416]/30">
+        <Link
+          to="/"
+          className="text-[#ffb77a] font-bold text-xl tracking-wide hover:text-[#ffd4a8] transition-colors"
+          style={{textShadow: "0 2px 12px rgba(255,140,40,0.18)"}}
+        >
+          Zenith 2026
+        </Link>
+
+        <div className="flex gap-6 items-center">
+          <Link
+            to="/"
+            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors text-sm"
+          >
+            ← Back to Home
+          </Link>
+          <Link
+            to="/gameverse"
+            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors text-sm"
+          >
+            🌌 GameVerse
+          </Link>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <div className="pt-24 pb-12 px-4 max-w-6xl mx-auto">
+        {/* Page Header */}
+        <div className="text-center mb-12">
+          <h1
+            className="text-4xl md:text-5xl font-bold text-[#ffb77a] mb-3"
+            style={{textShadow: "0 2px 20px rgba(255,140,40,0.3)"}}
+          >
+            Event Registration
           </h1>
-          <p className="text-purple-200 text-lg">
-            Register for your favorite sport - One form for all events!
+          <p className="text-gray-400 text-lg mb-6">
+            Register your team for Zenith 2026 sports events
           </p>
-          <div className="mt-4 inline-block bg-gradient-to-r from-purple-600/30 to-pink-600/30 rounded-lg px-6 py-3 border border-purple-400/50">
-            <p className="text-white font-semibold">
-              📅 Event Dates: February 20-22, 2026
-            </p>
-            <p className="text-purple-200">📍 Venue: SGGSIE&T College</p>
+
+          {/* Event Info Banner */}
+          <div className="inline-flex flex-col sm:flex-row gap-4 sm:gap-8 text-sm bg-[#1a1410]/50 backdrop-blur-sm border border-[#3a2416] rounded-lg px-6 py-4">
+            <div className="flex items-center gap-2">
+              <span className="text-[#ffb77a]">📅</span>
+              <span className="text-gray-300">Feb 20-22, 2026</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[#ffb77a]">📍</span>
+              <span className="text-gray-300">SGGSIE&T College</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[#ffb77a]">💰</span>
+              <span className="text-gray-300">
+                Entry Fee: ₹{FIXED_ENTRY_FEE}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Main Form */}
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-white">Registration Form</h2>
+        {/* Main Form Container */}
+        <div className="bg-[#1a1410]/30 backdrop-blur-sm border border-[#3a2416] rounded-xl p-6 md:p-8">
+          {/* Form Header with Test Data Button */}
+          <div className="flex justify-between items-center mb-6 pb-4 border-b border-[#3a2416]">
+            <h2 className="text-xl font-semibold text-[#ffb77a]">
+              Registration Form
+            </h2>
             <button
               type="button"
               onClick={fillTestData}
-              className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg text-sm"
+              className="text-xs px-3 py-1.5 bg-[#2a2010] hover:bg-[#3a2816] text-[#ffb77a] border border-[#3a2416] rounded transition-colors"
             >
-              🧪 Fill Test Data
+              Fill Test Data
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-8">
             {/* Sport Selection */}
-            <div className="bg-gradient-to-r from-yellow-600/20 to-orange-600/20 rounded-lg p-6 border border-yellow-400/30">
-              <label className="block text-white font-semibold mb-3 text-lg">
-                Select Sport *
+            <div className="bg-[#2a2010]/50 border border-[#3a2416] rounded-lg p-6">
+              <label className="block text-[#ffb77a] font-semibold mb-3">
+                Select Sport <span className="text-red-400">*</span>
               </label>
               <select
                 value={selectedSport}
                 onChange={(e) => setSelectedSport(e.target.value)}
                 required
-                className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white text-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full bg-black/50 border border-[#3a2416] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#ffb77a] focus:ring-1 focus:ring-[#ffb77a] transition-all"
               >
                 <option value="">-- Choose your sport --</option>
                 {SPORTS_CATEGORIES.map((sport) => {
@@ -518,9 +563,11 @@ const UniversalRegistration = () => {
               </select>
 
               {selectedEvent && (
-                <div className="mt-4 text-purple-200 text-sm">
-                  <p>✅ Event: {selectedEvent.name}</p>
-                  <p>💰 Entry Fee: ₹{FIXED_ENTRY_FEE} (Fixed for all sports)</p>
+                <div className="mt-4 p-3 bg-black/30 rounded border border-[#3a2416]/50">
+                  <p className="text-sm text-gray-300">
+                    <span className="text-[#ffb77a]">✓</span>{" "}
+                    {selectedEvent.name}
+                  </p>
                 </div>
               )}
             </div>
