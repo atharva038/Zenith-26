@@ -841,11 +841,15 @@ export default function GameVerse() {
 
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden">
-      {/* 3D Canvas Loading Animation */}
+      {/* 3D Canvas Loading Animation - GPU ACCELERATED */}
       <AnimatePresence>
         {isLoading && (
           <motion.div
             className="absolute inset-0 z-50"
+            style={{
+              willChange: "opacity",
+              transform: "translate3d(0,0,0)", // GPU layer
+            }}
             initial={{opacity: 1}}
             exit={{opacity: 0}}
             transition={{duration: 0.8}}
@@ -871,11 +875,15 @@ export default function GameVerse() {
         <span className="sm:hidden">← Home</span>
       </Link>
 
-      {/* Unlock/Reset View Button and Locked Planet Indicator (stacked) */}
+      {/* Unlock/Reset View Button and Locked Planet Indicator (stacked) - GPU ACCELERATED */}
       <div className="absolute top-2 right-2 sm:top-4 sm:right-4 md:top-8 md:right-8 z-20 flex flex-col items-end space-y-2">
         <motion.button
           onClick={handleResetView}
           className="px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 text-xs sm:text-sm md:text-base bg-black/50 backdrop-blur-md border border-[#ffb36a]/30 rounded-md md:rounded-lg text-[#ffb36a] hover:bg-[#ffb36a]/10 transition-all duration-300 font-semibold"
+          style={{
+            willChange: "transform, opacity",
+            transform: "translate3d(0,0,0)", // GPU layer
+          }}
           initial={{opacity: 0, y: -50}}
           animate={{opacity: 1, y: 0}}
           transition={{duration: 0.5, delay: 0.8}}
@@ -887,12 +895,16 @@ export default function GameVerse() {
           </span>
           <span className="sm:hidden">{lockedPlanet ? "🔓" : "🌌"}</span>
         </motion.button>
-        {/* Locked Planet Indicator - below the button */}
+        {/* Locked Planet Indicator - below the button - GPU ACCELERATED */}
         <AnimatePresence mode="wait">
           {lockedPlanet && (
             <motion.div
               key={lockedPlanet.id}
               className="w-full max-w-xs text-center pointer-events-none"
+              style={{
+                willChange: "transform, opacity",
+                transform: "translate3d(0,0,0)", // GPU layer
+              }}
               initial={{opacity: 0, scale: 0.8}}
               animate={{opacity: 1, scale: 1}}
               exit={{opacity: 0, scale: 0.8}}
@@ -918,13 +930,17 @@ export default function GameVerse() {
         </AnimatePresence>
       </div>
 
-      {/* Left Planet List - Vertical on both mobile and desktop, positioned on left side */}
+      {/* Left Planet List - Vertical on both mobile and desktop, positioned on left side - GPU ACCELERATED */}
       <motion.div
         className="absolute 
                    left-1 top-16 md:left-2 md:top-[25%] md:-translate-y-1/2
                    z-20 
                    flex flex-col gap-1 md:gap-2 
                    max-w-[120px] sm:max-w-[150px] md:max-w-[180px]"
+        style={{
+          willChange: "transform, opacity",
+          transform: "translate3d(0,0,0)", // GPU layer
+        }}
         initial={{opacity: 0, x: -50}}
         animate={{opacity: 1, x: 0}}
         transition={{duration: 0.5, delay: 1}}
@@ -941,6 +957,10 @@ export default function GameVerse() {
                            ? "bg-[#ffb36a]/20 border-2 border-[#ffb36a] scale-105"
                            : "bg-black/60 border border-[#ffb36a]/30 hover:bg-[#ffb36a]/10 hover:border-[#ffb36a]/60"
                        }`}
+            style={{
+              willChange: "transform, opacity",
+              transform: "translate3d(0,0,0)", // GPU layer
+            }}
             initial={{opacity: 0, x: -30}}
             animate={{opacity: 1, x: 0}}
             transition={{duration: 0.3, delay: 1 + index * 0.05}}
@@ -963,6 +983,10 @@ export default function GameVerse() {
             {lockedPlanet?.id === sport.id && (
               <motion.div
                 className="absolute -right-1 top-1/2 -translate-y-1/2"
+                style={{
+                  willChange: "transform",
+                  transform: "translate3d(0,0,0)", // GPU layer
+                }}
                 initial={{scale: 0}}
                 animate={{scale: 1}}
                 transition={{type: "spring", stiffness: 500}}
@@ -974,13 +998,17 @@ export default function GameVerse() {
         ))}
       </motion.div>
 
-      {/* Right Planet List - Vertical on both mobile and desktop, positioned on right side */}
+      {/* Right Planet List - Vertical on both mobile and desktop, positioned on right side - GPU ACCELERATED */}
       <motion.div
         className="absolute 
                    right-1 top-16 md:right-2 md:top-[25%] md:-translate-y-1/2
                    z-20 
                    flex flex-col gap-1 md:gap-2 
                    max-w-[120px] sm:max-w-[150px] md:max-w-[180px]"
+        style={{
+          willChange: "transform, opacity",
+          transform: "translate3d(0,0,0)", // GPU layer
+        }}
         initial={{opacity: 0, x: 50}}
         animate={{opacity: 1, x: 0}}
         transition={{duration: 0.5, delay: 1}}
@@ -997,6 +1025,10 @@ export default function GameVerse() {
                            ? "bg-[#ffb36a]/20 border-2 border-[#ffb36a] scale-105"
                            : "bg-black/60 border border-[#ffb36a]/30 hover:bg-[#ffb36a]/10 hover:border-[#ffb36a]/60"
                        }`}
+            style={{
+              willChange: "transform, opacity",
+              transform: "translate3d(0,0,0)", // GPU layer
+            }}
             initial={{opacity: 0, x: 30}}
             animate={{opacity: 1, x: 0}}
             transition={{duration: 0.3, delay: 1 + index * 0.05}}
@@ -1019,6 +1051,10 @@ export default function GameVerse() {
             {lockedPlanet?.id === sport.id && (
               <motion.div
                 className="absolute -left-1 top-1/2 -translate-y-1/2"
+                style={{
+                  willChange: "transform",
+                  transform: "translate3d(0,0,0)", // GPU layer
+                }}
                 initial={{scale: 0}}
                 animate={{scale: 1}}
                 transition={{type: "spring", stiffness: 500}}
@@ -1032,11 +1068,15 @@ export default function GameVerse() {
 
       {/* (Removed duplicate locked planet indicator box from center of screen) */}
 
-      {/* Title Overlay - Responsive & Perfectly Centered */}
+      {/* Title Overlay - Responsive & Perfectly Centered - GPU ACCELERATED */}
       <div className="absolute top-0 left-0 w-full z-10 pointer-events-none">
         <motion.div
           className="flex flex-col items-center justify-center 
                      pt-3 sm:pt-6 md:pt-8 px-4"
+          style={{
+            willChange: "transform, opacity",
+            transform: "translate3d(0,0,0)", // GPU layer
+          }}
           initial={{opacity: 0, y: -50, scale: 0.8}}
           animate={{opacity: 1, y: 0, scale: 1}}
           transition={{duration: 1, delay: 0.5, type: "spring"}}
@@ -1052,6 +1092,8 @@ export default function GameVerse() {
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
               filter: "drop-shadow(0 0 40px rgba(255,179,106,0.6))",
+              willChange: "background-position", // Performance hint
+              transform: "translate3d(0,0,0)", // GPU layer
             }}
             animate={{
               backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
@@ -1067,6 +1109,10 @@ export default function GameVerse() {
           <motion.p
             className="text-gray-400 text-[10px] sm:text-xs md:text-sm 
                        tracking-wider md:tracking-widest font-semibold text-center px-2"
+            style={{
+              willChange: "opacity",
+              transform: "translate3d(0,0,0)", // GPU layer
+            }}
             animate={{
               opacity: [0.5, 1, 0.5],
             }}
@@ -1083,10 +1129,14 @@ export default function GameVerse() {
           </motion.p>
         </motion.div>
       </div>
-      {/* Instructions - Responsive */}
+      {/* Instructions - Responsive - GPU ACCELERATED */}
       <motion.div
         className="absolute bottom-4 sm:bottom-6 md:bottom-8 
                    left-1/2 -translate-x-1/2 z-10 text-center px-4 max-w-full"
+        style={{
+          willChange: "opacity",
+          transform: "translate3d(0,0,0)", // GPU layer
+        }}
         initial={{opacity: 0}}
         animate={{opacity: 1}}
         transition={{duration: 1, delay: 1}}

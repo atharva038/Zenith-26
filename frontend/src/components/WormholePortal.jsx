@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useState, useMemo} from "react";
 import {useNavigate} from "react-router-dom";
 import {motion, AnimatePresence} from "framer-motion";
 
@@ -6,7 +6,7 @@ import {motion, AnimatePresence} from "framer-motion";
 // You can save the provided wormhole images to /public/img/wormhole.png
 const WORMHOLE_IMAGE = "/img/image.png";
 
-// Main Wormhole Portal Component
+// Main Wormhole Portal Component - PERFORMANCE OPTIMIZED
 export default function WormholePortal() {
   const [isEntering, setIsEntering] = useState(false);
   const navigate = useNavigate();
@@ -19,6 +19,36 @@ export default function WormholePortal() {
       navigate("/gameverse");
     }, 2500);
   };
+
+  // Pre-generate star positions for better performance (no re-calculation on render)
+  const stars = useMemo(() => {
+    return [...Array(500)].map((_, i) => ({
+      size: Math.random() * 2.5 + 0.3,
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      delay: Math.random() * 8,
+      duration: 2 + Math.random() * 6,
+      brightness: Math.random(),
+    }));
+  }, []);
+
+  // Pre-generate cosmic dust for better performance
+  const cosmicDust = useMemo(() => {
+    const colors = [
+      "rgba(139, 0, 0, 0.4)", // Dark Red
+      "rgba(220, 20, 60, 0.4)", // Crimson
+      "rgba(255, 69, 0, 0.4)", // Red-Orange
+      "rgba(138, 43, 226, 0.4)", // Blue-Violet/Purple
+    ];
+    return [...Array(100)].map((_, i) => ({
+      color: colors[Math.floor(Math.random() * colors.length)],
+      size: Math.random() * 1.5 + 0.5,
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      delay: Math.random() * 10,
+      duration: 4 + Math.random() * 8,
+    }));
+  }, []);
 
   return (
     <>
@@ -40,66 +70,46 @@ export default function WormholePortal() {
             }}
           />
 
-          {/* Massive star layers for deep space effect - 500 stars */}
-          {[...Array(500)].map((_, i) => {
-            const size = Math.random() * 2.5 + 0.3;
-            const left = Math.random() * 100;
-            const top = Math.random() * 100;
-            const delay = Math.random() * 8;
-            const duration = 2 + Math.random() * 6;
-            const brightness = Math.random();
+          {/* Optimized star layers - Pre-calculated positions, GPU-accelerated animations */}
+          {stars.map((star, i) => (
+            <div
+              key={i}
+              className="absolute rounded-full bg-white"
+              style={{
+                width: `${star.size}px`,
+                height: `${star.size}px`,
+                left: `${star.left}%`,
+                top: `${star.top}%`,
+                opacity: star.brightness,
+                boxShadow: `0 0 ${star.size * 3}px rgba(255, 255, 255, ${
+                  star.brightness * 0.8
+                })`,
+                animation: `twinkle ${star.duration}s ease-in-out ${star.delay}s infinite`,
+                willChange: "opacity", // Browser hint for optimization
+                transform: "translate3d(0,0,0)", // Force GPU acceleration
+              }}
+            />
+          ))}
 
-            return (
-              <div
-                key={i}
-                className="absolute rounded-full bg-white"
-                style={{
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  left: `${left}%`,
-                  top: `${top}%`,
-                  opacity: brightness,
-                  boxShadow: `0 0 ${size * 3}px rgba(255, 255, 255, ${
-                    brightness * 0.8
-                  })`,
-                  animation: `twinkle ${duration}s ease-in-out ${delay}s infinite`,
-                }}
-              />
-            );
-          })}
-
-          {/* Colorful cosmic dust particles */}
-          {[...Array(100)].map((_, i) => {
-            const colors = [
-              "rgba(139, 0, 0, 0.4)", // Dark Red
-              "rgba(220, 20, 60, 0.4)", // Crimson
-              "rgba(255, 69, 0, 0.4)", // Red-Orange
-              "rgba(138, 43, 226, 0.4)", // Blue-Violet/Purple
-            ];
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            const size = Math.random() * 1.5 + 0.5;
-            const left = Math.random() * 100;
-            const top = Math.random() * 100;
-            const delay = Math.random() * 10;
-            const duration = 4 + Math.random() * 8;
-
-            return (
-              <div
-                key={`cosmic-${i}`}
-                className="absolute rounded-full"
-                style={{
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  left: `${left}%`,
-                  top: `${top}%`,
-                  background: color,
-                  boxShadow: `0 0 ${size * 6}px ${color}`,
-                  animation: `twinkle ${duration}s ease-in-out ${delay}s infinite`,
-                  filter: "blur(0.5px)",
-                }}
-              />
-            );
-          })}
+          {/* Optimized cosmic dust - Pre-calculated, GPU-accelerated */}
+          {cosmicDust.map((dust, i) => (
+            <div
+              key={`cosmic-${i}`}
+              className="absolute rounded-full"
+              style={{
+                width: `${dust.size}px`,
+                height: `${dust.size}px`,
+                left: `${dust.left}%`,
+                top: `${dust.top}%`,
+                background: dust.color,
+                boxShadow: `0 0 ${dust.size * 6}px ${dust.color}`,
+                animation: `twinkle ${dust.duration}s ease-in-out ${dust.delay}s infinite`,
+                filter: "blur(0.5px)",
+                willChange: "opacity",
+                transform: "translate3d(0,0,0)",
+              }}
+            />
+          ))}
 
           {/* Nebula clouds with red/purple wormhole colors */}
           <div
@@ -151,7 +161,8 @@ export default function WormholePortal() {
                   transparent 100%
                 )
               `,
-              transform: "scale(2)",
+              transform: "scale(2) translate3d(0,0,0)", // GPU acceleration
+              willChange: "transform", // Browser optimization hint
             }}
           />
 
@@ -166,8 +177,12 @@ export default function WormholePortal() {
               ease: "linear",
             }}
             whileHover={{scale: 1.05}}
+            style={{
+              willChange: "transform", // Optimize rotation
+              transform: "translate3d(0,0,0)", // Force GPU layer
+            }}
           >
-            {/* Wormhole Image with smooth edge blending */}
+            {/* Wormhole Image with smooth edge blending - OPTIMIZED */}
             <div
               className="w-full h-full rounded-full relative overflow-hidden"
               style={{
@@ -181,6 +196,9 @@ export default function WormholePortal() {
                   0 0 180px rgba(138, 43, 226, 0.3),
                   inset 0 0 60px rgba(220, 20, 60, 0.2)
                 `,
+                willChange: "filter", // Optimize filter changes
+                transform: "translate3d(0,0,0)", // GPU acceleration
+                contain: "layout style paint", // CSS containment for performance
               }}
             >
               {/* Smooth edge fade mask - blends into space */}
@@ -198,22 +216,25 @@ export default function WormholePortal() {
                     )
                   `,
                   pointerEvents: "none",
+                  willChange: "opacity",
                 }}
               />
             </div>
 
-            {/* Overlay glow effect with smooth outer blend */}
+            {/* Overlay glow effect with smooth outer blend - GPU ACCELERATED */}
             <div
               className="absolute inset-0 rounded-full pointer-events-none"
               style={{
                 background:
                   "radial-gradient(circle, rgba(255,255,255,0.08) 0%, rgba(220,20,60,0.15) 30%, rgba(255,69,0,0.1) 60%, rgba(138,43,226,0.05) 80%, transparent 100%)",
                 animation: "pulse 3s ease-in-out infinite",
+                willChange: "opacity, transform",
+                transform: "translate3d(0,0,0)",
               }}
             />
           </motion.div>
 
-          {/* Stranger Things Style Button - No background, flickering red glow */}
+          {/* Stranger Things Style Button - No background, flickering red glow - GPU ACCELERATED */}
           {!isEntering && (
             <motion.button
               onClick={(e) => {
@@ -224,6 +245,10 @@ export default function WormholePortal() {
                          px-4 py-2 md:px-5 md:py-2.5
                          z-30
                          cursor-pointer"
+              style={{
+                willChange: "transform", // Browser hint for scale animation
+                transform: "translate3d(0,0,0)", // GPU layer
+              }}
               initial={{opacity: 0}}
               animate={{opacity: 1}}
               transition={{duration: 0.5}}
@@ -240,6 +265,8 @@ export default function WormholePortal() {
                     0 0 40px #ff0000,
                     0 0 70px #ff0000
                   `,
+                  willChange: "transform, opacity, text-shadow", // Performance hints
+                  transform: "translate3d(0,0,0)", // GPU layer
                 }}
                 animate={{
                   opacity: [1, 0.7, 1, 0.8, 1, 0.6, 1],
@@ -302,10 +329,9 @@ export default function WormholePortal() {
           </p>
         </motion.div>
 
-        {/* Energy particles floating around wormhole */}
+        {/* Energy particles floating around wormhole - PRE-CALCULATED & GPU ACCELERATED */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
-          {[...Array(40)].map((_, i) => {
-            const size = Math.random() * 3 + 1;
+          {useMemo(() => {
             const colors = [
               "#dc143c", // Crimson
               "#ff4500", // Red-Orange
@@ -313,36 +339,44 @@ export default function WormholePortal() {
               "#ff1493", // Deep Pink
               "#ffffff", // White
             ];
-            const color = colors[Math.floor(Math.random() * colors.length)];
 
-            return (
-              <motion.div
-                key={i}
-                className="absolute rounded-full"
-                style={{
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  background: color,
-                  boxShadow: `0 0 ${size * 4}px ${color}`,
-                  left: `${40 + Math.random() * 20}%`,
-                  top: `${40 + Math.random() * 20}%`,
-                  filter: "blur(1px)",
-                }}
-                animate={{
-                  x: [0, (Math.random() - 0.5) * 100],
-                  y: [0, (Math.random() - 0.5) * 100],
-                  opacity: [0, 1, 0],
-                  scale: [0, 1.5, 0],
-                }}
-                transition={{
-                  duration: 4 + Math.random() * 3,
-                  repeat: Infinity,
-                  delay: Math.random() * 5,
-                  ease: "easeInOut",
-                }}
-              />
-            );
-          })}
+            return [...Array(40)].map((_, i) => {
+              const size = Math.random() * 3 + 1;
+              const color = colors[Math.floor(Math.random() * colors.length)];
+              const left = 40 + Math.random() * 20;
+              const top = 40 + Math.random() * 20;
+
+              return (
+                <motion.div
+                  key={i}
+                  className="absolute rounded-full"
+                  style={{
+                    width: `${size}px`,
+                    height: `${size}px`,
+                    background: color,
+                    boxShadow: `0 0 ${size * 4}px ${color}`,
+                    left: `${left}%`,
+                    top: `${top}%`,
+                    filter: "blur(1px)",
+                    willChange: "transform, opacity", // Performance hint
+                    transform: "translate3d(0,0,0)", // GPU layer
+                  }}
+                  animate={{
+                    x: [0, (Math.random() - 0.5) * 100],
+                    y: [0, (Math.random() - 0.5) * 100],
+                    opacity: [0, 1, 0],
+                    scale: [0, 1.5, 0],
+                  }}
+                  transition={{
+                    duration: 4 + Math.random() * 3,
+                    repeat: Infinity,
+                    delay: Math.random() * 5,
+                    ease: "easeInOut",
+                  }}
+                />
+              );
+            });
+          }, [])}
         </div>
       </div>
 

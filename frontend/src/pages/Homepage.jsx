@@ -1,4 +1,4 @@
-import {useState, useRef, useEffect} from "react";
+import {useState, useRef, useEffect, useMemo} from "react";
 import {Link} from "react-router-dom";
 import {motion, useInView} from "framer-motion";
 import {gsap} from "gsap";
@@ -10,7 +10,7 @@ import WormholePortal from "../components/WormholePortal";
 // Register GSAP ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
 
-// Subtle Sparkle component for blink dots
+// Subtle Sparkle component for blink dots - GPU ACCELERATED
 const Sparkle = ({delay = 0, size = 4}) => (
   <motion.div
     className="absolute rounded-full bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-200"
@@ -19,6 +19,8 @@ const Sparkle = ({delay = 0, size = 4}) => (
       height: size,
       left: `${Math.random() * 100}%`,
       top: `${Math.random() * 100}%`,
+      willChange: "transform, opacity", // Browser performance hint
+      transform: "translate3d(0,0,0)", // Force GPU layer
     }}
     initial={{opacity: 0, scale: 0}}
     animate={{
@@ -42,7 +44,7 @@ export default function Homepage() {
   const aboutCardsRef = useRef(null);
   const eventsRef = useRef(null);
 
-  // Subtle mouse parallax effect for hero (reduced intensity)
+  // Subtle mouse parallax effect for hero (reduced intensity) - PASSIVE LISTENER FOR PERFORMANCE
   useEffect(() => {
     // Disable parallax on mobile for performance
     if (window.innerWidth < 768) return;
@@ -72,10 +74,11 @@ export default function Homepage() {
       });
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    // Use passive listener for better scroll performance
+    window.addEventListener("mousemove", handleMouseMove, {passive: true});
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mousemove", handleMouseMove, {passive: true});
     };
   }, []);
 
@@ -280,7 +283,7 @@ export default function Homepage() {
       </nav>
 
       <section id="hero" className="relative w-screen h-screen overflow-hidden">
-        {/* Stadium Background Image */}
+        {/* Stadium Background Image - GPU ACCELERATED */}
         <div
           ref={stadiumRef}
           className="absolute inset-0 z-[1] will-change-transform"
@@ -289,6 +292,8 @@ export default function Homepage() {
             backgroundSize: "cover",
             backgroundPosition: "center 55%",
             filter: "brightness(0.45) saturate(0.9) contrast(0.95)",
+            transform: "translate3d(0,0,0)", // Force GPU layer
+            willChange: "transform", // Performance hint for GSAP animations
           }}
         />
         {/* Subtle blinking dots/sparkles */}
@@ -318,6 +323,10 @@ export default function Homepage() {
         <div
           ref={textRef}
           className="absolute top-[20%] left-0 right-0 z-[200] text-center px-5 will-change-transform"
+          style={{
+            transform: "translate3d(0,0,0)", // GPU layer for GSAP parallax
+            willChange: "transform", // Performance hint
+          }}
         >
           <motion.h1
             className="m-0 text-[#ffe7c3] tracking-[6px] font-bold"
@@ -325,6 +334,8 @@ export default function Homepage() {
               fontSize: "clamp(2.4rem, 6vw, 5rem)",
               textShadow:
                 "0 18px 40px rgba(255,120,40,0.12), 0 0 30px rgba(255,150,50,0.18)",
+              willChange: "opacity, transform, filter", // Performance hints
+              transform: "translate3d(0,0,0)", // GPU layer
             }}
             initial={{opacity: 0, y: 30, filter: "blur(8px)"}}
             animate={{opacity: 1, y: 0, filter: "blur(0px)"}}
@@ -334,7 +345,11 @@ export default function Homepage() {
           </motion.h1>
           <motion.p
             className="mt-3 mb-0 text-[#ffdcb3]"
-            style={{fontSize: "clamp(1rem, 2vw, 1.2rem)"}}
+            style={{
+              fontSize: "clamp(1rem, 2vw, 1.2rem)",
+              willChange: "opacity, transform", // Performance hints
+              transform: "translate3d(0,0,0)", // GPU layer
+            }}
             initial={{opacity: 0, y: 20}}
             animate={{opacity: 1, y: 0}}
             transition={{duration: 0.8, delay: 0.3, ease: "easeOut"}}
@@ -348,6 +363,8 @@ export default function Homepage() {
                 background: "linear-gradient(90deg, #ffb36a, #ff8b1f)",
                 boxShadow:
                   "0 12px 28px rgba(255,140,40,0.18), inset 0 -2px 6px rgba(0,0,0,0.12)",
+                willChange: "transform", // Performance hint
+                transform: "translate3d(0,0,0)", // GPU layer
               }}
               initial={{opacity: 0, scale: 0.9}}
               animate={{opacity: 1, scale: 1}}
