@@ -4,7 +4,6 @@ import {toast} from "react-toastify";
 import api from "../config/api";
 
 const SPORTS_CATEGORIES = [
-  "Marathon",
   "Cricket",
   "Football",
   "Basketball",

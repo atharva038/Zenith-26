@@ -17,6 +17,7 @@ export const registerMarathon = async (req, res) => {
       tshirtSize,
       emergencyContact,
       medicalConditions,
+      paymentDetails,
     } = req.body;
 
     // Check if user already registered with this email
@@ -40,6 +41,7 @@ export const registerMarathon = async (req, res) => {
       tshirtSize,
       emergencyContact,
       medicalConditions,
+      paymentDetails,
     });
 
     res.status(201).json({
@@ -155,8 +157,31 @@ export const updateRegistrationStatus = async (req, res) => {
       });
     }
 
-    if (status) registration.status = status;
-    if (paymentStatus) registration.paymentStatus = paymentStatus;
+    if (status) {
+      registration.status = status;
+      
+      // When admin confirms registration, also verify payment
+      if (status === "confirmed") {
+        if (registration.paymentDetails) {
+          registration.paymentDetails.paymentStatus = "verified";
+        }
+      }
+      
+      // When admin cancels/rejects registration, mark payment as failed
+      if (status === "cancelled") {
+        if (registration.paymentDetails) {
+          registration.paymentDetails.paymentStatus = "failed";
+        }
+      }
+    }
+
+    // Handle payment status update separately
+    if (paymentStatus) {
+      if (!registration.paymentDetails) {
+        registration.paymentDetails = {};
+      }
+      registration.paymentDetails.paymentStatus = paymentStatus;
+    }
 
     await registration.save();
 

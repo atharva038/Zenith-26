@@ -356,25 +356,49 @@ export default function Homepage() {
           >
             SGGSIE&T Annual Sports Festival • Where Champions Rise
           </motion.p>
-          <Link to="/register">
-            <motion.button
-              className="inline-block mt-4 px-8 py-3 rounded-full font-extrabold text-[#2c1506] no-underline transition-transform hover:scale-105"
-              style={{
-                background: "linear-gradient(90deg, #ffb36a, #ff8b1f)",
-                boxShadow:
-                  "0 12px 28px rgba(255,140,40,0.18), inset 0 -2px 6px rgba(0,0,0,0.12)",
-                willChange: "transform", // Performance hint
-                transform: "translate3d(0,0,0)", // GPU layer
-              }}
-              initial={{opacity: 0, scale: 0.9}}
-              animate={{opacity: 1, scale: 1}}
-              transition={{duration: 0.6, delay: 0.6, ease: "easeOut"}}
-              whileHover={{scale: 1.05}}
-              whileTap={{scale: 0.95}}
-            >
-              Register Now
-            </motion.button>
-          </Link>
+          
+          {/* Registration Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 mt-6 justify-center items-center">
+            <Link to="/register">
+              <motion.button
+                className="inline-block px-8 py-3 rounded-full font-extrabold text-[#2c1506] no-underline transition-transform hover:scale-105"
+                style={{
+                  background: "linear-gradient(90deg, #ffb36a, #ff8b1f)",
+                  boxShadow:
+                    "0 12px 28px rgba(255,140,40,0.18), inset 0 -2px 6px rgba(0,0,0,0.12)",
+                  willChange: "transform", // Performance hint
+                  transform: "translate3d(0,0,0)", // GPU layer
+                }}
+                initial={{opacity: 0, scale: 0.9}}
+                animate={{opacity: 1, scale: 1}}
+                transition={{duration: 0.6, delay: 0.6, ease: "easeOut"}}
+                whileHover={{scale: 1.05}}
+                whileTap={{scale: 0.95}}
+              >
+                🏆 Register for Sports
+              </motion.button>
+            </Link>
+            
+            <Link to="/marathon">
+              <motion.button
+                className="inline-block px-8 py-3 rounded-full font-extrabold text-[#2c1506] no-underline transition-transform hover:scale-105"
+                style={{
+                  background: "linear-gradient(90deg, #ffd700, #ffa500)",
+                  boxShadow:
+                    "0 12px 28px rgba(255,165,0,0.25), inset 0 -2px 6px rgba(0,0,0,0.12)",
+                  willChange: "transform", // Performance hint
+                  transform: "translate3d(0,0,0)", // GPU layer
+                }}
+                initial={{opacity: 0, scale: 0.9}}
+                animate={{opacity: 1, scale: 1}}
+                transition={{duration: 0.6, delay: 0.7, ease: "easeOut"}}
+                whileHover={{scale: 1.05}}
+                whileTap={{scale: 0.95}}
+              >
+                🏃 Marathon Registration
+              </motion.button>
+            </Link>
+          </div>
         </div>
         <div
           className="absolute left-0 right-0 bottom-0 h-[22%] z-[210] pointer-events-none"

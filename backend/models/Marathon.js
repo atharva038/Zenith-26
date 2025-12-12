@@ -82,11 +82,25 @@ const marathonSchema = new mongoose.Schema(
       default: "pending",
     },
     
-    // Payment Information (if applicable)
-    paymentStatus: {
-      type: String,
-      enum: ["pending", "completed", "failed"],
-      default: "pending",
+    // Payment Information
+    paymentDetails: {
+      transactionId: {
+        type: String,
+        trim: true,
+      },
+      amount: {
+        type: Number,
+        default: 500,
+      },
+      paymentDate: {
+        type: Date,
+        default: Date.now,
+      },
+      paymentStatus: {
+        type: String,
+        enum: ["pending", "verified", "failed"],
+        default: "pending",
+      },
     },
     
     // Registration Number (auto-generated)

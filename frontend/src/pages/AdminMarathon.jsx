@@ -10,6 +10,8 @@ const AdminMarathon = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [selectedRegistration, setSelectedRegistration] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [filters, setFilters] = useState({
     category: "",
     status: "",
@@ -72,11 +74,80 @@ const AdminMarathon = () => {
       const response = await api.delete(`/marathon/registrations/${id}`);
       if (response.data.success) {
         toast.success("Registration deleted successfully");
+        setShowDetailsModal(false);
         fetchRegistrations();
       }
     } catch (error) {
       toast.error("Failed to delete registration");
     }
+  };
+
+  // Confirm registration
+  const confirmRegistration = async (id) => {
+    try {
+      const response = await api.put(`/marathon/registrations/${id}`, {
+        status: "confirmed",
+      });
+      if (response.data.success) {
+        toast.success("Registration confirmed successfully");
+        setShowDetailsModal(false);
+        fetchRegistrations();
+      }
+    } catch (error) {
+      toast.error("Failed to confirm registration");
+    }
+  };
+
+  // Reject registration
+  const rejectRegistration = async (id) => {
+    if (!window.confirm("Are you sure you want to reject this registration?")) {
+      return;
+    }
+
+    try {
+      const response = await api.put(`/marathon/registrations/${id}`, {
+        status: "cancelled",
+      });
+      if (response.data.success) {
+        toast.success("Registration rejected");
+        setShowDetailsModal(false);
+        fetchRegistrations();
+      }
+    } catch (error) {
+      toast.error("Failed to reject registration");
+    }
+  };
+
+  // Verify payment
+  const verifyPayment = async (id) => {
+    try {
+      const response = await api.put(`/marathon/registrations/${id}`, {
+        paymentStatus: "verified",
+      });
+      if (response.data.success) {
+        toast.success("Payment verified successfully");
+        fetchRegistrations();
+        // Update the modal data
+        if (selectedRegistration && selectedRegistration._id === id) {
+          setSelectedRegistration({
+            ...selectedRegistration,
+            paymentDetails: {
+              ...selectedRegistration.paymentDetails,
+              paymentStatus: "verified",
+            },
+          });
+        }
+      }
+    } catch (error) {
+      toast.error("Failed to verify payment");
+      console.error(error);
+    }
+  };
+
+  // View details
+  const viewDetails = (registration) => {
+    setSelectedRegistration(registration);
+    setShowDetailsModal(true);
   };
 
   // Export to CSV
@@ -408,6 +479,9 @@ const AdminMarathon = () => {
                         Category
                       </th>
                       <th className="px-6 py-4 text-left text-xs font-bold text-neon-blue uppercase tracking-wider font-rajdhani">
+                        Payment
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-neon-blue uppercase tracking-wider font-rajdhani">
                         Status
                       </th>
                       <th className="px-6 py-4 text-left text-xs font-bold text-neon-blue uppercase tracking-wider font-rajdhani">
@@ -442,12 +516,34 @@ const AdminMarathon = () => {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <select
-                            value={reg.status}
-                            onChange={(e) =>
-                              updateStatus(reg._id, e.target.value)
-                            }
-                            className={`px-3 py-1 text-xs font-semibold rounded-full font-rajdhani border ${
+                          <div className="flex items-center space-x-2">
+                            <span
+                              className={`px-3 py-1 text-xs font-semibold rounded-full font-rajdhani border ${
+                                reg.paymentDetails?.paymentStatus === "verified"
+                                  ? "bg-green-500/20 text-green-300 border-green-500/30"
+                                  : reg.paymentDetails?.paymentStatus === "pending"
+                                  ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"
+                                  : "bg-red-500/20 text-red-300 border-red-500/30"
+                              }`}
+                            >
+                              {reg.paymentDetails?.paymentStatus || "pending"}
+                            </span>
+                            {reg.paymentDetails?.paymentStatus === "pending" && (
+                              <motion.button
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                                onClick={() => verifyPayment(reg._id)}
+                                className="text-green-400 hover:text-green-300 transition-colors text-xs"
+                                title="Verify Payment"
+                              >
+                                ✓
+                              </motion.button>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full font-rajdhani border ${
                               reg.status === "confirmed"
                                 ? "bg-green-500/20 text-green-300 border-green-500/30"
                                 : reg.status === "pending"
@@ -455,20 +551,52 @@ const AdminMarathon = () => {
                                 : "bg-red-500/20 text-red-300 border-red-500/30"
                             }`}
                           >
-                            <option value="pending">Pending</option>
-                            <option value="confirmed">Confirmed</option>
-                            <option value="cancelled">Cancelled</option>
-                          </select>
+                            {reg.status}
+                          </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            onClick={() => deleteRegistration(reg._id)}
-                            className="text-red-400 hover:text-red-300 transition-colors"
-                          >
-                            🗑️
-                          </motion.button>
+                          <div className="flex items-center space-x-2">
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              onClick={() => viewDetails(reg)}
+                              className="text-blue-400 hover:text-blue-300 transition-colors"
+                              title="View Details"
+                            >
+                              👁️
+                            </motion.button>
+                            {reg.status === "pending" && (
+                              <>
+                                <motion.button
+                                  whileHover={{ scale: 1.1 }}
+                                  whileTap={{ scale: 0.9 }}
+                                  onClick={() => confirmRegistration(reg._id)}
+                                  className="text-green-400 hover:text-green-300 transition-colors"
+                                  title="Confirm"
+                                >
+                                  ✅
+                                </motion.button>
+                                <motion.button
+                                  whileHover={{ scale: 1.1 }}
+                                  whileTap={{ scale: 0.9 }}
+                                  onClick={() => rejectRegistration(reg._id)}
+                                  className="text-yellow-400 hover:text-yellow-300 transition-colors"
+                                  title="Reject"
+                                >
+                                  ❌
+                                </motion.button>
+                              </>
+                            )}
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              onClick={() => deleteRegistration(reg._id)}
+                              className="text-red-400 hover:text-red-300 transition-colors"
+                              title="Delete"
+                            >
+                              🗑️
+                            </motion.button>
+                          </div>
                         </td>
                       </motion.tr>
                     ))}
@@ -479,6 +607,258 @@ const AdminMarathon = () => {
           </motion.div>
         </div>
       </div>
+
+      {/* View Details Modal */}
+      <AnimatePresence>
+        {showDetailsModal && selectedRegistration && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowDetailsModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-gradient-to-br from-gray-900 to-black border border-neon-blue/30 rounded-2xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between mb-6 border-b border-neon-blue/20 pb-4">
+                <h2 className="text-2xl font-bold font-orbitron bg-gradient-to-r from-neon-blue to-electric-cyan bg-clip-text text-transparent">
+                  Registration Details
+                </h2>
+                <motion.button
+                  whileHover={{ scale: 1.1, rotate: 90 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setShowDetailsModal(false)}
+                  className="text-gray-400 hover:text-white text-2xl"
+                >
+                  ✕
+                </motion.button>
+              </div>
+
+              {/* Registration Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Personal Information */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-neon-blue font-rajdhani mb-3">
+                    Personal Information
+                  </h3>
+                  <div>
+                    <p className="text-gray-400 text-sm">Registration Number</p>
+                    <p className="text-white font-mono font-semibold">
+                      {selectedRegistration.registrationNumber}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">Full Name</p>
+                    <p className="text-white font-semibold">
+                      {selectedRegistration.fullName}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">Email</p>
+                    <p className="text-white">{selectedRegistration.email}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">Phone</p>
+                    <p className="text-white">{selectedRegistration.phone}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-gray-400 text-sm">Age</p>
+                      <p className="text-white">{selectedRegistration.age}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400 text-sm">Gender</p>
+                      <p className="text-white">{selectedRegistration.gender}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">College/Organization</p>
+                    <p className="text-white">{selectedRegistration.college}</p>
+                  </div>
+                </div>
+
+                {/* Marathon Details */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-neon-blue font-rajdhani mb-3">
+                    Marathon Details
+                  </h3>
+                  <div>
+                    <p className="text-gray-400 text-sm">Category</p>
+                    <p className="text-white font-semibold">
+                      {selectedRegistration.category}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">T-Shirt Size</p>
+                    <p className="text-white">
+                      {selectedRegistration.tshirtSize}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">Status</p>
+                    <span
+                      className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full font-rajdhani border ${
+                        selectedRegistration.status === "confirmed"
+                          ? "bg-green-500/20 text-green-300 border-green-500/30"
+                          : selectedRegistration.status === "pending"
+                          ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"
+                          : "bg-red-500/20 text-red-300 border-red-500/30"
+                      }`}
+                    >
+                      {selectedRegistration.status}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">Medical Conditions</p>
+                    <p className="text-white">
+                      {selectedRegistration.medicalConditions || "None"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">Registration Date</p>
+                    <p className="text-white">
+                      {new Date(
+                        selectedRegistration.createdAt
+                      ).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Emergency Contact */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-neon-blue font-rajdhani mb-3">
+                    Emergency Contact
+                  </h3>
+                  <div>
+                    <p className="text-gray-400 text-sm">Name</p>
+                    <p className="text-white">
+                      {selectedRegistration.emergencyContact?.name}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">Phone</p>
+                    <p className="text-white">
+                      {selectedRegistration.emergencyContact?.phone}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Payment Details */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-neon-blue font-rajdhani mb-3">
+                    Payment Details
+                  </h3>
+                  <div>
+                    <p className="text-gray-400 text-sm">Transaction ID</p>
+                    <p className="text-white font-mono">
+                      {selectedRegistration.paymentDetails?.transactionId ||
+                        "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">Amount</p>
+                    <p className="text-white font-semibold">
+                      ₹{selectedRegistration.paymentDetails?.amount || 500}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">Payment Status</p>
+                    <div className="flex items-center space-x-2">
+                      <span
+                        className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full font-rajdhani border ${
+                          selectedRegistration.paymentDetails?.paymentStatus ===
+                          "verified"
+                            ? "bg-green-500/20 text-green-300 border-green-500/30"
+                            : selectedRegistration.paymentDetails
+                                ?.paymentStatus === "pending"
+                            ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"
+                            : "bg-red-500/20 text-red-300 border-red-500/30"
+                        }`}
+                      >
+                        {selectedRegistration.paymentDetails?.paymentStatus ||
+                          "pending"}
+                      </span>
+                      {selectedRegistration.paymentDetails?.paymentStatus ===
+                        "pending" && (
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() =>
+                            verifyPayment(selectedRegistration._id)
+                          }
+                          className="px-3 py-1 bg-green-600/20 border border-green-500/50 rounded-lg text-green-300 hover:bg-green-600/30 transition-all text-xs font-semibold"
+                        >
+                          Verify Payment
+                        </motion.button>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">Payment Date</p>
+                    <p className="text-white">
+                      {selectedRegistration.paymentDetails?.paymentDate
+                        ? new Date(
+                            selectedRegistration.paymentDetails.paymentDate
+                          ).toLocaleDateString()
+                        : "N/A"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end space-x-4 mt-8 pt-6 border-t border-neon-blue/20">
+                {selectedRegistration.status === "pending" && (
+                  <>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() =>
+                        confirmRegistration(selectedRegistration._id)
+                      }
+                      className="px-6 py-3 bg-green-600/20 border border-green-500/50 rounded-lg text-green-300 hover:bg-green-600/30 transition-all font-rajdhani font-semibold"
+                    >
+                      ✅ Confirm Registration
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() =>
+                        rejectRegistration(selectedRegistration._id)
+                      }
+                      className="px-6 py-3 bg-yellow-600/20 border border-yellow-500/50 rounded-lg text-yellow-300 hover:bg-yellow-600/30 transition-all font-rajdhani font-semibold"
+                    >
+                      ❌ Reject
+                    </motion.button>
+                  </>
+                )}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => deleteRegistration(selectedRegistration._id)}
+                  className="px-6 py-3 bg-red-600/20 border border-red-500/50 rounded-lg text-red-300 hover:bg-red-600/30 transition-all font-rajdhani font-semibold"
+                >
+                  🗑️ Delete
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowDetailsModal(false)}
+                  className="px-6 py-3 bg-gray-600/20 border border-gray-500/50 rounded-lg text-gray-300 hover:bg-gray-600/30 transition-all font-rajdhani font-semibold"
+                >
+                  Close
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

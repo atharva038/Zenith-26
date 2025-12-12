@@ -1,31 +1,16 @@
-import {useState, useEffect} from "react";
-import {useNavigate, Link} from "react-router-dom";
-import {motion, AnimatePresence} from "framer-motion";
+import {useState, useEffect, useCallback} from "react";
+import {motion} from "framer-motion";
 import axios from "axios";
+import AdminLayout from "../components/AdminLayout";
 
 const AdminDashboard = () => {
-  const navigate = useNavigate();
   const [admin, setAdmin] = useState(null);
   const [stats, setStats] = useState(null);
   const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  useEffect(() => {
-    const token = localStorage.getItem("adminToken");
-    const adminData = localStorage.getItem("adminData");
-
-    if (!token || !adminData) {
-      navigate("/admin/login");
-      return;
-    }
-
-    setAdmin(JSON.parse(adminData));
-    fetchDashboardData(token);
-  }, [navigate]);
-
-  const fetchDashboardData = async (token) => {
+  const fetchDashboardData = useCallback(async (token) => {
     try {
       const [statsRes, adminsRes] = await Promise.all([
         axios.get("http://localhost:5000/api/admin/dashboard/stats", {
@@ -40,19 +25,21 @@ const AdminDashboard = () => {
       setAdmins(adminsRes.data.data.admins);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
-      if (error.response?.status === 401) {
-        handleLogout();
-      }
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("adminToken");
-    localStorage.removeItem("adminData");
-    navigate("/admin/login");
-  };
+  useEffect(() => {
+    const adminData = localStorage.getItem("adminData");
+    if (adminData) {
+      setAdmin(JSON.parse(adminData));
+    }
+    const token = localStorage.getItem("adminToken");
+    if (token) {
+      fetchDashboardData(token);
+    }
+  }, [fetchDashboardData]);
 
   const handleDeleteAdmin = async (id) => {
     if (!window.confirm("Are you sure you want to delete this admin?")) return;
@@ -63,7 +50,6 @@ const AdminDashboard = () => {
         headers: {Authorization: `Bearer ${token}`},
       });
 
-      // Refresh admins list
       setAdmins(admins.filter((a) => a._id !== id));
     } catch (error) {
       console.error("Error deleting admin:", error);
@@ -71,171 +57,42 @@ const AdminDashboard = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-black via-[#0a0a18] to-black flex items-center justify-center">
-        <motion.div
-          animate={{rotate: 360}}
-          transition={{duration: 1, repeat: Infinity, ease: "linear"}}
-          className="w-16 h-16 border-4 border-neon-blue border-t-transparent rounded-full"
-        />
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-[#0a0a18] to-black text-white">
-      {/* Sidebar */}
-      <AnimatePresence>
-        {sidebarOpen && (
+    <AdminLayout title={activeTab}>
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
           <motion.div
-            initial={{x: -300}}
-            animate={{x: 0}}
-            exit={{x: -300}}
-            className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-gray-900/95 to-black/95 backdrop-blur-xl border-r border-neon-blue/20 z-50"
-          >
-            {/* Logo */}
-            <div className="p-6 border-b border-gray-700/50">
-              <Link to="/home">
-                <h2 className="text-2xl font-bold font-orbitron bg-gradient-to-r from-neon-blue to-electric-cyan bg-clip-text text-transparent">
-                  ZENITH 2026
-                </h2>
-              </Link>
-              <p className="text-gray-400 text-sm mt-1">Admin Portal</p>
-            </div>
-
-            {/* Navigation */}
-            <nav className="p-4 space-y-2">
-              {[
-                {id: "dashboard", label: "Dashboard", icon: "📊"},
-                {id: "admins", label: "Admins", icon: "👥"},
-              ].map((item) => (
-                <motion.button
-                  key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  whileHover={{x: 5}}
-                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all font-rajdhani ${
-                    activeTab === item.id
-                      ? "bg-gradient-to-r from-neon-blue/20 to-electric-cyan/20 border border-neon-blue/50 text-white"
-                      : "text-gray-400 hover:text-white hover:bg-white/5"
-                  }`}
-                >
-                  <span className="text-xl">{item.icon}</span>
-                  <span className="font-semibold">{item.label}</span>
-                </motion.button>
-              ))}
-
-              {/* Events Navigation */}
-              <motion.button
-                onClick={() => navigate("/admin/events")}
-                whileHover={{x: 5}}
-                className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all font-rajdhani text-gray-400 hover:text-white hover:bg-white/5"
-              >
-                <span className="text-xl">🎪</span>
-                <span className="font-semibold">Events</span>
-              </motion.button>
-
-              {/* Marathon Navigation */}
-              <motion.button
-                onClick={() => navigate("/admin/marathon")}
-                whileHover={{x: 5}}
-                className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all font-rajdhani text-gray-400 hover:text-white hover:bg-white/5"
-              >
-                <span className="text-xl">🏃</span>
-                <span className="font-semibold">Marathon</span>
-              </motion.button>
-
-              {[
-                {id: "gallery", label: "Gallery", icon: "🖼️"},
-                {id: "settings", label: "Settings", icon: "⚙️"},
-              ].map((item) => (
-                <motion.button
-                  key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  whileHover={{x: 5}}
-                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all font-rajdhani ${
-                    activeTab === item.id
-                      ? "bg-gradient-to-r from-neon-blue/20 to-electric-cyan/20 border border-neon-blue/50 text-white"
-                      : "text-gray-400 hover:text-white hover:bg-white/5"
-                  }`}
-                >
-                  <span className="text-xl">{item.icon}</span>
-                  <span className="font-semibold">{item.label}</span>
-                </motion.button>
-              ))}
-            </nav>
-
-            {/* Admin Info */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-700/50">
-              <div className="flex items-center space-x-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-neon-blue to-neon-orange flex items-center justify-center font-bold">
-                  {admin?.username?.[0]?.toUpperCase()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold truncate">{admin?.username}</p>
-                  <p className="text-xs text-gray-400 truncate">
-                    {admin?.email}
-                  </p>
-                </div>
-              </div>
-              <motion.button
-                onClick={handleLogout}
-                whileHover={{scale: 1.02}}
-                whileTap={{scale: 0.98}}
-                className="w-full py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 rounded-lg text-red-400 font-rajdhani transition-all"
-              >
-                Logout
-              </motion.button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Main Content */}
-      <div
-        className={`transition-all duration-300 ${
-          sidebarOpen ? "ml-64" : "ml-0"
-        }`}
-      >
-        {/* Header */}
-        <div className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700/50 p-4 flex items-center justify-between sticky top-0 z-40">
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 hover:bg-white/10 rounded-lg transition-all"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
-            </button>
-            <h1 className="text-2xl font-bold font-rajdhani capitalize">
-              {activeTab}
-            </h1>
-          </div>
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-400">
-              {new Date().toLocaleDateString("en-US", {
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </span>
-          </div>
+            animate={{rotate: 360}}
+            transition={{duration: 1, repeat: Infinity, ease: "linear"}}
+            className="w-16 h-16 border-4 border-neon-blue border-t-transparent rounded-full"
+          />
         </div>
+      ) : (
+        <>
+          {/* Tab Navigation */}
+          <div className="mb-6 flex gap-4">
+            <button
+              onClick={() => setActiveTab("dashboard")}
+              className={`px-6 py-3 rounded-lg font-rajdhani font-semibold transition-all ${
+                activeTab === "dashboard"
+                  ? "bg-gradient-to-r from-neon-blue/20 to-electric-cyan/20 border border-neon-blue/50 text-white"
+                  : "bg-white/5 text-gray-400 hover:text-white hover:bg-white/10"
+              }`}
+            >
+              📊 Dashboard
+            </button>
+            <button
+              onClick={() => setActiveTab("admins")}
+              className={`px-6 py-3 rounded-lg font-rajdhani font-semibold transition-all ${
+                activeTab === "admins"
+                  ? "bg-gradient-to-r from-neon-blue/20 to-electric-cyan/20 border border-neon-blue/50 text-white"
+                  : "bg-white/5 text-gray-400 hover:text-white hover:bg-white/10"
+              }`}
+            >
+              👥 Admins
+            </button>
+          </div>
 
-        {/* Content Area */}
-        <div className="p-6">
           {activeTab === "dashboard" && (
             <motion.div
               initial={{opacity: 0, y: 20}}
@@ -387,25 +244,9 @@ const AdminDashboard = () => {
               </div>
             </motion.div>
           )}
-
-          {["events", "gallery", "settings"].includes(activeTab) && (
-            <motion.div
-              initial={{opacity: 0, y: 20}}
-              animate={{opacity: 1, y: 0}}
-              className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-xl rounded-xl p-12 border border-neon-orange/20 text-center"
-            >
-              <div className="text-6xl mb-4">🚧</div>
-              <h2 className="text-2xl font-bold mb-2 font-rajdhani">
-                Coming Soon
-              </h2>
-              <p className="text-gray-400">
-                This feature is under development and will be available soon.
-              </p>
-            </motion.div>
-          )}
-        </div>
-      </div>
-    </div>
+        </>
+      )}
+    </AdminLayout>
   );
 };
 

@@ -7,7 +7,7 @@
 Add these in **DigitalOcean App Platform Dashboard** → **Settings** → **Environment Variables**:
 
 ```env
-MONGODB_URI=mongodb+srv://zenith_db_user:k2S1v3uM9uCrwPhF@cluster0.rrayyg4.mongodb.net/zenith_db?appName=Cluster0
+MONGODB_URI=mongodb+srv://your_username:your_password@cluster0.xxxxx.mongodb.net/your_database?appName=Cluster0
 PORT=8080
 NODE_ENV=production
 JWT_SECRET=your_super_secret_key_minimum_32_characters_long_random_string
@@ -20,9 +20,9 @@ JWT_SECRET=your_super_secret_key_minimum_32_characters_long_random_string
 ### 1. MONGODB_URI (Required)
 **What it is:** Your MongoDB Atlas connection string
 
-**Current Value:**
+**Example Format:**
 ```
-mongodb+srv://zenith_db_user:k2S1v3uM9uCrwPhF@cluster0.rrayyg4.mongodb.net/zenith_db?appName=Cluster0
+mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/database_name?appName=Cluster0
 ```
 
 **How to get it:**

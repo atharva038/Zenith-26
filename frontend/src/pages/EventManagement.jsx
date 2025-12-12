@@ -1,7 +1,9 @@
-import React, {useState, useEffect} from "react";
+import {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
+import {motion} from "framer-motion";
 import api from "../config/api";
+import AdminLayout from "../components/AdminLayout";
 
 const EventManagement = () => {
   const navigate = useNavigate();
@@ -80,101 +82,98 @@ const EventManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 py-8 px-4">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-4xl font-bold text-white">Event Management</h1>
-            <button
-              onClick={() => navigate("/admin/events/create")}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg"
-            >
-              + Create New Event
-            </button>
-          </div>
+    <AdminLayout title="Events">
+      <div className="mb-6 flex justify-end">
+        <motion.button
+          whileHover={{scale: 1.02}}
+          whileTap={{scale: 0.98}}
+          onClick={() => navigate("/admin/events/create")}
+          className="bg-gradient-to-r from-neon-blue to-electric-cyan text-white px-6 py-3 rounded-lg font-rajdhani font-semibold hover:shadow-lg hover:shadow-neon-blue/50 transition-all"
+        >
+          + Create New Event
+        </motion.button>
+      </div>
 
-          {/* Stats Cards */}
-          {stats && (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      {/* Stats Cards */}
+      {stats && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/20">
                 <p className="text-purple-200 text-sm">Total Events</p>
-                <p className="text-3xl font-bold text-white">
-                  {stats.total[0]?.count || 0}
-                </p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/20">
-                <p className="text-purple-200 text-sm">Active Events</p>
-                <p className="text-3xl font-bold text-green-400">
-                  {stats.active[0]?.count || 0}
-                </p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/20">
-                <p className="text-purple-200 text-sm">Published Events</p>
-                <p className="text-3xl font-bold text-blue-400">
-                  {stats.published[0]?.count || 0}
-                </p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/20">
-                <p className="text-purple-200 text-sm">Total Registrations</p>
-                <p className="text-3xl font-bold text-yellow-400">
-                  {stats.totalRegistrations || 0}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Filters */}
-          <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/20">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <input
-                type="text"
-                placeholder="Search events..."
-                value={filter.search}
-                onChange={(e) => setFilter({...filter, search: e.target.value})}
-                className="bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-purple-300"
-              />
-              <select
-                value={filter.category}
-                onChange={(e) =>
-                  setFilter({...filter, category: e.target.value})
-                }
-                className="bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white"
-              >
-                <option value="">All Categories</option>
-                <option value="Sports">Sports</option>
-                <option value="Cultural">Cultural</option>
-                <option value="Technical">Technical</option>
-                <option value="Workshop">Workshop</option>
-                <option value="Competition">Competition</option>
-                <option value="Other">Other</option>
-              </select>
-              <select
-                value={filter.isActive}
-                onChange={(e) =>
-                  setFilter({...filter, isActive: e.target.value})
-                }
-                className="bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white"
-              >
-                <option value="">All Status</option>
-                <option value="true">Active</option>
-                <option value="false">Inactive</option>
-              </select>
-            </div>
-          </div>
+          <p className="text-3xl font-bold text-white">
+            {stats.total[0]?.count || 0}
+          </p>
         </div>
+        <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/20">
+          <p className="text-purple-200 text-sm">Active Events</p>
+          <p className="text-3xl font-bold text-green-400">
+            {stats.active[0]?.count || 0}
+          </p>
+        </div>
+        <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/20">
+          <p className="text-purple-200 text-sm">Published Events</p>
+          <p className="text-3xl font-bold text-blue-400">
+            {stats.published[0]?.count || 0}
+          </p>
+        </div>
+        <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/20">
+          <p className="text-purple-200 text-sm">Total Registrations</p>
+          <p className="text-3xl font-bold text-yellow-400">
+            {stats.totalRegistrations || 0}
+          </p>
+        </div>
+      </div>
+      )}
 
-        {/* Events Table */}
-        {loading ? (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-400"></div>
-          </div>
-        ) : events.length === 0 ? (
-          <div className="bg-white/10 backdrop-blur-md rounded-lg p-12 text-center border border-white/20">
-            <p className="text-purple-200 text-lg">No events found</p>
-          </div>
-        ) : (
-          <div className="bg-white/10 backdrop-blur-md rounded-lg border border-white/20 overflow-hidden">
+      {/* Filters */}
+      <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/20 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <input
+            type="text"
+            placeholder="Search events..."
+            value={filter.search}
+            onChange={(e) => setFilter({...filter, search: e.target.value})}
+            className="bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-purple-300"
+          />
+          <select
+            value={filter.category}
+            onChange={(e) =>
+              setFilter({...filter, category: e.target.value})
+            }
+            className="bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white"
+          >
+            <option value="">All Categories</option>
+            <option value="Sports">Sports</option>
+            <option value="Cultural">Cultural</option>
+            <option value="Technical">Technical</option>
+            <option value="Workshop">Workshop</option>
+            <option value="Competition">Competition</option>
+            <option value="Other">Other</option>
+          </select>
+          <select
+            value={filter.isActive}
+            onChange={(e) =>
+              setFilter({...filter, isActive: e.target.value})
+            }
+            className="bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white"
+          >
+            <option value="">All Status</option>
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Events Table */}
+      {loading ? (
+        <div className="text-center py-12">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-400"></div>
+        </div>
+      ) : events.length === 0 ? (
+        <div className="bg-white/10 backdrop-blur-md rounded-lg p-12 text-center border border-white/20">
+          <p className="text-purple-200 text-lg">No events found</p>
+        </div>
+      ) : (
+        <div className="bg-white/10 backdrop-blur-md rounded-lg border border-white/20 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-white/5">
@@ -289,8 +288,7 @@ const EventManagement = () => {
             </div>
           </div>
         )}
-      </div>
-    </div>
+    </AdminLayout>
   );
 };
 
