@@ -271,7 +271,7 @@ export default function ParallaxDemo() {
           ref={stadiumRef}
           className="absolute inset-0 transition-transform will-change-transform"
           style={{
-            backgroundImage: "url(/img/stadium.jpg)",
+            backgroundImage: `url("https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1/zenith-26/img/stadium?_a=BAMAMiB80")`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             filter: "brightness(0.4)",

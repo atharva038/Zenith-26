@@ -288,7 +288,7 @@ export default function Homepage() {
           ref={stadiumRef}
           className="absolute inset-0 z-[1] will-change-transform"
           style={{
-            backgroundImage: 'url("/img/stadium.jpg")',
+            backgroundImage: 'url("https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1/zenith-26/img/stadium?_a=BAMAMiB80")',
             backgroundSize: "cover",
             backgroundPosition: "center 55%",
             filter: "brightness(0.45) saturate(0.9) contrast(0.95)",

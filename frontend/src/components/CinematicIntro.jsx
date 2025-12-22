@@ -84,16 +84,19 @@ export default function CinematicIntro() {
       >
         {/* Browser will automatically choose the best quality it can handle */}
         <source
-          src="/video/intro_4k.mp4"
+          src="https://res.cloudinary.com/dvmsho3pj/video/upload/v1766421249/zenith-26/video/intro_4k.mp4"
           type="video/mp4"
           media="(min-width: 2560px)"
         />
         <source
-          src="/video/intro_hd.mp4"
+          src="https://res.cloudinary.com/dvmsho3pj/video/upload/v1766421230/zenith-26/video/intro_hd.mp4"
           type="video/mp4"
           media="(min-width: 1280px)"
         />
-        <source src="/video/intro.mp4" type="video/mp4" />
+        <source
+          src="https://res.cloudinary.com/dvmsho3pj/video/upload/v1766421221/zenith-26/video/intro.mp4"
+          type="video/mp4"
+        />
         Your browser does not support the video tag.
       </video>
 

@@ -1,4 +1,6 @@
 {
+  "name": "zenith-26",
+  "private": true,
   "dependencies": {
     "three": "^0.181.2"
   }

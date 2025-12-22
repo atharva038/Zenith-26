@@ -4,7 +4,7 @@ import {motion, AnimatePresence} from "framer-motion";
 
 // Note: Replace this with your actual wormhole image path
 // You can save the provided wormhole images to /public/img/wormhole.png
-const WORMHOLE_IMAGE = "/img/image.png";
+const WORMHOLE_IMAGE = "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1/zenith-26/img/image?_a=BAMAMiB80";
 
 // Main Wormhole Portal Component - PERFORMANCE OPTIMIZED
 export default function WormholePortal() {
