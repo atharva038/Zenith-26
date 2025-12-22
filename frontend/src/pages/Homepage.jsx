@@ -6,6 +6,8 @@ import {ScrollTrigger} from "gsap/ScrollTrigger";
 import ThreeScene from "../components/ThreeScene";
 import VIPCarousel from "../components/VIPCarousel";
 import WormholePortal from "../components/WormholePortal";
+import NextLevelCountdown from "../components/NextLevelCountdown";
+import MarathonPreview from "../components/MarathonPreview";
 
 // Register GSAP ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
@@ -288,7 +290,8 @@ export default function Homepage() {
           ref={stadiumRef}
           className="absolute inset-0 z-[1] will-change-transform"
           style={{
-            backgroundImage: 'url("https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1/zenith-26/img/stadium?_a=BAMAMiB80")',
+            backgroundImage:
+              'url("https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1/zenith-26/img/stadium?_a=BAMAMiB80")',
             backgroundSize: "cover",
             backgroundPosition: "center 55%",
             filter: "brightness(0.45) saturate(0.9) contrast(0.95)",
@@ -356,7 +359,7 @@ export default function Homepage() {
           >
             SGGSIE&T Annual Sports Festival • Where Champions Rise
           </motion.p>
-          
+
           {/* Registration Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mt-6 justify-center items-center">
             <Link to="/register">
@@ -378,7 +381,7 @@ export default function Homepage() {
                 🏆 Register for Sports
               </motion.button>
             </Link>
-            
+
             <Link to="/marathon">
               <motion.button
                 className="inline-block px-8 py-3 rounded-full font-extrabold text-[#2c1506] no-underline transition-transform hover:scale-105"
@@ -399,6 +402,14 @@ export default function Homepage() {
               </motion.button>
             </Link>
           </div>
+
+          {/* Next Level Countdown Timer */}
+          <div className="mt-10">
+            <NextLevelCountdown
+              targetDate="2026-02-20T09:00:00"
+              eventName="ZENITH 2026"
+            />
+          </div>
         </div>
         <div
           className="absolute left-0 right-0 bottom-0 h-[22%] z-[210] pointer-events-none"
@@ -408,6 +419,9 @@ export default function Homepage() {
           }}
         />
       </section>
+
+      {/* Marathon Preview Section */}
+      <MarathonPreview />
 
       <section
         id="about"

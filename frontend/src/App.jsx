@@ -15,6 +15,7 @@ import Homepage from "./pages/Homepage";
 import ParallaxDemo from "./pages/ParallaxDemo";
 import Homepage_ScrollAnimations from "./pages/Homepage_ScrollAnimations";
 import GameVerse from "./pages/GameVerse";
+import MarathonPage from "./pages/MarathonPage";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import EventManagement from "./pages/EventManagement";
@@ -53,8 +54,9 @@ function App() {
                 element={<EventRegistrationPage />}
               />
               <Route path="/register" element={<UniversalRegistration />} />
-              
-              {/* Marathon Route */}
+
+              {/* Marathon Routes */}
+              <Route path="/marathon-event" element={<MarathonPage />} />
               <Route path="/marathon" element={<MarathonRegistration />} />
 
               {/* Admin Routes */}
