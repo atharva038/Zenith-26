@@ -18,6 +18,7 @@ import GameVerse from "./pages/GameVerse";
 import MarathonPage from "./pages/MarathonPage";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import "lenis/dist/lenis.css";
 import EventManagement from "./pages/EventManagement";
 import SportEventForm from "./pages/SportEventForm";
 import EventAnalytics from "./pages/EventAnalytics";
@@ -29,9 +30,13 @@ import AdminMarathon from "./pages/AdminMarathon";
 import AdminAdmins from "./pages/AdminAdmins";
 import AdminGallery from "./pages/AdminGallery";
 import AdminSettings from "./pages/AdminSettings";
+import {useSmoothScroll} from "./hooks/useSmoothScroll";
 import "./App.css";
 
 function App() {
+  // Enable smooth scrolling globally
+  useSmoothScroll();
+
   return (
     <ThemeProvider>
       <AuthProvider>
