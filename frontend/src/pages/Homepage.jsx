@@ -8,6 +8,7 @@ import VIPCarousel from "../components/VIPCarousel";
 import WormholePortal from "../components/WormholePortal";
 import NextLevelCountdown from "../components/NextLevelCountdown";
 import MarathonPreview from "../components/MarathonPreview";
+import MentorsSection from "../components/MentorsSection";
 
 // Register GSAP ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
@@ -486,104 +487,14 @@ export default function Homepage() {
         </div>
       </section>
 
-      <section id="events" className="relative py-20 px-6 bg-[#0a0604]">
-        <div className="max-w-7xl mx-auto">
-          <motion.h2
-            className="text-5xl md:text-6xl font-bold text-center mb-4 text-transparent bg-clip-text bg-gradient-to-r from-[#ff8b1f] to-[#ffb36a]"
-            initial={{opacity: 0, y: 30}}
-            whileInView={{opacity: 1, y: 0}}
-            viewport={{once: true, margin: "-50px"}}
-            transition={{duration: 0.7, ease: "easeOut"}}
-          >
-            Choose Your Arena
-          </motion.h2>
-          <motion.p
-            className="text-center text-gray-400 text-xl mb-16"
-            initial={{opacity: 0}}
-            whileInView={{opacity: 1}}
-            viewport={{once: true}}
-            transition={{duration: 0.6, delay: 0.2, ease: "easeOut"}}
-          >
-            Six disciplines. Infinite glory.
-          </motion.p>
-
-          <div
-            ref={eventsRef}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-          >
-            {[
-              {
-                name: "Cricket",
-                icon: "🏏",
-                color: "from-green-600 to-green-800",
-                desc: "Test your batting & bowling skills",
-              },
-              {
-                name: "Volleyball",
-                icon: "🏐",
-                color: "from-yellow-600 to-orange-600",
-                desc: "Spike your way to victory",
-              },
-              {
-                name: "Chess",
-                icon: "♟️",
-                color: "from-gray-700 to-slate-900",
-                desc: "Strategic battles of the mind",
-              },
-              {
-                name: "E-Games",
-                icon: "🎮",
-                color: "from-purple-600 to-pink-600",
-                desc: "Digital arena showdowns",
-              },
-              {
-                name: "Athletics",
-                icon: "🏃",
-                color: "from-red-600 to-orange-600",
-                desc: "Run, jump, throw - dominate",
-              },
-              {
-                name: "Badminton",
-                icon: "🏸",
-                color: "from-blue-600 to-cyan-600",
-                desc: "Shuttle your way to glory",
-              },
-            ].map((sport) => (
-              <div
-                key={sport.name}
-                className="event-card group relative bg-gradient-to-br from-[#2a1a11] to-[#1a0f08] rounded-2xl p-8 border-2 border-[#3a2416] hover:border-[#ffb36a] transition-all duration-300 cursor-pointer"
-              >
-                {/* Subtle sparkles on hover */}
-                <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  {[...Array(4)].map((_, i) => (
-                    <Sparkle key={i} delay={i * 0.15} size={4} />
-                  ))}
-                </div>
-
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${sport.color} opacity-0 group-hover:opacity-20 transition-opacity rounded-2xl`}
-                />
-                <div className="relative z-10">
-                  <div className="text-6xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                    {sport.icon}
-                  </div>
-                  <h3 className="text-2xl font-bold text-white mb-2">
-                    {sport.name}
-                  </h3>
-                  <p className="text-gray-400 group-hover:text-gray-300 transition-colors">
-                    {sport.desc}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Wormhole Portal Section */}
       <section
         id="wormhole"
         className="relative h-screen w-full bg-black overflow-hidden"
+        style={{
+          willChange: "transform",
+          transform: "translate3d(0,0,0)",
+        }}
       >
         {/* Wormhole Portal Component */}
         <WormholePortal />
@@ -629,6 +540,9 @@ export default function Homepage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Mentors Section */}
+      <MentorsSection />
 
       <footer className="relative py-12 px-6 bg-black border-t border-[#3a2416]">
         <div className="max-w-7xl mx-auto text-center">
