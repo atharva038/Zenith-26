@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {motion} from "framer-motion";
-import axios from "axios";
+import api from "../config/api";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -26,10 +26,7 @@ const AdminLogin = () => {
     setError("");
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/login",
-        formData
-      );
+      const response = await api.post("/auth/login", formData);
 
       if (response.data.success) {
         // Store token and admin data

@@ -1,9 +1,14 @@
 import axios from "axios";
 
+// Determine API base URL based on environment
 const API_BASE_URL =
+  import.meta.env.VITE_API_URL || // Use env var if available
   import.meta.env.MODE === "production"
-    ? "https://zenithapp-5onhx.ondigitalocean.app" // Replace with your actual DigitalOcean URL
-    : "http://localhost:5000";
+    ? "https://zenithapp-5onhx.ondigitalocean.app" // Production URL
+    : "http://localhost:5000"; // Development URL
+
+console.log("🌐 API Base URL:", API_BASE_URL);
+console.log("🔧 Environment Mode:", import.meta.env.MODE);
 
 // Create axios instance
 const api = axios.create({
@@ -11,6 +16,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  timeout: 10000, // 10 second timeout
 });
 
 // Add auth token to requests
