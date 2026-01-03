@@ -26,6 +26,7 @@ import EventsPage from "./pages/EventsPage";
 import EventRegistrationPage from "./pages/EventRegistrationPage";
 import UniversalRegistration from "./pages/UniversalRegistration";
 import MarathonRegistration from "./pages/MarathonRegistration";
+import WomenTournamentPage from "./pages/WomenTournamentPage";
 import AdminMarathon from "./pages/AdminMarathon";
 import AdminAdmins from "./pages/AdminAdmins";
 import AdminGallery from "./pages/AdminGallery";
@@ -62,9 +63,15 @@ function App() {
               />
               <Route path="/register" element={<UniversalRegistration />} />
 
-              {/* Marathon Routes */}
-              <Route path="/marathon-event" element={<MarathonPage />} />
-              <Route path="/marathon" element={<MarathonRegistration />} />
+              {/* Marathon Routes - COMMENTED OUT */}
+              {/* <Route path="/marathon-event" element={<MarathonPage />} /> */}
+              {/* <Route path="/marathon" element={<MarathonRegistration />} /> */}
+
+              {/* Women's Tournament Route - NEW */}
+              <Route
+                path="/women-tournament"
+                element={<WomenTournamentPage />}
+              />
 
               {/* Gallery Route */}
               <Route path="/gallery" element={<Gallery />} />

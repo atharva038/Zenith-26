@@ -7,7 +7,8 @@ import ThreeScene from "../components/ThreeScene";
 import VIPCarousel from "../components/VIPCarousel";
 import WormholePortal from "../components/WormholePortal";
 import NextLevelCountdown from "../components/NextLevelCountdown";
-import MarathonPreview from "../components/MarathonPreview";
+// import MarathonPreview from "../components/MarathonPreview"; // COMMENTED OUT
+import WomenTournamentPreview from "../components/WomenTournamentPreview";
 import MentorsSection from "../components/MentorsSection";
 
 // Register GSAP ScrollTrigger
@@ -385,6 +386,7 @@ export default function Homepage() {
               </motion.button>
             </Link>
 
+            {/* MARATHON BUTTON COMMENTED OUT
             <Link to="/marathon">
               <motion.button
                 className="inline-block px-8 py-3 rounded-full font-extrabold text-[#2c1506] no-underline transition-transform hover:scale-105"
@@ -392,8 +394,8 @@ export default function Homepage() {
                   background: "linear-gradient(90deg, #ffd700, #ffa500)",
                   boxShadow:
                     "0 12px 28px rgba(255,165,0,0.25), inset 0 -2px 6px rgba(0,0,0,0.12)",
-                  willChange: "transform", // Performance hint
-                  transform: "translate3d(0,0,0)", // GPU layer
+                  willChange: "transform",
+                  transform: "translate3d(0,0,0)",
                 }}
                 initial={{opacity: 0, scale: 0.9}}
                 animate={{opacity: 1, scale: 1}}
@@ -402,6 +404,28 @@ export default function Homepage() {
                 whileTap={{scale: 0.95}}
               >
                 🏃 Marathon Registration
+              </motion.button>
+            </Link>
+            */}
+
+            <Link to="/women-tournament">
+              <motion.button
+                className="inline-block px-8 py-3 rounded-full font-extrabold text-white no-underline transition-transform hover:scale-105"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #ec4899, #8b5cf6, #6366f1)",
+                  boxShadow:
+                    "0 12px 28px rgba(236,72,153,0.4), inset 0 -2px 6px rgba(0,0,0,0.12)",
+                  willChange: "transform",
+                  transform: "translate3d(0,0,0)",
+                }}
+                initial={{opacity: 0, scale: 0.9}}
+                animate={{opacity: 1, scale: 1}}
+                transition={{duration: 0.6, delay: 0.7, ease: "easeOut"}}
+                whileHover={{scale: 1.05}}
+                whileTap={{scale: 0.95}}
+              >
+                ⚡ Women's Tournament
               </motion.button>
             </Link>
           </div>
@@ -423,8 +447,11 @@ export default function Homepage() {
         />
       </section>
 
-      {/* Marathon Preview Section */}
-      <MarathonPreview />
+      {/* Marathon Preview Section - COMMENTED OUT */}
+      {/* <MarathonPreview /> */}
+
+      {/* Women's Tournament Preview Section - NEW */}
+      <WomenTournamentPreview />
 
       <section
         id="about"
