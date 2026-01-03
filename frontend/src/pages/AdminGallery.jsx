@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import {useState, useEffect} from "react";
+import {motion, AnimatePresence} from "framer-motion";
 import AdminLayout from "../components/AdminLayout";
 import {
   uploadMedia,
@@ -7,7 +7,7 @@ import {
   deleteMedia,
   updateMedia,
 } from "../services/mediaService";
-import { toast } from "react-toastify";
+import {toast} from "react-toastify";
 
 const AdminGallery = () => {
   const [media, setMedia] = useState([]);
@@ -19,10 +19,7 @@ const AdminGallery = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
     category: "other",
-    tags: "",
   });
 
   useEffect(() => {
@@ -54,11 +51,55 @@ const AdminGallery = () => {
 
   const handleFileSelect = (e) => {
     const files = Array.from(e.target.files);
-    setSelectedFiles(files);
+
+    // Validate file sizes before setting
+    const maxImageSize = 10 * 1024 * 1024; // 10MB
+    const maxVideoSize = 50 * 1024 * 1024; // 50MB
+
+    const validFiles = [];
+    const invalidFiles = [];
+
+    files.forEach((file) => {
+      const isImage = file.type.startsWith("image/");
+      const isVideo = file.type.startsWith("video/");
+      const maxSize = isVideo ? maxVideoSize : maxImageSize;
+
+      if (file.size > maxSize) {
+        invalidFiles.push({
+          name: file.name,
+          size: (file.size / 1024 / 1024).toFixed(2),
+          maxSize: (maxSize / 1024 / 1024).toFixed(0),
+        });
+      } else {
+        validFiles.push(file);
+      }
+    });
+
+    // Show warnings for invalid files
+    if (invalidFiles.length > 0) {
+      invalidFiles.forEach((file) => {
+        toast.warning(
+          `${file.name} is too large (${file.size}MB). Max size: ${file.maxSize}MB`
+        );
+      });
+    }
+
+    if (validFiles.length === 0) {
+      toast.error("No valid files selected");
+      return;
+    }
+
+    setSelectedFiles(validFiles);
 
     // Create preview URLs
-    const urls = files.map((file) => URL.createObjectURL(file));
+    const urls = validFiles.map((file) => URL.createObjectURL(file));
     setPreviewUrls(urls);
+
+    if (validFiles.length < files.length) {
+      toast.info(
+        `${validFiles.length} of ${files.length} files selected (others too large)`
+      );
+    }
   };
 
   const handleUpload = async (e) => {
@@ -69,45 +110,89 @@ const AdminGallery = () => {
       return;
     }
 
-    if (!formData.title.trim()) {
-      toast.error("Please provide a title");
-      return;
-    }
-
     setUploading(true);
+    let successCount = 0;
+    let failCount = 0;
 
     try {
-      for (const file of selectedFiles) {
-        const uploadFormData = new FormData();
-        uploadFormData.append("file", file);
-        uploadFormData.append("title", formData.title);
-        uploadFormData.append("description", formData.description);
-        uploadFormData.append("category", formData.category);
-        uploadFormData.append("tags", formData.tags);
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        try {
+          const uploadFormData = new FormData();
+          uploadFormData.append("file", file);
+          // Auto-generate title from filename
+          const autoTitle = file.name.replace(/\.[^/.]+$/, "");
+          uploadFormData.append("title", autoTitle);
+          uploadFormData.append("category", formData.category);
 
-        await uploadMedia(uploadFormData);
+          // Show progress toast with updating percentage
+          const isVideo = file.type.startsWith("video/");
+          let progressToast = toast.info(
+            `Uploading ${file.name}... 0% (${i + 1}/${selectedFiles.length})`,
+            {autoClose: false}
+          );
+
+          await uploadMedia(uploadFormData, (progress) => {
+            if (progress < 100) {
+              toast.update(progressToast, {
+                render: `Uploading ${file.name}... ${progress}% (${i + 1}/${
+                  selectedFiles.length
+                })`,
+              });
+            } else if (progress === 100) {
+              toast.update(progressToast, {
+                render: `Processing ${file.name} on Cloudinary... ${
+                  isVideo ? "(may take 20-30s)" : ""
+                } (${i + 1}/${selectedFiles.length})`,
+                type: "info",
+              });
+            }
+          });
+
+          // Dismiss progress toast
+          toast.dismiss(progressToast);
+
+          successCount++;
+        } catch (fileError) {
+          failCount++;
+          console.error(`Error uploading ${file.name}:`, fileError);
+
+          // Extract meaningful error message
+          const errorMsg =
+            fileError?.response?.data?.message ||
+            fileError?.message ||
+            "Upload failed";
+          toast.error(`Failed to upload ${file.name}: ${errorMsg}`);
+        }
       }
 
-      toast.success(`Successfully uploaded ${selectedFiles.length} file(s)!`);
+      // Show final result
+      if (successCount > 0) {
+        toast.success(`Successfully uploaded ${successCount} file(s)!`);
+      }
+      if (failCount > 0) {
+        toast.warning(`Failed to upload ${failCount} file(s)`);
+      }
 
-      // Reset form
-      setSelectedFiles([]);
-      setPreviewUrls([]);
-      setFormData({
-        title: "",
-        description: "",
-        category: "other",
-        tags: "",
-      });
+      // Reset form if any uploads succeeded
+      if (successCount > 0) {
+        setSelectedFiles([]);
+        setPreviewUrls([]);
+        setFormData({
+          category: "other",
+        });
 
-      // Clear file input
-      const fileInput = document.getElementById("file-upload");
-      if (fileInput) fileInput.value = "";
+        // Clear file input
+        const fileInput = document.getElementById("file-upload");
+        if (fileInput) fileInput.value = "";
 
-      // Refresh media list
-      fetchMedia();
+        // Refresh media list
+        fetchMedia();
+      }
     } catch (error) {
-      toast.error(error.message || "Upload failed");
+      const errorMsg =
+        error?.response?.data?.message || error?.message || "Upload failed";
+      toast.error(errorMsg);
       console.error("Upload error:", error);
     } finally {
       setUploading(false);
@@ -131,7 +216,7 @@ const AdminGallery = () => {
 
   const handleToggleActive = async (id, currentStatus) => {
     try {
-      await updateMedia(id, { isActive: !currentStatus });
+      await updateMedia(id, {isActive: !currentStatus});
       toast.success(
         `Media ${!currentStatus ? "activated" : "deactivated"} successfully`
       );
@@ -153,16 +238,16 @@ const AdminGallery = () => {
       <div className="space-y-6">
         {/* Upload Section */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-xl rounded-xl p-6 border border-neon-orange/20"
+          initial={{opacity: 0, y: 20}}
+          animate={{opacity: 1, y: 0}}
+          className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-xl rounded-xl p-6 border border-neon-orange/20 max-w-2xl"
         >
           <h2 className="text-2xl font-bold mb-6 text-neon-orange font-rajdhani">
             Upload Media
           </h2>
 
-          <form onSubmit={handleUpload} className="space-y-6">
-            {/* File Upload */}
+          <form onSubmit={handleUpload} className="space-y-4">
+            {/* Compact File Upload */}
             <div>
               <label className="block text-sm font-medium mb-2">
                 Select Images/Videos
@@ -173,13 +258,16 @@ const AdminGallery = () => {
                 multiple
                 accept="image/*,video/*"
                 onChange={handleFileSelect}
-                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-neon-orange transition-colors"
+                className="w-full px-4 py-2.5 bg-gray-800/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:border-neon-orange transition-colors"
               />
+              <p className="text-xs text-gray-400 mt-1.5">
+                Max size: 50MB for videos, 10MB for images
+              </p>
             </div>
 
             {/* Preview */}
             {previewUrls.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                 {previewUrls.map((url, index) => (
                   <div
                     key={index}
@@ -203,78 +291,30 @@ const AdminGallery = () => {
               </div>
             )}
 
-            {/* Form Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Title *
-                </label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) =>
-                    setFormData({ ...formData, title: e.target.value })
-                  }
-                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-neon-orange transition-colors"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Category
-                </label>
-                <select
-                  value={formData.category}
-                  onChange={(e) =>
-                    setFormData({ ...formData, category: e.target.value })
-                  }
-                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-neon-orange transition-colors"
-                >
-                  <option value="event">Event</option>
-                  <option value="sports">Sports</option>
-                  <option value="ceremony">Ceremony</option>
-                  <option value="participants">Participants</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-            </div>
-
+            {/* Compact Category Selector */}
             <div>
-              <label className="block text-sm font-medium mb-2">
-                Description
-              </label>
-              <textarea
-                value={formData.description}
+              <label className="block text-sm font-medium mb-2">Category</label>
+              <select
+                value={formData.category}
                 onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
+                  setFormData({...formData, category: e.target.value})
                 }
-                rows={3}
-                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-neon-orange transition-colors"
-              />
+                className="w-full px-4 py-2.5 bg-gray-800/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:border-neon-orange transition-colors"
+              >
+                <option value="event">Event</option>
+                <option value="sports">Sports</option>
+                <option value="ceremony">Ceremony</option>
+                <option value="participants">Participants</option>
+                <option value="other">Other</option>
+              </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Tags (comma separated)
-              </label>
-              <input
-                type="text"
-                value={formData.tags}
-                onChange={(e) =>
-                  setFormData({ ...formData, tags: e.target.value })
-                }
-                placeholder="zenith2026, sports, event"
-                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-neon-orange transition-colors"
-              />
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-4">
+            {/* Compact Action Buttons */}
+            <div className="flex gap-3">
               <button
                 type="submit"
                 disabled={uploading || selectedFiles.length === 0}
-                className="flex-1 bg-gradient-to-r from-neon-orange to-orange-600 text-white py-3 px-6 rounded-lg font-bold hover:shadow-lg hover:shadow-neon-orange/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 bg-gradient-to-r from-neon-orange to-orange-600 text-white py-2.5 px-6 rounded-lg font-bold text-sm hover:shadow-lg hover:shadow-neon-orange/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {uploading ? "Uploading..." : "Upload to Cloudinary"}
               </button>
@@ -283,7 +323,7 @@ const AdminGallery = () => {
                 <button
                   type="button"
                   onClick={clearPreviews}
-                  className="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-bold transition-colors"
+                  className="px-5 py-2.5 bg-gray-700 hover:bg-gray-600 rounded-lg font-bold text-sm transition-colors"
                 >
                   Clear
                 </button>
@@ -325,15 +365,15 @@ const AdminGallery = () => {
         ) : (
           <motion.div
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{opacity: 0}}
+            animate={{opacity: 1}}
           >
             {media.map((item, index) => (
               <motion.div
                 key={item._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
+                transition={{delay: index * 0.05}}
                 className="group relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl overflow-hidden border border-gray-700 hover:border-neon-orange/50 transition-all"
               >
                 {/* Media Preview */}
@@ -369,15 +409,6 @@ const AdminGallery = () => {
 
                 {/* Media Info */}
                 <div className="p-4">
-                  <h3 className="text-white font-bold text-lg mb-1 truncate">
-                    {item.title}
-                  </h3>
-                  {item.description && (
-                    <p className="text-gray-400 text-sm mb-2 line-clamp-2">
-                      {item.description}
-                    </p>
-                  )}
-
                   <div className="flex flex-wrap gap-2 mb-3">
                     <span className="px-2 py-1 bg-purple-500/20 text-purple-300 text-xs rounded">
                       {item.category}

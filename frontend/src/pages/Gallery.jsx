@@ -1,39 +1,43 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { getAllMedia } from "../services/mediaService";
-import { motion, AnimatePresence } from "framer-motion";
+import {useState, useEffect} from "react";
+import {Link} from "react-router-dom";
+import {getAllMedia} from "../services/mediaService";
+import {motion, AnimatePresence} from "framer-motion";
 
 const Gallery = () => {
   const [media, setMedia] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedMedia, setSelectedMedia] = useState(null);
-  const [filter, setFilter] = useState("all"); // all, image, video
-  const [categoryFilter, setCategoryFilter] = useState("all");
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Separate state for videos and images
+  const [videos, setVideos] = useState([]);
+  const [images, setImages] = useState([]);
 
   // Fetch media from API
   useEffect(() => {
     fetchMedia();
-  }, [filter, categoryFilter, page]);
+  }, []);
 
   const fetchMedia = async () => {
     try {
       setLoading(true);
       const filters = {
-        page,
-        limit: 12,
+        limit: 100, // Get all media items
         sortBy: "createdAt",
         sortOrder: "desc",
       };
 
-      if (filter !== "all") filters.type = filter;
-      if (categoryFilter !== "all") filters.category = categoryFilter;
-
       const response = await getAllMedia(filters);
-      setMedia(response.data.media);
-      setTotalPages(response.data.pagination.pages);
+      const allMedia = response.data.media;
+
+      // Separate videos and images
+      const videoItems = allMedia.filter((item) => item.type === "video");
+      const imageItems = allMedia.filter((item) => item.type === "image");
+
+      setVideos(videoItems);
+      setImages(imageItems);
+      setMedia(allMedia);
       setError(null);
     } catch (err) {
       setError("Failed to load gallery. Please try again later.");
@@ -51,22 +55,151 @@ const Gallery = () => {
     setSelectedMedia(null);
   };
 
-  const categories = [
-    { value: "all", label: "All Categories" },
-    { value: "event", label: "Events" },
-    { value: "sports", label: "Sports" },
-    { value: "ceremony", label: "Ceremonies" },
-    { value: "participants", label: "Participants" },
-    { value: "other", label: "Other" },
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-[#0a0604] to-black text-white py-20">
-      <div className="container mx-auto px-4">
+    <div className="relative min-h-screen bg-gradient-to-br from-black via-[#0a0604] to-black text-white">
+      {/* Navigation */}
+      <nav className="fixed top-0 left-0 right-0 px-9 py-5 flex justify-between items-center z-[600] bg-black/40 backdrop-blur-md border-b border-[#3a2416]">
+        <Link
+          to="/home"
+          className="text-[#ffb77a] font-bold text-xl tracking-wide"
+          style={{textShadow: "0 2px 12px rgba(255,140,40,0.18)"}}
+        >
+          Zenith 2026
+        </Link>
+
+        {/* Desktop Menu */}
+        <div className="hidden md:flex gap-6">
+          <Link
+            to="/home"
+            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
+          >
+            Home
+          </Link>
+          <a
+            href="/home#about"
+            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
+          >
+            About
+          </a>
+          <a
+            href="/home#events"
+            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
+          >
+            Events
+          </a>
+          <a
+            href="/home#vip-guests"
+            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
+          >
+            VIP Guests
+          </a>
+          <Link
+            to="/gallery"
+            className="text-[#ffd4a8] font-semibold underline decoration-2 underline-offset-4"
+          >
+            Gallery
+          </Link>
+          <Link
+            to="/register"
+            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
+          >
+            Register
+          </Link>
+        </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="md:hidden text-[#ffb77a] z-[700]"
+        >
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            {mobileMenuOpen ? (
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            ) : (
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            )}
+          </svg>
+        </button>
+
+        {/* BACKDROP */}
+        {mobileMenuOpen && (
+          <div
+            className="fixed inset-0 bg-black/70 z-[650] md:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        )}
+
+        {/* MOBILE MENU */}
+        {mobileMenuOpen && (
+          <div className="fixed top-16 left-0 right-0 bg-black/90 backdrop-blur-xl p-6 z-[700] border-b border-[#3a2416] animate-slideDown md:hidden">
+            <div className="flex flex-col gap-4">
+              <Link
+                to="/home"
+                className="text-[#ffb77a] font-semibold"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Home
+              </Link>
+              <a
+                href="/home#about"
+                className="text-[#ffb77a] font-semibold"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                About
+              </a>
+              <a
+                href="/home#events"
+                className="text-[#ffb77a] font-semibold"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Events
+              </a>
+              <a
+                href="/home#vip-guests"
+                className="text-[#ffb77a] font-semibold"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                VIP Guests
+              </a>
+              <Link
+                to="/gallery"
+                className="text-[#ffd4a8] font-semibold"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Gallery
+              </Link>
+              <Link
+                to="/register"
+                className="text-[#ffb77a] font-semibold"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Register
+              </Link>
+            </div>
+          </div>
+        )}
+      </nav>
+
+      <div className="container mx-auto px-4 pt-32 pb-20">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{opacity: 0, y: -20}}
+          animate={{opacity: 1, y: 0}}
           className="text-center mb-12"
         >
           <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] bg-clip-text text-transparent">
@@ -76,46 +209,6 @@ const Gallery = () => {
             Relive the moments from our spectacular event
           </p>
         </motion.div>
-
-        {/* Filters */}
-        <div className="flex flex-wrap gap-4 mb-8 justify-center">
-          {/* Type Filter */}
-          <div className="flex gap-2">
-            {["all", "image", "video"].map((type) => (
-              <button
-                key={type}
-                onClick={() => {
-                  setFilter(type);
-                  setPage(1);
-                }}
-                className={`px-6 py-2 rounded-full font-semibold transition-all ${
-                  filter === type
-                    ? "bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] text-[#2c1506]"
-                    : "bg-[#2a1a11] text-[#ffb36a] border border-[#3a2416] hover:border-[#ffb36a]"
-                }`}
-              >
-                {type.charAt(0).toUpperCase() + type.slice(1)}
-                {type === "all" ? " Media" : "s"}
-              </button>
-            ))}
-          </div>
-
-          {/* Category Filter */}
-          <select
-            value={categoryFilter}
-            onChange={(e) => {
-              setCategoryFilter(e.target.value);
-              setPage(1);
-            }}
-            className="px-6 py-2 rounded-full bg-gray-800 text-white font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500"
-          >
-            {categories.map((cat) => (
-              <option key={cat.value} value={cat.value}>
-                {cat.label}
-              </option>
-            ))}
-          </select>
-        </div>
 
         {/* Error Message */}
         {error && (
@@ -139,123 +232,115 @@ const Gallery = () => {
         )}
 
         {!loading && media.length > 0 && (
-          <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            {media.map((item, index) => (
-              <motion.div
-                key={item._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className="group relative bg-gradient-to-br from-[#2a1a11] to-[#1a0f08] rounded-2xl overflow-hidden border border-[#3a2416] hover:border-[#ffb36a] shadow-lg hover:shadow-2xl hover:shadow-[#ffb36a]/20 transition-all duration-300 cursor-pointer"
-                onClick={() => handleMediaClick(item)}
+          <div className="space-y-16">
+            {/* Video Section */}
+            {videos.length > 0 && (
+              <motion.section
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
+                transition={{duration: 0.6}}
               >
-                {/* Media Container with object-contain */}
-                <div className="relative w-full aspect-video bg-black overflow-hidden">
-                  {item.type === "image" ? (
-                    <img
-                      src={item.secureUrl}
-                      alt={item.title}
-                      className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
-                      loading="lazy"
-                      style={{ imageRendering: "-webkit-optimize-contrast" }}
-                    />
-                  ) : (
-                    <div className="relative w-full h-full">
-                      <video
-                        src={item.secureUrl}
-                        className="w-full h-full object-contain"
-                        preload="metadata"
-                        style={{ imageRendering: "high-quality" }}
-                      />
-                      {/* Play Icon Overlay */}
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/60 transition-all">
-                        <div className="w-16 h-16 bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <svg
-                            className="w-8 h-8 text-[#2c1506] ml-1"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M8 5v14l11-7z" />
-                          </svg>
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="flex items-center gap-3">
+                    <span className="text-4xl">🎬</span>
+                    <h2 className="text-3xl font-bold bg-gradient-to-r from-[#ffb36a] via-[#ff8b1f] to-[#ff6b3d] bg-clip-text text-transparent">
+                      Cinematic Moments
+                    </h2>
+                  </div>
+                  <div className="h-px flex-1 bg-gradient-to-r from-[#ffb36a]/50 to-transparent"></div>
+                  <span className="text-sm text-gray-400 font-medium px-3 py-1 rounded-full bg-[#2a1a11] border border-[#3a2416]">
+                    {videos.length} {videos.length === 1 ? "Video" : "Videos"}
+                  </span>
+                </div>
+
+                <motion.div
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                  initial={{opacity: 0}}
+                  animate={{opacity: 1}}
+                >
+                  {videos.map((item, index) => (
+                    <motion.div
+                      key={item._id}
+                      initial={{opacity: 0, y: 20}}
+                      animate={{opacity: 1, y: 0}}
+                      transition={{delay: index * 0.05}}
+                      className="relative bg-black rounded-lg overflow-hidden border border-gray-700 hover:border-[#ff8b1f] hover:shadow-lg hover:shadow-[#ff8b1f]/20 transition-all duration-300 cursor-pointer group"
+                      onClick={() => handleMediaClick(item)}
+                    >
+                      {/* Video Container */}
+                      <div className="relative w-full aspect-video">
+                        <video
+                          src={item.secureUrl}
+                          className="w-full h-full object-cover"
+                          preload="metadata"
+                        />
+                        {/* Play Icon Overlay */}
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="w-16 h-16 rounded-full bg-[#ff8b1f] flex items-center justify-center">
+                            <span className="text-white text-2xl ml-1">▶</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </motion.section>
+            )}
 
-                  {/* Gradient Overlay on Hover */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </div>
-
-                {/* Media Info */}
-                <div className="p-4">
-                  <h3 className="text-white font-bold text-lg mb-1 truncate group-hover:text-[#ffb36a] transition-colors">
-                    {item.title}
-                  </h3>
-                  {item.description && (
-                    <p className="text-gray-400 text-sm mb-3 line-clamp-2">
-                      {item.description}
-                    </p>
-                  )}
-
-                  {/* Tags and Category */}
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="px-2 py-1 bg-[#ffb36a]/20 text-[#ffb36a] text-xs rounded-full font-semibold border border-[#3a2416]">
-                      {item.type}
-                    </span>
-                    <span className="px-2 py-1 bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] text-[#2c1506] text-xs rounded-full font-semibold">
-                      {item.category}
-                    </span>
-                    {item.tags?.slice(0, 2).map((tag, i) => (
-                      <span
-                        key={i}
-                        className="px-2 py-1 bg-[#2a1a11] text-gray-300 text-xs rounded-full border border-[#3a2416]"
-                      >
-                        #{tag}
-                      </span>
-                    ))}
+            {/* Image Section */}
+            {images.length > 0 && (
+              <motion.section
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
+                transition={{duration: 0.6, delay: 0.2}}
+              >
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="flex items-center gap-3">
+                    <span className="text-4xl">📸</span>
+                    <h2 className="text-3xl font-bold bg-gradient-to-r from-[#6bcfff] via-[#4a9eff] to-[#3d7fff] bg-clip-text text-transparent">
+                      Captured Memories
+                    </h2>
                   </div>
+                  <div className="h-px flex-1 bg-gradient-to-r from-[#4a9eff]/50 to-transparent"></div>
+                  <span className="text-sm text-gray-400 font-medium px-3 py-1 rounded-full bg-[#0a1a2a] border border-[#163a54]">
+                    {images.length} {images.length === 1 ? "Image" : "Images"}
+                  </span>
                 </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-center gap-2 mt-12">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="px-4 py-2 bg-[#2a1a11] text-[#ffb36a] border border-[#3a2416] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#3a2416]"
-            >
-              Previous
-            </button>
-            <div className="flex items-center gap-2">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                <button
-                  key={p}
-                  onClick={() => setPage(p)}
-                  className={`px-4 py-2 rounded-lg ${
-                    page === p
-                      ? "bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] text-[#2c1506] font-bold"
-                      : "bg-[#2a1a11] text-[#ffb36a] border border-[#3a2416] hover:bg-[#3a2416]"
-                  }`}
+                <motion.div
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                  initial={{opacity: 0}}
+                  animate={{opacity: 1}}
                 >
-                  {p}
-                </button>
-              ))}
-            </div>
-            <button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="px-4 py-2 bg-[#2a1a11] text-[#ffb36a] border border-[#3a2416] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#3a2416]"
-            >
-              Next
-            </button>
+                  {images.map((item, index) => (
+                    <motion.div
+                      key={item._id}
+                      initial={{opacity: 0, y: 20}}
+                      animate={{opacity: 1, y: 0}}
+                      transition={{delay: index * 0.05}}
+                      className="relative bg-black rounded-lg overflow-hidden border border-gray-700 hover:border-[#4a9eff] hover:shadow-lg hover:shadow-[#4a9eff]/20 transition-all duration-300 cursor-pointer group"
+                      onClick={() => handleMediaClick(item)}
+                    >
+                      {/* Image Container */}
+                      <div className="relative w-full aspect-video">
+                        <img
+                          src={item.secureUrl}
+                          alt="Gallery image"
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                        {/* Zoom Overlay */}
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="w-16 h-16 rounded-full bg-[#4a9eff] flex items-center justify-center">
+                            <span className="text-white text-3xl">🔍</span>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </motion.section>
+            )}
           </div>
         )}
       </div>
@@ -264,9 +349,9 @@ const Gallery = () => {
       <AnimatePresence>
         {selectedMedia && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{opacity: 0}}
+            animate={{opacity: 1}}
+            exit={{opacity: 0}}
             className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
             onClick={closeModal}
           >
@@ -279,102 +364,67 @@ const Gallery = () => {
             </button>
 
             <motion.div
-              initial={{ scale: 0.8, y: 50 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.8, y: 50 }}
-              className="max-w-6xl w-full max-h-[90vh] flex flex-col"
+              initial={{scale: 0.8, y: 50}}
+              animate={{scale: 1, y: 0}}
+              exit={{scale: 0.8, y: 50}}
+              className="max-w-6xl w-full max-h-[90vh] flex items-center justify-center"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Media Display with object-contain */}
-              <div className="flex-1 flex items-center justify-center mb-6 bg-black rounded-2xl overflow-hidden">
+              {/* Media Display */}
+              <div className="bg-black rounded-2xl overflow-hidden border border-[#ffb36a]/30">
                 {selectedMedia.type === "image" ? (
                   <img
                     src={selectedMedia.secureUrl}
-                    alt={selectedMedia.title}
-                    className="max-w-full max-h-[70vh] object-contain"
-                    style={{ imageRendering: "-webkit-optimize-contrast" }}
+                    alt="Gallery image"
+                    className="max-w-full max-h-[85vh] object-contain"
                   />
                 ) : (
                   <video
                     src={selectedMedia.secureUrl}
                     controls
                     autoPlay
-                    className="max-w-full max-h-[70vh] object-contain"
-                    style={{ imageRendering: "high-quality" }}
+                    className="max-w-full max-h-[85vh] object-contain"
                   />
                 )}
-              </div>
-
-              {/* Media Information */}
-              <div className="bg-gradient-to-br from-[#2a1a11] to-[#1a0f08] p-6 rounded-2xl border border-[#ffb36a]/30">
-                <h3 className="text-2xl font-bold text-white mb-2 bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] bg-clip-text text-transparent">
-                  {selectedMedia.title}
-                </h3>
-                {selectedMedia.description && (
-                  <p className="text-gray-300 mb-4">
-                    {selectedMedia.description}
-                  </p>
-                )}
-                <div className="flex items-center gap-2 flex-wrap mb-4">
-                  <span className="px-3 py-1 bg-[#ffb36a]/20 text-[#ffb36a] text-sm rounded-full font-semibold border border-[#3a2416]">
-                    {selectedMedia.type}
-                  </span>
-                  <span className="px-3 py-1 bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] text-[#2c1506] text-sm rounded-full font-semibold">
-                    {selectedMedia.category}
-                  </span>
-                  {selectedMedia.tags?.map((tag, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1 bg-[#2a1a11] text-gray-300 text-sm rounded-full border border-[#3a2416]"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-                <p className="text-gray-500 text-sm">
-                  Uploaded:{" "}
-                  {new Date(selectedMedia.createdAt).toLocaleDateString(
-                    "en-US",
-                    {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    }
-                  )}
-                </p>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Floating Admin Button */}
-      <Link to="/admin/login" className="fixed bottom-6 right-6 z-50 group">
-        <motion.div
-          className="relative"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#ffb36a] to-[#ff8b1f] flex items-center justify-center shadow-lg shadow-[#ffb36a]/50 group-hover:shadow-xl group-hover:shadow-[#ffb36a]/70 transition-all duration-300">
-            <svg
-              className="w-7 h-7 text-[#2c1506]"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-              />
-            </svg>
+      {/* Footer */}
+      <footer className="relative py-12 px-6 bg-black border-t border-[#3a2416]">
+        <div className="max-w-7xl mx-auto text-center">
+          <motion.h3
+            className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] mb-6"
+            initial={{opacity: 0, y: 20}}
+            whileInView={{opacity: 1, y: 0}}
+            viewport={{once: true}}
+            transition={{duration: 0.6, ease: "easeOut"}}
+          >
+            ZENITH 2026
+          </motion.h3>
+          <div className="flex gap-6 justify-center mb-8">
+            {["📘", "📷", "🐦", "▶️", "💼"].map((icon, i) => (
+              <motion.a
+                key={i}
+                href="#"
+                className="w-12 h-12 flex items-center justify-center rounded-full border-2 border-[#3a2416] bg-[#1a0f08] hover:border-[#ffb36a] hover:scale-110 transition-all duration-300"
+                initial={{opacity: 0, y: 20}}
+                whileInView={{opacity: 1, y: 0}}
+                viewport={{once: true}}
+                transition={{duration: 0.4, delay: i * 0.08, ease: "easeOut"}}
+              >
+                <span className="text-2xl">{icon}</span>
+              </motion.a>
+            ))}
           </div>
-          <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-black/90 text-white px-3 py-1 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-            Admin Login
-          </span>
-        </motion.div>
-      </Link>
+          <p className="text-gray-500 mb-2">
+            © 2026 SGGSIE&T Zenith. All rights reserved.
+          </p>
+          <p className="text-sm text-gray-600">Where Champions Rise 🏆</p>
+        </div>
+      </footer>
     </div>
   );
 };

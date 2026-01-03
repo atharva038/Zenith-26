@@ -39,18 +39,49 @@ export const getMediaById = async (id) => {
 };
 
 // Upload media file (Admin only)
-export const uploadMedia = async (formData) => {
+export const uploadMedia = async (formData, onProgress) => {
   try {
     const response = await api.post("/media/upload", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
-      timeout: 120000, // 2 minutes timeout for file uploads
+      timeout: 180000, // 3 minutes timeout for large video uploads
+      onUploadProgress: (progressEvent) => {
+        const percentCompleted = Math.round(
+          (progressEvent.loaded * 100) / progressEvent.total
+        );
+        console.log(`Upload progress: ${percentCompleted}%`);
+
+        // Call progress callback if provided
+        if (onProgress) {
+          onProgress(percentCompleted);
+        }
+      },
     });
     return response.data;
   } catch (error) {
     console.error("Error uploading media:", error);
-    throw error.response?.data || error;
+
+    // Provide more specific error messages
+    if (error.code === "ECONNABORTED") {
+      throw new Error(
+        "Upload timeout - file may be too large or connection is slow"
+      );
+    }
+    if (error.response) {
+      // Server responded with error
+      const message =
+        error.response.data?.message ||
+        error.response.data?.error ||
+        `Upload failed (${error.response.status})`;
+      throw new Error(message);
+    }
+    if (error.request) {
+      // Request made but no response
+      throw new Error("No response from server - check your connection");
+    }
+    // Other errors
+    throw new Error(error.message || "Upload failed");
   }
 };
 
@@ -79,7 +110,7 @@ export const deleteMedia = async (id) => {
 // Reorder media items (Admin only)
 export const reorderMedia = async (mediaOrder) => {
   try {
-    const response = await api.put("/media/reorder", { mediaOrder });
+    const response = await api.put("/media/reorder", {mediaOrder});
     return response.data;
   } catch (error) {
     console.error("Error reordering media:", error);

@@ -4,9 +4,9 @@ const MediaSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: [true, "Please provide a title"],
       trim: true,
       maxlength: [100, "Title cannot exceed 100 characters"],
+      default: "Untitled Media",
     },
     description: {
       type: String,
@@ -100,10 +100,10 @@ const MediaSchema = new mongoose.Schema(
 );
 
 // Indexes for better query performance
-MediaSchema.index({ type: 1, isActive: 1 });
-MediaSchema.index({ category: 1, isActive: 1 });
-MediaSchema.index({ createdAt: -1 });
-MediaSchema.index({ tags: 1 });
+MediaSchema.index({type: 1, isActive: 1});
+MediaSchema.index({category: 1, isActive: 1});
+MediaSchema.index({createdAt: -1});
+MediaSchema.index({tags: 1});
 
 // Virtual for formatted file size
 MediaSchema.virtual("formattedSize").get(function () {
@@ -118,7 +118,7 @@ MediaSchema.virtual("formattedSize").get(function () {
 });
 
 // Ensure virtuals are included in JSON output
-MediaSchema.set("toJSON", { virtuals: true });
-MediaSchema.set("toObject", { virtuals: true });
+MediaSchema.set("toJSON", {virtuals: true});
+MediaSchema.set("toObject", {virtuals: true});
 
 export default mongoose.model("Media", MediaSchema);

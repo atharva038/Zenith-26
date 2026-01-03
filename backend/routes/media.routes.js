@@ -1,8 +1,8 @@
 import express from "express";
-import { body, query } from "express-validator";
+import {body, query} from "express-validator";
 import * as mediaController from "../controllers/media.controller.js";
-import { authMiddleware, isAdmin } from "../middleware/auth.middleware.js";
-import { upload, handleMulterError } from "../middleware/media.middleware.js";
+import {authMiddleware, isAdmin} from "../middleware/auth.middleware.js";
+import {upload, handleMulterError} from "../middleware/media.middleware.js";
 import validate from "../middleware/validate.js";
 
 const router = express.Router();
@@ -10,15 +10,14 @@ const router = express.Router();
 // Validation rules
 const uploadValidation = [
   body("title")
+    .optional()
     .trim()
-    .notEmpty()
-    .withMessage("Title is required")
-    .isLength({ max: 100 })
+    .isLength({max: 100})
     .withMessage("Title cannot exceed 100 characters"),
   body("description")
     .optional()
     .trim()
-    .isLength({ max: 500 })
+    .isLength({max: 500})
     .withMessage("Description cannot exceed 500 characters"),
   body("category")
     .optional()
@@ -31,12 +30,12 @@ const updateValidation = [
   body("title")
     .optional()
     .trim()
-    .isLength({ max: 100 })
+    .isLength({max: 100})
     .withMessage("Title cannot exceed 100 characters"),
   body("description")
     .optional()
     .trim()
-    .isLength({ max: 500 })
+    .isLength({max: 500})
     .withMessage("Description cannot exceed 500 characters"),
   body("category")
     .optional()
@@ -59,11 +58,11 @@ const queryValidation = [
     .withMessage("Invalid category"),
   query("page")
     .optional()
-    .isInt({ min: 1 })
+    .isInt({min: 1})
     .withMessage("Page must be a positive integer"),
   query("limit")
     .optional()
-    .isInt({ min: 1, max: 100 })
+    .isInt({min: 1, max: 100})
     .withMessage("Limit must be between 1 and 100"),
 ];
 
@@ -82,11 +81,11 @@ router.get(
 // Reorder media route (Drag and Drop)
 const reorderValidation = [
   body("mediaOrder")
-    .isArray({ min: 1 })
+    .isArray({min: 1})
     .withMessage("mediaOrder must be a non-empty array"),
   body("mediaOrder.*.id").notEmpty().withMessage("Each item must have an id"),
   body("mediaOrder.*.order")
-    .isInt({ min: 0 })
+    .isInt({min: 0})
     .withMessage("Order must be a non-negative integer"),
 ];
 

@@ -1,12 +1,8 @@
-import { useState, useEffect, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "react-toastify";
-import {
-  uploadMedia,
-  getAllMedia,
-  deleteMedia,
-} from "../services/mediaService";
+import {useState, useEffect, useRef} from "react";
+import {useNavigate, Link} from "react-router-dom";
+import {motion, AnimatePresence} from "framer-motion";
+import {toast} from "react-toastify";
+import {uploadMedia, getAllMedia, deleteMedia} from "../services/mediaService";
 import AdminSidebar from "../components/AdminSidebar";
 
 const AdminMediaUpload = () => {
@@ -19,10 +15,7 @@ const AdminMediaUpload = () => {
   const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
     category: "event",
-    tags: "",
   });
 
   useEffect(() => {
@@ -85,16 +78,14 @@ const AdminMediaUpload = () => {
       return;
     }
 
-    // Validate file size (max 100MB for videos, 10MB for images)
-    const maxSize = isVideo ? 100 * 1024 * 1024 : 10 * 1024 * 1024;
+    // Validate file size (max 50MB for videos, 10MB for images)
+    const maxSize = isVideo ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
     if (file.size > maxSize) {
-      toast.error(`File too large. Max size: ${isVideo ? "100MB" : "10MB"}`);
-      return;
-    }
-
-    // Validate form data
-    if (!formData.title.trim()) {
-      toast.error("Please enter a title before uploading");
+      toast.error(
+        `File too large (${(file.size / 1024 / 1024).toFixed(
+          2
+        )}MB). Max size: ${isVideo ? "50MB" : "10MB"}`
+      );
       return;
     }
 
@@ -102,28 +93,51 @@ const AdminMediaUpload = () => {
     try {
       const uploadFormData = new FormData();
       uploadFormData.append("file", file);
-      uploadFormData.append("title", formData.title);
-      uploadFormData.append("description", formData.description);
+      // Auto-generate title from filename
+      const autoTitle = file.name.replace(/\.[^/.]+$/, "");
+      uploadFormData.append("title", autoTitle);
       uploadFormData.append("category", formData.category);
-      uploadFormData.append("tags", formData.tags);
 
-      const response = await uploadMedia(uploadFormData);
+      // Show initial upload toast
+      let uploadToast = toast.info(`Uploading ${file.name}... 0%`, {
+        autoClose: false,
+      });
+      let lastProgress = 0;
+
+      const response = await uploadMedia(uploadFormData, (progress) => {
+        lastProgress = progress;
+
+        // Update toast with progress
+        if (progress < 100) {
+          toast.update(uploadToast, {
+            render: `Uploading ${file.name}... ${progress}%`,
+          });
+        } else if (progress === 100) {
+          // Show processing message when upload reaches 100%
+          toast.update(uploadToast, {
+            render: `Processing on Cloudinary... This may take 20-30 seconds for videos`,
+            type: "info",
+          });
+        }
+      });
+
+      // Dismiss processing toast
+      toast.dismiss(uploadToast);
 
       toast.success(`${isImage ? "Image" : "Video"} uploaded successfully!`);
 
       // Reset form
       setFormData({
-        title: "",
-        description: "",
         category: "event",
-        tags: "",
       });
 
       // Refresh media list
       fetchMedia();
     } catch (error) {
       console.error("Upload error:", error);
-      toast.error(error.message || "Upload failed");
+      const errorMsg =
+        error?.response?.data?.message || error?.message || "Upload failed";
+      toast.error(errorMsg);
     } finally {
       setUploading(false);
       if (fileInputRef.current) {
@@ -162,9 +176,9 @@ const AdminMediaUpload = () => {
       <AnimatePresence>
         {sidebarOpen && (
           <motion.div
-            initial={{ x: -300 }}
-            animate={{ x: 0 }}
-            exit={{ x: -300 }}
+            initial={{x: -300}}
+            animate={{x: 0}}
+            exit={{x: -300}}
             className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-gray-900/95 to-black/95 backdrop-blur-xl border-r border-neon-blue/20 z-50"
           >
             <div className="p-6 border-b border-gray-700/50">
@@ -179,7 +193,7 @@ const AdminMediaUpload = () => {
             <nav className="p-4 space-y-2">
               <motion.button
                 onClick={() => navigate("/admin/dashboard")}
-                whileHover={{ x: 5 }}
+                whileHover={{x: 5}}
                 className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all font-rajdhani text-gray-400 hover:text-white hover:bg-white/5"
               >
                 <span className="text-xl">📊</span>
@@ -188,7 +202,7 @@ const AdminMediaUpload = () => {
 
               <motion.button
                 onClick={() => navigate("/admin/events")}
-                whileHover={{ x: 5 }}
+                whileHover={{x: 5}}
                 className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all font-rajdhani text-gray-400 hover:text-white hover:bg-white/5"
               >
                 <span className="text-xl">🎮</span>
@@ -197,7 +211,7 @@ const AdminMediaUpload = () => {
 
               <motion.button
                 onClick={() => navigate("/admin/marathon")}
-                whileHover={{ x: 5 }}
+                whileHover={{x: 5}}
                 className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all font-rajdhani text-gray-400 hover:text-white hover:bg-white/5"
               >
                 <span className="text-xl">🏃</span>
@@ -206,7 +220,7 @@ const AdminMediaUpload = () => {
 
               <motion.button
                 onClick={() => navigate("/admin/media-upload")}
-                whileHover={{ x: 5 }}
+                whileHover={{x: 5}}
                 className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all font-rajdhani bg-gradient-to-r from-neon-blue/20 to-electric-cyan/20 border border-neon-blue/50 text-white"
               >
                 <span className="text-xl">📤</span>
@@ -217,8 +231,8 @@ const AdminMediaUpload = () => {
             <div className="absolute bottom-6 left-0 right-0 px-4">
               <motion.button
                 onClick={handleLogout}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={{scale: 1.02}}
+                whileTap={{scale: 0.98}}
                 className="w-full px-4 py-3 bg-red-600/20 border border-red-500/50 rounded-lg text-red-400 hover:bg-red-600/30 transition-all font-rajdhani font-semibold"
               >
                 🚪 Logout
@@ -239,8 +253,8 @@ const AdminMediaUpload = () => {
           <div className="flex items-center justify-between px-8 py-4">
             <div className="flex items-center space-x-4">
               <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+                whileHover={{scale: 1.1}}
+                whileTap={{scale: 0.9}}
                 onClick={() => setSidebarOpen(!sidebarOpen)}
                 className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-all"
               >
@@ -257,102 +271,51 @@ const AdminMediaUpload = () => {
         <div className="p-8 max-w-7xl mx-auto">
           {/* Instructions */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{opacity: 0, y: 20}}
+            animate={{opacity: 1, y: 0}}
             className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-sm border border-blue-500/30 rounded-2xl p-6 mb-8"
           >
             <h2 className="text-xl font-bold font-orbitron text-neon-blue mb-3">
               ℹ️ Media Upload Guidelines
             </h2>
             <div className="text-gray-300 space-y-2 font-rajdhani">
-              <p>✨ Upload images and videos for the Gallery page</p>
+              <p>✨ Quick and easy upload - just select category and file</p>
               <p>📦 Files are stored in Cloudinary with auto-optimization</p>
-              <p>🎯 URLs are saved in MongoDB for instant frontend access</p>
               <p>🖼️ Images: Max 10MB | Videos: Max 100MB</p>
-              <p>
-                🚀 No cropping, full quality preservation with object-fit:
-                contain
-              </p>
+              <p>🚀 Title is auto-generated from filename</p>
+              <p>⚡ Streamlined process - no unnecessary fields</p>
             </div>
           </motion.div>
 
           {/* Upload Section */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+            initial={{opacity: 0, y: 20}}
+            animate={{opacity: 1, y: 0}}
+            transition={{delay: 0.1}}
             className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm border border-neon-blue/30 rounded-2xl p-8 mb-8"
           >
             <h2 className="text-2xl font-bold font-orbitron text-electric-cyan mb-6">
               Upload New Media
             </h2>
 
-            {/* Form */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div>
-                <label className="block text-sm font-semibold font-rajdhani text-gray-300 mb-2">
-                  Title *
-                </label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) =>
-                    setFormData({ ...formData, title: e.target.value })
-                  }
-                  placeholder="Enter media title"
-                  className="w-full px-4 py-3 bg-black/50 border border-neon-blue/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-neon-blue transition-all"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold font-rajdhani text-gray-300 mb-2">
-                  Category
-                </label>
-                <select
-                  value={formData.category}
-                  onChange={(e) =>
-                    setFormData({ ...formData, category: e.target.value })
-                  }
-                  className="w-full px-4 py-3 bg-black/50 border border-neon-blue/30 rounded-lg text-white focus:outline-none focus:border-neon-blue transition-all"
-                >
-                  <option value="event">Event</option>
-                  <option value="sports">Sports</option>
-                  <option value="ceremony">Ceremony</option>
-                  <option value="participants">Participants</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-semibold font-rajdhani text-gray-300 mb-2">
-                  Description
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  placeholder="Enter description (optional)"
-                  rows="3"
-                  className="w-full px-4 py-3 bg-black/50 border border-neon-blue/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-neon-blue transition-all"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-semibold font-rajdhani text-gray-300 mb-2">
-                  Tags (comma separated)
-                </label>
-                <input
-                  type="text"
-                  value={formData.tags}
-                  onChange={(e) =>
-                    setFormData({ ...formData, tags: e.target.value })
-                  }
-                  placeholder="e.g., gaming, tournament, finals"
-                  className="w-full px-4 py-3 bg-black/50 border border-neon-blue/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-neon-blue transition-all"
-                />
-              </div>
+            {/* Minimal Form - Only Category */}
+            <div className="mb-6">
+              <label className="block text-sm font-semibold font-rajdhani text-gray-300 mb-2">
+                Category
+              </label>
+              <select
+                value={formData.category}
+                onChange={(e) =>
+                  setFormData({...formData, category: e.target.value})
+                }
+                className="w-full md:w-1/2 px-4 py-3 bg-black/50 border border-neon-blue/30 rounded-lg text-white focus:outline-none focus:border-neon-blue transition-all"
+              >
+                <option value="event">Event</option>
+                <option value="sports">Sports</option>
+                <option value="ceremony">Ceremony</option>
+                <option value="participants">Participants</option>
+                <option value="other">Other</option>
+              </select>
             </div>
 
             {/* Drag and Drop Area */}
@@ -407,9 +370,9 @@ const AdminMediaUpload = () => {
 
           {/* Uploaded Media Gallery */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            initial={{opacity: 0, y: 20}}
+            animate={{opacity: 1, y: 0}}
+            transition={{delay: 0.2}}
             className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm border border-neon-blue/30 rounded-2xl p-8"
           >
             <div className="flex items-center justify-between mb-6">
@@ -440,8 +403,8 @@ const AdminMediaUpload = () => {
                 {uploadedMedia.map((item) => (
                   <motion.div
                     key={item._id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
+                    initial={{opacity: 0, scale: 0.9}}
+                    animate={{opacity: 1, scale: 1}}
                     className="bg-black/50 border border-gray-700 rounded-xl overflow-hidden hover:border-neon-blue/50 transition-all group"
                   >
                     {/* Media Preview */}
@@ -474,15 +437,6 @@ const AdminMediaUpload = () => {
 
                     {/* Media Info */}
                     <div className="p-4">
-                      <h3 className="font-bold text-lg text-white mb-1 truncate">
-                        {item.title}
-                      </h3>
-                      {item.description && (
-                        <p className="text-gray-400 text-sm mb-2 line-clamp-2">
-                          {item.description}
-                        </p>
-                      )}
-
                       <div className="flex items-center gap-2 mb-3">
                         <span className="px-2 py-1 bg-neon-blue/20 text-neon-blue text-xs rounded">
                           {item.type}
