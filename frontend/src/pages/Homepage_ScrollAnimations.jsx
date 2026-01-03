@@ -565,7 +565,7 @@ export default function Homepage_ScrollAnimations() {
             ZENITH 2026
           </motion.h3>
 
-          <div className="flex gap-6 justify-center mb-8">
+          {/* <div className="flex gap-6 justify-center mb-8">
             {["📘", "📷", "🐦", "▶️", "💼"].map((icon, i) => (
               <motion.a
                 key={i}
@@ -584,7 +584,7 @@ export default function Homepage_ScrollAnimations() {
                 <span className="text-2xl">{icon}</span>
               </motion.a>
             ))}
-          </div>
+          </div> */}
 
           <motion.p
             className="text-gray-500 mb-2"

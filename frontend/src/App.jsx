@@ -4,11 +4,11 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import {AnimatePresence} from "framer-motion";
-import {ToastContainer} from "react-toastify";
+import { AnimatePresence } from "framer-motion";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {ThemeProvider} from "./context/ThemeContext";
-import {AuthProvider} from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
+import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CinematicIntro from "./components/CinematicIntro";
 import Homepage from "./pages/Homepage";
@@ -30,7 +30,8 @@ import AdminMarathon from "./pages/AdminMarathon";
 import AdminAdmins from "./pages/AdminAdmins";
 import AdminGallery from "./pages/AdminGallery";
 import AdminSettings from "./pages/AdminSettings";
-import {useSmoothScroll} from "./hooks/useSmoothScroll";
+import Gallery from "./pages/Gallery";
+import { useSmoothScroll } from "./hooks/useSmoothScroll";
 import "./App.css";
 
 function App() {
@@ -63,6 +64,9 @@ function App() {
               {/* Marathon Routes */}
               <Route path="/marathon-event" element={<MarathonPage />} />
               <Route path="/marathon" element={<MarathonRegistration />} />
+
+              {/* Gallery Route */}
+              <Route path="/gallery" element={<Gallery />} />
 
               {/* Admin Routes */}
               <Route path="/admin/login" element={<AdminLogin />} />
