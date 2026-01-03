@@ -1,11 +1,16 @@
-import {useState, useRef, useEffect, useMemo} from "react";
-import {Link, useNavigate} from "react-router-dom";
-import {Canvas, useFrame, useThree} from "@react-three/fiber";
-import {OrbitControls, Stars, PerspectiveCamera, Text} from "@react-three/drei";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import {
+  OrbitControls,
+  Stars,
+  PerspectiveCamera,
+  Text,
+} from "@react-three/drei";
 import FloatingIsland from "../components/gameverse/FloatingIsland";
 import SportModal from "../components/gameverse/SportModal";
 import GamerverseLoading from "../components/gameverse/GamerverseLoading";
-import {motion, AnimatePresence} from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import * as THREE from "three";
 
 // Cinematic Nebula + Galaxy Background
@@ -134,13 +139,13 @@ function NebulaBackground() {
 
     // Add nebula clouds with multiple colors
     const nebulaColors = [
-      {color: "rgba(138, 43, 226, 0.15)", count: 8}, // Purple
-      {color: "rgba(255, 105, 180, 0.12)", count: 6}, // Pink
-      {color: "rgba(65, 105, 225, 0.1)", count: 7}, // Blue
-      {color: "rgba(255, 140, 0, 0.08)", count: 5}, // Orange
+      { color: "rgba(138, 43, 226, 0.15)", count: 8 }, // Purple
+      { color: "rgba(255, 105, 180, 0.12)", count: 6 }, // Pink
+      { color: "rgba(65, 105, 225, 0.1)", count: 7 }, // Blue
+      { color: "rgba(255, 140, 0, 0.08)", count: 5 }, // Orange
     ];
 
-    nebulaColors.forEach(({color, count}) => {
+    nebulaColors.forEach(({ color, count }) => {
       for (let i = 0; i < count; i++) {
         const x = Math.random() * 512;
         const y = Math.random() * 512;
@@ -229,7 +234,7 @@ function CosmicDust() {
       }
     }
 
-    return {positions, colors};
+    return { positions, colors };
   }, []);
 
   useFrame((state) => {
@@ -552,7 +557,7 @@ const sportsData = [
 ];
 
 // Orbital Ring Component
-function OrbitalRing({radius, color, opacity = 0.15, segments = 128}) {
+function OrbitalRing({ radius, color, opacity = 0.15, segments = 128 }) {
   const ringRef = useRef();
 
   useFrame((state) => {
@@ -587,7 +592,7 @@ function OrbitingPlanet({
 }) {
   const orbitRef = useRef();
 
-  useFrame(({clock}) => {
+  useFrame(({ clock }) => {
     const elapsed = clock.getElapsedTime();
     const angle = initialAngle + elapsed * orbitSpeed;
 
@@ -622,8 +627,8 @@ function OrbitingPlanet({
 }
 
 // Camera component with planet tracking
-function CameraRig({lockedPlanetRef}) {
-  const {camera, controls} = useThree();
+function CameraRig({ lockedPlanetRef }) {
+  const { camera, controls } = useThree();
   const targetPos = useRef(new THREE.Vector3(0, 8, 35));
   const targetLookAt = useRef(new THREE.Vector3(0, 0, 0));
 
@@ -662,7 +667,7 @@ function CameraRig({lockedPlanetRef}) {
 }
 
 // Scene component
-function Scene({onIslandClick, lockedPlanet, onRegisterPlanetRef}) {
+function Scene({ onIslandClick, lockedPlanet, onRegisterPlanetRef }) {
   return (
     <>
       <CinematicSpaceBackground />
@@ -850,9 +855,9 @@ export default function GameVerse() {
               willChange: "opacity",
               transform: "translate3d(0,0,0)", // GPU layer
             }}
-            initial={{opacity: 1}}
-            exit={{opacity: 0}}
-            transition={{duration: 0.8}}
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
           >
             <GamerverseLoading />
           </motion.div>
@@ -884,11 +889,11 @@ export default function GameVerse() {
             willChange: "transform, opacity",
             transform: "translate3d(0,0,0)", // GPU layer
           }}
-          initial={{opacity: 0, y: -50}}
-          animate={{opacity: 1, y: 0}}
-          transition={{duration: 0.5, delay: 0.8}}
-          whileHover={{scale: 1.05}}
-          whileTap={{scale: 0.95}}
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           <span className="hidden sm:inline">
             {lockedPlanet ? "🔓 Unlock View" : "🌌 Overview"}
@@ -905,10 +910,10 @@ export default function GameVerse() {
                 willChange: "transform, opacity",
                 transform: "translate3d(0,0,0)", // GPU layer
               }}
-              initial={{opacity: 0, scale: 0.8}}
-              animate={{opacity: 1, scale: 1}}
-              exit={{opacity: 0, scale: 0.8}}
-              transition={{duration: 0.3}}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.3 }}
             >
               <div className="bg-black/80 backdrop-blur-md border-2 border-[#ffb36a] rounded-md md:rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 shadow-lg shadow-[#ffb36a]/20 mx-auto">
                 <div className="flex items-center gap-1 sm:gap-2 justify-center">
@@ -941,9 +946,9 @@ export default function GameVerse() {
           willChange: "transform, opacity",
           transform: "translate3d(0,0,0)", // GPU layer
         }}
-        initial={{opacity: 0, x: -50}}
-        animate={{opacity: 1, x: 0}}
-        transition={{duration: 0.5, delay: 1}}
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 1 }}
       >
         {leftSports.map((sport, index) => (
           <motion.button
@@ -961,11 +966,11 @@ export default function GameVerse() {
               willChange: "transform, opacity",
               transform: "translate3d(0,0,0)", // GPU layer
             }}
-            initial={{opacity: 0, x: -30}}
-            animate={{opacity: 1, x: 0}}
-            transition={{duration: 0.3, delay: 1 + index * 0.05}}
-            whileHover={{scale: 1.05, x: 5}}
-            whileTap={{scale: 0.95}}
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3, delay: 1 + index * 0.05 }}
+            whileHover={{ scale: 1.05, x: 5 }}
+            whileTap={{ scale: 0.95 }}
           >
             <div className="flex items-center gap-1.5 md:gap-2.5 backdrop-blur-md">
               <span className="text-lg sm:text-xl md:text-2xl">
@@ -987,9 +992,9 @@ export default function GameVerse() {
                   willChange: "transform",
                   transform: "translate3d(0,0,0)", // GPU layer
                 }}
-                initial={{scale: 0}}
-                animate={{scale: 1}}
-                transition={{type: "spring", stiffness: 500}}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 500 }}
               >
                 <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-[#ffb36a] animate-pulse"></div>
               </motion.div>
@@ -1009,9 +1014,9 @@ export default function GameVerse() {
           willChange: "transform, opacity",
           transform: "translate3d(0,0,0)", // GPU layer
         }}
-        initial={{opacity: 0, x: 50}}
-        animate={{opacity: 1, x: 0}}
-        transition={{duration: 0.5, delay: 1}}
+        initial={{ opacity: 0, x: 50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 1 }}
       >
         {rightSports.map((sport, index) => (
           <motion.button
@@ -1029,11 +1034,11 @@ export default function GameVerse() {
               willChange: "transform, opacity",
               transform: "translate3d(0,0,0)", // GPU layer
             }}
-            initial={{opacity: 0, x: 30}}
-            animate={{opacity: 1, x: 0}}
-            transition={{duration: 0.3, delay: 1 + index * 0.05}}
-            whileHover={{scale: 1.05, x: -5}}
-            whileTap={{scale: 0.95}}
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3, delay: 1 + index * 0.05 }}
+            whileHover={{ scale: 1.05, x: -5 }}
+            whileTap={{ scale: 0.95 }}
           >
             <div className="flex items-center gap-1.5 md:gap-2.5 backdrop-blur-md">
               <div className="text-right flex-1">
@@ -1055,9 +1060,9 @@ export default function GameVerse() {
                   willChange: "transform",
                   transform: "translate3d(0,0,0)", // GPU layer
                 }}
-                initial={{scale: 0}}
-                animate={{scale: 1}}
-                transition={{type: "spring", stiffness: 500}}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 500 }}
               >
                 <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-[#ffb36a] animate-pulse"></div>
               </motion.div>
@@ -1077,9 +1082,9 @@ export default function GameVerse() {
             willChange: "transform, opacity",
             transform: "translate3d(0,0,0)", // GPU layer
           }}
-          initial={{opacity: 0, y: -50, scale: 0.8}}
-          animate={{opacity: 1, y: 0, scale: 1}}
-          transition={{duration: 1, delay: 0.5, type: "spring"}}
+          initial={{ opacity: 0, y: -50, scale: 0.8 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 1, delay: 0.5, type: "spring" }}
         >
           <motion.h1
             className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl 
@@ -1137,9 +1142,9 @@ export default function GameVerse() {
           willChange: "opacity",
           transform: "translate3d(0,0,0)", // GPU layer
         }}
-        initial={{opacity: 0}}
-        animate={{opacity: 1}}
-        transition={{duration: 1, delay: 1}}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 1 }}
       >
         <p className="text-gray-500 text-[8px] sm:text-[10px] md:text-xs tracking-wider hidden md:block">
           DRAG TO ROTATE • SCROLL TO ZOOM • RIGHT-CLICK & DRAG TO PAN
@@ -1192,6 +1197,34 @@ export default function GameVerse() {
         sport={selectedSport}
         onRegister={handleRegisterClick}
       />
+
+      {/* Floating Admin Button */}
+      <Link to="/admin/login" className="fixed bottom-6 right-6 z-50 group">
+        <motion.div
+          className="relative"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/50 group-hover:shadow-xl group-hover:shadow-purple-500/70 transition-all duration-300">
+            <svg
+              className="w-7 h-7 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
+            </svg>
+          </div>
+          <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-black/90 text-white px-3 py-1 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            Admin Login
+          </span>
+        </motion.div>
+      </Link>
     </div>
   );
 }

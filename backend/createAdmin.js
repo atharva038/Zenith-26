@@ -6,9 +6,9 @@ dotenv.config();
 
 // Admin credentials
 const ADMIN_DATA = {
-  username: "zenith_admin",
-  email: "zenith_admin@zenith2026.com",
-  password: "Zenith@2026", // This will be hashed automatically
+  username: "sggs_admin",
+  email: "admin@sggs.ac.in",
+  password: "Admin@123", // This will be hashed automatically
   role: "superadmin",
 };
 
@@ -21,7 +21,7 @@ async function createAdmin() {
     console.log("✅ Connected to MongoDB");
 
     // Check if admin already exists
-    const existingAdmin = await Admin.findOne({email: ADMIN_DATA.email});
+    const existingAdmin = await Admin.findOne({ email: ADMIN_DATA.email });
 
     if (existingAdmin) {
       console.log("⚠️  Admin already exists!");
