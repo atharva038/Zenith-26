@@ -1,72 +1,153 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
-import api from "../config/api";
+import {
+  uploadMedia,
+  getAllMedia,
+  deleteMedia,
+} from "../services/mediaService";
+import AdminSidebar from "../components/AdminSidebar";
 
 const AdminMediaUpload = () => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const [uploadingVideo, setUploadingVideo] = useState(false);
-  const [uploadedImages, setUploadedImages] = useState([]);
-  const [uploadedVideos, setUploadedVideos] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadedMedia, setUploadedMedia] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef(null);
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    category: "event",
+    tags: "",
+  });
 
-    setUploadingImage(true);
+  useEffect(() => {
+    fetchMedia();
+  }, []);
+
+  const fetchMedia = async () => {
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await api.post('/upload/asset/image', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      setLoading(true);
+      const response = await getAllMedia({
+        page: 1,
+        limit: 50,
+        sortBy: "createdAt",
+        sortOrder: "desc",
       });
-
-      if (response.data?.url) {
-        toast.success(`Image uploaded successfully!`);
-        setUploadedImages([...uploadedImages, { url: response.data.url, name: file.name, type: 'image' }]);
-      }
+      setUploadedMedia(response.data.media);
     } catch (error) {
-      console.error(error);
-      toast.error(error.response?.data?.message || 'Image upload failed');
+      console.error("Error fetching media:", error);
+      toast.error("Failed to load media");
     } finally {
-      setUploadingImage(false);
-      e.target.value = ''; // Reset input
+      setLoading(false);
     }
   };
 
-  const handleVideoUpload = async (e) => {
-    const file = e.target.files?.[0];
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileUpload(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      handleFileUpload(e.target.files[0]);
+    }
+  };
+
+  const handleFileUpload = async (file) => {
     if (!file) return;
 
-    setUploadingVideo(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
+    // Validate file type
+    const isImage = file.type.startsWith("image/");
+    const isVideo = file.type.startsWith("video/");
 
-      const response = await api.post('/upload/asset/video', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+    if (!isImage && !isVideo) {
+      toast.error("Please upload only images or videos");
+      return;
+    }
+
+    // Validate file size (max 100MB for videos, 10MB for images)
+    const maxSize = isVideo ? 100 * 1024 * 1024 : 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast.error(`File too large. Max size: ${isVideo ? "100MB" : "10MB"}`);
+      return;
+    }
+
+    // Validate form data
+    if (!formData.title.trim()) {
+      toast.error("Please enter a title before uploading");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append("file", file);
+      uploadFormData.append("title", formData.title);
+      uploadFormData.append("description", formData.description);
+      uploadFormData.append("category", formData.category);
+      uploadFormData.append("tags", formData.tags);
+
+      const response = await uploadMedia(uploadFormData);
+
+      toast.success(`${isImage ? "Image" : "Video"} uploaded successfully!`);
+
+      // Reset form
+      setFormData({
+        title: "",
+        description: "",
+        category: "event",
+        tags: "",
       });
 
-      if (response.data?.url) {
-        toast.success(`Video uploaded successfully!`);
-        setUploadedVideos([...uploadedVideos, { url: response.data.url, name: file.name, type: 'video' }]);
-      }
+      // Refresh media list
+      fetchMedia();
     } catch (error) {
-      console.error(error);
-      toast.error(error.response?.data?.message || 'Video upload failed');
+      console.error("Upload error:", error);
+      toast.error(error.message || "Upload failed");
     } finally {
-      setUploadingVideo(false);
-      e.target.value = ''; // Reset input
+      setUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this media?")) return;
+
+    try {
+      await deleteMedia(id);
+      toast.success("Media deleted successfully");
+      fetchMedia();
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("Failed to delete media");
     }
   };
 
   const copyToClipboard = (url) => {
     navigator.clipboard.writeText(url);
-    toast.success('URL copied to clipboard!');
+    toast.success("URL copied to clipboard!");
   };
 
   const handleLogout = () => {
@@ -129,7 +210,7 @@ const AdminMediaUpload = () => {
                 className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all font-rajdhani bg-gradient-to-r from-neon-blue/20 to-electric-cyan/20 border border-neon-blue/50 text-white"
               >
                 <span className="text-xl">📤</span>
-                <span className="font-semibold">Media Upload</span>
+                <span className="font-semibold">Gallery Upload</span>
               </motion.button>
             </nav>
 
@@ -148,7 +229,11 @@ const AdminMediaUpload = () => {
       </AnimatePresence>
 
       {/* Main Content */}
-      <div className={`transition-all duration-300 ${sidebarOpen ? "ml-64" : "ml-0"}`}>
+      <div
+        className={`transition-all duration-300 ${
+          sidebarOpen ? "ml-64" : "ml-0"
+        }`}
+      >
         {/* Top Bar */}
         <div className="sticky top-0 z-40 bg-black/40 backdrop-blur-xl border-b border-neon-blue/20">
           <div className="flex items-center justify-between px-8 py-4">
@@ -162,14 +247,14 @@ const AdminMediaUpload = () => {
                 <span className="text-2xl">☰</span>
               </motion.button>
               <h1 className="text-2xl font-bold font-orbitron bg-gradient-to-r from-neon-blue to-electric-cyan bg-clip-text text-transparent">
-                📤 Media Upload - Cloudinary
+                📤 Gallery Media Management
               </h1>
             </div>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-8 max-w-6xl mx-auto">
+        <div className="p-8 max-w-7xl mx-auto">
           {/* Instructions */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -177,186 +262,260 @@ const AdminMediaUpload = () => {
             className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-sm border border-blue-500/30 rounded-2xl p-6 mb-8"
           >
             <h2 className="text-xl font-bold font-orbitron text-neon-blue mb-3">
-              ℹ️ Upload Your Assets to Cloudinary
+              ℹ️ Media Upload Guidelines
             </h2>
             <div className="text-gray-300 space-y-2 font-rajdhani">
-              <p>• Upload intro videos, background images, and other media assets</p>
-              <p>• Files are automatically stored in Cloudinary cloud storage</p>
-              <p>• Copy the URL and use it in your frontend components</p>
-              <p>• Images: zenith26/images/ | Videos: zenith26/videos/</p>
+              <p>✨ Upload images and videos for the Gallery page</p>
+              <p>📦 Files are stored in Cloudinary with auto-optimization</p>
+              <p>🎯 URLs are saved in MongoDB for instant frontend access</p>
+              <p>🖼️ Images: Max 10MB | Videos: Max 100MB</p>
+              <p>
+                🚀 No cropping, full quality preservation with object-fit:
+                contain
+              </p>
             </div>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Image Upload */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm border border-neon-blue/20 rounded-2xl p-6"
-            >
-              <h3 className="text-xl font-bold font-orbitron text-electric-cyan mb-4">
-                🖼️ Upload Images
-              </h3>
-              <p className="text-gray-400 text-sm mb-4 font-rajdhani">
-                Upload background images, logos, cyclone image, etc.
-              </p>
+          {/* Upload Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm border border-neon-blue/30 rounded-2xl p-8 mb-8"
+          >
+            <h2 className="text-2xl font-bold font-orbitron text-electric-cyan mb-6">
+              Upload New Media
+            </h2>
 
-              <div className="mb-6">
-                <label className="block w-full">
-                  <div className="border-2 border-dashed border-neon-blue/30 rounded-xl p-8 text-center hover:border-neon-blue/60 transition-all cursor-pointer bg-white/5">
-                    {uploadingImage ? (
-                      <div className="space-y-3">
-                        <div className="w-12 h-12 border-4 border-neon-blue border-t-transparent rounded-full animate-spin mx-auto"></div>
-                        <p className="text-gray-300 font-rajdhani">Uploading image...</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        <div className="text-5xl">📸</div>
-                        <p className="text-neon-blue font-semibold font-rajdhani">Click to upload image</p>
-                        <p className="text-gray-400 text-sm font-rajdhani">JPG, PNG, WEBP (Max 10MB)</p>
-                      </div>
-                    )}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      disabled={uploadingImage}
-                      className="hidden"
-                    />
-                  </div>
+            {/* Form */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div>
+                <label className="block text-sm font-semibold font-rajdhani text-gray-300 mb-2">
+                  Title *
                 </label>
+                <input
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) =>
+                    setFormData({ ...formData, title: e.target.value })
+                  }
+                  placeholder="Enter media title"
+                  className="w-full px-4 py-3 bg-black/50 border border-neon-blue/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-neon-blue transition-all"
+                  required
+                />
               </div>
 
-              {/* Uploaded Images */}
-              {uploadedImages.length > 0 && (
-                <div className="space-y-3">
-                  <h4 className="font-semibold text-green-400 font-rajdhani">✅ Uploaded Images:</h4>
-                  {uploadedImages.map((item, index) => (
-                    <div key={index} className="bg-black/40 rounded-lg p-4 border border-green-500/30">
-                      <img src={item.url} alt={item.name} className="w-full h-32 object-cover rounded-lg mb-3" />
-                      <p className="text-xs text-gray-400 mb-2 font-rajdhani truncate">{item.name}</p>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={item.url}
-                          readOnly
-                          className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded text-xs text-gray-300 font-mono"
-                        />
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => copyToClipboard(item.url)}
-                          className="px-4 py-2 bg-neon-blue/20 text-neon-blue border border-neon-blue/30 rounded hover:bg-neon-blue/30 transition-all font-rajdhani text-xs font-semibold"
-                        >
-                          📋 Copy
-                        </motion.button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </motion.div>
-
-            {/* Video Upload */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm border border-neon-blue/20 rounded-2xl p-6"
-            >
-              <h3 className="text-xl font-bold font-orbitron text-electric-cyan mb-4">
-                🎬 Upload Videos
-              </h3>
-              <p className="text-gray-400 text-sm mb-4 font-rajdhani">
-                Upload intro video, promotional videos, etc.
-              </p>
-
-              <div className="mb-6">
-                <label className="block w-full">
-                  <div className="border-2 border-dashed border-purple-500/30 rounded-xl p-8 text-center hover:border-purple-500/60 transition-all cursor-pointer bg-white/5">
-                    {uploadingVideo ? (
-                      <div className="space-y-3">
-                        <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                        <p className="text-gray-300 font-rajdhani">Uploading video...</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        <div className="text-5xl">🎥</div>
-                        <p className="text-purple-400 font-semibold font-rajdhani">Click to upload video</p>
-                        <p className="text-gray-400 text-sm font-rajdhani">MP4, MOV, WEBM (Max 100MB)</p>
-                      </div>
-                    )}
-                    <input
-                      type="file"
-                      accept="video/*"
-                      onChange={handleVideoUpload}
-                      disabled={uploadingVideo}
-                      className="hidden"
-                    />
-                  </div>
+              <div>
+                <label className="block text-sm font-semibold font-rajdhani text-gray-300 mb-2">
+                  Category
                 </label>
+                <select
+                  value={formData.category}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category: e.target.value })
+                  }
+                  className="w-full px-4 py-3 bg-black/50 border border-neon-blue/30 rounded-lg text-white focus:outline-none focus:border-neon-blue transition-all"
+                >
+                  <option value="event">Event</option>
+                  <option value="sports">Sports</option>
+                  <option value="ceremony">Ceremony</option>
+                  <option value="participants">Participants</option>
+                  <option value="other">Other</option>
+                </select>
               </div>
 
-              {/* Uploaded Videos */}
-              {uploadedVideos.length > 0 && (
-                <div className="space-y-3">
-                  <h4 className="font-semibold text-green-400 font-rajdhani">✅ Uploaded Videos:</h4>
-                  {uploadedVideos.map((item, index) => (
-                    <div key={index} className="bg-black/40 rounded-lg p-4 border border-green-500/30">
-                      <video src={item.url} controls className="w-full h-32 rounded-lg mb-3 bg-black" />
-                      <p className="text-xs text-gray-400 mb-2 font-rajdhani truncate">{item.name}</p>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={item.url}
-                          readOnly
-                          className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded text-xs text-gray-300 font-mono"
-                        />
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => copyToClipboard(item.url)}
-                          className="px-4 py-2 bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded hover:bg-purple-500/30 transition-all font-rajdhani text-xs font-semibold"
-                        >
-                          📋 Copy
-                        </motion.button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </motion.div>
-          </div>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-semibold font-rajdhani text-gray-300 mb-2">
+                  Description
+                </label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                  placeholder="Enter description (optional)"
+                  rows="3"
+                  className="w-full px-4 py-3 bg-black/50 border border-neon-blue/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-neon-blue transition-all"
+                />
+              </div>
 
-          {/* How to Use */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-semibold font-rajdhani text-gray-300 mb-2">
+                  Tags (comma separated)
+                </label>
+                <input
+                  type="text"
+                  value={formData.tags}
+                  onChange={(e) =>
+                    setFormData({ ...formData, tags: e.target.value })
+                  }
+                  placeholder="e.g., gaming, tournament, finals"
+                  className="w-full px-4 py-3 bg-black/50 border border-neon-blue/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-neon-blue transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Drag and Drop Area */}
+            <div
+              className={`relative border-2 border-dashed rounded-2xl p-12 text-center transition-all ${
+                dragActive
+                  ? "border-neon-blue bg-neon-blue/10"
+                  : "border-gray-600 hover:border-neon-blue/50"
+              }`}
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                onChange={handleFileChange}
+                accept="image/*,video/*"
+                className="hidden"
+                id="fileInput"
+                disabled={uploading}
+              />
+
+              {uploading ? (
+                <div className="space-y-4">
+                  <div className="w-16 h-16 mx-auto border-4 border-neon-blue border-t-transparent rounded-full animate-spin"></div>
+                  <p className="text-xl font-semibold text-neon-blue">
+                    Uploading to Cloudinary...
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div className="text-6xl mb-4">📁</div>
+                  <p className="text-xl font-semibold text-gray-300 mb-2">
+                    Drag & Drop your file here
+                  </p>
+                  <p className="text-gray-500 mb-4">or</p>
+                  <label
+                    htmlFor="fileInput"
+                    className="inline-block px-8 py-3 bg-gradient-to-r from-neon-blue to-electric-cyan rounded-lg font-bold cursor-pointer hover:scale-105 transition-transform"
+                  >
+                    Browse Files
+                  </label>
+                  <p className="text-gray-500 text-sm mt-4">
+                    Supports: Images (JPG, PNG, WebP) & Videos (MP4, WebM, MOV)
+                  </p>
+                </>
+              )}
+            </div>
+          </motion.div>
+
+          {/* Uploaded Media Gallery */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mt-8 bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm border border-yellow-500/20 rounded-2xl p-6"
+            className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm border border-neon-blue/30 rounded-2xl p-8"
           >
-            <h3 className="text-lg font-bold font-orbitron text-yellow-400 mb-4">
-              💡 How to Use Uploaded URLs
-            </h3>
-            <div className="space-y-4 text-sm text-gray-300 font-rajdhani">
-              <div>
-                <p className="font-semibold text-white mb-2">For Images (in JSX/React):</p>
-                <code className="block bg-black/60 p-3 rounded border border-white/10 text-green-400 font-mono text-xs">
-                  &lt;img src="PASTE_CLOUDINARY_URL_HERE" alt="Description" /&gt;
-                </code>
-              </div>
-              <div>
-                <p className="font-semibold text-white mb-2">For Videos (in JSX/React):</p>
-                <code className="block bg-black/60 p-3 rounded border border-white/10 text-green-400 font-mono text-xs">
-                  &lt;video src="PASTE_CLOUDINARY_URL_HERE" controls /&gt;
-                </code>
-              </div>
-              <div>
-                <p className="font-semibold text-white mb-2">For Background Images (CSS):</p>
-                <code className="block bg-black/60 p-3 rounded border border-white/10 text-green-400 font-mono text-xs">
-                  backgroundImage: 'url(PASTE_CLOUDINARY_URL_HERE)'
-                </code>
-              </div>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold font-orbitron text-electric-cyan">
+                Uploaded Media ({uploadedMedia.length})
+              </h2>
+              <button
+                onClick={fetchMedia}
+                className="px-4 py-2 bg-neon-blue/20 border border-neon-blue/50 rounded-lg hover:bg-neon-blue/30 transition-all"
+              >
+                🔄 Refresh
+              </button>
             </div>
+
+            {loading ? (
+              <div className="flex justify-center py-20">
+                <div className="w-12 h-12 border-4 border-neon-blue border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            ) : uploadedMedia.length === 0 ? (
+              <div className="text-center py-20 text-gray-500">
+                <p className="text-xl">No media uploaded yet</p>
+                <p className="text-sm mt-2">
+                  Start by uploading your first image or video above
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {uploadedMedia.map((item) => (
+                  <motion.div
+                    key={item._id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-black/50 border border-gray-700 rounded-xl overflow-hidden hover:border-neon-blue/50 transition-all group"
+                  >
+                    {/* Media Preview */}
+                    <div className="relative aspect-video bg-black">
+                      {item.type === "image" ? (
+                        <img
+                          src={item.secureUrl}
+                          alt={item.title}
+                          className="w-full h-full object-contain"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="relative w-full h-full">
+                          <video
+                            src={item.secureUrl}
+                            className="w-full h-full object-contain"
+                            controls
+                          />
+                        </div>
+                      )}
+
+                      {/* Delete Button */}
+                      <button
+                        onClick={() => handleDelete(item._id)}
+                        className="absolute top-2 right-2 p-2 bg-red-600/80 hover:bg-red-600 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+
+                    {/* Media Info */}
+                    <div className="p-4">
+                      <h3 className="font-bold text-lg text-white mb-1 truncate">
+                        {item.title}
+                      </h3>
+                      {item.description && (
+                        <p className="text-gray-400 text-sm mb-2 line-clamp-2">
+                          {item.description}
+                        </p>
+                      )}
+
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="px-2 py-1 bg-neon-blue/20 text-neon-blue text-xs rounded">
+                          {item.type}
+                        </span>
+                        <span className="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded">
+                          {item.category}
+                        </span>
+                      </div>
+
+                      {/* URL Copy */}
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={item.secureUrl}
+                          readOnly
+                          className="flex-1 px-3 py-2 bg-black/50 border border-gray-600 rounded text-xs text-gray-400 truncate"
+                        />
+                        <button
+                          onClick={() => copyToClipboard(item.secureUrl)}
+                          className="px-3 py-2 bg-neon-blue/20 border border-neon-blue/50 rounded hover:bg-neon-blue/30 transition-all text-sm"
+                        >
+                          📋
+                        </button>
+                      </div>
+
+                      <p className="text-gray-500 text-xs mt-2">
+                        {new Date(item.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </motion.div>
         </div>
       </div>

@@ -7,56 +7,75 @@ const VIPCarousel = () => {
   const carouselRef = useRef(null);
 
   // VIP Guests Data - Replace with actual guest photos
-  const vipGuests = [
-    {
-      id: 1,
-      name: "Dr. Rajesh Kumar",
-      designation: "Olympic Gold Medalist",
-      year: "Zenith 2023",
-      image:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
-    },
-    {
-      id: 2,
-      name: "Priya Sharma",
-      designation: "National Cricket Captain",
-      year: "Zenith 2024",
-      image:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
-    },
-    {
-      id: 3,
-      name: "Arjun Mehta",
-      designation: "Chess Grandmaster",
-      year: "Zenith 2022",
-      image:
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
-    },
-    {
-      id: 4,
-      name: "Simran Singh",
-      designation: "Pro E-Sports Champion",
-      year: "Zenith 2024",
-      image:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop",
-    },
-    {
-      id: 5,
-      name: "Vikram Malhotra",
-      designation: "Athletics World Record Holder",
-      year: "Zenith 2023",
-      image:
-        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop",
-    },
-    {
-      id: 6,
-      name: "Ananya Desai",
-      designation: "Badminton International Player",
-      year: "Zenith 2025",
-      image:
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop",
-    },
-  ];
+ const vipGuests = [
+   {
+    id: 7,
+    name: "Mr. Rishana K Devadiga",
+    designation: "Captain of Maharashtra Kabaddi Team and UP Yoddha",
+    year: "Zenith 2019 (Guest of Honour)",
+    image:
+      "https://res.cloudinary.com/dqki29mbg/image/upload/v1708458744/Zenith-24/bwm84dbzmcwms62g1j3b.jpg",
+  },
+  {
+    id: 8,
+    name: "Mr. Vishal Mane",
+    designation:
+      "First player to complete 100 PKL matches, Top Defender of Dabangg Delhi K.C.",
+    year: "Zenith 2019 (Guest of Honour)",
+    image:
+      "https://res.cloudinary.com/dqki29mbg/image/upload/v1708458745/Zenith-24/ceuxn5zq5wxvjhali4vo.png",
+  },
+  {
+    id: 9,
+    name: "Mr. Murali Krishna",
+    designation: "Indian Basketball Captain",
+    year: "Zenith 2020 (Guest of Honour)",
+    image:
+      "https://res.cloudinary.com/dqki29mbg/image/upload/v1708458779/Zenith-24/ixsbnrw62yf7zxguibp5.jpg",
+  },
+  {
+    id: 10,
+    name: "Mr. Sachin Baby",
+    designation: "RCB Left-hand Batsman (2016–17 & 2021)",
+    year: "Zenith 2022 (Guest of Honour)",
+    image:
+      "https://res.cloudinary.com/dqki29mbg/image/upload/v1708459688/Zenith-24/pl2guez2miasibgq1vgl.png",
+  },
+  {
+    id: 11,
+    name: "Mr. Sangram Choughle",
+    designation: "Mr. Universe, Mr. Asia, Mr. India",
+    year: "Zenith 2017 (Guest of Honour)",
+    image:
+      "https://res.cloudinary.com/dqki29mbg/image/upload/v1708458745/Zenith-24/vmpnvp1atxin1lz3icdj.png",
+  },
+  {
+    id: 12,
+    name: "Mr. Unmukt Chand",
+    designation: "Indian Cricketer, U-19 World Cup Captain (2012)",
+    year: "Zenith 2018 (Guest of Honour)",
+    image:
+      "https://res.cloudinary.com/dqki29mbg/image/upload/v1708458745/Zenith-24/euntdtajxj1exz5te9mh.png",
+  },
+  {
+    id: 13,
+    name: "Mr. Sambhaji Kadam",
+    designation:
+      "Former Indian Basketball Captain, Head Coach of Army Team",
+    year: "Zenith 2021 (Guest of Honour)",
+    image:
+      "https://res.cloudinary.com/dqki29mbg/image/upload/v1708459687/Zenith-24/yhsbo0ojfpglgjmxudjs.png",
+  },
+  {
+    id: 14,
+    name: "Mr. Pardeep Narwal",
+    designation: "Former Professional Kabaddi Player",
+    year: "Zenith 2024 (Guest of Honour)",
+    image:
+      "https://res.cloudinary.com/dyamfzeea/image/upload/v1738695799/Images%20of%20guest/gcjiyt8tqu4y2usbqvyx.jpg",
+  },
+];
+
 
   // Auto-slide functionality
   useEffect(() => {
@@ -80,13 +99,6 @@ const VIPCarousel = () => {
   const handleNext = () => {
     setCurrentIndex((prev) => (prev + 1) % vipGuests.length);
   };
-
-  // Calculate visible cards (show all cards)
-  const getVisibleCards = () => {
-    return vipGuests.map((_, index) => index);
-  };
-
-  const visibleIndices = getVisibleCards();
 
   // Calculate position relative to current index
   const getCardPosition = (index) => {
