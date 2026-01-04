@@ -11,7 +11,6 @@ const womenTournamentSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      index: true,
     },
     mobileNumber: {
       type: String,
