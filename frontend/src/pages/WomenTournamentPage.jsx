@@ -332,7 +332,7 @@ const WomenTournamentPage = () => {
         selectedCategory: formData.selectedCategory,
         selectedSports: formData.selectedSports,
         category3TeamName: formData.category3TeamName || undefined,
-        paymentScreenshot: formData.paymentScreenshotUrl,
+        paymentScreenshot: formData.paymentScreenshotUrl, // Cloudinary URL
       });
 
       // Dismiss loading toast
@@ -340,7 +340,18 @@ const WomenTournamentPage = () => {
 
       if (response.data.success) {
         toast.success(
-          `Registration submitted successfully! Total Amount: ₹${response.data.data.totalAmount}`
+          `Registration submitted successfully! Your registration is pending admin approval. Total Amount: ₹${response.data.data.totalAmount}`,
+          {
+            duration: 6000, // Show for 6 seconds
+          }
+        );
+
+        // Show additional info toast
+        toast.info(
+          "Admin will review your payment screenshot and approve your registration soon.",
+          {
+            duration: 5000,
+          }
         );
 
         // Reset form
@@ -475,10 +486,21 @@ const WomenTournamentPage = () => {
 
   const handleChange = (e) => {
     const {name, value} = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+
+    // If category is being changed, clear selected sports and team name
+    if (name === "selectedCategory") {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+        selectedSports: [], // Clear sports when category changes
+        category3TeamName: "", // Clear team name when category changes
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const scrollToForm = () => {

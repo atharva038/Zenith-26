@@ -106,13 +106,35 @@ const AdminWomenTournament = () => {
 
   const handleStatusUpdate = async (id, status, paymentStatus) => {
     try {
+      console.log("Updating status:", {id, status, paymentStatus});
+
+      // Build update object - only send fields that are provided
+      const updateData = {};
+      if (status !== undefined && status !== null) updateData.status = status;
+      if (paymentStatus !== undefined && paymentStatus !== null)
+        updateData.paymentStatus = paymentStatus;
+
+      // If nothing to update, return early
+      if (Object.keys(updateData).length === 0) {
+        console.log("No changes to update");
+        return;
+      }
+
       const response = await api.patch(
         `/women-tournament/admin/registrations/${id}/status`,
-        {status, paymentStatus}
+        updateData
       );
 
       if (response.data.success) {
-        toast.success("Status updated successfully");
+        // Build a descriptive message
+        let message = "Updated: ";
+        const updates = [];
+        if (updateData.status) updates.push(`Status → ${status}`);
+        if (updateData.paymentStatus)
+          updates.push(`Payment → ${paymentStatus}`);
+        message += updates.join(", ");
+
+        toast.success(message);
         fetchRegistrations();
         if (selectedRegistration?._id === id) {
           setSelectedRegistration(response.data.data);
@@ -120,8 +142,18 @@ const AdminWomenTournament = () => {
       }
     } catch (error) {
       console.error("Update Error:", error);
-      toast.error("Failed to update status");
+      toast.error(error.response?.data?.message || "Failed to update status");
     }
+  };
+
+  // Separate handler for status only
+  const handleStatusChange = async (id, newStatus) => {
+    await handleStatusUpdate(id, newStatus, undefined);
+  };
+
+  // Separate handler for payment status only
+  const handlePaymentStatusChange = async (id, newPaymentStatus) => {
+    await handleStatusUpdate(id, undefined, newPaymentStatus);
   };
 
   const handleDelete = async (id) => {
@@ -780,10 +812,9 @@ const AdminWomenTournament = () => {
                     <select
                       value={selectedRegistration.status}
                       onChange={(e) =>
-                        handleStatusUpdate(
+                        handleStatusChange(
                           selectedRegistration._id,
-                          e.target.value,
-                          selectedRegistration.paymentStatus
+                          e.target.value
                         )
                       }
                       className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-white"
@@ -800,9 +831,8 @@ const AdminWomenTournament = () => {
                     <select
                       value={selectedRegistration.paymentStatus}
                       onChange={(e) =>
-                        handleStatusUpdate(
+                        handlePaymentStatusChange(
                           selectedRegistration._id,
-                          selectedRegistration.status,
                           e.target.value
                         )
                       }
@@ -833,6 +863,22 @@ const AdminWomenTournament = () => {
                         )
                       }
                     />
+
+                    {/* Quick Approve Button (only show if pending) */}
+                    {selectedRegistration.status === "pending" && (
+                      <button
+                        onClick={() => {
+                          handleStatusUpdate(
+                            selectedRegistration._id,
+                            "confirmed",
+                            "completed"
+                          );
+                        }}
+                        className="w-full mt-4 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 rounded-lg text-white font-semibold transition-all shadow-lg shadow-green-500/20"
+                      >
+                        ✅ Approve Registration & Mark Payment Complete
+                      </button>
+                    )}
                   </div>
                 )}
 

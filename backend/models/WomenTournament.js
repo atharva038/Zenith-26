@@ -36,7 +36,7 @@ const womenTournamentSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["pending", "confirmed", "cancelled"],
-      default: "confirmed",
+      default: "pending",
     },
     paymentStatus: {
       type: String,
