@@ -2,6 +2,10 @@ import express from "express";
 import WomenTournament from "../models/WomenTournament.js";
 import {authMiddleware} from "../middleware/auth.middleware.js";
 import {uploadPaymentScreenshot} from "../middleware/cloudinaryUpload.middleware.js";
+import {
+  sendPendingWomenTournamentEmail,
+  sendApprovedWomenTournamentEmail,
+} from "../services/email.service.js";
 
 const router = express.Router();
 
@@ -10,6 +14,7 @@ router.post("/register", async (req, res) => {
   try {
     const {
       name,
+      email,
       registrationNumber,
       mobileNumber,
       selectedCategory,
@@ -19,10 +24,25 @@ router.post("/register", async (req, res) => {
     } = req.body;
 
     // Validation
-    if (!name || !registrationNumber || !mobileNumber || !selectedCategory) {
+    if (
+      !name ||
+      !email ||
+      !registrationNumber ||
+      !mobileNumber ||
+      !selectedCategory
+    ) {
       return res.status(400).json({
         success: false,
         message: "Please provide all required fields",
+      });
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a valid email address",
       });
     }
 
@@ -68,6 +88,7 @@ router.post("/register", async (req, res) => {
     // Create registration
     const registration = new WomenTournament({
       name,
+      email: email.toLowerCase(),
       registrationNumber,
       mobileNumber,
       selectedCategory,
@@ -79,6 +100,21 @@ router.post("/register", async (req, res) => {
     });
 
     await registration.save();
+
+    // Send pending registration email (non-blocking)
+    sendPendingWomenTournamentEmail({
+      name: registration.name,
+      email: registration.email,
+      registrationNumber: registration.registrationNumber,
+      selectedSports: registration.selectedSports,
+      selectedCategory: registration.selectedCategory,
+      totalAmount: registration.totalAmount,
+    }).catch((err) => {
+      console.error(
+        "Failed to send women tournament pending email:",
+        err.message
+      );
+    });
 
     res.status(201).json({
       success: true,
@@ -312,6 +348,17 @@ router.patch(
     try {
       const {status, paymentStatus, notes} = req.body;
 
+      // First, get the current registration to check previous status
+      const currentRegistration = await WomenTournament.findById(req.params.id);
+      if (!currentRegistration) {
+        return res.status(404).json({
+          success: false,
+          message: "Registration not found",
+        });
+      }
+
+      const previousStatus = currentRegistration.status;
+
       const updateData = {};
       if (status) updateData.status = status;
       if (paymentStatus) updateData.paymentStatus = paymentStatus;
@@ -323,10 +370,24 @@ router.patch(
         {new: true, runValidators: true}
       );
 
-      if (!registration) {
-        return res.status(404).json({
-          success: false,
-          message: "Registration not found",
+      // Send approval email if status changed to confirmed
+      if (
+        status === "confirmed" &&
+        previousStatus !== "confirmed" &&
+        registration.email
+      ) {
+        sendApprovedWomenTournamentEmail({
+          name: registration.name,
+          email: registration.email,
+          registrationNumber: registration.registrationNumber,
+          selectedSports: registration.selectedSports,
+          selectedCategory: registration.selectedCategory,
+          totalAmount: registration.totalAmount,
+        }).catch((err) => {
+          console.error(
+            "Failed to send women tournament approval email:",
+            err.message
+          );
         });
       }
 

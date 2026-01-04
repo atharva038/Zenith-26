@@ -66,6 +66,14 @@ const RegistrationCard = ({registration, onViewDetails, onUpdateStatus}) => {
             ₹{registration.totalAmount || 0}
           </p>
         </div>
+        {registration.email && (
+          <div className="col-span-2">
+            <p className="text-gray-500 text-xs mb-1">Email</p>
+            <p className="text-white font-medium text-sm truncate">
+              {registration.email}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Sports List */}

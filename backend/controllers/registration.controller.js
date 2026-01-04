@@ -1,6 +1,10 @@
 import Registration from "../models/Registration.js";
 import Event from "../models/Event.js";
 import {Parser} from "json2csv";
+import {
+  sendPendingRegistrationEmail,
+  sendApprovedRegistrationEmail,
+} from "../services/email.service.js";
 
 // Create new registration
 export const createRegistration = async (req, res) => {
@@ -126,6 +130,17 @@ export const createRegistration = async (req, res) => {
 
     await registration.save();
 
+    // Send pending registration email (non-blocking)
+    sendPendingRegistrationEmail({
+      name: registration.name,
+      eventName: registration.eventName,
+      registrationNumber: registration.registrationNumber,
+      email: registration.email,
+      institution: registration.institution,
+    }).catch((err) => {
+      console.error("Failed to send pending registration email:", err.message);
+    });
+
     res.status(201).json({
       success: true,
       message: "Registration successful",
@@ -244,7 +259,10 @@ export const updateRegistrationStatus = async (req, res) => {
   try {
     const {status, notes} = req.body;
 
-    const registration = await Registration.findById(req.params.id);
+    const registration = await Registration.findById(req.params.id).populate(
+      "eventId",
+      "name eventDate venue"
+    );
 
     if (!registration) {
       return res.status(404).json({
@@ -253,10 +271,26 @@ export const updateRegistrationStatus = async (req, res) => {
       });
     }
 
+    const previousStatus = registration.status;
     registration.status = status;
     if (notes) registration.notes = notes;
 
     await registration.save();
+
+    // Send approval email if status changed to confirmed
+    if (status === "confirmed" && previousStatus !== "confirmed") {
+      sendApprovedRegistrationEmail({
+        name: registration.name,
+        eventName: registration.eventName,
+        registrationNumber: registration.registrationNumber,
+        email: registration.email,
+        institution: registration.institution,
+        eventDate: registration.eventId?.eventDate,
+        venue: registration.eventId?.venue,
+      }).catch((err) => {
+        console.error("Failed to send approval email:", err.message);
+      });
+    }
 
     res.json({
       success: true,

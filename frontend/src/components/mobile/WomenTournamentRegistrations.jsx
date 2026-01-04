@@ -59,6 +59,7 @@ const WomenTournamentRegistrations = ({
       // Search filter
       const matchesSearch =
         registration.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        registration.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         registration.registrationNumber
           ?.toLowerCase()
           .includes(searchQuery.toLowerCase()) ||

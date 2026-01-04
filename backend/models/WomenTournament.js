@@ -7,6 +7,13 @@ const womenTournamentSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    email: {
+      type: String,
+      required: true,
+      lowercase: true,
+      trim: true,
+      index: true,
+    },
     registrationNumber: {
       type: String,
       required: true,

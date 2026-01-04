@@ -34,6 +34,7 @@ const WomenTournamentPage = () => {
   const [isUploadingScreenshot, setIsUploadingScreenshot] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
+    email: "",
     registrationNumber: "",
     mobileNumber: "",
     selectedSports: [],
@@ -290,6 +291,17 @@ const WomenTournamentPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validate email
+    if (!formData.email) {
+      toast.error("Please enter your email address!");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error("Please enter a valid email address!");
+      return;
+    }
+
     // Validate at least one sport is selected
     if (formData.selectedSports.length === 0) {
       toast.error("Please select at least one sport!");
@@ -327,6 +339,7 @@ const WomenTournamentPage = () => {
       // Submit to backend
       const response = await api.post("/women-tournament/register", {
         name: formData.name,
+        email: formData.email,
         registrationNumber: formData.registrationNumber,
         mobileNumber: formData.mobileNumber,
         selectedCategory: formData.selectedCategory,
@@ -357,6 +370,7 @@ const WomenTournamentPage = () => {
         // Reset form
         setFormData({
           name: "",
+          email: "",
           registrationNumber: "",
           mobileNumber: "",
           selectedSports: [],
@@ -1059,6 +1073,22 @@ const WomenTournamentPage = () => {
                     onChange={handleChange}
                     required
                     placeholder="Your answer"
+                    className="w-full border-b-2 border-white/20 focus:border-pink-500 outline-none py-2 text-white placeholder-gray-400 bg-transparent transition-colors"
+                  />
+                </div>
+
+                {/* Email */}
+                <div className="border-b border-white/10 pb-6">
+                  <label className="block text-white font-medium mb-4 text-lg">
+                    Email <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    placeholder="your.email@example.com"
                     className="w-full border-b-2 border-white/20 focus:border-pink-500 outline-none py-2 text-white placeholder-gray-400 bg-transparent transition-colors"
                   />
                 </div>
