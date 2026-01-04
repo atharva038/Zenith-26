@@ -98,6 +98,20 @@ const AdminWomenTournament = () => {
     fetchRegistrations();
   }, [fetchRegistrations]);
 
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (showDetailsModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [showDetailsModal]);
+
   // Filter registrations by sport on client-side (since backend doesn't support it yet)
   const filteredRegistrations = registrations.filter((reg) => {
     if (!filters.sport) return true;
@@ -717,195 +731,281 @@ const AdminWomenTournament = () => {
               initial={{scale: 0.9, y: 20}}
               animate={{scale: 1, y: 0}}
               exit={{scale: 0.9, y: 20}}
-              className="bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-2xl p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              className="bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex justify-between items-start mb-6">
-                <h2 className="text-2xl md:text-3xl font-bold text-white">
-                  Registration Details
-                </h2>
-                <button
-                  onClick={() => setShowDetailsModal(false)}
-                  className="text-gray-400 hover:text-white transition-colors text-2xl"
-                >
-                  ×
-                </button>
-              </div>
-
-              <div className="space-y-6">
-                {/* Participant Information */}
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                    <span>👤</span> Participant Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <div className="text-gray-400 text-sm mb-1">Name</div>
-                      <div className="text-white font-medium">
-                        {selectedRegistration.name}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-gray-400 text-sm mb-1">
-                        Registration Number
-                      </div>
-                      <div className="text-white font-medium">
-                        {selectedRegistration.registrationNumber}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-gray-400 text-sm mb-1">
-                        Mobile Number
-                      </div>
-                      <div className="text-white font-medium">
-                        {selectedRegistration.mobileNumber}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-gray-400 text-sm mb-1">Category</div>
-                      <div className="text-white font-medium">
-                        {selectedRegistration.selectedCategory?.replace(
-                          "category",
-                          "Category "
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Selected Sports */}
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                    <span>🏆</span> Selected Sports (
-                    {selectedRegistration.selectedSports?.length || 0})
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedRegistration.selectedSports?.map(
-                      (sport, index) => (
-                        <span
-                          key={index}
-                          className="px-3 py-2 bg-blue-500/20 text-blue-400 rounded-lg text-sm border border-blue-500/30"
-                        >
-                          {sport}
-                        </span>
-                      )
-                    )}
-                  </div>
-                </div>
-
-                {/* Team Name */}
-                {selectedRegistration.category3TeamName && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
-                      <span>👥</span> Team Name
-                    </h3>
-                    <div className="text-white font-medium">
-                      {selectedRegistration.category3TeamName}
-                    </div>
-                  </div>
-                )}
-
-                {/* Status and Payment */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-gray-400 text-sm mb-2">Status</div>
-                    <select
-                      value={selectedRegistration.status}
-                      onChange={(e) =>
-                        handleStatusChange(
-                          selectedRegistration._id,
-                          e.target.value
-                        )
-                      }
-                      className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-white"
-                    >
-                      <option value="pending">Pending</option>
-                      <option value="confirmed">Confirmed</option>
-                      <option value="cancelled">Cancelled</option>
-                    </select>
-                  </div>
-                  <div>
-                    <div className="text-gray-400 text-sm mb-2">
-                      Payment Status
-                    </div>
-                    <select
-                      value={selectedRegistration.paymentStatus}
-                      onChange={(e) =>
-                        handlePaymentStatusChange(
-                          selectedRegistration._id,
-                          e.target.value
-                        )
-                      }
-                      className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-white"
-                    >
-                      <option value="pending">Pending</option>
-                      <option value="completed">Completed</option>
-                      <option value="failed">Failed</option>
-                      <option value="not_required">Not Required</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Payment Screenshot */}
-                {selectedRegistration.paymentScreenshot && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
-                      <span>🖼️</span> Payment Screenshot
-                    </h3>
-                    <img
-                      src={selectedRegistration.paymentScreenshot}
-                      alt="Payment Screenshot"
-                      className="w-full rounded-lg border border-white/10 cursor-pointer hover:opacity-90 transition-opacity"
-                      onClick={() =>
-                        window.open(
-                          selectedRegistration.paymentScreenshot,
-                          "_blank"
-                        )
-                      }
-                    />
-
-                    {/* Quick Approve Button (only show if pending) */}
-                    {selectedRegistration.status === "pending" && (
-                      <button
-                        onClick={() => {
-                          handleStatusUpdate(
-                            selectedRegistration._id,
-                            "confirmed",
-                            "completed"
-                          );
-                        }}
-                        className="w-full mt-4 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 rounded-lg text-white font-semibold transition-all shadow-lg shadow-green-500/20"
-                      >
-                        ✅ Approve Registration & Mark Payment Complete
-                      </button>
-                    )}
-                  </div>
-                )}
-
-                {/* Total Amount */}
-                <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
-                  <div className="text-gray-400 text-sm mb-1">Total Amount</div>
-                  <div className="text-3xl font-bold text-green-400">
-                    ₹{selectedRegistration.totalAmount}
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex gap-3 pt-4">
+              {/* Fixed Header */}
+              <div className="p-6 md:p-8 border-b border-white/10 flex-shrink-0">
+                <div className="flex justify-between items-start">
+                  <h2 className="text-2xl md:text-3xl font-bold text-white">
+                    Registration Details
+                  </h2>
                   <button
                     onClick={() => setShowDetailsModal(false)}
-                    className="flex-1 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg text-white font-semibold transition-all"
+                    className="text-gray-400 hover:text-white transition-colors text-2xl"
                   >
-                    Close
-                  </button>
-                  <button
-                    onClick={() => handleDelete(selectedRegistration._id)}
-                    className="flex-1 px-6 py-3 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-red-400 font-semibold transition-all"
-                  >
-                    Delete
+                    ×
                   </button>
                 </div>
               </div>
+
+              {/* Scrollable Content */}
+              <div className="flex-1 overflow-y-auto p-6 md:p-8">
+                <div className="space-y-6">
+                  {/* Participant Information */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                      <span>👤</span> Participant Information
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <div className="text-gray-400 text-sm mb-1">Name</div>
+                        <div className="text-white font-medium">
+                          {selectedRegistration.name}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-gray-400 text-sm mb-1">
+                          Registration Number
+                        </div>
+                        <div className="text-white font-medium">
+                          {selectedRegistration.registrationNumber}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-gray-400 text-sm mb-1">
+                          Mobile Number
+                        </div>
+                        <div className="text-white font-medium">
+                          {selectedRegistration.mobileNumber}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-gray-400 text-sm mb-1">
+                          Category
+                        </div>
+                        <div className="text-white font-medium">
+                          {selectedRegistration.selectedCategory?.replace(
+                            "category",
+                            "Category "
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Selected Sports */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                      <span>🏆</span> Selected Sports (
+                      {selectedRegistration.selectedSports?.length || 0})
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedRegistration.selectedSports?.map(
+                        (sport, index) => (
+                          <span
+                            key={index}
+                            className="px-3 py-2 bg-blue-500/20 text-blue-400 rounded-lg text-sm border border-blue-500/30"
+                          >
+                            {sport}
+                          </span>
+                        )
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Team Name */}
+                  {selectedRegistration.category3TeamName && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
+                        <span>👥</span> Team Name
+                      </h3>
+                      <div className="text-white font-medium">
+                        {selectedRegistration.category3TeamName}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Status Section - Single Unified View */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                      <span>📊</span> Status Management
+                    </h3>
+
+                    {/* Current Status Display */}
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-4 mb-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <div className="text-gray-400 text-xs mb-1">
+                            Registration
+                          </div>
+                          <div
+                            className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                              selectedRegistration.status === "confirmed"
+                                ? "bg-green-500/20 text-green-400"
+                                : selectedRegistration.status === "pending"
+                                ? "bg-yellow-500/20 text-yellow-400"
+                                : "bg-red-500/20 text-red-400"
+                            }`}
+                          >
+                            {selectedRegistration.status}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-400 text-xs mb-1">
+                            Payment
+                          </div>
+                          <div
+                            className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                              selectedRegistration.paymentStatus === "completed"
+                                ? "bg-green-500/20 text-green-400"
+                                : selectedRegistration.paymentStatus ===
+                                  "pending"
+                                ? "bg-yellow-500/20 text-yellow-400"
+                                : selectedRegistration.paymentStatus ===
+                                  "failed"
+                                ? "bg-red-500/20 text-red-400"
+                                : "bg-gray-500/20 text-gray-400"
+                            }`}
+                          >
+                            {selectedRegistration.paymentStatus}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Quick Actions */}
+                    {selectedRegistration.status === "pending" && (
+                      <div className="space-y-2">
+                        <button
+                          onClick={() => {
+                            handleStatusUpdate(
+                              selectedRegistration._id,
+                              "confirmed",
+                              "completed"
+                            );
+                          }}
+                          className="w-full px-4 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 rounded-lg text-white font-semibold transition-all shadow-lg shadow-green-500/20 text-sm"
+                        >
+                          ✅ Approve & Confirm Payment
+                        </button>
+                        <button
+                          onClick={() => {
+                            handleStatusChange(
+                              selectedRegistration._id,
+                              "cancelled"
+                            );
+                          }}
+                          className="w-full px-4 py-2.5 bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 rounded-lg text-red-400 font-semibold transition-all text-sm"
+                        >
+                          ❌ Reject Registration
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Advanced Controls (Collapsed by default) */}
+                    <details className="mt-3">
+                      <summary className="cursor-pointer text-gray-400 text-sm hover:text-white transition-colors">
+                        Advanced Status Controls
+                      </summary>
+                      <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3 p-3 bg-black/20 rounded-lg">
+                        <div>
+                          <label className="text-gray-400 text-xs mb-1 block">
+                            Registration Status
+                          </label>
+                          <select
+                            value={selectedRegistration.status}
+                            onChange={(e) =>
+                              handleStatusChange(
+                                selectedRegistration._id,
+                                e.target.value
+                              )
+                            }
+                            className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-white text-sm"
+                          >
+                            <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="cancelled">Cancelled</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-gray-400 text-xs mb-1 block">
+                            Payment Status
+                          </label>
+                          <select
+                            value={selectedRegistration.paymentStatus}
+                            onChange={(e) =>
+                              handlePaymentStatusChange(
+                                selectedRegistration._id,
+                                e.target.value
+                              )
+                            }
+                            className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-white text-sm"
+                          >
+                            <option value="pending">Pending</option>
+                            <option value="completed">Completed</option>
+                            <option value="failed">Failed</option>
+                            <option value="not_required">Not Required</option>
+                          </select>
+                        </div>
+                      </div>
+                    </details>
+                  </div>
+
+                  {/* Payment Screenshot */}
+                  {selectedRegistration.paymentScreenshot && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
+                        <span>🖼️</span> Payment Screenshot
+                      </h3>
+                      <div className="relative">
+                        <img
+                          src={selectedRegistration.paymentScreenshot}
+                          alt="Payment Screenshot"
+                          className="w-full max-h-[300px] md:max-h-[400px] object-contain rounded-lg border border-white/10 cursor-pointer hover:opacity-90 transition-opacity bg-black/20"
+                          onClick={() =>
+                            window.open(
+                              selectedRegistration.paymentScreenshot,
+                              "_blank"
+                            )
+                          }
+                        />
+                        <div className="text-xs text-gray-400 mt-2 text-center">
+                          Click image to view full size
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Total Amount */}
+                  <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
+                    <div className="text-gray-400 text-sm mb-1">
+                      Total Amount
+                    </div>
+                    <div className="text-3xl font-bold text-green-400">
+                      ₹{selectedRegistration.totalAmount}
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-3 pt-4">
+                    <button
+                      onClick={() => setShowDetailsModal(false)}
+                      className="flex-1 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg text-white font-semibold transition-all"
+                    >
+                      Close
+                    </button>
+                    <button
+                      onClick={() => handleDelete(selectedRegistration._id)}
+                      className="flex-1 px-6 py-3 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-red-400 font-semibold transition-all"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+                {/* End Scrollable Content */}
+              </div>
+              {/* End Modal Container */}
             </motion.div>
           </motion.div>
         )}

@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "react-toastify";
+import {useState, useEffect, useCallback} from "react";
+import {useNavigate, Link} from "react-router-dom";
+import {motion, AnimatePresence} from "framer-motion";
+import {toast} from "react-toastify";
 import api from "../config/api";
 import AdminLayout from "../components/AdminLayout";
 
@@ -12,6 +12,7 @@ const AdminMarathon = () => {
   const [loading, setLoading] = useState(true);
   const [selectedRegistration, setSelectedRegistration] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true); // Add missing state
   const [filters, setFilters] = useState({
     category: "",
     status: "",
@@ -169,12 +170,19 @@ const AdminMarathon = () => {
     }
   };
 
-if (loading) {
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem("adminToken");
+    toast.success("Logged out successfully");
+    navigate("/admin/login");
+  };
+
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-black via-[#0a0a18] to-black flex items-center justify-center">
         <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          animate={{rotate: 360}}
+          transition={{duration: 1, repeat: Infinity, ease: "linear"}}
           className="w-16 h-16 border-4 border-neon-blue border-t-transparent rounded-full"
         />
       </div>
@@ -187,9 +195,9 @@ if (loading) {
       <AnimatePresence>
         {sidebarOpen && (
           <motion.div
-            initial={{ x: -300 }}
-            animate={{ x: 0 }}
-            exit={{ x: -300 }}
+            initial={{x: -300}}
+            animate={{x: 0}}
+            exit={{x: -300}}
             className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-gray-900/95 to-black/95 backdrop-blur-xl border-r border-neon-blue/20 z-50"
           >
             {/* Logo */}
@@ -206,7 +214,7 @@ if (loading) {
             <nav className="p-4 space-y-2">
               <motion.button
                 onClick={() => navigate("/admin/dashboard")}
-                whileHover={{ x: 5 }}
+                whileHover={{x: 5}}
                 className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all font-rajdhani text-gray-400 hover:text-white hover:bg-white/5"
               >
                 <span className="text-xl">📊</span>
@@ -215,7 +223,7 @@ if (loading) {
 
               <motion.button
                 onClick={() => navigate("/admin/events")}
-                whileHover={{ x: 5 }}
+                whileHover={{x: 5}}
                 className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all font-rajdhani text-gray-400 hover:text-white hover:bg-white/5"
               >
                 <span className="text-xl">�</span>
@@ -224,7 +232,7 @@ if (loading) {
 
               <motion.button
                 onClick={() => navigate("/admin/marathon")}
-                whileHover={{ x: 5 }}
+                whileHover={{x: 5}}
                 className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all font-rajdhani bg-gradient-to-r from-neon-blue/20 to-electric-cyan/20 border border-neon-blue/50 text-white"
               >
                 <span className="text-xl">🏃</span>
@@ -233,7 +241,7 @@ if (loading) {
 
               <motion.button
                 onClick={() => navigate("/admin/dashboard")}
-                whileHover={{ x: 5 }}
+                whileHover={{x: 5}}
                 className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all font-rajdhani text-gray-400 hover:text-white hover:bg-white/5"
               >
                 <span className="text-xl">👥</span>
@@ -242,7 +250,7 @@ if (loading) {
 
               <motion.button
                 onClick={() => navigate("/admin/dashboard")}
-                whileHover={{ x: 5 }}
+                whileHover={{x: 5}}
                 className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all font-rajdhani text-gray-400 hover:text-white hover:bg-white/5"
               >
                 <span className="text-xl">🖼️</span>
@@ -251,7 +259,7 @@ if (loading) {
 
               <motion.button
                 onClick={() => navigate("/admin/dashboard")}
-                whileHover={{ x: 5 }}
+                whileHover={{x: 5}}
                 className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all font-rajdhani text-gray-400 hover:text-white hover:bg-white/5"
               >
                 <span className="text-xl">⚙️</span>
@@ -263,8 +271,8 @@ if (loading) {
             <div className="absolute bottom-6 left-0 right-0 px-4">
               <motion.button
                 onClick={handleLogout}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={{scale: 1.02}}
+                whileTap={{scale: 0.98}}
                 className="w-full px-4 py-3 bg-red-600/20 border border-red-500/50 rounded-lg text-red-400 hover:bg-red-600/30 transition-all font-rajdhani font-semibold"
               >
                 🚪 Logout
@@ -285,8 +293,8 @@ if (loading) {
           <div className="flex items-center justify-between px-8 py-4">
             <div className="flex items-center space-x-4">
               <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+                whileHover={{scale: 1.1}}
+                whileTap={{scale: 0.9}}
                 onClick={() => setSidebarOpen(!sidebarOpen)}
                 className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-all"
               >
@@ -305,8 +313,8 @@ if (loading) {
           {stats && (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
                 className="bg-gradient-to-br from-blue-600/20 to-blue-400/20 backdrop-blur-sm border border-blue-500/30 rounded-2xl p-6 hover:shadow-lg hover:shadow-blue-500/20 transition-all"
               >
                 <div className="flex items-center justify-between">
@@ -323,9 +331,9 @@ if (loading) {
               </motion.div>
 
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
+                transition={{delay: 0.1}}
                 className="bg-gradient-to-br from-green-600/20 to-green-400/20 backdrop-blur-sm border border-green-500/30 rounded-2xl p-6 hover:shadow-lg hover:shadow-green-500/20 transition-all"
               >
                 <div className="flex items-center justify-between">
@@ -342,9 +350,9 @@ if (loading) {
               </motion.div>
 
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
+                transition={{delay: 0.2}}
                 className="bg-gradient-to-br from-yellow-600/20 to-yellow-400/20 backdrop-blur-sm border border-yellow-500/30 rounded-2xl p-6 hover:shadow-lg hover:shadow-yellow-500/20 transition-all"
               >
                 <div className="flex items-center justify-between">
@@ -361,9 +369,9 @@ if (loading) {
               </motion.div>
 
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
+                transition={{delay: 0.3}}
                 className="bg-gradient-to-br from-red-600/20 to-red-400/20 backdrop-blur-sm border border-red-500/30 rounded-2xl p-6 hover:shadow-lg hover:shadow-red-500/20 transition-all"
               >
                 <div className="flex items-center justify-between">
@@ -383,8 +391,8 @@ if (loading) {
 
           {/* Filters and Actions */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{opacity: 0, y: 20}}
+            animate={{opacity: 1, y: 0}}
             className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm border border-neon-blue/20 rounded-2xl p-6 mb-6"
           >
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -393,7 +401,7 @@ if (loading) {
                 placeholder="🔍 Search by name, email, or reg number..."
                 value={filters.search}
                 onChange={(e) =>
-                  setFilters({ ...filters, search: e.target.value })
+                  setFilters({...filters, search: e.target.value})
                 }
                 className="px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-neon-blue/50 font-rajdhani"
               />
@@ -401,7 +409,7 @@ if (loading) {
               <select
                 value={filters.category}
                 onChange={(e) =>
-                  setFilters({ ...filters, category: e.target.value })
+                  setFilters({...filters, category: e.target.value})
                 }
                 className="px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-neon-blue/50 font-rajdhani"
               >
@@ -414,7 +422,7 @@ if (loading) {
               <select
                 value={filters.status}
                 onChange={(e) =>
-                  setFilters({ ...filters, status: e.target.value })
+                  setFilters({...filters, status: e.target.value})
                 }
                 className="px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-neon-blue/50 font-rajdhani"
               >
@@ -425,8 +433,8 @@ if (loading) {
               </select>
 
               <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={{scale: 1.02}}
+                whileTap={{scale: 0.98}}
                 onClick={exportToCSV}
                 className="bg-gradient-to-r from-green-600 to-green-500 text-white px-6 py-3 rounded-lg hover:from-green-700 hover:to-green-600 transition-all font-rajdhani font-semibold shadow-lg shadow-green-500/20"
               >
@@ -437,8 +445,8 @@ if (loading) {
 
           {/* Registrations Table */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{opacity: 0, y: 20}}
+            animate={{opacity: 1, y: 0}}
             className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm border border-neon-blue/20 rounded-2xl overflow-hidden"
           >
             {registrations.length === 0 ? (
@@ -482,9 +490,9 @@ if (loading) {
                     {registrations.map((reg, index) => (
                       <motion.tr
                         key={reg._id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
+                        initial={{opacity: 0, x: -20}}
+                        animate={{opacity: 1, x: 0}}
+                        transition={{delay: index * 0.05}}
                         className="hover:bg-white/5 transition-all"
                       >
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-electric-cyan font-mono">
@@ -510,17 +518,19 @@ if (loading) {
                               className={`px-3 py-1 text-xs font-semibold rounded-full font-rajdhani border ${
                                 reg.paymentDetails?.paymentStatus === "verified"
                                   ? "bg-green-500/20 text-green-300 border-green-500/30"
-                                  : reg.paymentDetails?.paymentStatus === "pending"
+                                  : reg.paymentDetails?.paymentStatus ===
+                                    "pending"
                                   ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"
                                   : "bg-red-500/20 text-red-300 border-red-500/30"
                               }`}
                             >
                               {reg.paymentDetails?.paymentStatus || "pending"}
                             </span>
-                            {reg.paymentDetails?.paymentStatus === "pending" && (
+                            {reg.paymentDetails?.paymentStatus ===
+                              "pending" && (
                               <motion.button
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
+                                whileHover={{scale: 1.1}}
+                                whileTap={{scale: 0.9}}
                                 onClick={() => verifyPayment(reg._id)}
                                 className="text-green-400 hover:text-green-300 transition-colors text-xs"
                                 title="Verify Payment"
@@ -546,8 +556,8 @@ if (loading) {
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex items-center space-x-2">
                             <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
+                              whileHover={{scale: 1.1}}
+                              whileTap={{scale: 0.9}}
                               onClick={() => viewDetails(reg)}
                               className="text-blue-400 hover:text-blue-300 transition-colors"
                               title="View Details"
@@ -557,8 +567,8 @@ if (loading) {
                             {reg.status === "pending" && (
                               <>
                                 <motion.button
-                                  whileHover={{ scale: 1.1 }}
-                                  whileTap={{ scale: 0.9 }}
+                                  whileHover={{scale: 1.1}}
+                                  whileTap={{scale: 0.9}}
                                   onClick={() => confirmRegistration(reg._id)}
                                   className="text-green-400 hover:text-green-300 transition-colors"
                                   title="Confirm"
@@ -566,8 +576,8 @@ if (loading) {
                                   ✅
                                 </motion.button>
                                 <motion.button
-                                  whileHover={{ scale: 1.1 }}
-                                  whileTap={{ scale: 0.9 }}
+                                  whileHover={{scale: 1.1}}
+                                  whileTap={{scale: 0.9}}
                                   onClick={() => rejectRegistration(reg._id)}
                                   className="text-yellow-400 hover:text-yellow-300 transition-colors"
                                   title="Reject"
@@ -577,8 +587,8 @@ if (loading) {
                               </>
                             )}
                             <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
+                              whileHover={{scale: 1.1}}
+                              whileTap={{scale: 0.9}}
                               onClick={() => deleteRegistration(reg._id)}
                               className="text-red-400 hover:text-red-300 transition-colors"
                               title="Delete"
@@ -601,16 +611,16 @@ if (loading) {
       <AnimatePresence>
         {showDetailsModal && selectedRegistration && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{opacity: 0}}
+            animate={{opacity: 1}}
+            exit={{opacity: 0}}
             className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
             onClick={() => setShowDetailsModal(false)}
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+              initial={{scale: 0.9, opacity: 0}}
+              animate={{scale: 1, opacity: 1}}
+              exit={{scale: 0.9, opacity: 0}}
               onClick={(e) => e.stopPropagation()}
               className="bg-gradient-to-br from-gray-900 to-black border border-neon-blue/30 rounded-2xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto"
             >
@@ -620,8 +630,8 @@ if (loading) {
                   Registration Details
                 </h2>
                 <motion.button
-                  whileHover={{ scale: 1.1, rotate: 90 }}
-                  whileTap={{ scale: 0.9 }}
+                  whileHover={{scale: 1.1, rotate: 90}}
+                  whileTap={{scale: 0.9}}
                   onClick={() => setShowDetailsModal(false)}
                   className="text-gray-400 hover:text-white text-2xl"
                 >
@@ -663,11 +673,15 @@ if (loading) {
                     </div>
                     <div>
                       <p className="text-gray-400 text-sm">Gender</p>
-                      <p className="text-white">{selectedRegistration.gender}</p>
+                      <p className="text-white">
+                        {selectedRegistration.gender}
+                      </p>
                     </div>
                   </div>
                   <div>
-                    <p className="text-gray-400 text-sm">College/Organization</p>
+                    <p className="text-gray-400 text-sm">
+                      College/Organization
+                    </p>
                     <p className="text-white">{selectedRegistration.college}</p>
                   </div>
                 </div>
@@ -776,8 +790,8 @@ if (loading) {
                       {selectedRegistration.paymentDetails?.paymentStatus ===
                         "pending" && (
                         <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
+                          whileHover={{scale: 1.05}}
+                          whileTap={{scale: 0.95}}
                           onClick={() =>
                             verifyPayment(selectedRegistration._id)
                           }
@@ -806,8 +820,8 @@ if (loading) {
                 {selectedRegistration.status === "pending" && (
                   <>
                     <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                      whileHover={{scale: 1.05}}
+                      whileTap={{scale: 0.95}}
                       onClick={() =>
                         confirmRegistration(selectedRegistration._id)
                       }
@@ -816,8 +830,8 @@ if (loading) {
                       ✅ Confirm Registration
                     </motion.button>
                     <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                      whileHover={{scale: 1.05}}
+                      whileTap={{scale: 0.95}}
                       onClick={() =>
                         rejectRegistration(selectedRegistration._id)
                       }
@@ -828,16 +842,16 @@ if (loading) {
                   </>
                 )}
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{scale: 1.05}}
+                  whileTap={{scale: 0.95}}
                   onClick={() => deleteRegistration(selectedRegistration._id)}
                   className="px-6 py-3 bg-red-600/20 border border-red-500/50 rounded-lg text-red-300 hover:bg-red-600/30 transition-all font-rajdhani font-semibold"
                 >
                   🗑️ Delete
                 </motion.button>
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{scale: 1.05}}
+                  whileTap={{scale: 0.95}}
                   onClick={() => setShowDetailsModal(false)}
                   className="px-6 py-3 bg-gray-600/20 border border-gray-500/50 rounded-lg text-gray-300 hover:bg-gray-600/30 transition-all font-rajdhani font-semibold"
                 >
