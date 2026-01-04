@@ -5,6 +5,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+package-lock.json
 
 # Frontend
 frontend/dist/
@@ -18,7 +19,15 @@ backend/dist/
 backend/.env
 backend/.env.local
 backend/.env.production
-backend/uploads/
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Sensitive/Credential Files
+ADMIN_CREDENTIALS.txt
+*.credentials
+*.secret
+*.key
+*.pem
 
 # Editor directories and files
 .vscode/*
@@ -38,6 +47,8 @@ backend/uploads/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.development
+.env.production
 
 # Testing
 coverage/
@@ -54,8 +65,26 @@ logs/
 
 # OS
 Thumbs.db
+.DS_Store
 
 # Temporary files
 *.tmp
 *.temp
 .cache/
+
+# Debug/Test scripts
+fix_marathon.py
+test-*.sh
+
+# Documentation/Notes (optional - remove if you want to track)
+# *_FIXES.md
+# *_IMPLEMENTATION.md
+# *_INTEGRATION.md
+
+# Vercel
+.vercel/
+
+# Misc
+*.bak
+*.swp
+*~
