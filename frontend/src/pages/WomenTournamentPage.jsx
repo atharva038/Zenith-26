@@ -42,6 +42,8 @@ const WomenTournamentPage = () => {
       id: "sack-race",
       name: "Sack Race",
       icon: SackRaceIcon,
+      image:
+        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767510042/zenith-26/img/Female-Tournament/1st-Category/SackRace",
       color: "from-yellow-500 to-orange-500",
       teamSize: 1,
       category: "1st Category",
@@ -52,6 +54,8 @@ const WomenTournamentPage = () => {
       id: "3-leg-race",
       name: "3 Leg Race",
       icon: ThreeLegRaceIcon,
+      image:
+        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767510044/zenith-26/img/Female-Tournament/1st-Category/3leg",
       color: "from-green-500 to-teal-500",
       teamSize: 2,
       category: "1st Category",
@@ -62,6 +66,8 @@ const WomenTournamentPage = () => {
       id: "balloon-bursting",
       name: "Balloon Bursting",
       icon: BalloonIcon,
+      image:
+        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767510045/zenith-26/img/Female-Tournament/1st-Category/BallonBursting",
       color: "from-pink-500 to-rose-500",
       teamSize: 1,
       category: "1st Category",
@@ -72,6 +78,8 @@ const WomenTournamentPage = () => {
       id: "brick-race",
       name: "Brick Race",
       icon: BrickIcon,
+      image:
+        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767510046/zenith-26/img/Female-Tournament/1st-Category/BrickRace",
       color: "from-red-500 to-orange-600",
       teamSize: 1,
       category: "1st Category",
@@ -82,6 +90,8 @@ const WomenTournamentPage = () => {
       id: "musical-chair",
       name: "Musical Chair",
       icon: MusicalChairIcon,
+      image:
+        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767510047/zenith-26/img/Female-Tournament/1st-Category/MusicalChair",
       color: "from-purple-500 to-pink-500",
       teamSize: 1,
       category: "1st Category",
@@ -92,6 +102,8 @@ const WomenTournamentPage = () => {
       id: "nimbu-chamach",
       name: "Nimbu Chamach",
       icon: LemonSpoonIcon,
+      image:
+        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767510048/zenith-26/img/Female-Tournament/1st-Category/NimbuChamcha",
       color: "from-lime-500 to-green-500",
       teamSize: 1,
       category: "1st Category",
@@ -102,6 +114,8 @@ const WomenTournamentPage = () => {
       id: "powerlifting",
       name: "Powerlifting",
       icon: PowerliftingIcon,
+      image:
+        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767510049/zenith-26/img/Female-Tournament/1st-Category/PowerLifting",
       color: "from-gray-600 to-gray-800",
       teamSize: 1,
       category: "1st Category",
@@ -112,6 +126,8 @@ const WomenTournamentPage = () => {
       id: "weightlifting",
       name: "Weightlifting",
       icon: WeightliftingIcon,
+      image:
+        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767510050/zenith-26/img/Female-Tournament/1st-Category/WeighLifting",
       color: "from-blue-600 to-indigo-600",
       teamSize: 1,
       category: "1st Category",
@@ -122,6 +138,8 @@ const WomenTournamentPage = () => {
       id: "hankerchief-snash",
       name: "Hankerchief Snash",
       icon: HandkerchiefIcon,
+      image:
+        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767510051/zenith-26/img/Female-Tournament/1st-Category/HankerChiefSnash",
       color: "from-cyan-500 to-blue-500",
       teamSize: 1,
       category: "1st Category",
@@ -166,6 +184,8 @@ const WomenTournamentPage = () => {
       id: "tug-of-war",
       name: "Tug of War",
       icon: TugOfWarIcon,
+      image:
+        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767508886/zenith-26/img/Female-Tournament/tug-of-war",
       color: "from-orange-500 to-red-600",
       teamSize: 8,
       category: "3rd Category",
@@ -176,6 +196,8 @@ const WomenTournamentPage = () => {
       id: "volleyball",
       name: "Volleyball",
       icon: VolleyballIcon,
+      image:
+        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767508885/zenith-26/img/Female-Tournament/Vollyball",
       color: "from-blue-500 to-cyan-500",
       teamSize: 6,
       category: "3rd Category",
@@ -186,6 +208,8 @@ const WomenTournamentPage = () => {
       id: "cricket",
       name: "Cricket",
       icon: CricketIcon,
+      image:
+        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767508880/zenith-26/img/Female-Tournament/Cricket",
       color: "from-green-600 to-emerald-600",
       teamSize: 11,
       category: "3rd Category",
@@ -196,6 +220,8 @@ const WomenTournamentPage = () => {
       id: "basketball-3x3",
       name: "Basketball 3x3",
       icon: BasketballIcon,
+      image:
+        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767508879/zenith-26/img/Female-Tournament/BasketBall",
       color: "from-orange-600 to-red-500",
       teamSize: 3,
       category: "3rd Category",
@@ -206,6 +232,8 @@ const WomenTournamentPage = () => {
       id: "rink-football",
       name: "Rink Football",
       icon: FootballIcon,
+      image:
+        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767508883/zenith-26/img/Female-Tournament/Ring-Football",
       color: "from-green-500 to-teal-600",
       teamSize: 5,
       category: "3rd Category",
@@ -216,6 +244,8 @@ const WomenTournamentPage = () => {
       id: "box-cricket",
       name: "Box Cricket",
       icon: BoxCricketIcon,
+      image:
+        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767508884/zenith-26/img/Female-Tournament/TurfCricket",
       color: "from-indigo-600 to-purple-600",
       teamSize: 6,
       category: "3rd Category",
@@ -413,30 +443,47 @@ const WomenTournamentPage = () => {
                     }}
                     className={`cursor-pointer bg-gradient-to-br ${
                       sport.color
-                    } p-1 rounded-2xl ${
+                    } p-1 rounded-2xl overflow-hidden ${
                       selectedSport?.id === sport.id ? "ring-4 ring-white" : ""
                     }`}
                   >
-                    <div className="bg-black/80 backdrop-blur-sm rounded-2xl p-6 h-full">
-                      <div className="text-center">
-                        <div className="mb-3 flex justify-center">
-                          <sport.icon className="w-16 h-16 text-white" />
+                    <div className="bg-black/80 backdrop-blur-sm rounded-2xl overflow-hidden h-full">
+                      {/* Image Section */}
+                      {sport.image && (
+                        <div className="relative w-full h-48 overflow-hidden">
+                          <img
+                            src={sport.image}
+                            alt={sport.name}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                         </div>
-                        <h4 className="text-xl font-bold text-white mb-2">
-                          {sport.name}
-                        </h4>
-                        <p className="text-gray-400 text-sm mb-3">
-                          {sport.description}
-                        </p>
-                        <div className="inline-block px-3 py-1.5 bg-white/10 rounded-full mb-2">
-                          <span className="text-sm font-semibold">
-                            {sport.teamSize === 1
-                              ? "Individual"
-                              : `Team of ${sport.teamSize}`}
-                          </span>
-                        </div>
-                        <div className="text-yellow-400 font-bold text-lg">
-                          ₹{sport.fee}
+                      )}
+
+                      {/* Content Section */}
+                      <div className="p-6">
+                        <div className="text-center">
+                          {!sport.image && (
+                            <div className="mb-3 flex justify-center">
+                              <sport.icon className="w-16 h-16 text-white" />
+                            </div>
+                          )}
+                          <h4 className="text-xl font-bold text-white mb-2">
+                            {sport.name}
+                          </h4>
+                          <p className="text-gray-400 text-sm mb-3">
+                            {sport.description}
+                          </p>
+                          <div className="inline-block px-3 py-1.5 bg-white/10 rounded-full mb-2">
+                            <span className="text-sm font-semibold">
+                              {sport.teamSize === 1
+                                ? "Individual"
+                                : `Team of ${sport.teamSize}`}
+                            </span>
+                          </div>
+                          <div className="text-yellow-400 font-bold text-lg">
+                            ₹{sport.fee}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -525,28 +572,45 @@ const WomenTournamentPage = () => {
                     }}
                     className={`cursor-pointer bg-gradient-to-br ${
                       sport.color
-                    } p-1 rounded-2xl ${
+                    } p-1 rounded-2xl overflow-hidden ${
                       selectedSport?.id === sport.id ? "ring-4 ring-white" : ""
                     }`}
                   >
-                    <div className="bg-black/80 backdrop-blur-sm rounded-2xl p-6 h-full">
-                      <div className="text-center">
-                        <div className="mb-3 flex justify-center">
-                          <sport.icon className="w-16 h-16 text-white" />
+                    <div className="bg-black/80 backdrop-blur-sm rounded-2xl overflow-hidden h-full">
+                      {/* Image Section */}
+                      {sport.image && (
+                        <div className="relative w-full h-48 overflow-hidden">
+                          <img
+                            src={sport.image}
+                            alt={sport.name}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                         </div>
-                        <h4 className="text-xl font-bold text-white mb-2">
-                          {sport.name}
-                        </h4>
-                        <p className="text-gray-400 text-sm mb-3">
-                          {sport.description}
-                        </p>
-                        <div className="inline-block px-3 py-1.5 bg-white/10 rounded-full mb-2">
-                          <span className="text-sm font-semibold">
-                            Team of {sport.teamSize}
-                          </span>
-                        </div>
-                        <div className="text-blue-400 font-bold text-lg">
-                          ₹{sport.fee}
+                      )}
+
+                      {/* Content Section */}
+                      <div className="p-6">
+                        <div className="text-center">
+                          {!sport.image && (
+                            <div className="mb-3 flex justify-center">
+                              <sport.icon className="w-16 h-16 text-white" />
+                            </div>
+                          )}
+                          <h4 className="text-xl font-bold text-white mb-2">
+                            {sport.name}
+                          </h4>
+                          <p className="text-gray-400 text-sm mb-3">
+                            {sport.description}
+                          </p>
+                          <div className="inline-block px-3 py-1.5 bg-white/10 rounded-full mb-2">
+                            <span className="text-sm font-semibold">
+                              Team of {sport.teamSize}
+                            </span>
+                          </div>
+                          <div className="text-blue-400 font-bold text-lg">
+                            ₹{sport.fee}
+                          </div>
                         </div>
                       </div>
                     </div>
