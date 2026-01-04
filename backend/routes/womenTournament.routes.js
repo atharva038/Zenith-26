@@ -73,19 +73,95 @@ router.post("/register", async (req, res) => {
       });
     }
 
-    // Check for duplicate registration number
+    // Check for duplicate sports registration (not blocking entire registration)
     const existingRegistration = await WomenTournament.findOne({
       registrationNumber,
     });
 
     if (existingRegistration) {
-      return res.status(400).json({
-        success: false,
-        message: "This registration number is already registered",
+      // Check if trying to register for already registered sports
+      const alreadyRegisteredSports = selectedSports.filter((sport) =>
+        existingRegistration.selectedSports.includes(sport)
+      );
+
+      if (alreadyRegisteredSports.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: `You are already registered for: ${alreadyRegisteredSports.join(
+            ", "
+          )}. Please select different sports.`,
+        });
+      }
+
+      // Update existing registration with new sports
+      existingRegistration.selectedSports = [
+        ...existingRegistration.selectedSports,
+        ...selectedSports,
+      ];
+
+      // Update category if needed (keep the highest category)
+      if (
+        selectedCategory === "category3" ||
+        existingRegistration.selectedCategory === "category3"
+      ) {
+        existingRegistration.selectedCategory = "category3";
+      } else if (
+        selectedCategory === "category2" ||
+        existingRegistration.selectedCategory === "category2"
+      ) {
+        existingRegistration.selectedCategory = "category2";
+      }
+
+      // Update team name if provided for category 3
+      if (category3TeamName) {
+        existingRegistration.category3TeamName = category3TeamName;
+      }
+
+      // Update payment screenshot if provided
+      if (paymentScreenshot) {
+        existingRegistration.paymentScreenshot = paymentScreenshot;
+      }
+
+      // Recalculate total amount
+      existingRegistration.totalAmount =
+        existingRegistration.calculateTotalAmount();
+
+      await existingRegistration.save();
+
+      // Send email notification for updated registration
+      if (existingRegistration.email) {
+        sendPendingWomenTournamentEmail({
+          name: existingRegistration.name,
+          email: existingRegistration.email,
+          registrationNumber: existingRegistration.registrationNumber,
+          selectedSports: existingRegistration.selectedSports,
+          selectedCategory: existingRegistration.selectedCategory,
+          totalAmount: existingRegistration.totalAmount,
+        }).catch((err) => {
+          console.error(
+            "Failed to send women tournament update email:",
+            err.message
+          );
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message:
+          "Registration updated successfully! New sports added to your registration.",
+        data: {
+          registrationId: existingRegistration._id,
+          name: existingRegistration.name,
+          registrationNumber: existingRegistration.registrationNumber,
+          selectedSports: existingRegistration.selectedSports,
+          totalAmount: existingRegistration.totalAmount,
+          status: existingRegistration.status,
+          isUpdate: true,
+        },
       });
     }
 
-    // Create registration
+    // Create new registration
     const registration = new WomenTournament({
       name,
       email: email.toLowerCase(),
