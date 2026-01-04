@@ -51,7 +51,7 @@ const WomenTournamentPage = () => {
         "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767510042/zenith-26/img/Female-Tournament/1st-Category/SackRace",
       color: "from-yellow-500 to-orange-500",
       teamSize: 1,
-      category: "1st Category",
+      category: "category1",
       fee: 49,
       description: "Fun-filled hopping race in sacks",
     },
@@ -63,7 +63,7 @@ const WomenTournamentPage = () => {
         "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767510044/zenith-26/img/Female-Tournament/1st-Category/3leg",
       color: "from-green-500 to-teal-500",
       teamSize: 2,
-      category: "1st Category",
+      category: "category1",
       fee: 49,
       description: "Teamwork race with legs tied together",
     },
@@ -75,7 +75,7 @@ const WomenTournamentPage = () => {
         "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767510045/zenith-26/img/Female-Tournament/1st-Category/BallonBursting",
       color: "from-pink-500 to-rose-500",
       teamSize: 1,
-      category: "1st Category",
+      category: "category1",
       fee: 49,
       description: "Fast-paced balloon popping challenge",
     },
@@ -87,7 +87,7 @@ const WomenTournamentPage = () => {
         "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767510046/zenith-26/img/Female-Tournament/1st-Category/BrickRace",
       color: "from-red-500 to-orange-600",
       teamSize: 1,
-      category: "1st Category",
+      category: "category1",
       fee: 49,
       description: "Balance and speed with bricks",
     },
@@ -99,7 +99,7 @@ const WomenTournamentPage = () => {
         "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767510047/zenith-26/img/Female-Tournament/1st-Category/MusicalChair",
       color: "from-purple-500 to-pink-500",
       teamSize: 1,
-      category: "1st Category",
+      category: "category1",
       fee: 49,
       description: "Classic game of quick reflexes",
     },
@@ -111,7 +111,7 @@ const WomenTournamentPage = () => {
         "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767510048/zenith-26/img/Female-Tournament/1st-Category/NimbuChamcha",
       color: "from-lime-500 to-green-500",
       teamSize: 1,
-      category: "1st Category",
+      category: "category1",
       fee: 49,
       description: "Lemon and spoon balance race",
     },
@@ -123,7 +123,7 @@ const WomenTournamentPage = () => {
         "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767510049/zenith-26/img/Female-Tournament/1st-Category/PowerLifting",
       color: "from-gray-600 to-gray-800",
       teamSize: 1,
-      category: "1st Category",
+      category: "category1",
       fee: 49,
       description: "Strength competition event",
     },
@@ -135,7 +135,7 @@ const WomenTournamentPage = () => {
         "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767510050/zenith-26/img/Female-Tournament/1st-Category/WeighLifting",
       color: "from-blue-600 to-indigo-600",
       teamSize: 1,
-      category: "1st Category",
+      category: "category1",
       fee: 49,
       description: "Olympic-style lifting competition",
     },
@@ -147,7 +147,7 @@ const WomenTournamentPage = () => {
         "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767510051/zenith-26/img/Female-Tournament/1st-Category/HankerChiefSnash",
       color: "from-cyan-500 to-blue-500",
       teamSize: 1,
-      category: "1st Category",
+      category: "category1",
       fee: 49,
       description: "Quick grab and dash game",
     },
@@ -161,7 +161,7 @@ const WomenTournamentPage = () => {
         "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767543425/zenith-26/img/category2/Badminton.png",
       color: "from-purple-500 to-pink-500",
       teamSize: 1,
-      category: "2nd Category",
+      category: "category2",
       fee: 49,
       description: "Swift racket sport testing reflexes",
     },
@@ -173,7 +173,7 @@ const WomenTournamentPage = () => {
         "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767543428/zenith-26/img/category2/Chess.png",
       color: "from-slate-700 to-slate-900",
       teamSize: 1,
-      category: "2nd Category",
+      category: "category2",
       fee: 49,
       description: "Strategic board game of intellect",
     },
@@ -185,7 +185,7 @@ const WomenTournamentPage = () => {
         "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767543431/zenith-26/img/category2/Carrom.png",
       color: "from-amber-600 to-yellow-700",
       teamSize: 1,
-      category: "2nd Category",
+      category: "category2",
       fee: 49,
       description: "Strike and pocket board game",
     },
@@ -197,7 +197,7 @@ const WomenTournamentPage = () => {
         "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767543732/zenith-26/img/category2/Athletics.png",
       color: "from-red-500 to-orange-600",
       teamSize: 1,
-      category: "2nd Category",
+      category: "category2",
       fee: 49,
       description: "Track and field running events",
     },
@@ -211,7 +211,7 @@ const WomenTournamentPage = () => {
         "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767508886/zenith-26/img/Female-Tournament/tug-of-war",
       color: "from-orange-500 to-red-600",
       teamSize: 8,
-      category: "3rd Category",
+      category: "category3",
       fee: 199,
       description: "Ultimate team strength battle",
     },
@@ -223,7 +223,7 @@ const WomenTournamentPage = () => {
         "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767508885/zenith-26/img/Female-Tournament/Vollyball",
       color: "from-blue-500 to-cyan-500",
       teamSize: 6,
-      category: "3rd Category",
+      category: "category3",
       fee: 199,
       description: "Dynamic court game of teamwork",
     },
@@ -235,7 +235,7 @@ const WomenTournamentPage = () => {
         "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767508880/zenith-26/img/Female-Tournament/Cricket",
       color: "from-green-600 to-emerald-600",
       teamSize: 11,
-      category: "3rd Category",
+      category: "category3",
       fee: 199,
       description: "Classic batting and bowling sport",
     },
@@ -247,7 +247,7 @@ const WomenTournamentPage = () => {
         "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767508879/zenith-26/img/Female-Tournament/BasketBall",
       color: "from-orange-600 to-red-500",
       teamSize: 3,
-      category: "3rd Category",
+      category: "category3",
       fee: 199,
       description: "Fast-paced half-court basketball",
     },
@@ -259,7 +259,7 @@ const WomenTournamentPage = () => {
         "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767508883/zenith-26/img/Female-Tournament/Ring-Football",
       color: "from-green-500 to-teal-600",
       teamSize: 5,
-      category: "3rd Category",
+      category: "category3",
       fee: 199,
       description: "Indoor mini football competition",
     },
@@ -271,7 +271,7 @@ const WomenTournamentPage = () => {
         "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767508884/zenith-26/img/Female-Tournament/TurfCricket",
       color: "from-indigo-600 to-purple-600",
       teamSize: 6,
-      category: "3rd Category",
+      category: "category3",
       fee: 199,
       description: "Compact cricket in enclosed space",
     },
@@ -757,7 +757,7 @@ const WomenTournamentPage = () => {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
               {sports
-                .filter((s) => s.category === "1st Category")
+                .filter((s) => s.category === "category1")
                 .map((sport, index) => (
                   <motion.div
                     key={sport.id}
@@ -849,7 +849,7 @@ const WomenTournamentPage = () => {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
               {sports
-                .filter((s) => s.category === "2nd Category")
+                .filter((s) => s.category === "category2")
                 .map((sport, index) => (
                   <motion.div
                     key={sport.id}
@@ -941,7 +941,7 @@ const WomenTournamentPage = () => {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
               {sports
-                .filter((s) => s.category === "3rd Category")
+                .filter((s) => s.category === "category3")
                 .map((sport, index) => (
                   <motion.div
                     key={sport.id}
@@ -1114,7 +1114,7 @@ const WomenTournamentPage = () => {
                     </div>
                     <div className="space-y-3">
                       {sports
-                        .filter((s) => s.category === "1st Category")
+                        .filter((s) => s.category === "category1")
                         .map((sport) => (
                           <label
                             key={sport.id}
@@ -1136,7 +1136,7 @@ const WomenTournamentPage = () => {
                     </div>
                     {formData.selectedSports.some((s) =>
                       sports.find(
-                        (sp) => sp.name === s && sp.category === "1st Category"
+                        (sp) => sp.name === s && sp.category === "category1"
                       )
                     ) && (
                       <div className="mt-6 bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
@@ -1173,7 +1173,7 @@ const WomenTournamentPage = () => {
                     </div>
                     <div className="space-y-3">
                       {sports
-                        .filter((s) => s.category === "2nd Category")
+                        .filter((s) => s.category === "category2")
                         .map((sport) => (
                           <label
                             key={sport.id}
@@ -1195,7 +1195,7 @@ const WomenTournamentPage = () => {
                     </div>
                     {formData.selectedSports.some((s) =>
                       sports.find(
-                        (sp) => sp.name === s && sp.category === "2nd Category"
+                        (sp) => sp.name === s && sp.category === "category2"
                       )
                     ) && (
                       <div className="mt-6 bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
@@ -1209,8 +1209,7 @@ const WomenTournamentPage = () => {
                               {formData.selectedSports.filter((s) =>
                                 sports.find(
                                   (sp) =>
-                                    sp.name === s &&
-                                    sp.category === "2nd Category"
+                                    sp.name === s && sp.category === "category2"
                                 )
                               ).length * 49}{" "}
                               (
@@ -1219,7 +1218,7 @@ const WomenTournamentPage = () => {
                                   sports.find(
                                     (sp) =>
                                       sp.name === s &&
-                                      sp.category === "2nd Category"
+                                      sp.category === "category2"
                                   )
                                 ).length
                               }{" "}
@@ -1250,7 +1249,7 @@ const WomenTournamentPage = () => {
                     </div>
                     <div className="space-y-3">
                       {sports
-                        .filter((s) => s.category === "3rd Category")
+                        .filter((s) => s.category === "category3")
                         .map((sport) => (
                           <label
                             key={sport.id}
@@ -1274,7 +1273,7 @@ const WomenTournamentPage = () => {
                     {/* Team Name for Category 3 */}
                     {formData.selectedSports.some((s) =>
                       sports.find(
-                        (sp) => sp.name === s && sp.category === "3rd Category"
+                        (sp) => sp.name === s && sp.category === "category3"
                       )
                     ) && (
                       <div className="mt-6 space-y-4">
@@ -1305,7 +1304,7 @@ const WomenTournamentPage = () => {
                                   sports.find(
                                     (sp) =>
                                       sp.name === s &&
-                                      sp.category === "3rd Category"
+                                      sp.category === "category3"
                                   )
                                 ).length * 199}{" "}
                                 (
@@ -1314,7 +1313,7 @@ const WomenTournamentPage = () => {
                                     sports.find(
                                       (sp) =>
                                         sp.name === s &&
-                                        sp.category === "3rd Category"
+                                        sp.category === "category3"
                                     )
                                   ).length
                                 }{" "}

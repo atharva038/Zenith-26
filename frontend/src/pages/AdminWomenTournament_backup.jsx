@@ -4,9 +4,6 @@ import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 import api from "../config/api";
 import AdminLayout from "../components/AdminLayout";
-import MobileTabNavigation from "../components/MobileTabNavigation";
-import WomenTournamentAnalytics from "../components/mobile/WomenTournamentAnalytics";
-import WomenTournamentRegistrations from "../components/mobile/WomenTournamentRegistrations";
 
 const AdminWomenTournament = () => {
   const navigate = useNavigate();
@@ -23,7 +20,6 @@ const AdminWomenTournament = () => {
   const [pagination, setPagination] = useState({});
   const [selectedRegistration, setSelectedRegistration] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [mobileActiveTab, setMobileActiveTab] = useState("analytics");
 
   const fetchRegistrations = useCallback(async () => {
     try {
@@ -158,35 +154,7 @@ const AdminWomenTournament = () => {
 
   return (
     <AdminLayout title="Women's Tournament">
-      {/* Mobile Tab Navigation - Only visible on mobile */}
-      <MobileTabNavigation
-        activeTab={mobileActiveTab}
-        onTabChange={setMobileActiveTab}
-      />
-
-      {/* Mobile View - Separate pages */}
-      <div className="md:hidden">
-        {mobileActiveTab === "analytics" ? (
-          <WomenTournamentAnalytics
-            registrations={registrations}
-            statistics={statistics}
-            onFilterChange={(filter) => setFilters({...filters, ...filter})}
-          />
-        ) : (
-          <WomenTournamentRegistrations
-            registrations={registrations}
-            loading={loading}
-            onViewDetails={(registration) => {
-              setSelectedRegistration(registration);
-              setShowDetailsModal(true);
-            }}
-            onUpdateStatus={handleStatusUpdate}
-          />
-        )}
-      </div>
-
-      {/* Desktop View - Combined page (existing layout) */}
-      <div className="p-8 hidden md:block">
+      <div className="p-8">
         {/* Statistics Cards */}
         {statistics && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -495,202 +463,256 @@ const AdminWomenTournament = () => {
             </>
           )}
         </div>
-        {/* End Desktop View */}
-      </div>
 
-      {/* Details Modal - Shared between Mobile and Desktop */}
-      <AnimatePresence>
-        {showDetailsModal && selectedRegistration && (
-          <motion.div
-            initial={{opacity: 0}}
-            animate={{opacity: 1}}
-            exit={{opacity: 0}}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-            onClick={() => setShowDetailsModal(false)}
-          >
+        {/* Details Modal */}
+        <AnimatePresence>
+          {showDetailsModal && selectedRegistration && (
             <motion.div
-              initial={{scale: 0.9, y: 20}}
-              animate={{scale: 1, y: 0}}
-              exit={{scale: 0.9, y: 20}}
-              className="bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-2xl p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-              onClick={(e) => e.stopPropagation()}
+              initial={{opacity: 0}}
+              animate={{opacity: 1}}
+              exit={{opacity: 0}}
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+              onClick={() => setShowDetailsModal(false)}
             >
-              <div className="flex justify-between items-start mb-6">
-                <h2 className="text-2xl md:text-3xl font-bold text-white">
-                  Registration Details
-                </h2>
-                <button
-                  onClick={() => setShowDetailsModal(false)}
-                  className="text-gray-400 hover:text-white transition-colors text-2xl"
-                >
-                  ×
-                </button>
-              </div>
+              <motion.div
+                initial={{scale: 0.9, y: 20}}
+                animate={{scale: 1, y: 0}}
+                exit={{scale: 0.9, y: 20}}
+                className="bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex justify-between items-start mb-6">
+                  <h2 className="text-3xl font-bold text-white">
+                    Registration Details
+                  </h2>
+                  <button
+                    onClick={() => setShowDetailsModal(false)}
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
 
-              <div className="space-y-6">
-                {/* Participant Information */}
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                    <span>👤</span> Participant Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
                       <div className="text-gray-400 text-sm mb-1">Name</div>
-                      <div className="text-white font-medium">
+                      <div className="text-white font-semibold">
                         {selectedRegistration.name}
                       </div>
                     </div>
-                    <div>
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
                       <div className="text-gray-400 text-sm mb-1">
-                        Registration Number
+                        Registration No
                       </div>
-                      <div className="text-white font-medium">
+                      <div className="text-white font-semibold">
                         {selectedRegistration.registrationNumber}
                       </div>
                     </div>
-                    <div>
-                      <div className="text-gray-400 text-sm mb-1">
-                        Mobile Number
-                      </div>
-                      <div className="text-white font-medium">
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                      <div className="text-gray-400 text-sm mb-1">Mobile</div>
+                      <div className="text-white font-semibold">
                         {selectedRegistration.mobileNumber}
                       </div>
                     </div>
-                    <div>
-                      <div className="text-gray-400 text-sm mb-1">Category</div>
-                      <div className="text-white font-medium">
-                        {selectedRegistration.selectedCategory?.replace(
-                          "category",
-                          "Category "
-                        )}
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                      <div className="text-gray-400 text-sm mb-1">
+                        Registration Date
+                      </div>
+                      <div className="text-white font-semibold">
+                        {new Date(
+                          selectedRegistration.createdAt
+                        ).toLocaleString("en-IN")}
                       </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Selected Sports */}
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                    <span>🏆</span> Selected Sports (
-                    {selectedRegistration.selectedSports?.length || 0})
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedRegistration.selectedSports?.map(
-                      (sport, index) => (
-                        <span
-                          key={index}
-                          className="px-3 py-2 bg-blue-500/20 text-blue-400 rounded-lg text-sm border border-blue-500/30"
-                        >
-                          {sport}
-                        </span>
-                      )
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                    <div className="text-gray-400 text-sm mb-1">Category</div>
+                    <div className="text-white font-semibold">
+                      {getCategoryLabel(selectedRegistration.selectedCategory)}
+                    </div>
+                  </div>
+
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                    <div className="text-gray-400 text-sm mb-2">
+                      Selected Sports (
+                      {selectedRegistration.selectedSports.length})
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedRegistration.selectedSports.map(
+                        (sport, index) => (
+                          <span
+                            key={index}
+                            className="px-3 py-1 bg-pink-500/20 text-pink-400 rounded-full text-sm"
+                          >
+                            {sport}
+                          </span>
+                        )
+                      )}
+                    </div>
+                  </div>
+
+                  {selectedRegistration.category3TeamName && (
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                      <div className="text-gray-400 text-sm mb-1">
+                        Team Name
+                      </div>
+                      <div className="text-white font-semibold">
+                        {selectedRegistration.category3TeamName}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Payment Screenshot Section */}
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                    <div className="text-gray-400 text-sm mb-3">
+                      Payment Screenshot
+                    </div>
+                    {selectedRegistration.paymentScreenshot ? (
+                      <div className="space-y-3">
+                        {selectedRegistration.paymentScreenshot.endsWith(
+                          ".pdf"
+                        ) ? (
+                          <div className="flex items-center space-x-3 bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+                            <svg
+                              className="w-8 h-8 text-red-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                              />
+                            </svg>
+                            <div>
+                              <p className="text-white font-medium">
+                                PDF Document
+                              </p>
+                              <a
+                                href={selectedRegistration.paymentScreenshot}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-400 hover:text-blue-300 text-sm"
+                              >
+                                Open PDF
+                              </a>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <img
+                              src={selectedRegistration.paymentScreenshot}
+                              alt="Payment Screenshot"
+                              className="w-full max-h-64 object-contain bg-black/40 rounded-lg border border-white/10"
+                            />
+                            <a
+                              href={selectedRegistration.paymentScreenshot}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block text-center text-blue-400 hover:text-blue-300 text-sm"
+                            >
+                              View Full Size
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-gray-500 text-sm italic">
+                        No screenshot uploaded
+                      </div>
                     )}
                   </div>
-                </div>
 
-                {/* Team Name */}
-                {selectedRegistration.category3TeamName && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
-                      <span>👥</span> Team Name
-                    </h3>
-                    <div className="text-white font-medium">
-                      {selectedRegistration.category3TeamName}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                      <div className="text-gray-400 text-sm mb-1">Status</div>
+                      <select
+                        value={selectedRegistration.status}
+                        onChange={(e) =>
+                          handleStatusUpdate(
+                            selectedRegistration._id,
+                            e.target.value,
+                            selectedRegistration.paymentStatus
+                          )
+                        }
+                        className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-white mt-2"
+                      >
+                        <option value="confirmed">Confirmed</option>
+                        <option value="pending">Pending</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
+                    </div>
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                      <div className="text-gray-400 text-sm mb-1">
+                        Payment Status
+                      </div>
+                      <select
+                        value={selectedRegistration.paymentStatus}
+                        onChange={(e) =>
+                          handleStatusUpdate(
+                            selectedRegistration._id,
+                            selectedRegistration.status,
+                            e.target.value
+                          )
+                        }
+                        className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-white mt-2"
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                        <option value="failed">Failed</option>
+                        <option value="not_required">Not Required</option>
+                      </select>
                     </div>
                   </div>
-                )}
 
-                {/* Status and Payment */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-gray-400 text-sm mb-2">Status</div>
-                    <select
-                      value={selectedRegistration.status}
-                      onChange={(e) =>
-                        handleStatusUpdate(
-                          selectedRegistration._id,
-                          e.target.value,
-                          selectedRegistration.paymentStatus
-                        )
-                      }
-                      className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-white"
-                    >
-                      <option value="pending">Pending</option>
-                      <option value="confirmed">Confirmed</option>
-                      <option value="cancelled">Cancelled</option>
-                    </select>
-                  </div>
-                  <div>
-                    <div className="text-gray-400 text-sm mb-2">
-                      Payment Status
+                  <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
+                    <div className="text-gray-400 text-sm mb-1">
+                      Total Amount
                     </div>
-                    <select
-                      value={selectedRegistration.paymentStatus}
-                      onChange={(e) =>
-                        handleStatusUpdate(
-                          selectedRegistration._id,
-                          selectedRegistration.status,
-                          e.target.value
-                        )
-                      }
-                      className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-white"
+                    <div className="text-3xl font-bold text-green-400">
+                      ₹{selectedRegistration.totalAmount}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3 pt-4">
+                    <button
+                      onClick={() => setShowDetailsModal(false)}
+                      className="flex-1 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg text-white font-semibold transition-all"
                     >
-                      <option value="pending">Pending</option>
-                      <option value="completed">Completed</option>
-                      <option value="failed">Failed</option>
-                      <option value="not_required">Not Required</option>
-                    </select>
+                      Close
+                    </button>
+                    <button
+                      onClick={() => handleDelete(selectedRegistration._id)}
+                      className="flex-1 px-6 py-3 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-red-400 font-semibold transition-all"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
-
-                {/* Payment Screenshot */}
-                {selectedRegistration.paymentScreenshot && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
-                      <span>🖼️</span> Payment Screenshot
-                    </h3>
-                    <img
-                      src={selectedRegistration.paymentScreenshot}
-                      alt="Payment Screenshot"
-                      className="w-full rounded-lg border border-white/10 cursor-pointer hover:opacity-90 transition-opacity"
-                      onClick={() =>
-                        window.open(
-                          selectedRegistration.paymentScreenshot,
-                          "_blank"
-                        )
-                      }
-                    />
-                  </div>
-                )}
-
-                {/* Total Amount */}
-                <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
-                  <div className="text-gray-400 text-sm mb-1">Total Amount</div>
-                  <div className="text-3xl font-bold text-green-400">
-                    ₹{selectedRegistration.totalAmount}
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex gap-3 pt-4">
-                  <button
-                    onClick={() => setShowDetailsModal(false)}
-                    className="flex-1 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg text-white font-semibold transition-all"
-                  >
-                    Close
-                  </button>
-                  <button
-                    onClick={() => handleDelete(selectedRegistration._id)}
-                    className="flex-1 px-6 py-3 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-red-400 font-semibold transition-all"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
+      </div>
     </AdminLayout>
   );
 };
