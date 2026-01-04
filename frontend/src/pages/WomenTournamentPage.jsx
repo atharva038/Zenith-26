@@ -1,6 +1,8 @@
 import {useState, useEffect} from "react";
 import {Link} from "react-router-dom";
 import {motion, AnimatePresence} from "framer-motion";
+import {toast} from "react-toastify";
+import api from "../config/api";
 import {
   SackRaceIcon,
   ThreeLegRaceIcon,
@@ -27,12 +29,16 @@ const WomenTournamentPage = () => {
   const [selectedSport, setSelectedSport] = useState(null);
   const [showRegistrationForm, setShowRegistrationForm] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [paymentScreenshot, setPaymentScreenshot] = useState(null);
+  const [screenshotPreview, setScreenshotPreview] = useState(null);
+  const [isUploadingScreenshot, setIsUploadingScreenshot] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     registrationNumber: "",
     mobileNumber: "",
     selectedSports: [],
     category3TeamName: "",
+    paymentScreenshotUrl: "",
   });
 
   const sports = [
@@ -263,34 +269,87 @@ const WomenTournamentPage = () => {
       "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=CATEGORY3-PAYMENT-199-RUPEES",
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validate at least one sport is selected
     if (formData.selectedSports.length === 0) {
-      alert("Please select at least one sport!");
+      toast.error("Please select at least one sport!");
       return;
     }
 
     // Validate team name for category 3
-    if (selectedCategory === "3rd Category" && !formData.category3TeamName) {
-      alert("Please enter a team name for Category 3 sports!");
+    const hasCategory3Sports = formData.selectedSports.some((sport) => {
+      const category3Sports = [
+        "Tug of War",
+        "Volleyball",
+        "Cricket",
+        "Basketball",
+        "Football",
+        "Box Cricket",
+      ];
+      return category3Sports.includes(sport);
+    });
+
+    if (hasCategory3Sports && !formData.category3TeamName) {
+      toast.error("Please enter a team name for Category 3 sports!");
       return;
     }
 
-    console.log("Form submitted:", formData);
-    alert("Registration submitted successfully! We'll contact you soon.");
+    // Validate payment screenshot is uploaded
+    if (!formData.paymentScreenshotUrl) {
+      toast.error("Please upload payment screenshot!");
+      return;
+    }
 
-    // Reset form
-    setFormData({
-      name: "",
-      registrationNumber: "",
-      mobileNumber: "",
-      selectedSports: [],
-      category3TeamName: "",
-    });
-    setSelectedCategory("");
-    setShowRegistrationForm(false);
+    try {
+      // Show loading toast
+      const loadingToast = toast.loading("Submitting registration...");
+
+      // Submit to backend
+      const response = await api.post("/women-tournament/register", {
+        name: formData.name,
+        registrationNumber: formData.registrationNumber,
+        mobileNumber: formData.mobileNumber,
+        selectedCategory: formData.selectedCategory,
+        selectedSports: formData.selectedSports,
+        category3TeamName: formData.category3TeamName || undefined,
+        paymentScreenshot: formData.paymentScreenshotUrl,
+      });
+
+      // Dismiss loading toast
+      toast.dismiss(loadingToast);
+
+      if (response.data.success) {
+        toast.success(
+          `Registration submitted successfully! Total Amount: ₹${response.data.data.totalAmount}`
+        );
+
+        // Reset form
+        setFormData({
+          name: "",
+          registrationNumber: "",
+          mobileNumber: "",
+          selectedSports: [],
+          category3TeamName: "",
+          selectedCategory: "",
+          paymentScreenshotUrl: "",
+        });
+        setPaymentScreenshot(null);
+        setScreenshotPreview(null);
+        setShowRegistrationForm(false);
+      }
+    } catch (error) {
+      console.error("Registration Error:", error);
+
+      // Dismiss loading toast if any
+      toast.dismiss();
+
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to submit registration. Please try again.";
+      toast.error(errorMessage);
+    }
   };
 
   const handleCheckboxChange = (sportName) => {
@@ -313,12 +372,106 @@ const WomenTournamentPage = () => {
     });
   };
 
+  const handleScreenshotChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "application/pdf",
+    ];
+    if (!validTypes.includes(file.type)) {
+      toast.error("Please upload a valid image (JPG, PNG) or PDF file");
+      return;
+    }
+
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File size must be less than 10MB");
+      return;
+    }
+
+    setPaymentScreenshot(file);
+
+    // Create preview for images
+    if (file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setScreenshotPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setScreenshotPreview("PDF");
+    }
+
+    // Upload the file immediately
+    try {
+      setIsUploadingScreenshot(true);
+      const uploadToast = toast.loading("Uploading payment screenshot...");
+
+      const formDataToUpload = new FormData();
+      formDataToUpload.append("screenshot", file);
+
+      const response = await api.post(
+        "/women-tournament/upload-payment-screenshot",
+        formDataToUpload,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      toast.dismiss(uploadToast);
+
+      if (response.data.success) {
+        setFormData((prev) => ({
+          ...prev,
+          paymentScreenshotUrl: response.data.url,
+        }));
+        toast.success("Payment screenshot uploaded successfully!");
+      }
+    } catch (error) {
+      console.error("Screenshot upload error:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to upload screenshot"
+      );
+      setPaymentScreenshot(null);
+      setScreenshotPreview(null);
+    } finally {
+      setIsUploadingScreenshot(false);
+    }
+  };
+
+  const handleRemoveScreenshot = () => {
+    setPaymentScreenshot(null);
+    setScreenshotPreview(null);
+    setFormData((prev) => ({
+      ...prev,
+      paymentScreenshotUrl: "",
+    }));
+  };
+
   const handleChange = (e) => {
     const {name, value} = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+  };
+
+  const scrollToForm = () => {
+    setShowRegistrationForm(true);
+    // Use setTimeout to ensure the form is rendered before scrolling
+    setTimeout(() => {
+      const formSection = document.getElementById("registration-form");
+      if (formSection) {
+        formSection.scrollIntoView({behavior: "smooth", block: "start"});
+      }
+    }, 100);
   };
 
   useEffect(() => {
@@ -350,90 +503,153 @@ const WomenTournamentPage = () => {
       {/* Content */}
       <div className="relative z-10">
         {/* Navigation */}
-        <nav className="bg-black/50 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <Link
-                to="/"
-                className="text-2xl font-bold text-white hover:text-pink-400 transition-colors"
-              >
-                Zenith'26
-              </Link>
+        <nav className="fixed top-0 left-0 right-0 px-9 py-5 flex justify-between items-center z-[600] bg-black/10 backdrop-blur-md">
+          <span
+            className="text-[#ffb77a] font-bold text-xl tracking-wide"
+            style={{textShadow: "0 2px 12px rgba(255,140,40,0.18)"}}
+          >
+            Zenith 2026
+          </span>
 
-              <div className="hidden md:flex space-x-8">
+          {/* Desktop Menu */}
+          <div className="hidden md:flex gap-6">
+            <Link
+              to="/home"
+              className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
+            >
+              Home
+            </Link>
+            <a
+              href="/home#about"
+              className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
+            >
+              About
+            </a>
+            <a
+              href="/home#events"
+              className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
+            >
+              Events
+            </a>
+            <a
+              href="/home#wormhole"
+              className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors flex items-center gap-1"
+            >
+              🌀 Portal
+            </a>
+            <a
+              href="/home#vip-guests"
+              className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
+            >
+              VIP Guests
+            </a>
+            <Link
+              to="/gallery"
+              className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
+            >
+              Gallery
+            </Link>
+            <Link
+              to="/register"
+              className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
+            >
+              Register
+            </Link>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden text-[#ffb77a] z-[700]"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              {mobileMenuOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
+            </svg>
+          </button>
+
+          {/* BACKDROP */}
+          {mobileMenuOpen && (
+            <div
+              className="fixed inset-0 bg-black/70 z-[650] md:hidden"
+              onClick={() => setMobileMenuOpen(false)}
+            />
+          )}
+
+          {/* MOBILE MENU */}
+          {mobileMenuOpen && (
+            <div className="fixed top-16 left-0 right-0 bg-black/90 backdrop-blur-xl p-6 z-[700] border-b border-[#3a2416] animate-slideDown md:hidden">
+              <div className="flex flex-col gap-4">
                 <Link
-                  to="/"
-                  className="text-gray-300 hover:text-white transition-colors font-medium"
+                  to="/home"
+                  className="text-[#ffb77a] font-semibold"
+                  onClick={() => setMobileMenuOpen(false)}
                 >
                   Home
                 </Link>
-                <Link
-                  to="/events"
-                  className="text-gray-300 hover:text-white transition-colors font-medium"
+                <a
+                  href="/home#about"
+                  className="text-[#ffb77a] font-semibold"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  About
+                </a>
+                <a
+                  href="/home#events"
+                  className="text-[#ffb77a] font-semibold"
+                  onClick={() => setMobileMenuOpen(false)}
                 >
                   Events
-                </Link>
+                </a>
+                <a
+                  href="/home#wormhole"
+                  className="text-[#ffb77a] font-semibold flex items-center gap-1"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  🌀 Portal
+                </a>
+                <a
+                  href="/home#vip-guests"
+                  className="text-[#ffb77a] font-semibold"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  VIP Guests
+                </a>
                 <Link
                   to="/gallery"
-                  className="text-gray-300 hover:text-white transition-colors font-medium"
+                  className="text-[#ffb77a] font-semibold"
+                  onClick={() => setMobileMenuOpen(false)}
                 >
                   Gallery
                 </Link>
-              </div>
-
-              <button
-                className="md:hidden text-white"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+                <Link
+                  to="/register"
+                  className="text-[#ffb77a] font-semibold"
+                  onClick={() => setMobileMenuOpen(false)}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
-              </button>
+                  Register
+                </Link>
+              </div>
             </div>
-          </div>
-
-          {/* Mobile Menu */}
-          <AnimatePresence>
-            {mobileMenuOpen && (
-              <motion.div
-                initial={{opacity: 0, height: 0}}
-                animate={{opacity: 1, height: "auto"}}
-                exit={{opacity: 0, height: 0}}
-                className="md:hidden bg-black/60 backdrop-blur-md border-t border-white/10"
-              >
-                <div className="px-4 py-4 space-y-3">
-                  <Link
-                    to="/"
-                    className="block text-gray-300 hover:text-white transition-colors"
-                  >
-                    Home
-                  </Link>
-                  <Link
-                    to="/events"
-                    className="block text-gray-300 hover:text-white transition-colors"
-                  >
-                    Events
-                  </Link>
-                  <Link
-                    to="/gallery"
-                    className="block text-gray-300 hover:text-white transition-colors"
-                  >
-                    Gallery
-                  </Link>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          )}
         </nav>
 
         {/* Hero Section */}
@@ -464,7 +680,7 @@ const WomenTournamentPage = () => {
 
           <div className="flex flex-wrap justify-center gap-4">
             <button
-              onClick={() => setShowRegistrationForm(true)}
+              onClick={scrollToForm}
               className="px-8 py-4 bg-pink-500 hover:bg-pink-600 rounded-xl font-semibold text-white transition-all transform hover:scale-105 shadow-lg shadow-pink-500/50"
             >
               Register Now
@@ -514,7 +730,7 @@ const WomenTournamentPage = () => {
                   </p>
                 </div>
                 <button
-                  onClick={() => setShowRegistrationForm(true)}
+                  onClick={scrollToForm}
                   className="px-8 py-4 bg-yellow-500 hover:bg-yellow-600 rounded-xl font-bold text-black transition-all transform hover:scale-105 shadow-lg shadow-yellow-500/30 whitespace-nowrap"
                 >
                   Register Now
@@ -606,7 +822,7 @@ const WomenTournamentPage = () => {
                   </p>
                 </div>
                 <button
-                  onClick={() => setShowRegistrationForm(true)}
+                  onClick={scrollToForm}
                   className="px-8 py-4 bg-blue-500 hover:bg-blue-600 rounded-xl font-bold text-white transition-all transform hover:scale-105 shadow-lg shadow-blue-500/30 whitespace-nowrap"
                 >
                   Register Now
@@ -681,7 +897,7 @@ const WomenTournamentPage = () => {
                   </p>
                 </div>
                 <button
-                  onClick={() => setShowRegistrationForm(true)}
+                  onClick={scrollToForm}
                   className="px-8 py-4 bg-green-500 hover:bg-green-600 rounded-xl font-bold text-white transition-all transform hover:scale-105 shadow-lg shadow-green-500/30 whitespace-nowrap"
                 >
                   Register Now
@@ -1082,6 +1298,125 @@ const WomenTournamentPage = () => {
                   </div>
                 )}
 
+                {/* Payment Screenshot Upload - Show if any sports selected */}
+                {formData.selectedSports.length > 0 && (
+                  <div className="border-b border-white/10 pb-6">
+                    <label className="block text-white font-medium mb-4 text-lg">
+                      Upload Payment Screenshot{" "}
+                      <span className="text-red-500">*</span>
+                    </label>
+                    <p className="text-sm text-gray-400 mb-4">
+                      Please upload a screenshot of your payment transaction.
+                      Accepted formats: JPG, PNG, PDF (Max 10MB)
+                    </p>
+
+                    {!screenshotPreview ? (
+                      <div className="relative">
+                        <input
+                          type="file"
+                          id="payment-screenshot"
+                          accept="image/jpeg,image/jpg,image/png,application/pdf"
+                          onChange={handleScreenshotChange}
+                          disabled={isUploadingScreenshot}
+                          className="hidden"
+                        />
+                        <label
+                          htmlFor="payment-screenshot"
+                          className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-white/20 rounded-lg cursor-pointer hover:border-pink-500 transition-colors ${
+                            isUploadingScreenshot
+                              ? "opacity-50 cursor-not-allowed"
+                              : ""
+                          }`}
+                        >
+                          <svg
+                            className="w-12 h-12 text-gray-400 mb-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                            />
+                          </svg>
+                          <p className="text-gray-300 text-sm">
+                            {isUploadingScreenshot
+                              ? "Uploading..."
+                              : "Click to upload payment screenshot"}
+                          </p>
+                          <p className="text-gray-500 text-xs mt-1">
+                            JPG, PNG or PDF (MAX. 10MB)
+                          </p>
+                        </label>
+                      </div>
+                    ) : (
+                      <div className="bg-black/40 border border-white/20 rounded-lg p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            {screenshotPreview === "PDF" ? (
+                              <div className="w-16 h-16 bg-red-500/20 rounded-lg flex items-center justify-center">
+                                <svg
+                                  className="w-8 h-8 text-red-500"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                                  />
+                                </svg>
+                              </div>
+                            ) : (
+                              <img
+                                src={screenshotPreview}
+                                alt="Payment Screenshot"
+                                className="w-16 h-16 object-cover rounded-lg"
+                              />
+                            )}
+                            <div>
+                              <p className="text-white font-medium">
+                                {paymentScreenshot?.name}
+                              </p>
+                              <p className="text-gray-400 text-sm">
+                                {(
+                                  paymentScreenshot?.size /
+                                  1024 /
+                                  1024
+                                ).toFixed(2)}{" "}
+                                MB
+                              </p>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={handleRemoveScreenshot}
+                            className="text-red-500 hover:text-red-400 transition-colors"
+                          >
+                            <svg
+                              className="w-6 h-6"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Submit Button */}
                 <div className="flex gap-4 pt-4">
                   <button
@@ -1101,7 +1436,10 @@ const WomenTournamentPage = () => {
                         selectedSports: [],
                         category3TeamName: "",
                         selectedCategory: "",
+                        paymentScreenshotUrl: "",
                       });
+                      setPaymentScreenshot(null);
+                      setScreenshotPreview(null);
                     }}
                     className="px-8 py-3 bg-gray-600/50 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors border border-white/10"
                   >
