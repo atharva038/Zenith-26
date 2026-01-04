@@ -24,8 +24,8 @@ const AdminLayout = ({children, title}) => {
     handleResize();
 
     // Listen for window resize
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
@@ -64,7 +64,11 @@ const AdminLayout = ({children, title}) => {
       </AnimatePresence>
 
       {/* Main Content - Push on desktop, full width on mobile */}
-      <div className={`transition-all duration-300 ${sidebarOpen ? 'lg:ml-64' : 'ml-0'}`}>
+      <div
+        className={`transition-all duration-300 ${
+          sidebarOpen ? "lg:ml-64" : "ml-0"
+        }`}
+      >
         {/* Header */}
         <div className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700/50 p-4 flex items-center justify-between sticky top-0 z-30">
           <div className="flex items-center space-x-4">
