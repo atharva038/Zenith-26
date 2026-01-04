@@ -16,6 +16,7 @@ const AdminWomenTournament = () => {
   const [filters, setFilters] = useState({
     search: "",
     category: "",
+    sport: "",
     status: "",
     page: 1,
     limit: 50,
@@ -24,6 +25,43 @@ const AdminWomenTournament = () => {
   const [selectedRegistration, setSelectedRegistration] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [mobileActiveTab, setMobileActiveTab] = useState("analytics");
+
+  // Category sports mapping (same as mobile)
+  const categorySportsMap = {
+    category1: [
+      "Sack Race",
+      "3 Leg Race",
+      "Balloon Bursting",
+      "Brick Race",
+      "Musical Chair",
+      "Nimbu Chamach",
+      "Powerlifting",
+      "Weightlifting",
+      "Hankerchief Snash",
+    ],
+    category2: ["Badminton", "Chess", "Carrom", "Athletics"],
+    category3: [
+      "Tug of War",
+      "Volleyball",
+      "Cricket",
+      "Basketball 3x3",
+      "Rink Football",
+      "Box Cricket",
+    ],
+  };
+
+  // Get available sports based on selected category
+  const getAvailableSports = () => {
+    if (!filters.category) {
+      // Return all sports if no category selected
+      return [
+        ...categorySportsMap.category1,
+        ...categorySportsMap.category2,
+        ...categorySportsMap.category3,
+      ];
+    }
+    return categorySportsMap[filters.category] || [];
+  };
 
   const fetchRegistrations = useCallback(async () => {
     try {
@@ -59,6 +97,12 @@ const AdminWomenTournament = () => {
   useEffect(() => {
     fetchRegistrations();
   }, [fetchRegistrations]);
+
+  // Filter registrations by sport on client-side (since backend doesn't support it yet)
+  const filteredRegistrations = registrations.filter((reg) => {
+    if (!filters.sport) return true;
+    return reg.selectedSports?.includes(filters.sport);
+  });
 
   const handleStatusUpdate = async (id, status, paymentStatus) => {
     try {
@@ -275,7 +319,7 @@ const AdminWomenTournament = () => {
 
         {/* Filters & Actions */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
             <input
               type="text"
               placeholder="Search by name, reg no, mobile..."
@@ -288,15 +332,47 @@ const AdminWomenTournament = () => {
 
             <select
               value={filters.category}
-              onChange={(e) =>
-                setFilters({...filters, category: e.target.value, page: 1})
-              }
+              onChange={(e) => {
+                setFilters({
+                  ...filters,
+                  category: e.target.value,
+                  sport: "", // Reset sport when category changes
+                  page: 1,
+                });
+              }}
               className="px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:border-pink-500 outline-none"
             >
               <option value="">All Categories</option>
-              <option value="category1">Category 1</option>
-              <option value="category2">Category 2</option>
-              <option value="category3">Category 3</option>
+              <option value="category1">
+                Cat 1 - Individual (₹49 Unlimited)
+              </option>
+              <option value="category2">Cat 2 - Indoor (₹49/game)</option>
+              <option value="category3">Cat 3 - Team (₹199/team)</option>
+            </select>
+
+            <select
+              value={filters.sport}
+              onChange={(e) =>
+                setFilters({...filters, sport: e.target.value, page: 1})
+              }
+              className="px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:border-pink-500 outline-none"
+            >
+              <option value="">
+                {filters.category
+                  ? `All ${
+                      filters.category === "category1"
+                        ? "Cat 1"
+                        : filters.category === "category2"
+                        ? "Cat 2"
+                        : "Cat 3"
+                    } Sports`
+                  : "All Sports"}
+              </option>
+              {getAvailableSports().map((sport) => (
+                <option key={sport} value={sport}>
+                  {sport}
+                </option>
+              ))}
             </select>
 
             <select
@@ -319,6 +395,86 @@ const AdminWomenTournament = () => {
               📥 Export CSV
             </button>
           </div>
+
+          {/* Active Filters Display */}
+          {(filters.search ||
+            filters.category ||
+            filters.sport ||
+            filters.status) && (
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-gray-400 text-sm">Active filters:</span>
+              {filters.search && (
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-500/20 text-blue-400 text-sm rounded-full">
+                  Search: {filters.search}
+                  <button
+                    onClick={() =>
+                      setFilters({...filters, search: "", page: 1})
+                    }
+                    className="hover:text-white"
+                  >
+                    ✕
+                  </button>
+                </span>
+              )}
+              {filters.category && (
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-500/20 text-purple-400 text-sm rounded-full">
+                  Category:{" "}
+                  {filters.category === "category1"
+                    ? "Cat 1"
+                    : filters.category === "category2"
+                    ? "Cat 2"
+                    : "Cat 3"}
+                  <button
+                    onClick={() =>
+                      setFilters({...filters, category: "", sport: "", page: 1})
+                    }
+                    className="hover:text-white"
+                  >
+                    ✕
+                  </button>
+                </span>
+              )}
+              {filters.sport && (
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-500/20 text-green-400 text-sm rounded-full">
+                  Sport: {filters.sport}
+                  <button
+                    onClick={() => setFilters({...filters, sport: "", page: 1})}
+                    className="hover:text-white"
+                  >
+                    ✕
+                  </button>
+                </span>
+              )}
+              {filters.status && (
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-yellow-500/20 text-yellow-400 text-sm rounded-full">
+                  Status: {filters.status}
+                  <button
+                    onClick={() =>
+                      setFilters({...filters, status: "", page: 1})
+                    }
+                    className="hover:text-white"
+                  >
+                    ✕
+                  </button>
+                </span>
+              )}
+              <button
+                onClick={() =>
+                  setFilters({
+                    search: "",
+                    category: "",
+                    sport: "",
+                    status: "",
+                    page: 1,
+                    limit: 50,
+                  })
+                }
+                className="text-gray-400 text-sm hover:text-white transition-colors underline"
+              >
+                Clear all
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Registrations Table */}
@@ -327,10 +483,15 @@ const AdminWomenTournament = () => {
             <div className="flex items-center justify-center p-12">
               <div className="animate-spin w-12 h-12 border-4 border-pink-500 border-t-transparent rounded-full"></div>
             </div>
-          ) : registrations.length === 0 ? (
+          ) : filteredRegistrations.length === 0 ? (
             <div className="text-center p-12 text-gray-400">
               <div className="text-6xl mb-4">📋</div>
               <div className="text-xl">No registrations found</div>
+              {filters.sport && (
+                <p className="text-sm mt-2">
+                  No registrations found for "{filters.sport}"
+                </p>
+              )}
             </div>
           ) : (
             <>
@@ -371,7 +532,7 @@ const AdminWomenTournament = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5">
-                    {registrations.map((reg, index) => (
+                    {filteredRegistrations.map((reg, index) => (
                       <motion.tr
                         key={reg._id}
                         initial={{opacity: 0}}
@@ -460,12 +621,24 @@ const AdminWomenTournament = () => {
               {pagination.pages > 1 && (
                 <div className="flex items-center justify-between p-6 border-t border-white/10">
                   <div className="text-sm text-gray-400">
-                    Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
-                    {Math.min(
-                      pagination.page * pagination.limit,
-                      pagination.total
-                    )}{" "}
-                    of {pagination.total} registrations
+                    {filters.sport ? (
+                      <>
+                        Showing {filteredRegistrations.length} filtered results
+                        <span className="text-blue-400 ml-1">
+                          (from {pagination.total} total)
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        Showing {(pagination.page - 1) * pagination.limit + 1}{" "}
+                        to{" "}
+                        {Math.min(
+                          pagination.page * pagination.limit,
+                          pagination.total
+                        )}{" "}
+                        of {pagination.total} registrations
+                      </>
+                    )}
                   </div>
                   <div className="flex gap-2">
                     <button

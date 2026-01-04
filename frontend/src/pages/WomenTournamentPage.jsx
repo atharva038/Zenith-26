@@ -1168,7 +1168,7 @@ const WomenTournamentPage = () => {
                         Category 2:
                       </h3>
                       <p className="text-sm text-gray-400">
-                        ₹49/- Per Game - Select all that apply
+                        ₹49/- Per Game - Select one sport
                       </p>
                     </div>
                     <div className="space-y-3">
@@ -1180,12 +1180,19 @@ const WomenTournamentPage = () => {
                             className="flex items-center space-x-3 cursor-pointer group"
                           >
                             <input
-                              type="checkbox"
+                              type="radio"
+                              name="category2Sport"
                               checked={formData.selectedSports.includes(
                                 sport.name
                               )}
-                              onChange={() => handleCheckboxChange(sport.name)}
-                              className="w-5 h-5 text-pink-600 border-white/20 rounded focus:ring-pink-500 bg-black/40"
+                              onChange={() => {
+                                // For radio, replace the selection with only this sport
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  selectedSports: [sport.name],
+                                }));
+                              }}
+                              className="w-5 h-5 text-pink-600 border-white/20 focus:ring-pink-500 bg-black/40"
                             />
                             <span className="text-gray-300 group-hover:text-pink-400 transition-colors">
                               {sport.name}
@@ -1205,24 +1212,7 @@ const WomenTournamentPage = () => {
                               Payment QR Code - Category 2
                             </p>
                             <p className="text-sm text-blue-300">
-                              Scan to pay ₹
-                              {formData.selectedSports.filter((s) =>
-                                sports.find(
-                                  (sp) =>
-                                    sp.name === s && sp.category === "category2"
-                                )
-                              ).length * 49}{" "}
-                              (
-                              {
-                                formData.selectedSports.filter((s) =>
-                                  sports.find(
-                                    (sp) =>
-                                      sp.name === s &&
-                                      sp.category === "category2"
-                                  )
-                                ).length
-                              }{" "}
-                              × ₹49)
+                              Scan to pay ₹49 for {formData.selectedSports[0]}
                             </p>
                           </div>
                           <img
@@ -1244,7 +1234,7 @@ const WomenTournamentPage = () => {
                         Category 3:
                       </h3>
                       <p className="text-sm text-gray-400">
-                        ₹199/- Per Team - Select all that apply
+                        ₹199/- Per Team - Select one sport
                       </p>
                     </div>
                     <div className="space-y-3">
@@ -1256,12 +1246,19 @@ const WomenTournamentPage = () => {
                             className="flex items-center space-x-3 cursor-pointer group"
                           >
                             <input
-                              type="checkbox"
+                              type="radio"
+                              name="category3Sport"
                               checked={formData.selectedSports.includes(
                                 sport.name
                               )}
-                              onChange={() => handleCheckboxChange(sport.name)}
-                              className="w-5 h-5 text-pink-600 border-white/20 rounded focus:ring-pink-500 bg-black/40"
+                              onChange={() => {
+                                // For radio, replace the selection with only this sport
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  selectedSports: [sport.name],
+                                }));
+                              }}
+                              className="w-5 h-5 text-pink-600 border-white/20 focus:ring-pink-500 bg-black/40"
                             />
                             <span className="text-gray-300 group-hover:text-pink-400 transition-colors">
                               {sport.name}
@@ -1299,25 +1296,8 @@ const WomenTournamentPage = () => {
                                 Payment QR Code - Category 3
                               </p>
                               <p className="text-sm text-green-300">
-                                Scan to pay ₹
-                                {formData.selectedSports.filter((s) =>
-                                  sports.find(
-                                    (sp) =>
-                                      sp.name === s &&
-                                      sp.category === "category3"
-                                  )
-                                ).length * 199}{" "}
-                                (
-                                {
-                                  formData.selectedSports.filter((s) =>
-                                    sports.find(
-                                      (sp) =>
-                                        sp.name === s &&
-                                        sp.category === "category3"
-                                    )
-                                  ).length
-                                }{" "}
-                                × ₹199)
+                                Scan to pay ₹199 for{" "}
+                                {formData.selectedSports[0]}
                               </p>
                             </div>
                             <img
