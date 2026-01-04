@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import {useState, useEffect} from "react";
+import {useNavigate} from "react-router-dom";
+import {motion, AnimatePresence} from "framer-motion";
 import AdminSidebar from "./AdminSidebar";
 
-const AdminLayout = ({ children, title }) => {
+const AdminLayout = ({children, title}) => {
   const navigate = useNavigate();
   const [admin, setAdmin] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
@@ -24,8 +24,8 @@ const AdminLayout = ({ children, title }) => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-black via-[#0a0a18] to-black flex items-center justify-center">
         <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          animate={{rotate: 360}}
+          transition={{duration: 1, repeat: Infinity, ease: "linear"}}
           className="w-16 h-16 border-4 border-neon-blue border-t-transparent rounded-full"
         />
       </div>
@@ -44,20 +44,16 @@ const AdminLayout = ({ children, title }) => {
       </AnimatePresence>
 
       {/* Main Content */}
-      <div
-        className={`transition-all duration-300 ${
-          sidebarOpen ? "ml-64" : "ml-0"
-        }`}
-      >
+      <div className="w-full">
         {/* Header */}
-        <div className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700/50 p-4 flex items-center justify-between sticky top-0 z-40">
+        <div className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700/50 p-4 flex items-center justify-between sticky top-0 z-30">
           <div className="flex items-center space-x-4">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 hover:bg-white/10 rounded-lg transition-all"
+              className="p-2 hover:bg-white/10 rounded-lg transition-all group"
             >
               <svg
-                className="w-6 h-6"
+                className="w-6 h-6 group-hover:text-neon-blue transition-colors"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

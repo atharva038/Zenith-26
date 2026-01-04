@@ -34,20 +34,53 @@ const AdminSidebar = ({sidebarOpen, setSidebarOpen, admin}) => {
 
   return (
     <>
+      {/* Backdrop Blur Overlay */}
+      {sidebarOpen && (
+        <motion.div
+          initial={{opacity: 0}}
+          animate={{opacity: 1}}
+          exit={{opacity: 0}}
+          onClick={() => setSidebarOpen(false)}
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+        />
+      )}
+
+      {/* Sidebar */}
       {sidebarOpen && (
         <motion.div
           initial={{x: -300}}
           animate={{x: 0}}
           exit={{x: -300}}
-          className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-gray-900/95 to-black/95 backdrop-blur-xl border-r border-neon-blue/20 z-50"
+          transition={{type: "spring", damping: 25, stiffness: 200}}
+          className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-gray-900/95 to-black/95 backdrop-blur-xl border-r border-neon-blue/20 z-50 shadow-2xl shadow-neon-blue/20"
         >
-          {/* Logo */}
+          {/* Logo & Toggle */}
           <div className="p-6 border-b border-gray-700/50">
-            <Link to="/home">
-              <h2 className="text-2xl font-bold font-orbitron bg-gradient-to-r from-neon-blue to-electric-cyan bg-clip-text text-transparent">
-                ZENITH 2026
-              </h2>
-            </Link>
+            <div className="flex items-center justify-between mb-2">
+              <Link to="/home">
+                <h2 className="text-2xl font-bold font-orbitron bg-gradient-to-r from-neon-blue to-electric-cyan bg-clip-text text-transparent">
+                  ZENITH 2026
+                </h2>
+              </Link>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="p-2 hover:bg-white/10 rounded-lg transition-all group"
+              >
+                <svg
+                  className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
             <p className="text-gray-400 text-sm mt-1">Admin Portal</p>
           </div>
 

@@ -1,15 +1,15 @@
-import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import api from "../config/api";
+import AdminLayout from "../components/AdminLayout";
 
 const AdminMarathon = () => {
   const navigate = useNavigate();
   const [registrations, setRegistrations] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [selectedRegistration, setSelectedRegistration] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [filters, setFilters] = useState({
@@ -18,17 +18,8 @@ const AdminMarathon = () => {
     search: "",
   });
 
-  useEffect(() => {
-    const token = localStorage.getItem("adminToken");
-    if (!token) {
-      navigate("/admin/login");
-      return;
-    }
-    fetchRegistrations();
-  }, [navigate, filters]);
-
   // Fetch registrations
-  const fetchRegistrations = async () => {
+  const fetchRegistrations = useCallback(async () => {
     try {
       setLoading(true);
       const queryParams = new URLSearchParams();
@@ -47,7 +38,11 @@ const AdminMarathon = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
+
+  useEffect(() => {
+    fetchRegistrations();
+  }, [fetchRegistrations]);
 
   // Update registration status
   const updateStatus = async (id, status) => {
@@ -174,13 +169,7 @@ const AdminMarathon = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("adminToken");
-    localStorage.removeItem("adminData");
-    navigate("/admin/login");
-  };
-
-  if (loading) {
+if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-black via-[#0a0a18] to-black flex items-center justify-center">
         <motion.div

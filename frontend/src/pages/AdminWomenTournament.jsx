@@ -1,4 +1,4 @@
-import {useState, useEffect} from "react";
+import {useState, useEffect, useCallback} from "react";
 import {motion, AnimatePresence} from "framer-motion";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
@@ -21,11 +21,7 @@ const AdminWomenTournament = () => {
   const [selectedRegistration, setSelectedRegistration] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
-  useEffect(() => {
-    fetchRegistrations();
-  }, [filters]);
-
-  const fetchRegistrations = async () => {
+  const fetchRegistrations = useCallback(async () => {
     try {
       setLoading(true);
       const response = await api.get("/women-tournament/admin/registrations", {
@@ -39,11 +35,26 @@ const AdminWomenTournament = () => {
       }
     } catch (error) {
       console.error("Fetch Error:", error);
-      toast.error("Failed to fetch registrations");
+      if (error.response?.status === 404) {
+        toast.error(
+          "Women's Tournament admin endpoint not found. Please check backend routes."
+        );
+      } else if (error.response?.status === 401) {
+        toast.error("Authentication failed. Please login again.");
+        navigate("/admin/login");
+      } else {
+        toast.error(
+          error.response?.data?.message || "Failed to fetch registrations"
+        );
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters, navigate]);
+
+  useEffect(() => {
+    fetchRegistrations();
+  }, [fetchRegistrations]);
 
   const handleStatusUpdate = async (id, status, paymentStatus) => {
     try {
