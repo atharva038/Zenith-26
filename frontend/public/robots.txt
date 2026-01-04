@@ -1,0 +1,16 @@
+# Robots.txt for Zenith 2026
+# https://zenithsggs.com
+
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow admin routes
+Disallow: /admin
+Disallow: /admin/*
+
+# Sitemap location
+Sitemap: https://zenithsggs.com/sitemap.xml
+
+# Crawl delay (optional - be polite to crawlers)
+Crawl-delay: 1

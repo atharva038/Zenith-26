@@ -1,0 +1,25 @@
+{
+    "name": "Zenith 2026 - SGGS Sports Fest",
+    "short_name": "Zenith 2026",
+    "description": "The ultimate inter-college sports fest at SGGS Institute of Engineering & Technology",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0f0f23",
+    "theme_color": "#7c3aed",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/zenith-logo.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": [
+        "sports",
+        "events",
+        "entertainment"
+    ],
+    "lang": "en-IN",
+    "dir": "ltr"
+}
