@@ -755,7 +755,7 @@ const WomenTournamentPage = () => {
                 </button>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
               {sports
                 .filter((s) => s.category === "1st Category")
                 .map((sport, index) => (
@@ -767,10 +767,10 @@ const WomenTournamentPage = () => {
                     whileHover={{scale: 1.02, y: -5}}
                     className="cursor-pointer group"
                   >
-                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden h-full hover:border-yellow-400/50 hover:bg-white/10 transition-all duration-300">
-                      {/* Image Section */}
+                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl md:rounded-2xl overflow-hidden h-full hover:border-yellow-400/50 hover:bg-white/10 transition-all duration-300">
+                      {/* Image Section - Square box on mobile, wide on desktop */}
                       {sport.image && (
-                        <div className="relative w-full h-56 overflow-hidden">
+                        <div className="relative w-full h-32 md:h-56 overflow-hidden">
                           <img
                             src={sport.image}
                             alt={sport.name}
@@ -780,37 +780,37 @@ const WomenTournamentPage = () => {
                         </div>
                       )}
 
-                      {/* Content Section */}
-                      <div className="p-6">
+                      {/* Content Section - Very compact on mobile */}
+                      <div className="p-2 md:p-6">
                         {!sport.image && (
-                          <div className="mb-4 flex justify-center">
-                            <div className="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center">
-                              <sport.icon className="w-12 h-12 text-yellow-400" />
+                          <div className="mb-1 md:mb-4 flex justify-center">
+                            <div className="w-12 h-12 md:w-20 md:h-20 rounded-full bg-yellow-500/10 flex items-center justify-center">
+                              <sport.icon className="w-8 h-8 md:w-12 md:h-12 text-yellow-400" />
                             </div>
                           </div>
                         )}
-                        <h4 className="text-2xl font-bold text-white mb-2">
+                        <h4 className="text-sm md:text-2xl font-bold text-white mb-0.5 md:mb-2 line-clamp-1">
                           {sport.name}
                         </h4>
-                        <p className="text-gray-400 text-sm mb-4 leading-relaxed">
+                        <p className="text-gray-400 text-[10px] md:text-sm mb-1.5 md:mb-4 leading-tight md:leading-relaxed line-clamp-2 hidden md:block">
                           {sport.description}
                         </p>
-                        <div className="flex items-center justify-between">
-                          <div className="px-4 py-2 bg-white/10 rounded-lg border border-white/10">
-                            <span className="text-xs text-gray-400 block">
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-1 md:gap-0">
+                          <div className="px-1.5 py-0.5 md:px-4 md:py-2 bg-white/10 rounded md:rounded-lg border border-white/10 w-full md:w-auto">
+                            <span className="text-[8px] md:text-xs text-gray-400 block">
                               Type
                             </span>
-                            <span className="text-sm font-semibold text-white">
+                            <span className="text-[10px] md:text-sm font-semibold text-white">
                               {sport.teamSize === 1
                                 ? "Individual"
-                                : `Team of ${sport.teamSize}`}
+                                : `Team ${sport.teamSize}`}
                             </span>
                           </div>
-                          <div className="text-right">
-                            <span className="text-xs text-gray-400 block">
+                          <div className="text-left md:text-right w-full md:w-auto">
+                            <span className="text-[8px] md:text-xs text-gray-400 block">
                               Price
                             </span>
-                            <span className="text-2xl font-bold text-yellow-400">
+                            <span className="text-base md:text-2xl font-bold text-yellow-400">
                               ₹{sport.fee}
                             </span>
                           </div>
@@ -847,7 +847,7 @@ const WomenTournamentPage = () => {
                 </button>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
               {sports
                 .filter((s) => s.category === "2nd Category")
                 .map((sport, index) => (
@@ -859,10 +859,10 @@ const WomenTournamentPage = () => {
                     whileHover={{scale: 1.02, y: -5}}
                     className="cursor-pointer group"
                   >
-                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden h-full hover:border-blue-400/50 hover:bg-white/10 transition-all duration-300">
-                      {/* Image Section */}
+                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl md:rounded-2xl overflow-hidden h-full hover:border-blue-400/50 hover:bg-white/10 transition-all duration-300">
+                      {/* Image Section - Square box on mobile, wide on desktop */}
                       {sport.image && (
-                        <div className="relative w-full h-56 overflow-hidden">
+                        <div className="relative w-full h-32 md:h-56 overflow-hidden">
                           <img
                             src={sport.image}
                             alt={sport.name}
@@ -872,37 +872,37 @@ const WomenTournamentPage = () => {
                         </div>
                       )}
 
-                      {/* Content Section */}
-                      <div className="p-6">
+                      {/* Content Section - Very compact on mobile */}
+                      <div className="p-2 md:p-6">
                         {!sport.image && (
-                          <div className="mb-4 flex justify-center">
-                            <div className="w-20 h-20 rounded-full bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
-                              <sport.icon className="w-12 h-12 text-blue-400" />
+                          <div className="mb-1 md:mb-4 flex justify-center">
+                            <div className="w-12 h-12 md:w-20 md:h-20 rounded-full bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
+                              <sport.icon className="w-8 h-8 md:w-12 md:h-12 text-blue-400" />
                             </div>
                           </div>
                         )}
-                        <h4 className="text-2xl font-bold text-white mb-2">
+                        <h4 className="text-sm md:text-2xl font-bold text-white mb-0.5 md:mb-2 line-clamp-1">
                           {sport.name}
                         </h4>
-                        <p className="text-gray-400 text-sm mb-4 leading-relaxed">
+                        <p className="text-gray-400 text-[10px] md:text-sm mb-1.5 md:mb-4 leading-tight md:leading-relaxed line-clamp-2 hidden md:block">
                           {sport.description}
                         </p>
-                        <div className="flex items-center justify-between">
-                          <div className="px-4 py-2 bg-white/10 rounded-lg border border-white/10">
-                            <span className="text-xs text-gray-400 block">
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-1 md:gap-0">
+                          <div className="px-1.5 py-0.5 md:px-4 md:py-2 bg-white/10 rounded md:rounded-lg border border-white/10 w-full md:w-auto">
+                            <span className="text-[8px] md:text-xs text-gray-400 block">
                               Type
                             </span>
-                            <span className="text-sm font-semibold text-white">
+                            <span className="text-[10px] md:text-sm font-semibold text-white">
                               {sport.teamSize === 1
                                 ? "Individual"
-                                : `Team of ${sport.teamSize}`}
+                                : `Team ${sport.teamSize}`}
                             </span>
                           </div>
-                          <div className="text-right">
-                            <span className="text-xs text-gray-400 block">
+                          <div className="text-left md:text-right w-full md:w-auto">
+                            <span className="text-[8px] md:text-xs text-gray-400 block">
                               Price
                             </span>
-                            <span className="text-2xl font-bold text-blue-400">
+                            <span className="text-base md:text-2xl font-bold text-blue-400">
                               ₹{sport.fee}
                             </span>
                           </div>
@@ -939,7 +939,7 @@ const WomenTournamentPage = () => {
                 </button>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
               {sports
                 .filter((s) => s.category === "3rd Category")
                 .map((sport, index) => (
@@ -951,10 +951,10 @@ const WomenTournamentPage = () => {
                     whileHover={{scale: 1.02, y: -5}}
                     className="cursor-pointer group"
                   >
-                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden h-full hover:border-green-400/50 hover:bg-white/10 transition-all duration-300">
-                      {/* Image Section */}
+                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl md:rounded-2xl overflow-hidden h-full hover:border-green-400/50 hover:bg-white/10 transition-all duration-300">
+                      {/* Image Section - Square box on mobile, wide on desktop */}
                       {sport.image && (
-                        <div className="relative w-full h-56 overflow-hidden">
+                        <div className="relative w-full h-32 md:h-56 overflow-hidden">
                           <img
                             src={sport.image}
                             alt={sport.name}
@@ -964,35 +964,35 @@ const WomenTournamentPage = () => {
                         </div>
                       )}
 
-                      {/* Content Section */}
-                      <div className="p-6">
+                      {/* Content Section - Very compact on mobile */}
+                      <div className="p-2 md:p-6">
                         {!sport.image && (
-                          <div className="mb-4 flex justify-center">
-                            <div className="w-20 h-20 rounded-full bg-green-500/10 flex items-center justify-center">
-                              <sport.icon className="w-12 h-12 text-green-400" />
+                          <div className="mb-1 md:mb-4 flex justify-center">
+                            <div className="w-12 h-12 md:w-20 md:h-20 rounded-full bg-green-500/10 flex items-center justify-center">
+                              <sport.icon className="w-8 h-8 md:w-12 md:h-12 text-green-400" />
                             </div>
                           </div>
                         )}
-                        <h4 className="text-2xl font-bold text-white mb-2">
+                        <h4 className="text-sm md:text-2xl font-bold text-white mb-0.5 md:mb-2 line-clamp-1">
                           {sport.name}
                         </h4>
-                        <p className="text-gray-400 text-sm mb-4 leading-relaxed">
+                        <p className="text-gray-400 text-[10px] md:text-sm mb-1.5 md:mb-4 leading-tight md:leading-relaxed line-clamp-2 hidden md:block">
                           {sport.description}
                         </p>
-                        <div className="flex items-center justify-between">
-                          <div className="px-4 py-2 bg-white/10 rounded-lg border border-white/10">
-                            <span className="text-xs text-gray-400 block">
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-1 md:gap-0">
+                          <div className="px-1.5 py-0.5 md:px-4 md:py-2 bg-white/10 rounded md:rounded-lg border border-white/10 w-full md:w-auto">
+                            <span className="text-[8px] md:text-xs text-gray-400 block">
                               Type
                             </span>
-                            <span className="text-sm font-semibold text-white">
-                              Team of {sport.teamSize}
+                            <span className="text-[10px] md:text-sm font-semibold text-white">
+                              Team {sport.teamSize}
                             </span>
                           </div>
-                          <div className="text-right">
-                            <span className="text-xs text-gray-400 block">
+                          <div className="text-left md:text-right w-full md:w-auto">
+                            <span className="text-[8px] md:text-xs text-gray-400 block">
                               Price
                             </span>
-                            <span className="text-2xl font-bold text-green-400">
+                            <span className="text-base md:text-2xl font-bold text-green-400">
                               ₹{sport.fee}
                             </span>
                           </div>
