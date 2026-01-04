@@ -8,6 +8,26 @@ const AdminLayout = ({children, title}) => {
   const [admin, setAdmin] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // Set initial sidebar state based on screen size
+  useEffect(() => {
+    const handleResize = () => {
+      // Desktop (>= 1024px): sidebar open by default
+      // Mobile (< 1024px): sidebar closed by default
+      if (window.innerWidth >= 1024) {
+        setSidebarOpen(true);
+      } else {
+        setSidebarOpen(false);
+      }
+    };
+
+    // Set initial state
+    handleResize();
+
+    // Listen for window resize
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
     const adminData = localStorage.getItem("adminData");
@@ -43,14 +63,14 @@ const AdminLayout = ({children, title}) => {
         />
       </AnimatePresence>
 
-      {/* Main Content */}
-      <div className="w-full">
+      {/* Main Content - Push on desktop, full width on mobile */}
+      <div className={`transition-all duration-300 ${sidebarOpen ? 'lg:ml-64' : 'ml-0'}`}>
         {/* Header */}
         <div className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-700/50 p-4 flex items-center justify-between sticky top-0 z-30">
           <div className="flex items-center space-x-4">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 hover:bg-white/10 rounded-lg transition-all group"
+              className="p-2 hover:bg-white/10 rounded-lg transition-all group lg:hidden"
             >
               <svg
                 className="w-6 h-6 group-hover:text-neon-blue transition-colors"

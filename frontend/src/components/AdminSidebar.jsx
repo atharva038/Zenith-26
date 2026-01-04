@@ -34,14 +34,14 @@ const AdminSidebar = ({sidebarOpen, setSidebarOpen, admin}) => {
 
   return (
     <>
-      {/* Backdrop Blur Overlay */}
+      {/* Backdrop Blur Overlay - Only on mobile */}
       {sidebarOpen && (
         <motion.div
           initial={{opacity: 0}}
           animate={{opacity: 1}}
           exit={{opacity: 0}}
           onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
         />
       )}
 
@@ -62,9 +62,10 @@ const AdminSidebar = ({sidebarOpen, setSidebarOpen, admin}) => {
                   ZENITH 2026
                 </h2>
               </Link>
+              {/* Close button - only on mobile */}
               <button
                 onClick={() => setSidebarOpen(false)}
-                className="p-2 hover:bg-white/10 rounded-lg transition-all group"
+                className="p-2 hover:bg-white/10 rounded-lg transition-all group lg:hidden"
               >
                 <svg
                   className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors"
