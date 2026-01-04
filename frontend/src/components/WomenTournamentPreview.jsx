@@ -2,62 +2,36 @@ import {motion} from "framer-motion";
 import {Link} from "react-router-dom";
 
 const WomenTournamentPreview = () => {
-  const sports = [
-    {icon: "🏀", name: "Basketball", color: "from-orange-500 to-red-500"},
-    {icon: "🏐", name: "Volleyball", color: "from-blue-500 to-cyan-500"},
-    {icon: "⚽", name: "Football", color: "from-green-500 to-emerald-500"},
-    {icon: "🏸", name: "Badminton", color: "from-purple-500 to-pink-500"},
-    {icon: "🎾", name: "Tennis", color: "from-yellow-500 to-orange-500"},
-    {icon: "🏑", name: "Hockey", color: "from-teal-500 to-blue-500"},
-  ];
-
   return (
-    <section className="relative py-24 px-6 overflow-hidden bg-gradient-to-br from-black via-purple-950/20 to-black">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Glowing Orbs */}
-        <motion.div
-          className="absolute top-1/4 left-1/4 w-96 h-96 bg-pink-500 rounded-full filter blur-[120px] opacity-20"
-          animate={{
-            scale: [1, 1.2, 1],
-            x: [0, 50, 0],
-            y: [0, 30, 0],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
+    <section className="relative py-32 px-6 overflow-hidden bg-gradient-to-br from-purple-950 via-pink-950 to-black">
+      {/* Background Image with Overlay */}
+      <div className="absolute inset-0">
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-20"
+          style={{
+            backgroundImage: `url('https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto:good/v1767513046/zenith-26/img/backgrounds/women-tournament-bg')`,
           }}
         />
-        <motion.div
-          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500 rounded-full filter blur-[120px] opacity-20"
-          animate={{
-            scale: [1, 1.3, 1],
-            x: [0, -50, 0],
-            y: [0, -30, 0],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-950/60 via-pink-950/50 to-black/95" />
+      </div>
 
-        {/* Floating Sparkles */}
-        {[...Array(15)].map((_, i) => (
+      {/* Animated Sparkles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(20)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-2 h-2 bg-pink-400 rounded-full"
+            className="absolute w-1 h-1 bg-pink-300 rounded-full"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
             }}
             animate={{
-              y: [0, -100, 0],
+              y: [0, -30, 0],
               opacity: [0, 1, 0],
+              scale: [0, 1.5, 0],
             }}
             transition={{
-              duration: 3 + Math.random() * 2,
+              duration: 2 + Math.random() * 2,
               repeat: Infinity,
               delay: Math.random() * 2,
             }}
@@ -66,242 +40,206 @@ const WomenTournamentPreview = () => {
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
-        {/* Header */}
+        {/* Main Header */}
         <motion.div
-          initial={{opacity: 0, y: 30}}
+          initial={{opacity: 0, y: 50}}
           whileInView={{opacity: 1, y: 0}}
           viewport={{once: true}}
           transition={{duration: 0.8}}
           className="text-center mb-16"
         >
+          {/* Badge */}
           <motion.div
-            className="inline-block mb-4"
-            animate={{
-              rotate: [0, 10, -10, 0],
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
+            initial={{scale: 0}}
+            whileInView={{scale: 1}}
+            viewport={{once: true}}
+            transition={{delay: 0.2, type: "spring"}}
+            className="inline-block mb-8"
           >
-            <span className="text-8xl">⚡</span>
+            <div className="bg-gradient-to-r from-pink-600/80 to-purple-700/80 backdrop-blur-sm px-8 py-3 rounded-full border border-pink-400/30">
+              <p className="text-white font-black text-lg tracking-wider uppercase">
+                ✨ For The Very First Time! ✨
+              </p>
+            </div>
           </motion.div>
 
-          <h2 className="text-6xl md:text-7xl font-black mb-6">
-            <span className="bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
-              Women's Tournament
+          {/* Main Title */}
+          <motion.h2
+            initial={{opacity: 0, scale: 0.9}}
+            whileInView={{opacity: 1, scale: 1}}
+            viewport={{once: true}}
+            transition={{delay: 0.3}}
+            className="text-6xl md:text-8xl font-black mb-6 leading-tight"
+          >
+            <span className="block text-white mb-2">WOMEN'S</span>
+            <span className="block bg-gradient-to-r from-pink-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              TOURNAMENT 2026
             </span>
-          </h2>
+          </motion.h2>
 
-          <motion.p
+          {/* Subtitle */}
+          <motion.div
             initial={{opacity: 0}}
             whileInView={{opacity: 1}}
             viewport={{once: true}}
-            transition={{delay: 0.3}}
-            className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed"
+            transition={{delay: 0.5}}
+            className="max-w-3xl mx-auto"
           >
-            Celebrating Excellence, Strength & Unity
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400 font-bold">
-              Empowering Women Athletes
-            </span>
-          </motion.p>
+            <p className="text-2xl md:text-3xl text-pink-300/90 font-bold mb-4">
+              OPEN FOR GIRLS AND ALL FEMALE FACULTIES
+            </p>
+            <p className="text-lg text-gray-400">
+              Celebrating strength, skill, and sportsmanship in a spectacular
+              tournament
+            </p>
+          </motion.div>
         </motion.div>
 
-        {/* Sports Grid */}
+        {/* Date and Venue Card */}
         <motion.div
-          initial={{opacity: 0, y: 20}}
-          whileInView={{opacity: 1, y: 0}}
-          viewport={{once: true}}
-          transition={{delay: 0.4}}
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-16"
-        >
-          {sports.map((sport, index) => (
-            <motion.div
-              key={sport.name}
-              initial={{opacity: 0, scale: 0.8}}
-              whileInView={{opacity: 1, scale: 1}}
-              viewport={{once: true}}
-              transition={{delay: 0.1 * index}}
-              whileHover={{scale: 1.1, rotate: [0, -5, 5, 0]}}
-              className="group relative"
-            >
-              <div
-                className={`bg-gradient-to-br ${sport.color} p-1 rounded-2xl`}
-              >
-                <div className="bg-black/80 backdrop-blur-sm rounded-2xl p-6 flex flex-col items-center justify-center h-full transition-all group-hover:bg-black/60">
-                  <span className="text-5xl mb-3 transform group-hover:scale-110 transition-transform">
-                    {sport.icon}
-                  </span>
-                  <p className="text-white font-bold text-sm text-center">
-                    {sport.name}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Key Features */}
-        <motion.div
-          initial={{opacity: 0, y: 20}}
+          initial={{opacity: 0, y: 30}}
           whileInView={{opacity: 1, y: 0}}
           viewport={{once: true}}
           transition={{delay: 0.6}}
-          className="grid md:grid-cols-3 gap-8 mb-16"
+          className="max-w-4xl mx-auto mb-20"
         >
-          {[
-            {
-              icon: "🏆",
-              title: "Championship Glory",
-              description: "Compete for prestigious titles and recognition",
-            },
-            {
-              icon: "💪",
-              title: "Skill Showcase",
-              description: "Display your talent on the grand stage",
-            },
-            {
-              icon: "🌟",
-              title: "Networking",
-              description: "Connect with athletes and sports professionals",
-            },
-          ].map((feature, index) => (
-            <motion.div
-              key={feature.title}
-              initial={{opacity: 0, y: 20}}
-              whileInView={{opacity: 1, y: 0}}
-              viewport={{once: true}}
-              transition={{delay: 0.7 + index * 0.1}}
-              whileHover={{y: -10}}
-              className="bg-gradient-to-br from-pink-500/10 via-purple-500/10 to-indigo-500/10 backdrop-blur-sm border border-pink-500/20 rounded-2xl p-8 text-center"
-            >
-              <div className="text-5xl mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-bold text-white mb-3">
-                {feature.title}
-              </h3>
-              <p className="text-gray-400 leading-relaxed">
-                {feature.description}
-              </p>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Tournament Details */}
-        <motion.div
-          initial={{opacity: 0, y: 20}}
-          whileInView={{opacity: 1, y: 0}}
-          viewport={{once: true}}
-          transition={{delay: 0.8}}
-          className="bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-indigo-500/10 backdrop-blur-sm border border-pink-500/20 rounded-3xl p-8 md:p-12 mb-12"
-        >
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div>
-              <h3 className="text-3xl font-bold mb-6 bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
-                Tournament Highlights
-              </h3>
-              <ul className="space-y-4 text-gray-300">
-                <li className="flex items-start space-x-3">
-                  <span className="text-2xl">✓</span>
-                  <span className="text-lg">Multiple sports categories</span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <span className="text-2xl">✓</span>
-                  <span className="text-lg">Team & individual events</span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <span className="text-2xl">✓</span>
-                  <span className="text-lg">
-                    Professional coaching sessions
-                  </span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <span className="text-2xl">✓</span>
-                  <span className="text-lg">
-                    Prizes & recognition for winners
-                  </span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <span className="text-2xl">✓</span>
-                  <span className="text-lg">Networking opportunities</span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="space-y-4">
-              <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-6 border border-pink-500/20">
-                <div className="flex items-center space-x-4 mb-3">
+          <div className="bg-white/5 backdrop-blur-xl border-2 border-pink-500/20 rounded-3xl p-8 md:p-12 shadow-2xl">
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Date */}
+              <div className="text-center md:text-left">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-pink-600/70 to-purple-700/70 backdrop-blur-sm rounded-2xl mb-4">
                   <span className="text-3xl">📅</span>
-                  <div>
-                    <p className="text-gray-400 text-sm">Date</p>
-                    <p className="text-white font-bold text-xl">
-                      February 20-23, 2026
-                    </p>
-                  </div>
                 </div>
+                <h3 className="text-lg text-pink-400/90 font-semibold mb-2 uppercase tracking-wider">
+                  Tournament Dates
+                </h3>
+                <p className="text-4xl md:text-5xl font-black text-white mb-2">
+                  JAN 10-11
+                </p>
+                <p className="text-pink-300/80 text-lg">2026</p>
               </div>
 
-              <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/20">
-                <div className="flex items-center space-x-4 mb-3">
+              {/* Venue */}
+              <div className="text-center md:text-left border-l-0 md:border-l-2 border-t-2 md:border-t-0 border-pink-500/20 pt-8 md:pt-0 md:pl-8">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-700/70 to-pink-600/70 backdrop-blur-sm rounded-2xl mb-4">
                   <span className="text-3xl">📍</span>
-                  <div>
-                    <p className="text-gray-400 text-sm">Venue</p>
-                    <p className="text-white font-bold text-xl">
-                      SGGSIE&T Campus
-                    </p>
-                  </div>
                 </div>
-              </div>
-
-              <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-6 border border-indigo-500/20">
-                <div className="flex items-center space-x-4 mb-3">
-                  <span className="text-3xl">💰</span>
-                  <div>
-                    <p className="text-gray-400 text-sm">Registration Fee</p>
-                    <p className="text-white font-bold text-xl">
-                      ₹200 per person
-                    </p>
-                  </div>
-                </div>
+                <h3 className="text-lg text-purple-400/90 font-semibold mb-2 uppercase tracking-wider">
+                  Venue
+                </h3>
+                <p className="text-2xl md:text-3xl font-bold text-white mb-2">
+                  SGGSIE&T Campus
+                </p>
+                <p className="text-purple-300/80">Nanded, Maharashtra</p>
               </div>
             </div>
           </div>
         </motion.div>
 
-        {/* CTA Buttons */}
+        {/* Sports Categories with Images */}
         <motion.div
-          initial={{opacity: 0, y: 20}}
+          initial={{opacity: 0, y: 30}}
           whileInView={{opacity: 1, y: 0}}
           viewport={{once: true}}
-          transition={{delay: 1}}
-          className="flex flex-col sm:flex-row gap-6 justify-center items-center"
+          transition={{delay: 0.7}}
+          className="mb-16"
         >
-          <Link to="/women-tournament">
-            <motion.button
-              whileHover={{scale: 1.05}}
-              whileTap={{scale: 0.95}}
-              className="px-10 py-4 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-bold text-lg rounded-full shadow-2xl shadow-pink-500/50 hover:shadow-pink-500/70 transition-all"
-            >
-              <span className="flex items-center space-x-2">
-                <span>⚡</span>
-                <span>Register Now</span>
-              </span>
-            </motion.button>
-          </Link>
+          <h3 className="text-4xl md:text-5xl font-black text-center mb-12 text-white">
+            COMPETE IN
+          </h3>
 
-          <Link to="/women-tournament#details">
-            <motion.button
-              whileHover={{scale: 1.05}}
-              whileTap={{scale: 0.95}}
-              className="px-10 py-4 bg-white/5 backdrop-blur-sm border-2 border-pink-500 text-pink-400 font-bold text-lg rounded-full hover:bg-white/10 transition-all"
-            >
-              <span className="flex items-center space-x-2">
-                <span>📋</span>
-                <span>View Details</span>
-              </span>
-            </motion.button>
-          </Link>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
+            {[
+              {
+                name: "Tug of War",
+                img: "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767508886/zenith-26/img/Female-Tournament/tug-of-war",
+              },
+              {
+                name: "Volleyball",
+                img: "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767508885/zenith-26/img/Female-Tournament/Vollyball",
+              },
+              {
+                name: "Cricket",
+                img: "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767508880/zenith-26/img/Female-Tournament/Cricket",
+              },
+              {
+                name: "Basketball",
+                img: "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767508879/zenith-26/img/Female-Tournament/BasketBall",
+              },
+              {
+                name: "Football",
+                img: "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767508883/zenith-26/img/Female-Tournament/Ring-Football",
+              },
+              {
+                name: "Box Cricket",
+                img: "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767508884/zenith-26/img/Female-Tournament/TurfCricket",
+              },
+            ].map((sport, index) => (
+              <motion.div
+                key={sport.name}
+                initial={{opacity: 0, scale: 0.8}}
+                whileInView={{opacity: 1, scale: 1}}
+                viewport={{once: true}}
+                transition={{delay: 0.1 * index}}
+                whileHover={{scale: 1.05}}
+                className="group relative overflow-hidden rounded-2xl aspect-square cursor-pointer"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-pink-600/10 to-purple-700/10" />
+                <img
+                  src={sport.img}
+                  alt={sport.name}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <p className="text-white font-bold text-center text-sm md:text-base">
+                    {sport.name}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* CTA Section */}
+        <motion.div
+          initial={{opacity: 0, y: 30}}
+          whileInView={{opacity: 1, y: 0}}
+          viewport={{once: true}}
+          transition={{delay: 0.9}}
+          className="text-center"
+        >
+          <div className="bg-gradient-to-r from-pink-600/10 via-purple-700/10 to-pink-600/10 backdrop-blur-xl border-2 border-pink-500/20 rounded-3xl p-12 max-w-4xl mx-auto">
+            <h3 className="text-3xl md:text-4xl font-black text-white mb-4">
+              READY TO COMPETE?
+            </h3>
+            <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
+              Register now and be part of this historic event. Show your skills
+              and make history!
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link to="/women-tournament">
+                <motion.button
+                  whileHover={{scale: 1.05}}
+                  whileTap={{scale: 0.95}}
+                  className="px-12 py-5 bg-gradient-to-r from-pink-600 to-purple-700 text-white font-black text-xl rounded-full shadow-2xl shadow-pink-600/40 hover:shadow-pink-600/60 transition-all"
+                >
+                  REGISTER NOW
+                </motion.button>
+              </Link>
+
+              <Link to="/women-tournament">
+                <motion.button
+                  whileHover={{scale: 1.05}}
+                  whileTap={{scale: 0.95}}
+                  className="px-12 py-5 bg-white/10 backdrop-blur-sm border-2 border-white text-white font-bold text-xl rounded-full hover:bg-white/20 transition-all"
+                >
+                  VIEW DETAILS
+                </motion.button>
+              </Link>
+            </div>
+          </div>
         </motion.div>
       </div>
     </section>

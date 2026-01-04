@@ -4,7 +4,8 @@ import {motion, AnimatePresence} from "framer-motion";
 
 // Note: Replace this with your actual wormhole image path
 // You can save the provided wormhole images to /public/img/wormhole.png
-const WORMHOLE_IMAGE = "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1/zenith-26/img/image?_a=BAMAMiB80";
+const WORMHOLE_IMAGE =
+  "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1/zenith-26/img/image?_a=BAMAMiB80";
 
 // Main Wormhole Portal Component - PERFORMANCE OPTIMIZED
 export default function WormholePortal() {
@@ -20,9 +21,9 @@ export default function WormholePortal() {
     }, 2500);
   };
 
-  // Pre-generate star positions for better performance (no re-calculation on render)
+  // Pre-generate star positions for better performance - REDUCED for better performance
   const stars = useMemo(() => {
-    return [...Array(500)].map((_, i) => ({
+    return [...Array(150)].map((_, i) => ({
       size: Math.random() * 2.5 + 0.3,
       left: Math.random() * 100,
       top: Math.random() * 100,
@@ -32,15 +33,15 @@ export default function WormholePortal() {
     }));
   }, []);
 
-  // Pre-generate cosmic dust for better performance
+  // Pre-generate cosmic dust for better performance - REDUCED significantly
   const cosmicDust = useMemo(() => {
     const colors = [
-      "rgba(139, 0, 0, 0.4)", // Dark Red
-      "rgba(220, 20, 60, 0.4)", // Crimson
-      "rgba(255, 69, 0, 0.4)", // Red-Orange
-      "rgba(138, 43, 226, 0.4)", // Blue-Violet/Purple
+      "rgba(139, 0, 0, 0.3)", // Dark Red - reduced opacity
+      "rgba(220, 20, 60, 0.3)", // Crimson - reduced opacity
+      "rgba(255, 69, 0, 0.3)", // Red-Orange - reduced opacity
+      "rgba(138, 43, 226, 0.3)", // Blue-Violet/Purple - reduced opacity
     ];
-    return [...Array(100)].map((_, i) => ({
+    return [...Array(30)].map((_, i) => ({
       color: colors[Math.floor(Math.random() * colors.length)],
       size: Math.random() * 1.5 + 0.5,
       left: Math.random() * 100,
@@ -81,11 +82,11 @@ export default function WormholePortal() {
                 left: `${star.left}%`,
                 top: `${star.top}%`,
                 opacity: star.brightness,
-                boxShadow: `0 0 ${star.size * 3}px rgba(255, 255, 255, ${
-                  star.brightness * 0.8
+                boxShadow: `0 0 ${star.size * 2}px rgba(255, 255, 255, ${
+                  star.brightness * 0.6
                 })`,
                 animation: `twinkle ${star.duration}s ease-in-out ${star.delay}s infinite`,
-                willChange: "opacity", // Browser hint for optimization
+                // Removed willChange for better performance - only use when actively animating
                 transform: "translate3d(0,0,0)", // Force GPU acceleration
               }}
             />
@@ -102,10 +103,10 @@ export default function WormholePortal() {
                 left: `${dust.left}%`,
                 top: `${dust.top}%`,
                 background: dust.color,
-                boxShadow: `0 0 ${dust.size * 6}px ${dust.color}`,
+                boxShadow: `0 0 ${dust.size * 4}px ${dust.color}`,
                 animation: `twinkle ${dust.duration}s ease-in-out ${dust.delay}s infinite`,
-                filter: "blur(0.5px)",
-                willChange: "opacity",
+                filter: "blur(0.3px)",
+                // Removed willChange for better performance
                 transform: "translate3d(0,0,0)",
               }}
             />
@@ -130,41 +131,23 @@ export default function WormholePortal() {
           className="relative w-48 md:w-56 lg:w-64 xl:w-72 aspect-square z-10 cursor-pointer group"
           onClick={handleEnter}
         >
-          {/* Enhanced outer glow aura with red/purple wormhole colors - soft blend */}
+          {/* Enhanced outer glow aura with red/purple wormhole colors - OPTIMIZED */}
           <div
-            className="absolute inset-0 rounded-full blur-3xl opacity-40 group-hover:opacity-60 transition-opacity duration-300"
+            className="absolute inset-0 rounded-full blur-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-300"
             style={{
               background: `
                 radial-gradient(circle, 
-                  rgba(220, 20, 60, 0.6) 0%, 
-                  rgba(255, 69, 0, 0.4) 20%,
-                  rgba(138, 43, 226, 0.3) 40%,
-                  rgba(220, 20, 60, 0.15) 60%,
-                  rgba(138, 43, 226, 0.08) 80%,
-                  transparent 100%
+                  rgba(220, 20, 60, 0.5) 0%, 
+                  rgba(255, 69, 0, 0.3) 20%,
+                  rgba(138, 43, 226, 0.2) 40%,
+                  transparent 70%
                 )
               `,
-              transform: "scale(1.5)",
+              transform: "scale(1.4)",
             }}
           />
 
-          {/* Additional soft outer halo for seamless space integration */}
-          <div
-            className="absolute inset-0 rounded-full blur-[100px] opacity-30"
-            style={{
-              background: `
-                radial-gradient(circle, 
-                  rgba(255, 69, 0, 0.3) 0%,
-                  rgba(220, 20, 60, 0.2) 30%,
-                  rgba(138, 43, 226, 0.15) 50%,
-                  rgba(255, 69, 0, 0.08) 70%,
-                  transparent 100%
-                )
-              `,
-              transform: "scale(2) translate3d(0,0,0)", // GPU acceleration
-              willChange: "transform", // Browser optimization hint
-            }}
-          />
+          {/* Removed second halo for better performance */}
 
           <motion.div
             className="relative w-full h-full"
@@ -178,7 +161,7 @@ export default function WormholePortal() {
             }}
             whileHover={{scale: 1.05}}
             style={{
-              willChange: "transform", // Optimize rotation
+              // Removed willChange - only use during active animation
               transform: "translate3d(0,0,0)", // Force GPU layer
             }}
           >
@@ -189,16 +172,13 @@ export default function WormholePortal() {
                 backgroundImage: `url(${WORMHOLE_IMAGE})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
-                filter: "brightness(1.2) contrast(1.3) saturate(1.2)",
+                filter: "brightness(1.1) contrast(1.2) saturate(1.1)",
                 boxShadow: `
-                  0 0 60px rgba(220, 20, 60, 0.6), 
-                  0 0 120px rgba(255, 69, 0, 0.4), 
-                  0 0 180px rgba(138, 43, 226, 0.3),
-                  inset 0 0 60px rgba(220, 20, 60, 0.2)
+                  0 0 40px rgba(220, 20, 60, 0.5), 
+                  0 0 80px rgba(255, 69, 0, 0.3)
                 `,
-                willChange: "filter", // Optimize filter changes
+                // Removed willChange and contain for better baseline performance
                 transform: "translate3d(0,0,0)", // GPU acceleration
-                contain: "layout style paint", // CSS containment for performance
               }}
             >
               {/* Smooth edge fade mask - blends into space */}
@@ -216,7 +196,7 @@ export default function WormholePortal() {
                     )
                   `,
                   pointerEvents: "none",
-                  willChange: "opacity",
+                  // Removed willChange
                 }}
               />
             </div>
@@ -226,9 +206,9 @@ export default function WormholePortal() {
               className="absolute inset-0 rounded-full pointer-events-none"
               style={{
                 background:
-                  "radial-gradient(circle, rgba(255,255,255,0.08) 0%, rgba(220,20,60,0.15) 30%, rgba(255,69,0,0.1) 60%, rgba(138,43,226,0.05) 80%, transparent 100%)",
+                  "radial-gradient(circle, rgba(255,255,255,0.06) 0%, rgba(220,20,60,0.12) 30%, rgba(255,69,0,0.08) 60%, transparent 80%)",
                 animation: "pulse 3s ease-in-out infinite",
-                willChange: "opacity, transform",
+                // Removed willChange
                 transform: "translate3d(0,0,0)",
               }}
             />
@@ -241,13 +221,13 @@ export default function WormholePortal() {
                 e.stopPropagation();
                 handleEnter();
               }}
-              className="absolute -top-16 md:-top-20 left-[25%] md:left-[28%] -translate-x-1/2 
+              className="absolute -top-28 md:-top-32 left-1/2 -translate-x-1/2 
                          px-4 py-2 md:px-5 md:py-2.5
                          z-30
                          cursor-pointer"
               style={{
-                willChange: "transform", // Browser hint for scale animation
-                transform: "translate3d(0,0,0)", // GPU layer
+                // Removed willChange - only needed during active animation
+                transform: "translate3d(-50%, 0, 0)", // GPU layer with centering
               }}
               initial={{opacity: 0}}
               animate={{opacity: 1}}
@@ -259,41 +239,25 @@ export default function WormholePortal() {
                 style={{
                   fontFamily: "'Courier New', monospace",
                   textShadow: `
-                    0 0 10px #ff0000,
-                    0 0 20px #ff0000,
-                    0 0 30px #ff0000,
-                    0 0 40px #ff0000,
-                    0 0 70px #ff0000
+                    0 0 8px #ff0000,
+                    0 0 16px #ff0000,
+                    0 0 24px #ff0000
                   `,
-                  willChange: "transform, opacity, text-shadow", // Performance hints
+                  // Removed willChange
                   transform: "translate3d(0,0,0)", // GPU layer
                 }}
                 animate={{
-                  opacity: [1, 0.7, 1, 0.8, 1, 0.6, 1],
-                  textShadow: [
-                    "0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 30px #ff0000, 0 0 40px #ff0000, 0 0 70px #ff0000",
-                    "0 0 5px #ff0000, 0 0 10px #ff0000, 0 0 15px #ff0000, 0 0 20px #ff0000, 0 0 35px #ff0000",
-                    "0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 30px #ff0000, 0 0 40px #ff0000, 0 0 70px #ff0000",
-                    "0 0 8px #ff0000, 0 0 16px #ff0000, 0 0 24px #ff0000, 0 0 32px #ff0000, 0 0 50px #ff0000",
-                    "0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 30px #ff0000, 0 0 40px #ff0000, 0 0 70px #ff0000",
-                  ],
+                  opacity: [1, 0.7, 1],
                 }}
                 transition={{
                   opacity: {
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  },
-                  textShadow: {
-                    duration: 4,
+                    duration: 2,
                     repeat: Infinity,
                     ease: "easeInOut",
                   },
                 }}
                 whileHover={{
-                  scale: 1.1,
-                  textShadow:
-                    "0 0 15px #ff0000, 0 0 30px #ff0000, 0 0 45px #ff0000, 0 0 60px #ff0000, 0 0 100px #ff0000",
+                  scale: 1.05,
                 }}
               >
                 CLICK TO ENTER
@@ -329,19 +293,17 @@ export default function WormholePortal() {
           </p>
         </motion.div>
 
-        {/* Energy particles floating around wormhole - PRE-CALCULATED & GPU ACCELERATED */}
+        {/* Energy particles floating around wormhole - SIGNIFICANTLY REDUCED */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
           {useMemo(() => {
             const colors = [
               "#dc143c", // Crimson
               "#ff4500", // Red-Orange
               "#8a2be2", // Blue-Violet
-              "#ff1493", // Deep Pink
-              "#ffffff", // White
             ];
 
-            return [...Array(40)].map((_, i) => {
-              const size = Math.random() * 3 + 1;
+            return [...Array(15)].map((_, i) => {
+              const size = Math.random() * 2.5 + 1;
               const color = colors[Math.floor(Math.random() * colors.length)];
               const left = 40 + Math.random() * 20;
               const top = 40 + Math.random() * 20;
@@ -354,23 +316,23 @@ export default function WormholePortal() {
                     width: `${size}px`,
                     height: `${size}px`,
                     background: color,
-                    boxShadow: `0 0 ${size * 4}px ${color}`,
+                    boxShadow: `0 0 ${size * 3}px ${color}`,
                     left: `${left}%`,
                     top: `${top}%`,
-                    filter: "blur(1px)",
-                    willChange: "transform, opacity", // Performance hint
+                    filter: "blur(0.5px)",
+                    // Removed willChange
                     transform: "translate3d(0,0,0)", // GPU layer
                   }}
                   animate={{
-                    x: [0, (Math.random() - 0.5) * 100],
-                    y: [0, (Math.random() - 0.5) * 100],
-                    opacity: [0, 1, 0],
-                    scale: [0, 1.5, 0],
+                    x: [0, (Math.random() - 0.5) * 80],
+                    y: [0, (Math.random() - 0.5) * 80],
+                    opacity: [0, 0.8, 0],
+                    scale: [0, 1.3, 0],
                   }}
                   transition={{
-                    duration: 4 + Math.random() * 3,
+                    duration: 4 + Math.random() * 2,
                     repeat: Infinity,
-                    delay: Math.random() * 5,
+                    delay: Math.random() * 4,
                     ease: "easeInOut",
                   }}
                 />
