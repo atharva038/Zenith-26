@@ -157,6 +157,8 @@ const WomenTournamentPage = () => {
       id: "badminton",
       name: "Badminton",
       icon: BadmintonIcon,
+      image:
+        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767543425/zenith-26/img/category2/Badminton.png",
       color: "from-purple-500 to-pink-500",
       teamSize: 1,
       category: "2nd Category",
@@ -167,6 +169,8 @@ const WomenTournamentPage = () => {
       id: "chess",
       name: "Chess",
       icon: ChessIcon,
+      image:
+        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767543428/zenith-26/img/category2/Chess.png",
       color: "from-slate-700 to-slate-900",
       teamSize: 1,
       category: "2nd Category",
@@ -177,11 +181,25 @@ const WomenTournamentPage = () => {
       id: "carrom",
       name: "Carrom",
       icon: CarromIcon,
+      image:
+        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767543431/zenith-26/img/category2/Carrom.png",
       color: "from-amber-600 to-yellow-700",
       teamSize: 1,
       category: "2nd Category",
       fee: 49,
       description: "Strike and pocket board game",
+    },
+    {
+      id: "athletics",
+      name: "Athletics",
+      icon: ThreeLegRaceIcon,
+      image:
+        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767543732/zenith-26/img/category2/Athletics.png",
+      color: "from-red-500 to-orange-600",
+      teamSize: 1,
+      category: "2nd Category",
+      fee: 49,
+      description: "Track and field running events",
     },
 
     // 3rd Category: 199/- Per Team
@@ -841,36 +859,53 @@ const WomenTournamentPage = () => {
                     whileHover={{scale: 1.02, y: -5}}
                     className="cursor-pointer group"
                   >
-                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 h-full hover:border-blue-400/50 hover:bg-white/10 transition-all duration-300">
-                      <div className="mb-4 flex justify-center">
-                        <div className="w-20 h-20 rounded-full bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
-                          <sport.icon className="w-12 h-12 text-blue-400" />
+                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden h-full hover:border-blue-400/50 hover:bg-white/10 transition-all duration-300">
+                      {/* Image Section */}
+                      {sport.image && (
+                        <div className="relative w-full h-56 overflow-hidden">
+                          <img
+                            src={sport.image}
+                            alt={sport.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
                         </div>
-                      </div>
-                      <h4 className="text-2xl font-bold text-white mb-2 text-center">
-                        {sport.name}
-                      </h4>
-                      <p className="text-gray-400 text-sm mb-4 leading-relaxed text-center">
-                        {sport.description}
-                      </p>
-                      <div className="flex items-center justify-between mt-auto">
-                        <div className="px-4 py-2 bg-white/10 rounded-lg border border-white/10">
-                          <span className="text-xs text-gray-400 block">
-                            Type
-                          </span>
-                          <span className="text-sm font-semibold text-white">
-                            {sport.teamSize === 1
-                              ? "Individual"
-                              : `Team of ${sport.teamSize}`}
-                          </span>
-                        </div>
-                        <div className="text-right">
-                          <span className="text-xs text-gray-400 block">
-                            Price
-                          </span>
-                          <span className="text-2xl font-bold text-blue-400">
-                            ₹{sport.fee}
-                          </span>
+                      )}
+
+                      {/* Content Section */}
+                      <div className="p-6">
+                        {!sport.image && (
+                          <div className="mb-4 flex justify-center">
+                            <div className="w-20 h-20 rounded-full bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
+                              <sport.icon className="w-12 h-12 text-blue-400" />
+                            </div>
+                          </div>
+                        )}
+                        <h4 className="text-2xl font-bold text-white mb-2">
+                          {sport.name}
+                        </h4>
+                        <p className="text-gray-400 text-sm mb-4 leading-relaxed">
+                          {sport.description}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <div className="px-4 py-2 bg-white/10 rounded-lg border border-white/10">
+                            <span className="text-xs text-gray-400 block">
+                              Type
+                            </span>
+                            <span className="text-sm font-semibold text-white">
+                              {sport.teamSize === 1
+                                ? "Individual"
+                                : `Team of ${sport.teamSize}`}
+                            </span>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-xs text-gray-400 block">
+                              Price
+                            </span>
+                            <span className="text-2xl font-bold text-blue-400">
+                              ₹{sport.fee}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
