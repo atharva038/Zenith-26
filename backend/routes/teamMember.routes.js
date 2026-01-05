@@ -8,8 +8,8 @@ import {
   permanentlyDeleteTeamMember,
   clearAllTeamData,
 } from "../controllers/teamMember.controller.js";
-import { authMiddleware, isAdmin } from "../middleware/auth.middleware.js";
-import { uploadTeamMemberPhoto } from "../middleware/cloudinaryUpload.middleware.js";
+import {authMiddleware, isAdmin} from "../middleware/auth.middleware.js";
+import {uploadTeamMemberPhoto} from "../middleware/cloudinaryUpload.middleware.js";
 
 const router = express.Router();
 
@@ -19,13 +19,10 @@ router.get("/:id", getTeamMemberById);
 
 // Protected routes (Admin only) - Order matters! Specific routes before parameterized ones
 router.delete("/clear-all-data", authMiddleware, isAdmin, clearAllTeamData);
-router.post(
-  "/",
-  authMiddleware,
-  isAdmin,
-  uploadTeamMemberPhoto,
-  createTeamMember
-);
+
+// Public route - Anyone can add team members
+router.post("/", uploadTeamMemberPhoto, createTeamMember);
+
 router.put(
   "/:id",
   authMiddleware,
