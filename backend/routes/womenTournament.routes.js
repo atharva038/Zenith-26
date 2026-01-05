@@ -248,28 +248,61 @@ router.get("/admin/registrations", authMiddleware, async (req, res) => {
     // Calculate statistics
     const stats = await WomenTournament.aggregate([
       {
-        $group: {
-          _id: null,
-          totalRegistrations: {$sum: 1},
-          category1Count: {
-            $sum: {$cond: [{$eq: ["$selectedCategory", "category1"]}, 1, 0]},
-          },
-          category2Count: {
-            $sum: {$cond: [{$eq: ["$selectedCategory", "category2"]}, 1, 0]},
-          },
-          category3Count: {
-            $sum: {$cond: [{$eq: ["$selectedCategory", "category3"]}, 1, 0]},
-          },
-          totalRevenue: {$sum: "$totalAmount"},
-          confirmedCount: {
-            $sum: {$cond: [{$eq: ["$status", "confirmed"]}, 1, 0]},
-          },
-          pendingCount: {
-            $sum: {$cond: [{$eq: ["$status", "pending"]}, 1, 0]},
-          },
+        $facet: {
+          // Overall counts (excluding rejected)
+          overall: [
+            {
+              $match: {isRejected: {$ne: true}},
+            },
+            {
+              $group: {
+                _id: null,
+                totalRegistrations: {$sum: 1},
+                category1Count: {
+                  $sum: {
+                    $cond: [{$eq: ["$selectedCategory", "category1"]}, 1, 0],
+                  },
+                },
+                category2Count: {
+                  $sum: {
+                    $cond: [{$eq: ["$selectedCategory", "category2"]}, 1, 0],
+                  },
+                },
+                category3Count: {
+                  $sum: {
+                    $cond: [{$eq: ["$selectedCategory", "category3"]}, 1, 0],
+                  },
+                },
+                confirmedCount: {
+                  $sum: {$cond: [{$eq: ["$status", "confirmed"]}, 1, 0]},
+                },
+                pendingCount: {
+                  $sum: {$cond: [{$eq: ["$status", "pending"]}, 1, 0]},
+                },
+              },
+            },
+          ],
+          // Revenue calculation (only confirmed, not rejected)
+          revenue: [
+            {
+              $match: {
+                status: "confirmed",
+                isRejected: {$ne: true},
+              },
+            },
+            {
+              $group: {
+                _id: null,
+                totalRevenue: {$sum: "$totalAmount"},
+              },
+            },
+          ],
         },
       },
     ]);
+
+    const overallStats = stats[0]?.overall[0] || {};
+    const revenueStats = stats[0]?.revenue[0] || {};
 
     res.json({
       success: true,
@@ -281,14 +314,14 @@ router.get("/admin/registrations", authMiddleware, async (req, res) => {
           limit: parseInt(limit),
           pages: Math.ceil(total / parseInt(limit)),
         },
-        statistics: stats[0] || {
-          totalRegistrations: 0,
-          category1Count: 0,
-          category2Count: 0,
-          category3Count: 0,
-          totalRevenue: 0,
-          confirmedCount: 0,
-          pendingCount: 0,
+        statistics: {
+          totalRegistrations: overallStats.totalRegistrations || 0,
+          category1Count: overallStats.category1Count || 0,
+          category2Count: overallStats.category2Count || 0,
+          category3Count: overallStats.category3Count || 0,
+          totalRevenue: revenueStats.totalRevenue || 0,
+          confirmedCount: overallStats.confirmedCount || 0,
+          pendingCount: overallStats.pendingCount || 0,
         },
       },
     });
@@ -439,7 +472,9 @@ router.get(
   async (req, res) => {
     try {
       const {category, status} = req.query;
-      const query = {};
+      const query = {
+        isRejected: {$ne: true}, // Exclude rejected registrations by default
+      };
 
       if (category) query.selectedCategory = category;
       if (status) query.status = status;
