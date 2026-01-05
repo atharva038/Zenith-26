@@ -164,17 +164,13 @@ export default function Homepage() {
   return (
     <div className="relative min-h-screen bg-black text-white overflow-hidden">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 px-9 py-2 flex justify-between items-center z-[600] bg-black/10 backdrop-blur-md">
-        <Link
-          to="/home"
-          className="flex items-center hover:opacity-90 transition-opacity"
+      <nav className="fixed top-0 left-0 right-0 px-9 py-3 flex justify-between items-center z-[600] bg-black/10 backdrop-blur-md">
+        <span
+          className="text-[#ffb77a] font-bold text-xl tracking-wide"
+          style={{textShadow: "0 2px 12px rgba(255,140,40,0.18)"}}
         >
-          <img
-            src="https://res.cloudinary.com/dvmsho3pj/image/upload/v1767597012/zenith-26/img/zenith-logo.png"
-            alt="Zenith 2026"
-            className="h-16 md:h-20 w-auto"
-          />
-        </Link>
+          Zenith 2026
+        </span>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex gap-6">

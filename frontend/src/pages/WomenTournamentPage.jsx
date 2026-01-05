@@ -699,7 +699,7 @@ const WomenTournamentPage = () => {
       {/* Content */}
       <div className="relative z-10">
         {/* Navigation */}
-        <nav className="fixed top-0 left-0 right-0 px-9 py-5 flex justify-between items-center z-[600] bg-black/10 backdrop-blur-md">
+        <nav className="fixed top-0 left-0 right-0 px-9 py-3 flex justify-between items-center z-[600] bg-black/10 backdrop-blur-md">
           <span
             className="text-[#ffb77a] font-bold text-xl tracking-wide"
             style={{textShadow: "0 2px 12px rgba(255,140,40,0.18)"}}
@@ -716,28 +716,10 @@ const WomenTournamentPage = () => {
               Home
             </Link>
             <a
-              href="/home#about"
-              className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
-            >
-              About
-            </a>
-            <a
-              href="/home#events"
-              className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
-            >
-              Events
-            </a>
-            <a
               href="/home#wormhole"
               className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors flex items-center gap-1"
             >
-              🌀 Portal
-            </a>
-            <a
-              href="/home#vip-guests"
-              className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
-            >
-              VIP Guests
+              🌀 Gameverse
             </a>
             <Link
               to="/gallery"
@@ -802,32 +784,11 @@ const WomenTournamentPage = () => {
                   Home
                 </Link>
                 <a
-                  href="/home#about"
-                  className="text-[#ffb77a] font-semibold"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  About
-                </a>
-                <a
-                  href="/home#events"
-                  className="text-[#ffb77a] font-semibold"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Events
-                </a>
-                <a
                   href="/home#wormhole"
                   className="text-[#ffb77a] font-semibold flex items-center gap-1"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  🌀 Portal
-                </a>
-                <a
-                  href="/home#vip-guests"
-                  className="text-[#ffb77a] font-semibold"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  VIP Guests
+                  🌀 Gameverse
                 </a>
                 <Link
                   to="/gallery"
@@ -882,7 +843,7 @@ const WomenTournamentPage = () => {
               Register Now
             </button>
             <Link
-              to="/"
+              to="/home"
               className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl font-semibold hover:bg-white/20 transition-all text-white"
             >
               Back to Home
