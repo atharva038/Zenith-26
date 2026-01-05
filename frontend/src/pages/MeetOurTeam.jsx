@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { toast } from "react-toastify";
-import { Phone, Mail, Users, Plus, X } from "lucide-react";
-import { motion } from "framer-motion";
+import React, {useState, useEffect} from "react";
+import {toast} from "react-toastify";
+import {Phone, Mail, Users, Plus, X} from "lucide-react";
+import {motion} from "framer-motion";
 import api from "../config/api";
 import TeamMemberForm from "../components/TeamMemberForm";
 
@@ -10,17 +10,10 @@ const MeetOurTeam = () => {
   const [groupedMembers, setGroupedMembers] = useState({});
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     fetchTeamMembers();
-    checkAdminStatus();
   }, []);
-
-  const checkAdminStatus = () => {
-    const token = localStorage.getItem("adminToken");
-    setIsAdmin(!!token);
-  };
 
   const fetchTeamMembers = async () => {
     try {
@@ -41,7 +34,7 @@ const MeetOurTeam = () => {
 
     // Update grouped members
     setGroupedMembers((prev) => {
-      const updated = { ...prev };
+      const updated = {...prev};
       if (!updated[newMember.committee]) {
         updated[newMember.committee] = [];
       }
@@ -52,42 +45,8 @@ const MeetOurTeam = () => {
     setShowForm(false);
   };
 
-  const handleClearAllData = async () => {
-    const confirmClear = window.confirm(
-      "⚠️ Are you sure you want to delete ALL team members and their photos from Cloudinary? This action cannot be undone!"
-    );
-
-    if (!confirmClear) return;
-
-    const doubleConfirm = window.confirm(
-      "🚨 FINAL CONFIRMATION: This will permanently delete all team member data and photos. Type 'DELETE ALL' to confirm or click Cancel."
-    );
-
-    if (!doubleConfirm) return;
-
-    try {
-      setLoading(true);
-      const response = await api.delete("/team-members/clear-all-data");
-
-      if (response.data.success) {
-        setTeamMembers([]);
-        setGroupedMembers({});
-        toast.success(
-          "All team member data and photos have been successfully cleared!"
-        );
-      }
-    } catch (error) {
-      console.error("Error clearing team data:", error);
-      const errorMessage =
-        error.response?.data?.message || "Failed to clear team data";
-      toast.error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // Sparkle animation component (matching mentors section)
-  const Sparkle = ({ delay = 0, size = 4 }) => (
+  const Sparkle = ({delay = 0, size = 4}) => (
     <motion.div
       className="absolute rounded-full bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-200"
       style={{
@@ -98,7 +57,7 @@ const MeetOurTeam = () => {
         willChange: "transform, opacity",
         transform: "translate3d(0,0,0)",
       }}
-      initial={{ opacity: 0, scale: 0 }}
+      initial={{opacity: 0, scale: 0}}
       animate={{
         opacity: [0, 0.6, 0],
         scale: [0, 1, 0],
@@ -113,7 +72,7 @@ const MeetOurTeam = () => {
     />
   );
 
-  const MemberCard = ({ member, index, isLeadership = false }) => {
+  const MemberCard = ({member, index, isLeadership = false}) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     // Get gradient based on committee
@@ -156,9 +115,9 @@ const MeetOurTeam = () => {
     return (
       <motion.div
         className="group relative h-full"
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-50px" }}
+        initial={{opacity: 0, y: 40}}
+        whileInView={{opacity: 1, y: 0}}
+        viewport={{once: true, margin: "-50px"}}
         transition={{
           duration: 0.6,
           delay: index * 0.1,
@@ -198,7 +157,7 @@ const MeetOurTeam = () => {
                 scale: 1.1,
                 rotate: [0, -5, 5, -5, 0],
               }}
-              transition={{ duration: 0.5 }}
+              transition={{duration: 0.5}}
             >
               <img
                 src={member.photo}
@@ -254,10 +213,10 @@ const MeetOurTeam = () => {
               className={`mt-6 h-1 bg-gradient-to-r from-transparent via-[${
                 isLeadership ? "#fbbf24" : "#ffb36a"
               }] to-transparent rounded-full`}
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.3 }}
+              initial={{scaleX: 0}}
+              whileInView={{scaleX: 1}}
+              viewport={{once: true}}
+              transition={{duration: 0.8, delay: 0.3}}
             />
           </div>
         </div>
@@ -267,13 +226,13 @@ const MeetOurTeam = () => {
           className={`absolute inset-0 bg-gradient-to-br ${
             isLeadership ? "from-yellow-500/20" : "from-[#ffb36a]/20"
           } to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-xl`}
-          style={{ transform: "translateY(10px)" }}
+          style={{transform: "translateY(10px)"}}
         />
       </motion.div>
     );
   };
 
-  const CommitteeSection = ({ committeeName, members }) => {
+  const CommitteeSection = ({committeeName, members}) => {
     // Group members by position for better hierarchy display
     const sortedMembers = members.sort((a, b) => {
       // Sort by position (main first, then sjc) and then by name
@@ -293,24 +252,24 @@ const MeetOurTeam = () => {
     return (
       <motion.div
         className="mb-20"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
+        initial={{opacity: 0}}
+        whileInView={{opacity: 1}}
+        viewport={{once: true, margin: "-50px"}}
+        transition={{duration: 0.7, ease: "easeOut"}}
       >
         <motion.div
           className="text-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
+          initial={{opacity: 0, y: 30}}
+          whileInView={{opacity: 1, y: 0}}
+          viewport={{once: true, margin: "-50px"}}
+          transition={{duration: 0.7, ease: "easeOut"}}
         >
           <motion.div
             className="inline-block mb-4"
-            initial={{ scale: 0.8, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: "backOut" }}
+            initial={{scale: 0.8, opacity: 0}}
+            whileInView={{scale: 1, opacity: 1}}
+            viewport={{once: true}}
+            transition={{duration: 0.6, ease: "backOut"}}
           >
             <span className="text-4xl">⚡</span>
           </motion.div>
@@ -325,10 +284,10 @@ const MeetOurTeam = () => {
           {/* Decorative Line */}
           <motion.div
             className="mt-6 h-1 bg-gradient-to-r from-transparent via-[#ffb36a] to-transparent rounded-full max-w-xs mx-auto"
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            initial={{scaleX: 0}}
+            whileInView={{scaleX: 1}}
+            viewport={{once: true}}
+            transition={{duration: 0.8, delay: 0.2}}
           />
         </motion.div>
 
@@ -337,10 +296,10 @@ const MeetOurTeam = () => {
           <div className="mb-12">
             <motion.div
               className="text-center mb-8"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+              initial={{opacity: 0, y: 20}}
+              whileInView={{opacity: 1, y: 0}}
+              viewport={{once: true}}
+              transition={{duration: 0.5, delay: 0.3}}
             >
               <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mb-2">
                 🏆 Leadership Team
@@ -365,10 +324,10 @@ const MeetOurTeam = () => {
           <div>
             <motion.div
               className="text-center mb-8"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+              initial={{opacity: 0, y: 20}}
+              whileInView={{opacity: 1, y: 0}}
+              viewport={{once: true}}
+              transition={{duration: 0.5, delay: 0.4}}
             >
               <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-500 mb-2">
                 ⭐ Core Team
@@ -397,13 +356,13 @@ const MeetOurTeam = () => {
         <div className="text-center">
           <motion.div
             className="w-32 h-32 border-4 border-[#ffb36a]/20 border-t-[#ffb36a] rounded-full mx-auto mb-8"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            animate={{rotate: 360}}
+            transition={{duration: 1, repeat: Infinity, ease: "linear"}}
           />
           <motion.p
             className="text-gray-400 text-xl"
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 2, repeat: Infinity }}
+            animate={{opacity: [0.5, 1, 0.5]}}
+            transition={{duration: 2, repeat: Infinity}}
           >
             Loading our amazing team...
           </motion.p>
@@ -455,28 +414,28 @@ const MeetOurTeam = () => {
         <div className="max-w-7xl mx-auto relative z-10">
           <motion.div
             className="inline-block mb-6"
-            initial={{ scale: 0.8, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: "backOut" }}
+            initial={{scale: 0.8, opacity: 0}}
+            whileInView={{scale: 1, opacity: 1}}
+            viewport={{once: true}}
+            transition={{duration: 0.6, ease: "backOut"}}
           >
             <span className="text-8xl">👥</span>
           </motion.div>
 
           <motion.h1
             className="text-5xl md:text-7xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] via-[#ff8b1f] to-[#ffb36a]"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
+            initial={{opacity: 0, y: 30}}
+            animate={{opacity: 1, y: 0}}
+            transition={{duration: 0.7, ease: "easeOut"}}
           >
             Meet Our Team
           </motion.h1>
 
           <motion.p
             className="text-xl md:text-2xl mb-8 text-gray-400 max-w-3xl mx-auto"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+            initial={{opacity: 0, y: 20}}
+            animate={{opacity: 1, y: 0}}
+            transition={{duration: 0.7, delay: 0.2, ease: "easeOut"}}
           >
             The passionate individuals working together to make Zenith 2026
             extraordinary
@@ -484,9 +443,9 @@ const MeetOurTeam = () => {
 
           <motion.div
             className="flex items-center justify-center text-lg text-gray-300"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.4 }}
+            initial={{opacity: 0}}
+            animate={{opacity: 1}}
+            transition={{duration: 0.7, delay: 0.4}}
           >
             <Users size={24} className="mr-2 text-[#ffb36a]" />
             <span>{teamMembers.length} dedicated team members</span>
@@ -494,48 +453,32 @@ const MeetOurTeam = () => {
         </div>
       </section>
 
-      {/* Admin Controls */}
-      {isAdmin && (
-        <section className="relative py-6">
-          <div className="max-w-7xl mx-auto px-6 relative z-10">
-            <div className="flex justify-end gap-4">
-              {/* Clear All Data Button - Commented Out */}
-              {/*
-              <motion.button
-                onClick={handleClearAllData}
-                className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-6 py-3 rounded-2xl font-bold transition-all duration-300 flex items-center gap-2 shadow-lg border-2 border-red-800 hover:border-red-600"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                title="Clear all testing data and photos"
-              >
-                <X size={20} />
-                Clear All Data
-              </motion.button>
-              */}
-
-              <motion.button
-                onClick={() => setShowForm(!showForm)}
-                className="bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] hover:from-[#ff8b1f] hover:to-[#ffb36a] text-black px-6 py-3 rounded-2xl font-bold transition-all duration-300 flex items-center gap-2 shadow-lg border-2 border-[#3a2416] hover:border-[#ffb36a]"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {showForm ? <X size={20} /> : <Plus size={20} />}
-                {showForm ? "Cancel" : "Add Team Member"}
-              </motion.button>
-            </div>
+      {/* Add Team Member Button - Available to Everyone */}
+      <section className="relative py-6">
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="flex justify-center">
+            <motion.button
+              onClick={() => setShowForm(!showForm)}
+              className="bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] hover:from-[#ff8b1f] hover:to-[#ffb36a] text-black px-8 py-4 rounded-2xl font-bold transition-all duration-300 flex items-center gap-2 shadow-lg border-2 border-[#3a2416] hover:border-[#ffb36a]"
+              whileHover={{scale: 1.05}}
+              whileTap={{scale: 0.95}}
+            >
+              {showForm ? <X size={20} /> : <Plus size={20} />}
+              {showForm ? "Cancel" : "Add Team Member"}
+            </motion.button>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
-      {/* Team Member Form */}
-      {showForm && isAdmin && (
+      {/* Team Member Form - Available to Everyone */}
+      {showForm && (
         <section className="relative py-6">
           <div className="max-w-7xl mx-auto px-6 relative z-10">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
+              initial={{opacity: 0, y: 20}}
+              animate={{opacity: 1, y: 0}}
+              exit={{opacity: 0, y: -20}}
+              transition={{duration: 0.3}}
               className="bg-gradient-to-br from-[#2a1a11] to-[#1a0f08] rounded-2xl p-8 border-2 border-[#3a2416]"
             >
               <TeamMemberForm
@@ -553,15 +496,15 @@ const MeetOurTeam = () => {
           {Object.keys(groupedMembers).length === 0 ? (
             <motion.div
               className="text-center py-20"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7 }}
+              initial={{opacity: 0, y: 20}}
+              animate={{opacity: 1, y: 0}}
+              transition={{duration: 0.7}}
             >
               <motion.div
                 className="inline-block mb-6"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.6, ease: "backOut" }}
+                initial={{scale: 0.8, opacity: 0}}
+                animate={{scale: 1, opacity: 1}}
+                transition={{duration: 0.6, ease: "backOut"}}
               >
                 <Users size={80} className="text-gray-600 mx-auto" />
               </motion.div>
@@ -569,9 +512,7 @@ const MeetOurTeam = () => {
                 No team members yet
               </h2>
               <p className="text-gray-500 text-lg">
-                {isAdmin
-                  ? "Add the first team member using the button above!"
-                  : "Team members will be displayed here once added by administrators."}
+                Add the first team member using the button above!
               </p>
             </motion.div>
           ) : (
@@ -594,17 +535,17 @@ const MeetOurTeam = () => {
           <div className="max-w-7xl mx-auto px-6 relative z-10">
             <motion.div
               className="text-center mb-16"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
+              initial={{opacity: 0, y: 30}}
+              whileInView={{opacity: 1, y: 0}}
+              viewport={{once: true, margin: "-50px"}}
+              transition={{duration: 0.7, ease: "easeOut"}}
             >
               <motion.div
                 className="inline-block mb-4"
-                initial={{ scale: 0.8, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, ease: "backOut" }}
+                initial={{scale: 0.8, opacity: 0}}
+                whileInView={{scale: 1, opacity: 1}}
+                viewport={{once: true}}
+                transition={{duration: 0.6, ease: "backOut"}}
               >
                 <span className="text-6xl">📊</span>
               </motion.div>
@@ -641,9 +582,9 @@ const MeetOurTeam = () => {
                 <motion.div
                   key={stat.label}
                   className="group relative"
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-50px" }}
+                  initial={{opacity: 0, y: 40}}
+                  whileInView={{opacity: 1, y: 0}}
+                  viewport={{once: true, margin: "-50px"}}
                   transition={{
                     duration: 0.6,
                     delay: index * 0.2,
@@ -670,15 +611,15 @@ const MeetOurTeam = () => {
                           scale: 1.2,
                           rotate: [0, -10, 10, -10, 0],
                         }}
-                        transition={{ duration: 0.5 }}
+                        transition={{duration: 0.5}}
                       >
                         {stat.icon}
                       </motion.div>
                       <motion.div
                         className="text-5xl font-bold mb-3 text-white group-hover:text-[#ffb36a] transition-colors duration-300"
-                        initial={{ scale: 0 }}
-                        whileInView={{ scale: 1 }}
-                        viewport={{ once: true }}
+                        initial={{scale: 0}}
+                        whileInView={{scale: 1}}
+                        viewport={{once: true}}
                         transition={{
                           duration: 0.5,
                           delay: index * 0.2 + 0.3,
@@ -697,7 +638,7 @@ const MeetOurTeam = () => {
                     {/* Floating Effect on Hover */}
                     <motion.div
                       className="absolute inset-0 bg-gradient-to-br from-[#ffb36a]/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-xl"
-                      style={{ transform: "translateY(10px)" }}
+                      style={{transform: "translateY(10px)"}}
                     />
                   </div>
                 </motion.div>
@@ -711,10 +652,10 @@ const MeetOurTeam = () => {
       {teamMembers.length > 0 && (
         <motion.section
           className="relative py-16 text-center"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, delay: 0.5 }}
+          initial={{opacity: 0}}
+          whileInView={{opacity: 1}}
+          viewport={{once: true}}
+          transition={{duration: 1, delay: 0.5}}
         >
           <div className="max-w-7xl mx-auto px-6 relative z-10">
             <p className="text-2xl italic text-gray-500 max-w-4xl mx-auto mb-6">
