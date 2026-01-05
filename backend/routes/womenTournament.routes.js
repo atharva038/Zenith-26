@@ -395,31 +395,42 @@ router.patch(
   }
 );
 
-// Admin route - Delete registration
-router.delete("/admin/registrations/:id", authMiddleware, async (req, res) => {
-  try {
-    const registration = await WomenTournament.findByIdAndDelete(req.params.id);
+// Admin route - Toggle rejection status (soft delete)
+router.patch(
+  "/admin/registrations/:id/reject",
+  authMiddleware,
+  async (req, res) => {
+    try {
+      const registration = await WomenTournament.findById(req.params.id);
 
-    if (!registration) {
-      return res.status(404).json({
+      if (!registration) {
+        return res.status(404).json({
+          success: false,
+          message: "Registration not found",
+        });
+      }
+
+      // Toggle rejection status
+      registration.isRejected = !registration.isRejected;
+      await registration.save();
+
+      res.json({
+        success: true,
+        message: `Registration ${
+          registration.isRejected ? "rejected" : "restored"
+        } successfully`,
+        data: registration,
+      });
+    } catch (error) {
+      console.error("Toggle Rejection Error:", error);
+      res.status(500).json({
         success: false,
-        message: "Registration not found",
+        message: "Failed to update registration",
+        error: error.message,
       });
     }
-
-    res.json({
-      success: true,
-      message: "Registration deleted successfully",
-    });
-  } catch (error) {
-    console.error("Delete Registration Error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to delete registration",
-      error: error.message,
-    });
   }
-});
+);
 
 // Admin route - Export registrations to CSV
 router.get(
@@ -491,4 +502,3 @@ router.get(
 );
 
 export default router;
-  

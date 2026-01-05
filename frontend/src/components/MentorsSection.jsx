@@ -53,7 +53,8 @@ const MENTORS_DATA = [
     name: "Prof. Bhaskar Kadam",
     role: "Sports Incharge",
     // designation: "Current",
-    image: "🏃‍♂️",
+    image:
+      "https://res.cloudinary.com/dvmsho3pj/image/upload/v1767627613/zenith-26/mentors/kadam-sir.jpg",
     gradient: "from-green-600 to-emerald-600",
     description:
       "As a sports incharge, it's my duty to encourage athletes to praticipate in such events. This event is bound to enhance your gameplay and team synergy. So teams, get warmed-up and be ready to give it all you got!!",
@@ -63,7 +64,8 @@ const MENTORS_DATA = [
     name: "Late Prof. R. B. Reddy",
     role: "Former Sports Incharge",
     // designation: "Legacy Builder",
-    image: "🏅",
+    image:
+      "https://res.cloudinary.com/dqki29mbg/image/upload/v1707291528/Zenith-24/uus5r2qf4joz5tyn3dmd.png",
     gradient: "from-yellow-600 to-orange-600",
     description:
       "The previous Sports Incharge of the institute who has helped all the student athletes in their preparation and has set the bar sky high. Under his guidance the sports level of the institute had elevated and SGGS became a force to be reckoned with. We hope to grow under the shadow of your blessings reddy sir😇",

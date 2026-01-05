@@ -25,6 +25,8 @@ const AdminWomenTournament = () => {
   const [selectedRegistration, setSelectedRegistration] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [mobileActiveTab, setMobileActiveTab] = useState("analytics");
+  const [showRejectedRegistrations, setShowRejectedRegistrations] =
+    useState(false);
 
   // Category sports mapping (same as mobile)
   const categorySportsMap = {
@@ -98,17 +100,51 @@ const AdminWomenTournament = () => {
     fetchRegistrations();
   }, [fetchRegistrations]);
 
-  // Lock body scroll when modal is open
+  // Prevent background scroll when modal is open
   useEffect(() => {
+    const body = document.body;
+
     if (showDetailsModal) {
-      document.body.style.overflow = "hidden";
+      // Get current scroll position
+      const scrollY = window.pageYOffset;
+
+      // Apply styles to lock body
+      body.style.position = "fixed";
+      body.style.top = `-${scrollY}px`;
+      body.style.left = "0";
+      body.style.right = "0";
+      body.style.width = "100%";
+
+      // Store scroll position as data attribute
+      body.setAttribute("data-scroll-lock", scrollY.toString());
     } else {
-      document.body.style.overflow = "unset";
+      // Get stored scroll position
+      const scrollY = body.getAttribute("data-scroll-lock");
+
+      // Remove all styles
+      body.style.position = "";
+      body.style.top = "";
+      body.style.left = "";
+      body.style.right = "";
+      body.style.width = "";
+
+      // Remove data attribute
+      body.removeAttribute("data-scroll-lock");
+
+      // Restore scroll position
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY, 10));
+      }
     }
 
-    // Cleanup on unmount
+    // Cleanup function
     return () => {
-      document.body.style.overflow = "unset";
+      body.style.position = "";
+      body.style.top = "";
+      body.style.left = "";
+      body.style.right = "";
+      body.style.width = "";
+      body.removeAttribute("data-scroll-lock");
     };
   }, [showDetailsModal]);
 
@@ -118,10 +154,16 @@ const AdminWomenTournament = () => {
     return reg.selectedSports?.includes(filters.sport);
   });
 
+  // Separate active and rejected registrations
+  const activeRegistrations = filteredRegistrations.filter(
+    (reg) => !reg.isRejected
+  );
+  const rejectedRegistrations = filteredRegistrations.filter(
+    (reg) => reg.isRejected
+  );
+
   const handleStatusUpdate = async (id, status, paymentStatus) => {
     try {
-      console.log("Updating status:", {id, status, paymentStatus});
-
       // Build update object - only send fields that are provided
       const updateData = {};
       if (status !== undefined && status !== null) updateData.status = status;
@@ -130,7 +172,6 @@ const AdminWomenTournament = () => {
 
       // If nothing to update, return early
       if (Object.keys(updateData).length === 0) {
-        console.log("No changes to update");
         return;
       }
 
@@ -171,23 +212,35 @@ const AdminWomenTournament = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this registration?")) {
+    const registration = registrations.find((r) => r._id === id);
+    const isRejected = registration?.isRejected;
+
+    const confirmMessage = isRejected
+      ? "Are you sure you want to restore this registration?"
+      : "Are you sure you want to reject this registration?";
+
+    if (!window.confirm(confirmMessage)) {
       return;
     }
 
     try {
-      const response = await api.delete(
-        `/women-tournament/admin/registrations/${id}`
+      const response = await api.patch(
+        `/women-tournament/admin/registrations/${id}/reject`
       );
 
       if (response.data.success) {
-        toast.success("Registration deleted successfully");
-        fetchRegistrations();
+        toast.success(response.data.message);
+        // Close modal first
         setShowDetailsModal(false);
+        setSelectedRegistration(null);
+        // Then refresh list
+        await fetchRegistrations();
       }
     } catch (error) {
-      console.error("Delete Error:", error);
-      toast.error("Failed to delete registration");
+      console.error("Reject Registration Error:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to update registration"
+      );
     }
   };
 
@@ -529,10 +582,10 @@ const AdminWomenTournament = () => {
             <div className="flex items-center justify-center p-12">
               <div className="animate-spin w-12 h-12 border-4 border-pink-500 border-t-transparent rounded-full"></div>
             </div>
-          ) : filteredRegistrations.length === 0 ? (
+          ) : activeRegistrations.length === 0 ? (
             <div className="text-center p-12 text-gray-400">
               <div className="text-6xl mb-4">📋</div>
-              <div className="text-xl">No registrations found</div>
+              <div className="text-xl">No active registrations found</div>
               {filters.sport && (
                 <p className="text-sm mt-2">
                   No registrations found for "{filters.sport}"
@@ -578,7 +631,7 @@ const AdminWomenTournament = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5">
-                    {filteredRegistrations.map((reg, index) => (
+                    {activeRegistrations.map((reg, index) => (
                       <motion.tr
                         key={reg._id}
                         initial={{opacity: 0}}
@@ -714,26 +767,178 @@ const AdminWomenTournament = () => {
             </>
           )}
         </div>
+
+        {/* Rejected Registrations Section */}
+        {rejectedRegistrations.length > 0 && (
+          <div className="mt-8">
+            <button
+              onClick={() =>
+                setShowRejectedRegistrations(!showRejectedRegistrations)
+              }
+              className="w-full bg-red-500/10 border border-red-500/20 rounded-2xl p-4 mb-4 flex items-center justify-between hover:bg-red-500/20 transition-all"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">🗑️</span>
+                <div className="text-left">
+                  <div className="text-white font-semibold">
+                    Rejected Registrations
+                  </div>
+                  <div className="text-gray-400 text-sm">
+                    {rejectedRegistrations.length} rejected registration(s)
+                  </div>
+                </div>
+              </div>
+              <motion.div
+                animate={{rotate: showRejectedRegistrations ? 180 : 0}}
+                transition={{duration: 0.3}}
+              >
+                <svg
+                  className="w-6 h-6 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </motion.div>
+            </button>
+
+            <AnimatePresence>
+              {showRejectedRegistrations && (
+                <motion.div
+                  initial={{height: 0, opacity: 0}}
+                  animate={{height: "auto", opacity: 1}}
+                  exit={{height: 0, opacity: 0}}
+                  transition={{duration: 0.3}}
+                  className="overflow-hidden"
+                >
+                  <div className="bg-red-500/5 border border-red-500/20 rounded-2xl overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-red-500/10 border-b border-red-500/20">
+                          <tr>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                              Date
+                            </th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                              Name
+                            </th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                              Reg No
+                            </th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                              Mobile
+                            </th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                              Category
+                            </th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                              Sports
+                            </th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                              Amount
+                            </th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-red-500/10">
+                          {rejectedRegistrations.map((reg, index) => (
+                            <motion.tr
+                              key={reg._id}
+                              initial={{opacity: 0}}
+                              animate={{opacity: 1}}
+                              transition={{delay: index * 0.05}}
+                              className="hover:bg-red-500/10 transition-colors opacity-60"
+                            >
+                              <td className="px-6 py-4 text-sm text-gray-400">
+                                {new Date(reg.createdAt).toLocaleDateString(
+                                  "en-IN"
+                                )}
+                              </td>
+                              <td className="px-6 py-4 text-sm text-white font-medium">
+                                {reg.name}
+                              </td>
+                              <td className="px-6 py-4 text-sm text-gray-300">
+                                {reg.registrationNumber}
+                              </td>
+                              <td className="px-6 py-4 text-sm text-gray-300">
+                                {reg.mobileNumber}
+                              </td>
+                              <td className="px-6 py-4 text-sm">
+                                <span className="text-xs px-2 py-1 rounded-full bg-purple-500/20 text-purple-400">
+                                  {reg.selectedCategory}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-sm text-gray-300">
+                                {reg.selectedSports.length} sport(s)
+                              </td>
+                              <td className="px-6 py-4 text-sm font-semibold text-green-400">
+                                ₹{reg.totalAmount}
+                              </td>
+                              <td className="px-6 py-4 text-sm">
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() => {
+                                      setSelectedRegistration(reg);
+                                      setShowDetailsModal(true);
+                                    }}
+                                    className="px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg font-medium transition-all"
+                                  >
+                                    View
+                                  </button>
+                                  <button
+                                    onClick={() => handleDelete(reg._id)}
+                                    className="px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded-lg font-medium transition-all"
+                                  >
+                                    Restore
+                                  </button>
+                                </div>
+                              </td>
+                            </motion.tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
         {/* End Desktop View */}
       </div>
 
-      {/* Details Modal - Fixed Scrolling Structure */}
+      {/* Details Modal - Fixed Scrolling Structure with Debug */}
       <AnimatePresence>
         {showDetailsModal && selectedRegistration && (
           <motion.div
             initial={{opacity: 0}}
             animate={{opacity: 1}}
             exit={{opacity: 0}}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
             onClick={() => setShowDetailsModal(false)}
+            onWheel={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            style={{overflow: "hidden", touchAction: "none"}}
           >
             <motion.div
               initial={{scale: 0.9, opacity: 0}}
               animate={{scale: 1, opacity: 1}}
               exit={{scale: 0.9, opacity: 0}}
               transition={{duration: 0.2}}
-              className="relative w-full max-w-3xl max-h-[90vh] mx-4 flex flex-col bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-2xl shadow-2xl"
+              className="relative w-full max-w-3xl max-h-[90vh] flex flex-col bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-2xl shadow-2xl"
               onClick={(e) => e.stopPropagation()}
+              onWheel={(e) => e.stopPropagation()}
+              style={{overflow: "hidden"}}
             >
               {/* Header - Fixed at Top */}
               <div className="flex items-center justify-between p-6 bg-gradient-to-b from-gray-900 to-gray-900/95 backdrop-blur-sm border-b border-white/10 flex-shrink-0">
@@ -749,7 +954,14 @@ const AdminWomenTournament = () => {
               </div>
 
               {/* Scrollable Content */}
-              <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
+              <div
+                className="flex-1 p-6 md:p-8 space-y-6 custom-scrollbar"
+                style={{
+                  overflowY: "auto",
+                  overflowX: "hidden",
+                  maxHeight: "calc(90vh - 80px)",
+                }}
+              >
                 {/* Participant Information */}
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
@@ -981,12 +1193,21 @@ const AdminWomenTournament = () => {
                   >
                     Close
                   </button>
-                  <button
-                    onClick={() => handleDelete(selectedRegistration._id)}
-                    className="flex-1 px-6 py-3 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-red-400 font-semibold transition-all"
-                  >
-                    Delete
-                  </button>
+                  {selectedRegistration?.isRejected ? (
+                    <button
+                      onClick={() => handleDelete(selectedRegistration._id)}
+                      className="flex-1 px-6 py-3 bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 rounded-lg text-green-400 font-semibold transition-all"
+                    >
+                      ✅ Restore Registration
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleDelete(selectedRegistration._id)}
+                      className="flex-1 px-6 py-3 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-red-400 font-semibold transition-all"
+                    >
+                      ❌ Reject Registration
+                    </button>
+                  )}
                 </div>
                 {/* End Content */}
               </div>

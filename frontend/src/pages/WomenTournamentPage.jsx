@@ -33,6 +33,11 @@ const WomenTournamentPage = () => {
   const [screenshotPreview, setScreenshotPreview] = useState(null);
   const [isUploadingScreenshot, setIsUploadingScreenshot] = useState(false);
   const [flippedCards, setFlippedCards] = useState({});
+  const [showBackupQR, setShowBackupQR] = useState({
+    category1: false,
+    category2: false,
+    category3: false,
+  });
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -404,6 +409,20 @@ const WomenTournamentPage = () => {
   // QR Codes for each category - Sagar Ubale (sagarubale2004@oksbi)
   const PAYMENT_QR_URL =
     "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto:best/v1767592627/zenith-26/img/payment/payment-qr-sagar-ubale";
+
+  // Backup QR Codes - Atharva Joshi
+  const BACKUP_QR_URLS = [
+    {
+      name: "Atharva Joshi (ICICI)",
+      upiId: "atharvsjoshi2005-1@okicici",
+      url: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1767630215/zenith-26/img/payment/backup-qr-atharva-okicici.png",
+    },
+    {
+      name: "Atharva Joshi (Axis)",
+      upiId: "atharvsjoshi2005@okaxis",
+      url: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1767630220/zenith-26/img/payment/backup-qr-atharva-okaxis.png",
+    },
+  ];
 
   const qrCodes = {
     category1: PAYMENT_QR_URL,
@@ -1724,6 +1743,76 @@ const WomenTournamentPage = () => {
                               className="w-64 h-auto"
                             />
                           </div>
+
+                          {/* Backup QR Codes Dropdown */}
+                          <div className="mt-6 w-full">
+                            <button
+                              onClick={() =>
+                                setShowBackupQR({
+                                  ...showBackupQR,
+                                  category1: !showBackupQR.category1,
+                                })
+                              }
+                              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/40 rounded-lg text-yellow-300 font-medium transition-all"
+                            >
+                              <span>🔄</span>
+                              <span>
+                                {showBackupQR.category1
+                                  ? "Hide Backup Payment Options"
+                                  : "Show Backup Payment Options"}
+                              </span>
+                              <svg
+                                className={`w-5 h-5 transition-transform ${
+                                  showBackupQR.category1 ? "rotate-180" : ""
+                                }`}
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 9l-7 7-7-7"
+                                />
+                              </svg>
+                            </button>
+
+                            <AnimatePresence>
+                              {showBackupQR.category1 && (
+                                <motion.div
+                                  initial={{height: 0, opacity: 0}}
+                                  animate={{height: "auto", opacity: 1}}
+                                  exit={{height: 0, opacity: 0}}
+                                  transition={{duration: 0.3}}
+                                  className="overflow-hidden"
+                                >
+                                  <div className="mt-4 space-y-6 pt-4 border-t border-yellow-500/20">
+                                    {BACKUP_QR_URLS.map((qr, index) => (
+                                      <div
+                                        key={index}
+                                        className="bg-yellow-500/5 p-6 rounded-lg border border-yellow-500/20"
+                                      >
+                                        <p className="text-sm text-yellow-300 mb-3 font-medium text-center">
+                                          {qr.name}
+                                        </p>
+                                        <div className="bg-white p-2 rounded-lg shadow-lg w-fit mx-auto">
+                                          <img
+                                            src={qr.url}
+                                            alt={`Backup QR ${index + 1}`}
+                                            className="w-64 h-auto"
+                                          />
+                                        </div>
+                                        <p className="text-xs text-gray-400 mt-3 text-center break-all">
+                                          UPI ID: {qr.upiId}
+                                        </p>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -1789,6 +1878,76 @@ const WomenTournamentPage = () => {
                               alt="Category 2 QR Code"
                               className="w-64 h-auto"
                             />
+                          </div>
+
+                          {/* Backup QR Codes Dropdown */}
+                          <div className="mt-6 w-full">
+                            <button
+                              onClick={() =>
+                                setShowBackupQR({
+                                  ...showBackupQR,
+                                  category2: !showBackupQR.category2,
+                                })
+                              }
+                              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/40 rounded-lg text-blue-300 font-medium transition-all"
+                            >
+                              <span>🔄</span>
+                              <span>
+                                {showBackupQR.category2
+                                  ? "Hide Backup Payment Options"
+                                  : "Show Backup Payment Options"}
+                              </span>
+                              <svg
+                                className={`w-5 h-5 transition-transform ${
+                                  showBackupQR.category2 ? "rotate-180" : ""
+                                }`}
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 9l-7 7-7-7"
+                                />
+                              </svg>
+                            </button>
+
+                            <AnimatePresence>
+                              {showBackupQR.category2 && (
+                                <motion.div
+                                  initial={{height: 0, opacity: 0}}
+                                  animate={{height: "auto", opacity: 1}}
+                                  exit={{height: 0, opacity: 0}}
+                                  transition={{duration: 0.3}}
+                                  className="overflow-hidden"
+                                >
+                                  <div className="mt-4 space-y-6 pt-4 border-t border-blue-500/20">
+                                    {BACKUP_QR_URLS.map((qr, index) => (
+                                      <div
+                                        key={index}
+                                        className="bg-blue-500/5 p-6 rounded-lg border border-blue-500/20"
+                                      >
+                                        <p className="text-sm text-blue-300 mb-3 font-medium text-center">
+                                          {qr.name}
+                                        </p>
+                                        <div className="bg-white p-2 rounded-lg shadow-lg w-fit mx-auto">
+                                          <img
+                                            src={qr.url}
+                                            alt={`Backup QR ${index + 1}`}
+                                            className="w-64 h-auto"
+                                          />
+                                        </div>
+                                        <p className="text-xs text-gray-400 mt-3 text-center break-all">
+                                          UPI ID: {qr.upiId}
+                                        </p>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
                           </div>
                         </div>
                       </div>
@@ -1873,6 +2032,76 @@ const WomenTournamentPage = () => {
                                 alt="Category 3 QR Code"
                                 className="w-64 h-auto"
                               />
+                            </div>
+
+                            {/* Backup QR Codes Dropdown */}
+                            <div className="mt-6 w-full">
+                              <button
+                                onClick={() =>
+                                  setShowBackupQR({
+                                    ...showBackupQR,
+                                    category3: !showBackupQR.category3,
+                                  })
+                                }
+                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-500/20 hover:bg-green-500/30 border border-green-500/40 rounded-lg text-green-300 font-medium transition-all"
+                              >
+                                <span>🔄</span>
+                                <span>
+                                  {showBackupQR.category3
+                                    ? "Hide Backup Payment Options"
+                                    : "Show Backup Payment Options"}
+                                </span>
+                                <svg
+                                  className={`w-5 h-5 transition-transform ${
+                                    showBackupQR.category3 ? "rotate-180" : ""
+                                  }`}
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M19 9l-7 7-7-7"
+                                  />
+                                </svg>
+                              </button>
+
+                              <AnimatePresence>
+                                {showBackupQR.category3 && (
+                                  <motion.div
+                                    initial={{height: 0, opacity: 0}}
+                                    animate={{height: "auto", opacity: 1}}
+                                    exit={{height: 0, opacity: 0}}
+                                    transition={{duration: 0.3}}
+                                    className="overflow-hidden"
+                                  >
+                                    <div className="mt-4 space-y-6 pt-4 border-t border-green-500/20">
+                                      {BACKUP_QR_URLS.map((qr, index) => (
+                                        <div
+                                          key={index}
+                                          className="bg-green-500/5 p-6 rounded-lg border border-green-500/20"
+                                        >
+                                          <p className="text-sm text-green-300 mb-3 font-medium text-center">
+                                            {qr.name}
+                                          </p>
+                                          <div className="bg-white p-2 rounded-lg shadow-lg w-fit mx-auto">
+                                            <img
+                                              src={qr.url}
+                                              alt={`Backup QR ${index + 1}`}
+                                              className="w-64 h-auto"
+                                            />
+                                          </div>
+                                          <p className="text-xs text-gray-400 mt-3 text-center break-all">
+                                            UPI ID: {qr.upiId}
+                                          </p>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
                             </div>
                           </div>
                         </div>
@@ -2036,11 +2265,110 @@ const WomenTournamentPage = () => {
 
         {/* Footer */}
         <footer className="bg-black/50 backdrop-blur-md border-t border-white/5 mt-20 py-12">
-          <div className="max-w-7xl mx-auto px-4 text-center">
-            <p className="text-gray-400">© 2026 Zenith. All rights reserved.</p>
-            <p className="text-gray-500 text-sm mt-2">
-              Empowering women through sports
-            </p>
+          <div className="max-w-7xl mx-auto px-4">
+            {/* Contact Section */}
+            <div className="mb-12">
+              <h3 className="text-2xl md:text-3xl font-bold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-600">
+                📞 Contact Us for Queries
+              </h3>
+              <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                {/* Sports Secretary */}
+                <div className="bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-pink-500/30 rounded-xl p-6 text-center hover:scale-105 transition-transform">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
+                    <span className="text-2xl">🏆</span>
+                  </div>
+                  <h4 className="text-lg font-semibold text-white mb-2">
+                    Sports Secretary
+                  </h4>
+                  <p className="text-pink-300 font-medium mb-3">Sagar Ubale</p>
+                  <a
+                    href="tel:+919545956689"
+                    className="text-white hover:text-pink-300 transition-colors block mb-1"
+                  >
+                    📱 +91 95459 56689
+                  </a>
+                  <p className="text-gray-400 text-sm mt-2">
+                    General Sports Queries & Doubts
+                  </p>
+                </div>
+
+                {/* SJC - Shital Thawre */}
+                <div className="bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-xl p-6 text-center hover:scale-105 transition-transform">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center">
+                    <span className="text-2xl">👥</span>
+                  </div>
+                  <h4 className="text-lg font-semibold text-white mb-2">
+                    SJC Coordinator
+                  </h4>
+                  <p className="text-purple-300 font-medium mb-3">
+                    Shital Thawre
+                  </p>
+                  <a
+                    href="tel:+919665502490"
+                    className="text-white hover:text-purple-300 transition-colors block mb-1"
+                  >
+                    📱 +91 96655 02490
+                  </a>
+                  <p className="text-gray-400 text-sm mt-2">
+                    Tournament Coordination
+                  </p>
+                </div>
+
+                {/* SJC - Isha Punje */}
+                <div className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-xl p-6 text-center hover:scale-105 transition-transform">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full flex items-center justify-center">
+                    <span className="text-2xl">👥</span>
+                  </div>
+                  <h4 className="text-lg font-semibold text-white mb-2">
+                    SJC Coordinator
+                  </h4>
+                  <p className="text-blue-300 font-medium mb-3">Isha Punje</p>
+                  <a
+                    href="tel:+917498374834"
+                    className="text-white hover:text-blue-300 transition-colors block mb-1"
+                  >
+                    📱 +91 74983 74834
+                  </a>
+                  <p className="text-gray-400 text-sm mt-2">
+                    Tournament Coordination
+                  </p>
+                </div>
+              </div>
+
+              {/* Web/Registration Issues */}
+              <div className="mt-8 max-w-2xl mx-auto">
+                <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/30 rounded-xl p-6 text-center hover:scale-105 transition-transform">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center">
+                    <span className="text-2xl">💻</span>
+                  </div>
+                  <h4 className="text-lg font-semibold text-white mb-2">
+                    Web & Technical Support
+                  </h4>
+                  <p className="text-emerald-300 font-medium mb-3">
+                    Atharva Joshi
+                  </p>
+                  <a
+                    href="tel:+919156906881"
+                    className="text-white hover:text-emerald-300 transition-colors block mb-1"
+                  >
+                    📱 +91 91569 06881
+                  </a>
+                  <p className="text-gray-400 text-sm mt-2">
+                    Website Issues, Registration Problems & Technical Support
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Copyright */}
+            <div className="text-center pt-8 border-t border-white/10">
+              <p className="text-gray-400">
+                © 2026 Zenith. All rights reserved.
+              </p>
+              <p className="text-gray-500 text-sm mt-2">
+                Empowering women through sports
+              </p>
+            </div>
           </div>
         </footer>
       </div>

@@ -50,6 +50,10 @@ const womenTournamentSchema = new mongoose.Schema(
       enum: ["pending", "completed", "failed", "not_required"],
       default: "pending",
     },
+    isRejected: {
+      type: Boolean,
+      default: false,
+    },
     totalAmount: {
       type: Number,
       required: true,

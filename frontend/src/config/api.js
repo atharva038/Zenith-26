@@ -24,11 +24,6 @@ const getApiBaseUrl = () => {
 
 const API_BASE_URL = getApiBaseUrl();
 
-console.log("🌐 API Base URL:", API_BASE_URL);
-console.log("🔧 Environment Mode:", import.meta.env.MODE);
-console.log("🔧 VITE_API_URL:", import.meta.env.VITE_API_URL);
-console.log("🏠 Hostname:", window.location.hostname);
-
 // Create axios instance
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api`,
