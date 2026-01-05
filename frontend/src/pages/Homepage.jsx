@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import {useState, useRef, useEffect} from "react";
+import {Link} from "react-router-dom";
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
+import {motion} from "framer-motion";
 import {
   Instagram,
   Mail,
@@ -12,8 +12,8 @@ import {
   Trophy,
   Users,
 } from "lucide-react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import {gsap} from "gsap";
+import {ScrollTrigger} from "gsap/ScrollTrigger";
 import ThreeScene from "../components/ThreeScene";
 import VIPCarousel from "../components/VIPCarousel";
 import WormholePortal from "../components/WormholePortal";
@@ -27,7 +27,7 @@ import logo from "../assets/logo.png";
 gsap.registerPlugin(ScrollTrigger);
 
 // Subtle Sparkle component for blink dots - GPU ACCELERATED
-const Sparkle = ({ delay = 0, size = 4 }) => (
+const Sparkle = ({delay = 0, size = 4}) => (
   <motion.div
     className="absolute rounded-full bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-200"
     style={{
@@ -38,7 +38,7 @@ const Sparkle = ({ delay = 0, size = 4 }) => (
       willChange: "transform, opacity", // Browser performance hint
       transform: "translate3d(0,0,0)", // Force GPU layer
     }}
-    initial={{ opacity: 0, scale: 0 }}
+    initial={{opacity: 0, scale: 0}}
     animate={{
       opacity: [0, 0.6, 0],
       scale: [0, 1, 0],
@@ -66,8 +66,8 @@ export default function Homepage() {
     if (window.innerWidth < 768) return;
 
     const handleMouseMove = (e) => {
-      const { clientX, clientY } = e;
-      const { innerWidth, innerHeight } = window;
+      const {clientX, clientY} = e;
+      const {innerWidth, innerHeight} = window;
 
       // Calculate mouse position as percentage (-0.5 to 0.5)
       const xPercent = (clientX / innerWidth - 0.5) * 2;
@@ -91,7 +91,7 @@ export default function Homepage() {
     };
 
     // Use passive listener for better scroll performance
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    window.addEventListener("mousemove", handleMouseMove, {passive: true});
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove, {
@@ -164,22 +164,20 @@ export default function Homepage() {
   return (
     <div className="relative min-h-screen bg-black text-white overflow-hidden">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 px-9 py-5 flex justify-between items-center z-[600] bg-black/10 backdrop-blur-md">
-        <span
-          className="text-[#ffb77a] font-bold text-xl tracking-wide"
-          style={{ textShadow: "0 2px 12px rgba(255,140,40,0.18)" }}
+      <nav className="fixed top-0 left-0 right-0 px-9 py-2 flex justify-between items-center z-[600] bg-black/10 backdrop-blur-md">
+        <Link
+          to="/home"
+          className="flex items-center hover:opacity-90 transition-opacity"
         >
-          Zenith 2026
-        </span>
+          <img
+            src="https://res.cloudinary.com/dvmsho3pj/image/upload/v1767597012/zenith-26/img/zenith-logo.png"
+            alt="Zenith 2026"
+            className="h-16 md:h-20 w-auto"
+          />
+        </Link>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex gap-6">
-          <a
-            href="#about"
-            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
-          >
-            About
-          </a>
           <a
             href="#events"
             className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
@@ -190,13 +188,7 @@ export default function Homepage() {
             href="#wormhole"
             className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors flex items-center gap-1"
           >
-            🌀 Portal
-          </a>
-          <a
-            href="#vip-guests"
-            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
-          >
-            VIP Guests
+            🌀 Gameverse
           </a>
           <Link
             to="/gallery"
@@ -254,13 +246,6 @@ export default function Homepage() {
           <div className="fixed top-16 left-0 right-0 bg-black/90 backdrop-blur-xl p-6 z-[700] border-b border-[#3a2416] animate-slideDown md:hidden">
             <div className="flex flex-col gap-4">
               <a
-                href="#about"
-                className="text-[#ffb77a] font-semibold"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                About
-              </a>
-              <a
                 href="#events"
                 className="text-[#ffb77a] font-semibold"
                 onClick={() => setMobileMenuOpen(false)}
@@ -272,14 +257,7 @@ export default function Homepage() {
                 className="text-[#ffb77a] font-semibold flex items-center gap-1"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                🌀 Portal
-              </a>
-              <a
-                href="#vip-guests"
-                className="text-[#ffb77a] font-semibold"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                VIP Guests
+                🌀 Gameverse
               </a>
               <Link
                 to="/gallery"
@@ -356,9 +334,9 @@ export default function Homepage() {
               willChange: "opacity, transform, filter", // Performance hints
               transform: "translate3d(0,0,0)", // GPU layer
             }}
-            initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 1, ease: "easeOut" }}
+            initial={{opacity: 0, y: 30, filter: "blur(8px)"}}
+            animate={{opacity: 1, y: 0, filter: "blur(0px)"}}
+            transition={{duration: 1, ease: "easeOut"}}
           >
             ZENITH 2026
           </motion.h1>
@@ -369,9 +347,9 @@ export default function Homepage() {
               willChange: "opacity, transform", // Performance hints
               transform: "translate3d(0,0,0)", // GPU layer
             }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+            initial={{opacity: 0, y: 20}}
+            animate={{opacity: 1, y: 0}}
+            transition={{duration: 0.8, delay: 0.3, ease: "easeOut"}}
           >
             SGGSIE&T Annual Sports Festival • Where Champions Rise
           </motion.p>
@@ -388,11 +366,11 @@ export default function Homepage() {
                   willChange: "transform", // Performance hint
                   transform: "translate3d(0,0,0)", // GPU layer
                 }}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                initial={{opacity: 0, scale: 0.9}}
+                animate={{opacity: 1, scale: 1}}
+                transition={{duration: 0.6, delay: 0.6, ease: "easeOut"}}
+                whileHover={{scale: 1.05}}
+                whileTap={{scale: 0.95}}
               >
                 🏆 Register for Sports
               </motion.button>
@@ -431,11 +409,11 @@ export default function Homepage() {
                   willChange: "transform",
                   transform: "translate3d(0,0,0)",
                 }}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.7, ease: "easeOut" }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                initial={{opacity: 0, scale: 0.9}}
+                animate={{opacity: 1, scale: 1}}
+                transition={{duration: 0.6, delay: 0.7, ease: "easeOut"}}
+                whileHover={{scale: 1.05}}
+                whileTap={{scale: 0.95}}
               >
                 ⚡ Women's Tournament
               </motion.button>
@@ -472,19 +450,19 @@ export default function Homepage() {
         <div className="max-w-6xl mx-auto">
           <motion.h2
             className="text-5xl md:text-6xl font-bold text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f]"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
+            initial={{opacity: 0, y: 30}}
+            whileInView={{opacity: 1, y: 0}}
+            viewport={{once: true, margin: "-50px"}}
+            transition={{duration: 0.7, ease: "easeOut"}}
           >
             About Zenith
           </motion.h2>
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
+              initial={{opacity: 0, x: -30}}
+              whileInView={{opacity: 1, x: 0}}
+              viewport={{once: true, margin: "-50px"}}
+              transition={{duration: 0.7, ease: "easeOut"}}
             >
               <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] mb-6">
                 ZENITH&apos;26
@@ -503,10 +481,10 @@ export default function Homepage() {
               </div>
             </motion.div>
             <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
+              initial={{opacity: 0, x: 30}}
+              whileInView={{opacity: 1, x: 0}}
+              viewport={{once: true, margin: "-50px"}}
+              transition={{duration: 0.7, ease: "easeOut", delay: 0.2}}
             >
               <img
                 src="https://res.cloudinary.com/ddaxlm9yc/image/upload/v1707427953/jqmii8uwfiub5nlvadxy.png"
@@ -520,10 +498,10 @@ export default function Homepage() {
           <motion.div
             ref={aboutCardsRef}
             className="mt-16"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.7, ease: "easeOut", delay: 0.3 }}
+            initial={{opacity: 0, y: 30}}
+            whileInView={{opacity: 1, y: 0}}
+            viewport={{once: true, margin: "-50px"}}
+            transition={{duration: 0.7, ease: "easeOut", delay: 0.3}}
           >
             <div className="grid md:grid-cols-4 gap-8">
               <a
@@ -603,10 +581,10 @@ export default function Homepage() {
           {/* Section Title */}
           <motion.div
             className="text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
+            initial={{opacity: 0, y: 30}}
+            whileInView={{opacity: 1, y: 0}}
+            viewport={{once: true, margin: "-50px"}}
+            transition={{duration: 0.7, ease: "easeOut"}}
           >
             <h2 className="text-5xl md:text-6xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f]">
               VIP Spotlight
@@ -618,10 +596,10 @@ export default function Homepage() {
 
           {/* VIP Carousel */}
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            initial={{opacity: 0, y: 40}}
+            whileInView={{opacity: 1, y: 0}}
+            viewport={{once: true, margin: "-100px"}}
+            transition={{duration: 0.8, ease: "easeOut"}}
           >
             <VIPCarousel />
           </motion.div>
@@ -639,30 +617,30 @@ export default function Homepage() {
             <div className="text-center lg:text-left">
               <motion.div
                 className="flex justify-center lg:justify-start mb-6"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
+                initial={{opacity: 0, y: 20}}
+                whileInView={{opacity: 1, y: 0}}
+                viewport={{once: true}}
+                transition={{duration: 0.6, ease: "easeOut"}}
               >
                 <img src={logo} alt="Zenith Logo" className="h-24 w-auto" />
               </motion.div>
 
               <motion.h3
                 className="text-2xl lg:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] mb-4"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
+                initial={{opacity: 0, y: 20}}
+                whileInView={{opacity: 1, y: 0}}
+                viewport={{once: true}}
+                transition={{duration: 0.6, ease: "easeOut", delay: 0.1}}
               >
                 ZENITH 2026
               </motion.h3>
 
               <motion.p
                 className="text-gray-400 text-base leading-relaxed max-w-sm mx-auto lg:mx-0"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+                initial={{opacity: 0, y: 20}}
+                whileInView={{opacity: 1, y: 0}}
+                viewport={{once: true}}
+                transition={{duration: 0.6, ease: "easeOut", delay: 0.2}}
               >
                 SGGSIE&T Annual Sports Festival
                 <br />
@@ -676,20 +654,20 @@ export default function Homepage() {
             <div className="text-center">
               <motion.h4
                 className="text-xl font-semibold text-[#ffb36a] mb-6"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
+                initial={{opacity: 0, y: 20}}
+                whileInView={{opacity: 1, y: 0}}
+                viewport={{once: true}}
+                transition={{duration: 0.5, ease: "easeOut"}}
               >
                 Quick Links
               </motion.h4>
 
               <motion.div
                 className="grid grid-cols-2 gap-x-6 gap-y-3 max-w-sm mx-auto"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
+                initial={{opacity: 0, y: 20}}
+                whileInView={{opacity: 1, y: 0}}
+                viewport={{once: true}}
+                transition={{duration: 0.5, ease: "easeOut", delay: 0.1}}
               >
                 <a
                   href="#about"
@@ -734,10 +712,10 @@ export default function Homepage() {
             <div className="text-center">
               <motion.h4
                 className="text-xl font-semibold text-[#ffb36a] mb-6"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
+                initial={{opacity: 0, y: 20}}
+                whileInView={{opacity: 1, y: 0}}
+                viewport={{once: true}}
+                transition={{duration: 0.5, ease: "easeOut"}}
               >
                 Connect With Us
               </motion.h4>
@@ -745,18 +723,18 @@ export default function Homepage() {
               {/* Social Media Icons */}
               <motion.div
                 className="flex justify-center gap-4 mb-6"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
+                initial={{opacity: 0, y: 20}}
+                whileInView={{opacity: 1, y: 0}}
+                viewport={{once: true}}
+                transition={{duration: 0.5, ease: "easeOut", delay: 0.1}}
               >
                 <motion.a
                   href="https://www.instagram.com/zenith_sggs?igsh=djNob2lwbXg2aGdi"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group relative"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{scale: 1.1}}
+                  whileTap={{scale: 0.95}}
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-[#ffb36a] to-[#ff8b1f] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-orange-500/25 transition-all duration-300">
                     <Instagram size={20} className="text-white" />
@@ -767,8 +745,8 @@ export default function Homepage() {
                 <motion.a
                   href="mailto:zenith@sggs.ac.in"
                   className="group relative"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{scale: 1.1}}
+                  whileTap={{scale: 0.95}}
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-[#d97706] to-[#ffb36a] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-orange-600/25 transition-all duration-300">
                     <Mail size={20} className="text-white" />
@@ -779,8 +757,8 @@ export default function Homepage() {
                 <motion.a
                   href="tel:+919356463943"
                   className="group relative"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{scale: 1.1}}
+                  whileTap={{scale: 0.95}}
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-[#ea580c] to-[#f97316] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-orange-700/25 transition-all duration-300">
                     <Phone size={20} className="text-white" />
@@ -793,8 +771,8 @@ export default function Homepage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group relative"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{scale: 1.1}}
+                  whileTap={{scale: 0.95}}
                 >
                   <div className="w-12 h-12 bg-gradient-to-br from-[#b45309] to-[#d97706] rounded-full flex items-center justify-center shadow-lg group-hover:shadow-amber-600/25 transition-all duration-300">
                     <MapPin size={20} className="text-white" />
@@ -806,10 +784,10 @@ export default function Homepage() {
               {/* Contact Info */}
               <motion.div
                 className="text-gray-400 text-sm space-y-1"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
+                initial={{opacity: 0, y: 20}}
+                whileInView={{opacity: 1, y: 0}}
+                viewport={{once: true}}
+                transition={{duration: 0.5, ease: "easeOut", delay: 0.2}}
               >
                 <p className="flex items-center justify-center gap-2">
                   <Mail size={14} className="text-[#ffb36a]" />
@@ -826,10 +804,10 @@ export default function Homepage() {
           {/* Bottom Section */}
           <motion.div
             className="pt-12 mt-8 border-t border-[#3a2416]/50"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: "easeOut", delay: 0.3 }}
+            initial={{opacity: 0, y: 20}}
+            whileInView={{opacity: 1, y: 0}}
+            viewport={{once: true}}
+            transition={{duration: 0.6, ease: "easeOut", delay: 0.3}}
           >
             <div className="text-center space-y-4">
               <p className="text-gray-500 text-sm">
