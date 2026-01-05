@@ -1,65 +1,183 @@
-import {motion} from "framer-motion";
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
+import { useState } from "react";
 
 // Mentor data structure
 const MENTORS_DATA = [
   {
     id: 1,
-    name: "Dr. Rajesh Kumar",
+    name: "Manesh Kokare",
     role: "Director",
     designation: "SGGSIE&T",
     image: "👨‍💼", // Replace with actual image URL
     gradient: "from-purple-600 to-blue-600",
-    description: "Guiding the vision of excellence",
+    description:
+      "ZENITH is an exhilarating State Level Sports event of SGGSIE&T, it's a platform for every student to showcase their talents and athletic skills. The beauty of it lies in its ability to bring together the entire sports enthusiasts and student community, since it is completely organised by students. In an era where sedentary lifestyles and academic pressures can affect our health, it is utmost crucial to emphasize the significance of physical activity and its positive impact on both mental and physical well being.",
   },
   {
     id: 2,
-    name: "Prof. Anjali Sharma",
+    name: "Prof.S.B.Dethe",
     role: "Dean",
     designation: "Student Affairs",
     image: "👩‍🏫",
     gradient: "from-pink-600 to-purple-600",
-    description: "Nurturing champions of tomorrow",
+    description:
+      "Zenith is a state level sports event organized by the students of SGGSIE&T consisting of various sports like basketball, football, volleyball, etc. various teams from all over the state of Maharashtra compete to celebrate the eternal glory. In an all one of the best events in the state, with all the fun and enjoyment for complete 3 days.",
   },
   {
     id: 3,
-    name: "Dr. Amit Patel",
+    name: "Dr. Jeet Patil",
     role: "Faculty Coordinator",
-    designation: "Sports Committee",
+    // designation: "Sports Committee",
     image: "🧑‍🏫",
     gradient: "from-orange-600 to-red-600",
-    description: "Architecting sporting excellence",
+    description:
+      "Zenith is the festival of the sports organised by the sggs from decade for all the students around the Maharashtra. zenith sports teach us organized, well structure, dynamic behaviour of life so enjoy zenith 6. खेळाच्या जिद्धिने, खेळाच्या सामर्थ्याने, खेळाचे भविष्य बनवुया चला zenith २५ खेळुया",
   },
   {
     id: 4,
-    name: "Prof. Priya Deshmukh",
+    name: "Mr. Tilak Jadhao",
     role: "Faculty Coordinator",
-    designation: "Sports Committee",
-    image: "👩‍💼",
+    // designation: "Sports Committee",
+    image: "�‍💼",
     gradient: "from-teal-600 to-cyan-600",
-    description: "Empowering athletic potential",
+    description:
+      "As a dedicated faculty coordinator, I believe in fostering a spirit of healthy competition and sportsmanship among students. Zenith provides an excellent platform for students to develop leadership skills, teamwork, and resilience while pursuing sporting excellence. Together, we create memories that last a lifetime.",
   },
   {
     id: 5,
-    name: "Mr. Vikram Singh",
+    name: "Prof. Bhaskar Kadam",
     role: "Sports Incharge",
-    designation: "Current",
+    // designation: "Current",
     image: "🏃‍♂️",
     gradient: "from-green-600 to-emerald-600",
-    description: "Leading the sporting revolution",
+    description:
+      "As a sports incharge, it's my duty to encourage athletes to praticipate in such events. This event is bound to enhance your gameplay and team synergy. So teams, get warmed-up and be ready to give it all you got!!",
   },
   {
     id: 6,
-    name: "Mr. Rahul Mehta",
+    name: "Late Prof. R. B. Reddy",
     role: "Former Sports Incharge",
-    designation: "Legacy Builder",
+    // designation: "Legacy Builder",
     image: "🏅",
     gradient: "from-yellow-600 to-orange-600",
-    description: "Foundation of sporting culture",
+    description:
+      "The previous Sports Incharge of the institute who has helped all the student athletes in their preparation and has set the bar sky high. Under his guidance the sports level of the institute had elevated and SGGS became a force to be reckoned with. We hope to grow under the shadow of your blessings reddy sir😇",
   },
 ];
 
+// Mentor Card component with read more functionality
+const MentorCard = ({ mentor, index }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  // Truncate description to 2 lines (approximately 80 characters)
+  const truncateText = (text, maxLength = 80) => {
+    if (text.length <= maxLength) return { text, isTruncated: false };
+    const truncated = text.slice(0, maxLength).trim();
+    const lastSpaceIndex = truncated.lastIndexOf(" ");
+    return {
+      text:
+        lastSpaceIndex > 0
+          ? truncated.slice(0, lastSpaceIndex) + "..."
+          : truncated + "...",
+      isTruncated: true,
+    };
+  };
+
+  const { text: truncatedText, isTruncated } = truncateText(mentor.description);
+
+  return (
+    <motion.div
+      className="group relative h-full"
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{
+        duration: 0.6,
+        delay: index * 0.1,
+        ease: "easeOut",
+      }}
+    >
+      {/* Card Container */}
+      <div className="relative bg-gradient-to-br from-[#2a1a11] to-[#1a0f08] rounded-2xl p-8 border-2 border-[#3a2416] hover:border-[#ffb36a] transition-all duration-500 overflow-hidden h-full flex flex-col">
+        {/* Hover Sparkles */}
+        <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          {[...Array(6)].map((_, i) => (
+            <Sparkle key={i} delay={i * 0.1} size={4} />
+          ))}
+        </div>
+
+        {/* Gradient Overlay on Hover */}
+        <div
+          className={`absolute inset-0 bg-gradient-to-br ${mentor.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}
+        />
+
+        {/* Content */}
+        <div className="relative z-10 flex flex-col h-full">
+          {/* Avatar with Animation */}
+          <motion.div
+            className="text-8xl mb-6 text-center"
+            whileHover={{
+              scale: 1.1,
+              rotate: [0, -5, 5, -5, 0],
+            }}
+            transition={{ duration: 0.5 }}
+          >
+            {mentor.image}
+          </motion.div>
+
+          {/* Name and Role */}
+          <div className="text-center mb-4">
+            <h3 className="text-2xl font-bold text-white mb-1 group-hover:text-[#ffb36a] transition-colors duration-300">
+              {mentor.name}
+            </h3>
+            <p
+              className={`text-lg font-semibold bg-gradient-to-r ${mentor.gradient} bg-clip-text text-transparent`}
+            >
+              {mentor.role}
+            </p>
+            <p className="text-sm text-gray-400 mt-1">{mentor.designation}</p>
+          </div>
+
+          {/* Description with Read More */}
+          <div className="text-center text-sm group-hover:text-gray-300 transition-colors duration-300 flex-grow">
+            <p className="text-gray-400 leading-relaxed">
+              {isExpanded ? mentor.description : truncatedText}
+            </p>
+            {isTruncated && (
+              <motion.button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="mt-2 text-[#ffb36a] hover:text-[#ffd4a8] font-semibold text-xs transition-colors duration-300"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {isExpanded ? "▲ Read Less" : "▼ Read More"}
+              </motion.button>
+            )}
+          </div>
+
+          {/* Decorative Line */}
+          <motion.div
+            className="mt-6 h-1 bg-gradient-to-r from-transparent via-[#ffb36a] to-transparent rounded-full"
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          />
+        </div>
+      </div>
+
+      {/* Floating Effect on Hover */}
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-br from-[#ffb36a]/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-xl"
+        style={{ transform: "translateY(10px)" }}
+      />
+    </motion.div>
+  );
+};
+
 // Sparkle animation component
-const Sparkle = ({delay = 0, size = 4}) => (
+const Sparkle = ({ delay = 0, size = 4 }) => (
   <motion.div
     className="absolute rounded-full bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-200"
     style={{
@@ -70,7 +188,7 @@ const Sparkle = ({delay = 0, size = 4}) => (
       willChange: "transform, opacity",
       transform: "translate3d(0,0,0)",
     }}
-    initial={{opacity: 0, scale: 0}}
+    initial={{ opacity: 0, scale: 0 }}
     animate={{
       opacity: [0, 0.6, 0],
       scale: [0, 1, 0],
@@ -131,17 +249,17 @@ export default function MentorsSection() {
         {/* Section Header */}
         <motion.div
           className="text-center mb-16"
-          initial={{opacity: 0, y: 30}}
-          whileInView={{opacity: 1, y: 0}}
-          viewport={{once: true, margin: "-50px"}}
-          transition={{duration: 0.7, ease: "easeOut"}}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
         >
           <motion.div
             className="inline-block mb-4"
-            initial={{scale: 0.8, opacity: 0}}
-            whileInView={{scale: 1, opacity: 1}}
-            viewport={{once: true}}
-            transition={{duration: 0.6, ease: "backOut"}}
+            initial={{ scale: 0.8, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: "backOut" }}
           >
             <span className="text-6xl">🌟</span>
           </motion.div>
@@ -157,93 +275,17 @@ export default function MentorsSection() {
         {/* Mentors Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {MENTORS_DATA.map((mentor, index) => (
-            <motion.div
-              key={mentor.id}
-              className="group relative"
-              initial={{opacity: 0, y: 40}}
-              whileInView={{opacity: 1, y: 0}}
-              viewport={{once: true, margin: "-50px"}}
-              transition={{
-                duration: 0.6,
-                delay: index * 0.1,
-                ease: "easeOut",
-              }}
-            >
-              {/* Card Container */}
-              <div className="relative bg-gradient-to-br from-[#2a1a11] to-[#1a0f08] rounded-2xl p-8 border-2 border-[#3a2416] hover:border-[#ffb36a] transition-all duration-500 overflow-hidden">
-                {/* Hover Sparkles */}
-                <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  {[...Array(6)].map((_, i) => (
-                    <Sparkle key={i} delay={i * 0.1} size={4} />
-                  ))}
-                </div>
-
-                {/* Gradient Overlay on Hover */}
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${mentor.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}
-                />
-
-                {/* Content */}
-                <div className="relative z-10">
-                  {/* Avatar with Animation */}
-                  <motion.div
-                    className="text-8xl mb-6 text-center"
-                    whileHover={{
-                      scale: 1.1,
-                      rotate: [0, -5, 5, -5, 0],
-                    }}
-                    transition={{duration: 0.5}}
-                  >
-                    {mentor.image}
-                  </motion.div>
-
-                  {/* Name and Role */}
-                  <div className="text-center mb-4">
-                    <h3 className="text-2xl font-bold text-white mb-1 group-hover:text-[#ffb36a] transition-colors duration-300">
-                      {mentor.name}
-                    </h3>
-                    <p
-                      className={`text-lg font-semibold bg-gradient-to-r ${mentor.gradient} bg-clip-text text-transparent`}
-                    >
-                      {mentor.role}
-                    </p>
-                    <p className="text-sm text-gray-400 mt-1">
-                      {mentor.designation}
-                    </p>
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-gray-400 text-center text-sm group-hover:text-gray-300 transition-colors duration-300">
-                    {mentor.description}
-                  </p>
-
-                  {/* Decorative Line */}
-                  <motion.div
-                    className="mt-6 h-1 bg-gradient-to-r from-transparent via-[#ffb36a] to-transparent rounded-full"
-                    initial={{scaleX: 0}}
-                    whileInView={{scaleX: 1}}
-                    viewport={{once: true}}
-                    transition={{duration: 0.8, delay: 0.3}}
-                  />
-                </div>
-              </div>
-
-              {/* Floating Effect on Hover */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-br from-[#ffb36a]/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-xl"
-                style={{transform: "translateY(10px)"}}
-              />
-            </motion.div>
+            <MentorCard key={mentor.id} mentor={mentor} index={index} />
           ))}
         </div>
 
         {/* Bottom Decorative Quote */}
         <motion.div
           className="mt-16 text-center"
-          initial={{opacity: 0}}
-          whileInView={{opacity: 1}}
-          viewport={{once: true}}
-          transition={{duration: 1, delay: 0.5}}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, delay: 0.5 }}
         >
           <p className="text-xl italic text-gray-500 max-w-3xl mx-auto">
             "Behind every champion, there's a mentor who believed in their
