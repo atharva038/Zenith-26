@@ -1,6 +1,6 @@
 import {useState, useEffect, useCallback} from "react";
 import {motion} from "framer-motion";
-import axios from "axios";
+import api from "../config/api";
 import AdminLayout from "../components/AdminLayout";
 
 const AdminAdmins = () => {
@@ -10,7 +10,7 @@ const AdminAdmins = () => {
 
   const fetchAdmins = useCallback(async (token) => {
     try {
-      const response = await axios.get("http://localhost:5000/api/admin/admins", {
+      const response = await api.get("/admin/admins", {
         headers: {Authorization: `Bearer ${token}`},
       });
       setAdmins(response.data.data.admins);
@@ -37,7 +37,7 @@ const AdminAdmins = () => {
 
     try {
       const token = localStorage.getItem("adminToken");
-      await axios.delete(`http://localhost:5000/api/admin/admins/${id}`, {
+      await api.delete(`/admin/admins/${id}`, {
         headers: {Authorization: `Bearer ${token}`},
       });
 

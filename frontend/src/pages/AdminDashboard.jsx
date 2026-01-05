@@ -1,6 +1,6 @@
 import {useState, useEffect, useCallback} from "react";
 import {motion} from "framer-motion";
-import axios from "axios";
+import api from "../config/api";
 import AdminLayout from "../components/AdminLayout";
 
 const AdminDashboard = () => {
@@ -13,10 +13,10 @@ const AdminDashboard = () => {
   const fetchDashboardData = useCallback(async (token) => {
     try {
       const [statsRes, adminsRes] = await Promise.all([
-        axios.get("http://localhost:5000/api/admin/dashboard/stats", {
+        api.get("/admin/dashboard/stats", {
           headers: {Authorization: `Bearer ${token}`},
         }),
-        axios.get("http://localhost:5000/api/admin/admins", {
+        api.get("/admin/admins", {
           headers: {Authorization: `Bearer ${token}`},
         }),
       ]);
@@ -46,7 +46,7 @@ const AdminDashboard = () => {
 
     try {
       const token = localStorage.getItem("adminToken");
-      await axios.delete(`http://localhost:5000/api/admin/admins/${id}`, {
+      await api.delete(`/admin/admins/${id}`, {
         headers: {Authorization: `Bearer ${token}`},
       });
 

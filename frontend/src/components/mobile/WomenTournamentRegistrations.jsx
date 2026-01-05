@@ -25,7 +25,7 @@ const WomenTournamentRegistrations = ({
       "Nimbu Chamach",
       "Powerlifting",
       "Weightlifting",
-      "Hankerchief Snash",
+      "Skipping Rope",
     ],
     category2: ["Badminton", "Chess", "Carrom", "Athletics"],
     category3: [
