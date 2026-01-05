@@ -23,6 +23,10 @@ const SPORTS_CATEGORIES = [
 
 const FIXED_ENTRY_FEE = 500; // Fixed for all sports
 
+// Payment QR Code - Sagar Ubale (sagarubale2004@oksbi)
+const PAYMENT_QR_URL =
+  "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto:best/v1767592627/zenith-26/img/payment/payment-qr-sagar-ubale";
+
 const MARATHON_FORM_FIELDS = [
   {
     label: "Full Name",
@@ -296,7 +300,8 @@ const UniversalRegistration = () => {
     }
 
     // Use appropriate form fields based on sport type
-    const fieldsToValidate = selectedSport === "Marathon" ? MARATHON_FORM_FIELDS : DEFAULT_FORM_FIELDS;
+    const fieldsToValidate =
+      selectedSport === "Marathon" ? MARATHON_FORM_FIELDS : DEFAULT_FORM_FIELDS;
 
     for (const field of fieldsToValidate) {
       if (field.required) {
@@ -393,7 +398,7 @@ const UniversalRegistration = () => {
         };
 
         const response = await api.post("/marathon/register", marathonData);
-        
+
         if (response.data.success) {
           setRegistrationNumber(response.data.data.registrationNumber);
           setRegistrationComplete(true);
@@ -479,11 +484,12 @@ const UniversalRegistration = () => {
             className={commonClasses}
           >
             <option value="">Select {field.label}</option>
-            {field.options && field.options.map((option, i) => (
-              <option key={i} value={option} className="bg-purple-900">
-                {option}
-              </option>
-            ))}
+            {field.options &&
+              field.options.map((option, i) => (
+                <option key={i} value={option} className="bg-purple-900">
+                  {option}
+                </option>
+              ))}
           </select>
         );
 
@@ -734,10 +740,15 @@ const UniversalRegistration = () => {
               <>
                 <div className="bg-white/5 rounded-lg p-6">
                   <h3 className="text-xl font-bold text-white mb-4">
-                    {selectedSport === "Marathon" ? "Participant Details" : "Team Details"}
+                    {selectedSport === "Marathon"
+                      ? "Participant Details"
+                      : "Team Details"}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {(selectedSport === "Marathon" ? MARATHON_FORM_FIELDS : DEFAULT_FORM_FIELDS).map((field, index) => (
+                    {(selectedSport === "Marathon"
+                      ? MARATHON_FORM_FIELDS
+                      : DEFAULT_FORM_FIELDS
+                    ).map((field, index) => (
                       <div
                         key={index}
                         className={
@@ -767,148 +778,144 @@ const UniversalRegistration = () => {
                     <h3 className="text-white font-semibold mb-4 text-xl">
                       💰 Payment Information
                     </h3>
-                  <div className="space-y-4">
-                    <div className="bg-yellow-500/20 border border-yellow-400/50 rounded-lg p-4">
-                      <p className="text-2xl font-bold text-yellow-300 mb-1">
-                        Entry Fee: ₹{FIXED_ENTRY_FEE}
-                      </p>
-                      <p className="text-sm text-yellow-100">
-                        Fixed for all sports at Zenith 2026
-                      </p>
-                    </div>
+                    <div className="space-y-4">
+                      <div className="bg-yellow-500/20 border border-yellow-400/50 rounded-lg p-4">
+                        <p className="text-2xl font-bold text-yellow-300 mb-1">
+                          Entry Fee: ₹{FIXED_ENTRY_FEE}
+                        </p>
+                        <p className="text-sm text-yellow-100">
+                          Fixed for all sports at Zenith 2026
+                        </p>
+                      </div>
 
-                    <div className="bg-white/10 rounded-lg p-4 space-y-3">
-                      <p className="text-white font-semibold text-center mb-3">
-                        📱 Scan QR Code to Pay via UPI
-                      </p>
+                      <div className="bg-white/10 rounded-lg p-4 space-y-3">
+                        <p className="text-white font-semibold text-center mb-3">
+                          📱 Scan QR Code to Pay via UPI
+                        </p>
 
-                      {/* QR Code Placeholder - Replace with actual QR code generator */}
-                      <div className="bg-white rounded-lg p-4 mx-auto w-fit">
-                        <div className="w-48 h-48 bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg flex items-center justify-center">
-                          <div className="text-center">
-                            <p className="text-gray-600 text-sm font-mono mb-2">
-                              QR Code
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              Scan to pay ₹{FIXED_ENTRY_FEE}
-                            </p>
-                          </div>
+                        {/* QR Code for Payment */}
+                        <div className="bg-white rounded-lg p-4 mx-auto w-fit">
+                          <img
+                            src={PAYMENT_QR_URL}
+                            alt="Payment QR Code - Scan to pay"
+                            className="w-48 h-48 object-contain"
+                          />
                         </div>
-                      </div>
 
-                      <div className="text-center space-y-2">
-                        <p className="text-purple-200 font-medium">
-                          UPI ID:{" "}
-                          <span className="text-white font-mono">
-                            taherroshan4-1@okicici
-                          </span>
-                        </p>
-                        <p className="text-purple-300 text-sm">
-                          Or pay using any UPI app (GPay, PhonePe, Paytm, etc.)
-                        </p>
-                      </div>
+                        <div className="text-center space-y-2">
+                          <p className="text-purple-200 font-medium">
+                            UPI ID:{" "}
+                            <span className="text-white font-mono">
+                              sagarubale2004@oksbi
+                            </span>
+                          </p>
+                          <p className="text-purple-300 text-sm">
+                            Or pay using any UPI app (GPay, PhonePe, Paytm,
+                            etc.)
+                          </p>
+                        </div>
 
-                      <div className="bg-red-500/20 border border-red-400/50 rounded-lg p-3 mt-4">
-                        <p className="text-red-200 text-sm">
-                          ⚠️ <strong>Important:</strong> Upload your payment
-                          receipt in the "Documents" section below
-                        </p>
+                        <div className="bg-red-500/20 border border-red-400/50 rounded-lg p-3 mt-4">
+                          <p className="text-red-200 text-sm">
+                            ⚠️ <strong>Important:</strong> Upload your payment
+                            receipt in the "Documents" section below
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
                 )}
 
                 {/* Document Upload Section - Only for non-Marathon sports */}
                 {selectedSport !== "Marathon" && (
-                <div className="bg-white/5 rounded-lg p-6 border border-white/10">
-                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    � Required Documents
-                    <span className="text-pink-400 text-lg">*</span>
-                  </h3>
-                  <p className="text-purple-200 text-sm mb-6">
-                    Please upload the following documents. All fields are
-                    mandatory. Accepted formats: JPG, PNG, PDF (Max 5MB each)
-                  </p>
+                  <div className="bg-white/5 rounded-lg p-6 border border-white/10">
+                    <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                      � Required Documents
+                      <span className="text-pink-400 text-lg">*</span>
+                    </h3>
+                    <p className="text-purple-200 text-sm mb-6">
+                      Please upload the following documents. All fields are
+                      mandatory. Accepted formats: JPG, PNG, PDF (Max 5MB each)
+                    </p>
 
-                  <div className="space-y-4">
-                    {/* Permission Letter */}
-                    <div className="bg-white/10 rounded-lg p-4">
-                      <label className="block text-purple-200 font-medium mb-2">
-                        1. College Permission Letter
-                        <span className="text-pink-400 ml-1">*</span>
-                      </label>
-                      <p className="text-purple-300 text-xs mb-3">
-                        Official letter from Dean or Student Affairs with
-                        signatures
-                      </p>
-                      <input
-                        type="file"
-                        accept=".jpg,.jpeg,.png,.pdf"
-                        onChange={(e) =>
-                          handleFileChange(e, "permissionLetter")
-                        }
-                        required
-                        className="w-full text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700 file:cursor-pointer"
-                      />
-                      {documents.permissionLetter && (
-                        <p className="text-green-400 text-sm mt-2">
-                          ✅ {documents.permissionLetter.name}
+                    <div className="space-y-4">
+                      {/* Permission Letter */}
+                      <div className="bg-white/10 rounded-lg p-4">
+                        <label className="block text-purple-200 font-medium mb-2">
+                          1. College Permission Letter
+                          <span className="text-pink-400 ml-1">*</span>
+                        </label>
+                        <p className="text-purple-300 text-xs mb-3">
+                          Official letter from Dean or Student Affairs with
+                          signatures
                         </p>
-                      )}
-                    </div>
+                        <input
+                          type="file"
+                          accept=".jpg,.jpeg,.png,.pdf"
+                          onChange={(e) =>
+                            handleFileChange(e, "permissionLetter")
+                          }
+                          required
+                          className="w-full text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700 file:cursor-pointer"
+                        />
+                        {documents.permissionLetter && (
+                          <p className="text-green-400 text-sm mt-2">
+                            ✅ {documents.permissionLetter.name}
+                          </p>
+                        )}
+                      </div>
 
-                    {/* Transaction Receipt */}
-                    <div className="bg-white/10 rounded-lg p-4">
-                      <label className="block text-purple-200 font-medium mb-2">
-                        2. Transaction Receipt / Payment Screenshot
-                        <span className="text-pink-400 ml-1">*</span>
-                      </label>
-                      <p className="text-purple-300 text-xs mb-3">
-                        Screenshot or receipt of the ₹{FIXED_ENTRY_FEE} payment
-                        made via UPI
-                      </p>
-                      <input
-                        type="file"
-                        accept=".jpg,.jpeg,.png,.pdf"
-                        onChange={(e) =>
-                          handleFileChange(e, "transactionReceipt")
-                        }
-                        required
-                        className="w-full text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700 file:cursor-pointer"
-                      />
-                      {documents.transactionReceipt && (
-                        <p className="text-green-400 text-sm mt-2">
-                          ✅ {documents.transactionReceipt.name}
+                      {/* Transaction Receipt */}
+                      <div className="bg-white/10 rounded-lg p-4">
+                        <label className="block text-purple-200 font-medium mb-2">
+                          2. Transaction Receipt / Payment Screenshot
+                          <span className="text-pink-400 ml-1">*</span>
+                        </label>
+                        <p className="text-purple-300 text-xs mb-3">
+                          Screenshot or receipt of the ₹{FIXED_ENTRY_FEE}{" "}
+                          payment made via UPI
                         </p>
-                      )}
-                    </div>
+                        <input
+                          type="file"
+                          accept=".jpg,.jpeg,.png,.pdf"
+                          onChange={(e) =>
+                            handleFileChange(e, "transactionReceipt")
+                          }
+                          required
+                          className="w-full text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700 file:cursor-pointer"
+                        />
+                        {documents.transactionReceipt && (
+                          <p className="text-green-400 text-sm mt-2">
+                            ✅ {documents.transactionReceipt.name}
+                          </p>
+                        )}
+                      </div>
 
-                    {/* Captain ID Card */}
-                    <div className="bg-white/10 rounded-lg p-4">
-                      <label className="block text-purple-200 font-medium mb-2">
-                        3. Team Captain's College ID Card
-                        <span className="text-pink-400 ml-1">*</span>
-                      </label>
-                      <p className="text-purple-300 text-xs mb-3">
-                        Clear photo/scan of the team captain's valid college ID
-                        card
-                      </p>
-                      <input
-                        type="file"
-                        accept=".jpg,.jpeg,.png,.pdf"
-                        onChange={(e) => handleFileChange(e, "captainIdCard")}
-                        required
-                        className="w-full text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700 file:cursor-pointer"
-                      />
-                      {documents.captainIdCard && (
-                        <p className="text-green-400 text-sm mt-2">
-                          ✅ {documents.captainIdCard.name}
+                      {/* Captain ID Card */}
+                      <div className="bg-white/10 rounded-lg p-4">
+                        <label className="block text-purple-200 font-medium mb-2">
+                          3. Team Captain's College ID Card
+                          <span className="text-pink-400 ml-1">*</span>
+                        </label>
+                        <p className="text-purple-300 text-xs mb-3">
+                          Clear photo/scan of the team captain's valid college
+                          ID card
                         </p>
-                      )}
+                        <input
+                          type="file"
+                          accept=".jpg,.jpeg,.png,.pdf"
+                          onChange={(e) => handleFileChange(e, "captainIdCard")}
+                          required
+                          className="w-full text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700 file:cursor-pointer"
+                        />
+                        {documents.captainIdCard && (
+                          <p className="text-green-400 text-sm mt-2">
+                            ✅ {documents.captainIdCard.name}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
                 )}
 
                 {/* Submit Button */}

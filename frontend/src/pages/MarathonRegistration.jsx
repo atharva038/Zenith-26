@@ -4,6 +4,10 @@ import {toast} from "react-toastify";
 import api from "../config/api";
 import {motion} from "framer-motion";
 
+// Payment QR Code - Sagar Ubale (sagarubale2004@oksbi)
+const PAYMENT_QR_URL =
+  "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto:best/v1767592627/zenith-26/img/payment/payment-qr-sagar-ubale";
+
 const MarathonRegistration = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -450,15 +454,6 @@ const MarathonRegistration = () => {
                 </h2>
 
                 <div className="bg-gradient-to-br from-[#ff8b1f]/10 to-[#ffb36a]/10 border-2 border-[#ff8b1f]/30 rounded-xl p-6">
-                  {/* Testing Notice */}
-                  <div className="mb-4 bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
-                    <p className="text-blue-300 text-sm text-center">
-                      🧪 <strong>For Testing:</strong> This is a sample QR code
-                      and UPI ID. Use the "Fill Test Data" button above to
-                      auto-fill test transaction ID.
-                    </p>
-                  </div>
-
                   <div className="text-center mb-4">
                     <p className="text-[#ffdcb3] text-lg font-semibold mb-2">
                       Registration Fee: ₹500
@@ -468,281 +463,16 @@ const MarathonRegistration = () => {
                     </p>
                   </div>
 
-                  {/* QR Code Placeholder */}
+                  {/* Payment QR Code */}
                   <div className="flex justify-center mb-6">
                     <div className="bg-white p-4 rounded-lg shadow-xl">
-                      {/* Sample QR Code SVG - Replace this with actual QR code later */}
-                      <svg
+                      <img
+                        src={PAYMENT_QR_URL}
+                        alt="Payment QR Code - Scan to pay"
                         width="200"
                         height="200"
-                        viewBox="0 0 200 200"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <rect width="200" height="200" fill="white" />
-                        {/* QR Code Pattern - Sample */}
-                        <rect
-                          x="10"
-                          y="10"
-                          width="60"
-                          height="60"
-                          fill="black"
-                        />
-                        <rect
-                          x="20"
-                          y="20"
-                          width="40"
-                          height="40"
-                          fill="white"
-                        />
-                        <rect
-                          x="30"
-                          y="30"
-                          width="20"
-                          height="20"
-                          fill="black"
-                        />
-
-                        <rect
-                          x="130"
-                          y="10"
-                          width="60"
-                          height="60"
-                          fill="black"
-                        />
-                        <rect
-                          x="140"
-                          y="20"
-                          width="40"
-                          height="40"
-                          fill="white"
-                        />
-                        <rect
-                          x="150"
-                          y="30"
-                          width="20"
-                          height="20"
-                          fill="black"
-                        />
-
-                        <rect
-                          x="10"
-                          y="130"
-                          width="60"
-                          height="60"
-                          fill="black"
-                        />
-                        <rect
-                          x="20"
-                          y="140"
-                          width="40"
-                          height="40"
-                          fill="white"
-                        />
-                        <rect
-                          x="30"
-                          y="150"
-                          width="20"
-                          height="20"
-                          fill="black"
-                        />
-
-                        {/* Random pattern blocks */}
-                        <rect
-                          x="80"
-                          y="20"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-                        <rect
-                          x="100"
-                          y="20"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-                        <rect
-                          x="80"
-                          y="40"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-                        <rect
-                          x="90"
-                          y="50"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-                        <rect
-                          x="110"
-                          y="40"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-
-                        <rect
-                          x="20"
-                          y="80"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-                        <rect
-                          x="40"
-                          y="90"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-                        <rect
-                          x="50"
-                          y="100"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-                        <rect
-                          x="30"
-                          y="110"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-
-                        <rect
-                          x="80"
-                          y="80"
-                          width="40"
-                          height="40"
-                          fill="black"
-                        />
-                        <rect
-                          x="90"
-                          y="90"
-                          width="20"
-                          height="20"
-                          fill="white"
-                        />
-                        <rect
-                          x="95"
-                          y="95"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-
-                        <rect
-                          x="130"
-                          y="80"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-                        <rect
-                          x="150"
-                          y="90"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-                        <rect
-                          x="160"
-                          y="100"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-                        <rect
-                          x="140"
-                          y="110"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-                        <rect
-                          x="170"
-                          y="120"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-
-                        <rect
-                          x="80"
-                          y="130"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-                        <rect
-                          x="100"
-                          y="140"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-                        <rect
-                          x="110"
-                          y="150"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-                        <rect
-                          x="90"
-                          y="160"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-                        <rect
-                          x="120"
-                          y="170"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-
-                        <rect
-                          x="130"
-                          y="130"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-                        <rect
-                          x="150"
-                          y="140"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-                        <rect
-                          x="160"
-                          y="150"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-                        <rect
-                          x="140"
-                          y="160"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-                        <rect
-                          x="170"
-                          y="170"
-                          width="10"
-                          height="10"
-                          fill="black"
-                        />
-                      </svg>
+                        className="object-contain"
+                      />
                     </div>
                   </div>
 
@@ -750,10 +480,7 @@ const MarathonRegistration = () => {
                     <p className="text-[#ffdcb3] text-sm mb-3 font-semibold">
                       UPI ID:{" "}
                       <span className="text-white font-mono">
-                        zenith2026@upi
-                      </span>
-                      <span className="ml-2 text-blue-400 text-xs">
-                        (Sample for testing)
+                        sagarubale2004@oksbi
                       </span>
                     </p>
                     <p className="text-gray-400 text-xs mb-4">

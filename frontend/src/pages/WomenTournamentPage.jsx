@@ -401,14 +401,14 @@ const WomenTournamentPage = () => {
     },
   ];
 
-  // QR Codes for each category (dummy QR codes for now)
+  // QR Codes for each category - Sagar Ubale (sagarubale2004@oksbi)
+  const PAYMENT_QR_URL =
+    "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto:best/v1767592627/zenith-26/img/payment/payment-qr-sagar-ubale";
+
   const qrCodes = {
-    category1:
-      "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=CATEGORY1-PAYMENT-49-RUPEES",
-    category2:
-      "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=CATEGORY2-PAYMENT-49-RUPEES",
-    category3:
-      "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=CATEGORY3-PAYMENT-199-RUPEES",
+    category1: PAYMENT_QR_URL,
+    category2: PAYMENT_QR_URL,
+    category3: PAYMENT_QR_URL,
   };
 
   const handleSubmit = async (e) => {
@@ -1709,21 +1709,21 @@ const WomenTournamentPage = () => {
                         (sp) => sp.name === s && sp.category === "category1"
                       )
                     ) && (
-                      <div className="mt-6 bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <p className="font-semibold text-yellow-400 mb-2">
-                              Payment QR Code - Category 1
-                            </p>
-                            <p className="text-sm text-yellow-300">
-                              Scan to pay ₹49 for unlimited pool access
-                            </p>
+                      <div className="mt-6 bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-6">
+                        <div className="flex flex-col items-center text-center">
+                          <p className="font-semibold text-yellow-400 mb-2">
+                            Payment QR Code - Category 1
+                          </p>
+                          <p className="text-sm text-yellow-300 mb-4">
+                            Scan to pay ₹49 for unlimited pool access
+                          </p>
+                          <div className="bg-white p-2 rounded-lg shadow-lg">
+                            <img
+                              src={qrCodes.category1}
+                              alt="Category 1 QR Code"
+                              className="w-64 h-auto"
+                            />
                           </div>
-                          <img
-                            src={qrCodes.category1}
-                            alt="Category 1 QR Code"
-                            className="w-32 h-32 bg-white p-2 rounded-lg shadow"
-                          />
                         </div>
                       </div>
                     )}
@@ -1775,21 +1775,21 @@ const WomenTournamentPage = () => {
                         (sp) => sp.name === s && sp.category === "category2"
                       )
                     ) && (
-                      <div className="mt-6 bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <p className="font-semibold text-blue-400 mb-2">
-                              Payment QR Code - Category 2
-                            </p>
-                            <p className="text-sm text-blue-300">
-                              Scan to pay ₹49 for {formData.selectedSports[0]}
-                            </p>
+                      <div className="mt-6 bg-blue-500/10 border border-blue-500/30 rounded-lg p-6">
+                        <div className="flex flex-col items-center text-center">
+                          <p className="font-semibold text-blue-400 mb-2">
+                            Payment QR Code - Category 2
+                          </p>
+                          <p className="text-sm text-blue-300 mb-4">
+                            Scan to pay ₹49 for {formData.selectedSports[0]}
+                          </p>
+                          <div className="bg-white p-2 rounded-lg shadow-lg">
+                            <img
+                              src={qrCodes.category2}
+                              alt="Category 2 QR Code"
+                              className="w-64 h-auto"
+                            />
                           </div>
-                          <img
-                            src={qrCodes.category2}
-                            alt="Category 2 QR Code"
-                            className="w-32 h-32 bg-white p-2 rounded-lg shadow"
-                          />
                         </div>
                       </div>
                     )}
@@ -1859,22 +1859,21 @@ const WomenTournamentPage = () => {
                           />
                         </div>
 
-                        <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <p className="font-semibold text-green-400 mb-2">
-                                Payment QR Code - Category 3
-                              </p>
-                              <p className="text-sm text-green-300">
-                                Scan to pay ₹199 for{" "}
-                                {formData.selectedSports[0]}
-                              </p>
+                        <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-6">
+                          <div className="flex flex-col items-center text-center">
+                            <p className="font-semibold text-green-400 mb-2">
+                              Payment QR Code - Category 3
+                            </p>
+                            <p className="text-sm text-green-300 mb-4">
+                              Scan to pay ₹199 for {formData.selectedSports[0]}
+                            </p>
+                            <div className="bg-white p-2 rounded-lg shadow-lg">
+                              <img
+                                src={qrCodes.category3}
+                                alt="Category 3 QR Code"
+                                className="w-64 h-auto"
+                              />
                             </div>
-                            <img
-                              src={qrCodes.category3}
-                              alt="Category 3 QR Code"
-                              className="w-32 h-32 bg-white p-2 rounded-lg shadow"
-                            />
                           </div>
                         </div>
                       </div>
