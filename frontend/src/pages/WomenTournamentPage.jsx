@@ -12,7 +12,7 @@ import {
   LemonSpoonIcon,
   PowerliftingIcon,
   WeightliftingIcon,
-  HandkerchiefIcon,
+  SkippingRopeIcon,
   BadmintonIcon,
   ChessIcon,
   CarromIcon,
@@ -32,6 +32,7 @@ const WomenTournamentPage = () => {
   const [paymentScreenshot, setPaymentScreenshot] = useState(null);
   const [screenshotPreview, setScreenshotPreview] = useState(null);
   const [isUploadingScreenshot, setIsUploadingScreenshot] = useState(false);
+  const [flippedCards, setFlippedCards] = useState({});
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -41,6 +42,13 @@ const WomenTournamentPage = () => {
     category3TeamName: "",
     paymentScreenshotUrl: "",
   });
+
+  const toggleCardFlip = (sportId) => {
+    setFlippedCards((prev) => ({
+      ...prev,
+      [sportId]: !prev[sportId],
+    }));
+  };
 
   const sports = [
     // 1st Category: 49/- (Unlimited Pool)
@@ -55,6 +63,12 @@ const WomenTournamentPage = () => {
       category: "category1",
       fee: 49,
       description: "Fun-filled hopping race in sacks",
+      rules: [
+        "Participant must stay inside the sack",
+        "Race distance: 50 meters",
+        "Falling means restart from that point",
+        "First to cross finish line wins",
+      ],
     },
     {
       id: "3-leg-race",
@@ -67,6 +81,12 @@ const WomenTournamentPage = () => {
       category: "category1",
       fee: 49,
       description: "Teamwork race with legs tied together",
+      rules: [
+        "Teams of 2 participants",
+        "Adjacent legs tied together",
+        "Race distance: 50 meters",
+        "Untying is disqualification",
+      ],
     },
     {
       id: "balloon-bursting",
@@ -79,6 +99,12 @@ const WomenTournamentPage = () => {
       category: "category1",
       fee: 49,
       description: "Fast-paced balloon popping challenge",
+      rules: [
+        "Pop maximum balloons in 1 minute",
+        "Only sitting allowed to burst",
+        "Hands cannot be used",
+        "Highest count wins",
+      ],
     },
     {
       id: "brick-race",
@@ -91,18 +117,12 @@ const WomenTournamentPage = () => {
       category: "category1",
       fee: 49,
       description: "Balance and speed with bricks",
-    },
-    {
-      id: "musical-chair",
-      name: "Musical Chair",
-      icon: MusicalChairIcon,
-      image:
-        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767510047/zenith-26/img/Female-Tournament/1st-Category/MusicalChair",
-      color: "from-purple-500 to-pink-500",
-      teamSize: 1,
-      category: "category1",
-      fee: 49,
-      description: "Classic game of quick reflexes",
+      rules: [
+        "Move using 2 bricks only",
+        "Feet must not touch ground",
+        "Race distance: 20 meters",
+        "First to finish wins",
+      ],
     },
     {
       id: "nimbu-chamach",
@@ -115,6 +135,12 @@ const WomenTournamentPage = () => {
       category: "category1",
       fee: 49,
       description: "Lemon and spoon balance race",
+      rules: [
+        "Balance lemon on spoon",
+        "Spoon held in mouth",
+        "Race distance: 50 meters",
+        "Dropping lemon restarts",
+      ],
     },
     {
       id: "powerlifting",
@@ -127,6 +153,12 @@ const WomenTournamentPage = () => {
       category: "category1",
       fee: 49,
       description: "Strength competition event",
+      rules: [
+        "3 attempts per lift",
+        "Squat, Bench, Deadlift",
+        "Standard weight categories",
+        "Best total wins",
+      ],
     },
     {
       id: "weightlifting",
@@ -139,18 +171,31 @@ const WomenTournamentPage = () => {
       category: "category1",
       fee: 49,
       description: "Olympic-style lifting competition",
+      rules: [
+        "Snatch and Clean & Jerk",
+        "3 attempts per lift",
+        "Weight categories apply",
+        "Highest total wins",
+      ],
     },
     {
-      id: "hankerchief-snash",
-      name: "Hankerchief Snash",
-      icon: HandkerchiefIcon,
+      id: "skipping-rope",
+      name: "Skipping Rope",
+      icon: SkippingRopeIcon,
       image:
-        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767510051/zenith-26/img/Female-Tournament/1st-Category/HankerChiefSnash",
+        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/zenith-26/img/Female-Tournament/1st-Category/SkippingRope",
       color: "from-cyan-500 to-blue-500",
       teamSize: 1,
       category: "category1",
       fee: 49,
-      description: "Quick grab and dash game",
+      description: "Jump rope endurance challenge",
+      rules: [
+        "Each participant gets 1 minute to skip",
+        "Count of successful jumps determines winner",
+        "Tripping resets count to zero",
+        "Standard skipping rope provided",
+        "No double-unders allowed",
+      ],
     },
 
     // 2nd Category: 49/- Per Game
@@ -165,6 +210,12 @@ const WomenTournamentPage = () => {
       category: "category2",
       fee: 49,
       description: "Swift racket sport testing reflexes",
+      rules: [
+        "Singles matches only",
+        "21 points per game",
+        "Best of 3 games",
+        "Standard BWF rules apply",
+      ],
     },
     {
       id: "chess",
@@ -177,6 +228,12 @@ const WomenTournamentPage = () => {
       category: "category2",
       fee: 49,
       description: "Strategic board game of intellect",
+      rules: [
+        "15 minutes per player",
+        "Touch-move rule applies",
+        "Standard FIDE rules",
+        "Knockout format",
+      ],
     },
     {
       id: "carrom",
@@ -189,6 +246,12 @@ const WomenTournamentPage = () => {
       category: "category2",
       fee: 49,
       description: "Strike and pocket board game",
+      rules: [
+        "Singles matches",
+        "25 points to win",
+        "Queen must be covered",
+        "Standard carrom rules",
+      ],
     },
     {
       id: "athletics",
@@ -201,6 +264,30 @@ const WomenTournamentPage = () => {
       category: "category2",
       fee: 49,
       description: "Track and field running events",
+      rules: [
+        "100m, 200m, 400m races",
+        "Heats and finals format",
+        "Lane allocation by draw",
+        "False start = disqualification",
+      ],
+    },
+    {
+      id: "musical-chair",
+      name: "Musical Chair",
+      icon: MusicalChairIcon,
+      image:
+        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767510047/zenith-26/img/Female-Tournament/1st-Category/MusicalChair",
+      color: "from-purple-500 to-pink-500",
+      teamSize: 1,
+      category: "category2",
+      fee: 49,
+      description: "Classic game of quick reflexes",
+      rules: [
+        "Music stops, grab a chair",
+        "One chair removed each round",
+        "Last person standing wins",
+        "No pushing allowed",
+      ],
     },
 
     // 3rd Category: 199/- Per Team
@@ -215,6 +302,12 @@ const WomenTournamentPage = () => {
       category: "category3",
       fee: 199,
       description: "Ultimate team strength battle",
+      rules: [
+        "8 players per team",
+        "Best of 3 pulls",
+        "Center mark decides winner",
+        "No anchoring allowed",
+      ],
     },
     {
       id: "volleyball",
@@ -227,6 +320,12 @@ const WomenTournamentPage = () => {
       category: "category3",
       fee: 199,
       description: "Dynamic court game of teamwork",
+      rules: [
+        "6 players on court",
+        "25 points per set",
+        "Best of 3 sets",
+        "Rally scoring system",
+      ],
     },
     {
       id: "cricket",
@@ -239,6 +338,12 @@ const WomenTournamentPage = () => {
       category: "category3",
       fee: 199,
       description: "Classic batting and bowling sport",
+      rules: [
+        "11 players per team",
+        "10 overs per innings",
+        "Standard cricket rules",
+        "Knockout format",
+      ],
     },
     {
       id: "basketball-3x3",
@@ -251,6 +356,12 @@ const WomenTournamentPage = () => {
       category: "category3",
       fee: 199,
       description: "Fast-paced half-court basketball",
+      rules: [
+        "3 players per team",
+        "10 minutes per game",
+        "21 points or time limit",
+        "FIBA 3x3 rules",
+      ],
     },
     {
       id: "rink-football",
@@ -263,6 +374,12 @@ const WomenTournamentPage = () => {
       category: "category3",
       fee: 199,
       description: "Indoor mini football competition",
+      rules: [
+        "5 players per team",
+        "15 minutes per half",
+        "Rolling substitutions",
+        "No offside rule",
+      ],
     },
     {
       id: "box-cricket",
@@ -275,6 +392,12 @@ const WomenTournamentPage = () => {
       category: "category3",
       fee: 199,
       description: "Compact cricket in enclosed space",
+      rules: [
+        "6 players per team",
+        "6 overs per innings",
+        "Boundaries off walls",
+        "Tennis ball used",
+      ],
     },
   ];
 
@@ -800,56 +923,189 @@ const WomenTournamentPage = () => {
                     initial={{opacity: 0, scale: 0.9}}
                     animate={{opacity: 1, scale: 1}}
                     transition={{delay: 0.1 * index}}
-                    whileHover={{scale: 1.02, y: -5}}
-                    className="cursor-pointer group"
+                    className="cursor-pointer group perspective-1000"
                   >
-                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl md:rounded-2xl overflow-hidden h-full hover:border-yellow-400/50 hover:bg-white/10 transition-all duration-300">
-                      {/* Image Section - Square box on mobile, wide on desktop */}
-                      {sport.image && (
-                        <div className="relative w-full h-32 md:h-56 overflow-hidden">
-                          <img
-                            src={sport.image}
-                            alt={sport.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
-                        </div>
-                      )}
-
-                      {/* Content Section - Very compact on mobile */}
-                      <div className="p-2 md:p-6">
-                        {!sport.image && (
-                          <div className="mb-1 md:mb-4 flex justify-center">
-                            <div className="w-12 h-12 md:w-20 md:h-20 rounded-full bg-yellow-500/10 flex items-center justify-center">
-                              <sport.icon className="w-8 h-8 md:w-12 md:h-12 text-yellow-400" />
-                            </div>
+                    <div
+                      className={`relative w-full h-full transition-transform duration-500 transform-style-3d ${
+                        flippedCards[sport.id] ? "rotate-y-180" : ""
+                      }`}
+                      style={{
+                        transformStyle: "preserve-3d",
+                        transform: flippedCards[sport.id]
+                          ? "rotateY(180deg)"
+                          : "rotateY(0deg)",
+                      }}
+                    >
+                      {/* Front of Card */}
+                      <div
+                        className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl md:rounded-2xl overflow-hidden hover:border-yellow-400/50 hover:bg-white/10 transition-all duration-300"
+                        style={{backfaceVisibility: "hidden"}}
+                      >
+                        {/* Image Section */}
+                        {sport.image && (
+                          <div className="relative w-full h-32 md:h-56 overflow-hidden">
+                            <img
+                              src={sport.image}
+                              alt={sport.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+                            {/* Rules Button - appears on hover */}
+                            {sport.rules && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleCardFlip(sport.id);
+                                }}
+                                className="absolute top-2 right-2 md:top-3 md:right-3 px-2 py-1 md:px-3 md:py-1.5 bg-yellow-500/90 hover:bg-yellow-400 rounded-lg text-[10px] md:text-xs font-bold text-black opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center gap-1 shadow-lg"
+                              >
+                                <svg
+                                  className="w-3 h-3 md:w-4 md:h-4"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                                  />
+                                </svg>
+                                Rules
+                              </button>
+                            )}
                           </div>
                         )}
-                        <h4 className="text-sm md:text-2xl font-bold text-white mb-0.5 md:mb-2 line-clamp-1">
-                          {sport.name}
-                        </h4>
-                        <p className="text-gray-400 text-[10px] md:text-sm mb-1.5 md:mb-4 leading-tight md:leading-relaxed line-clamp-2 hidden md:block">
-                          {sport.description}
-                        </p>
-                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-1 md:gap-0">
-                          <div className="px-1.5 py-0.5 md:px-4 md:py-2 bg-white/10 rounded md:rounded-lg border border-white/10 w-full md:w-auto">
-                            <span className="text-[8px] md:text-xs text-gray-400 block">
-                              Type
-                            </span>
-                            <span className="text-[10px] md:text-sm font-semibold text-white">
-                              {sport.teamSize === 1
-                                ? "Individual"
-                                : `Team ${sport.teamSize}`}
-                            </span>
+
+                        {/* Content Section */}
+                        <div className="p-2 md:p-6">
+                          {!sport.image && (
+                            <div className="mb-1 md:mb-4 flex justify-center relative">
+                              <div className="w-12 h-12 md:w-20 md:h-20 rounded-full bg-yellow-500/10 flex items-center justify-center">
+                                <sport.icon className="w-8 h-8 md:w-12 md:h-12 text-yellow-400" />
+                              </div>
+                              {sport.rules && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleCardFlip(sport.id);
+                                  }}
+                                  className="absolute top-0 right-0 px-2 py-1 md:px-3 md:py-1.5 bg-yellow-500/90 hover:bg-yellow-400 rounded-lg text-[10px] md:text-xs font-bold text-black opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center gap-1"
+                                >
+                                  <svg
+                                    className="w-3 h-3 md:w-4 md:h-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                                    />
+                                  </svg>
+                                  Rules
+                                </button>
+                              )}
+                            </div>
+                          )}
+                          <h4 className="text-sm md:text-2xl font-bold text-white mb-0.5 md:mb-2 line-clamp-1">
+                            {sport.name}
+                          </h4>
+                          <p className="text-gray-400 text-[10px] md:text-sm mb-1.5 md:mb-4 leading-tight md:leading-relaxed line-clamp-2 hidden md:block">
+                            {sport.description}
+                          </p>
+                          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-1 md:gap-0">
+                            <div className="px-1.5 py-0.5 md:px-4 md:py-2 bg-white/10 rounded md:rounded-lg border border-white/10 w-full md:w-auto">
+                              <span className="text-[8px] md:text-xs text-gray-400 block">
+                                Type
+                              </span>
+                              <span className="text-[10px] md:text-sm font-semibold text-white">
+                                {sport.teamSize === 1
+                                  ? "Individual"
+                                  : `Team ${sport.teamSize}`}
+                              </span>
+                            </div>
+                            <div className="text-left md:text-right w-full md:w-auto">
+                              <span className="text-[8px] md:text-xs text-gray-400 block">
+                                Price
+                              </span>
+                              <span className="text-base md:text-2xl font-bold text-yellow-400">
+                                ₹{sport.fee}
+                              </span>
+                            </div>
                           </div>
-                          <div className="text-left md:text-right w-full md:w-auto">
-                            <span className="text-[8px] md:text-xs text-gray-400 block">
-                              Price
-                            </span>
-                            <span className="text-base md:text-2xl font-bold text-yellow-400">
-                              ₹{sport.fee}
-                            </span>
-                          </div>
+                        </div>
+                      </div>
+
+                      {/* Back of Card - Rules */}
+                      <div
+                        className="absolute inset-0 bg-gradient-to-br from-yellow-900/90 to-orange-900/90 backdrop-blur-sm border border-yellow-400/30 rounded-xl md:rounded-2xl overflow-hidden p-3 md:p-6 flex flex-col"
+                        style={{
+                          backfaceVisibility: "hidden",
+                          transform: "rotateY(180deg)",
+                        }}
+                      >
+                        <div className="flex items-center justify-between mb-2 md:mb-4">
+                          <h4 className="text-sm md:text-xl font-bold text-yellow-400 flex items-center gap-2">
+                            <svg
+                              className="w-4 h-4 md:w-5 md:h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                              />
+                            </svg>
+                            {sport.name}
+                          </h4>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleCardFlip(sport.id);
+                            }}
+                            className="p-1.5 md:p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+                          >
+                            <svg
+                              className="w-4 h-4 md:w-5 md:h-5 text-white"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto">
+                          <ul className="space-y-1.5 md:space-y-2">
+                            {sport.rules?.map((rule, idx) => (
+                              <li
+                                key={idx}
+                                className="flex items-start gap-2 text-[10px] md:text-sm text-white/90"
+                              >
+                                <span className="text-yellow-400 mt-0.5">
+                                  •
+                                </span>
+                                {rule}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="mt-2 md:mt-4 pt-2 md:pt-3 border-t border-yellow-400/20">
+                          <span className="text-[10px] md:text-xs text-yellow-400/70">
+                            Entry Fee: ₹{sport.fee}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -892,56 +1148,187 @@ const WomenTournamentPage = () => {
                     initial={{opacity: 0, scale: 0.9}}
                     animate={{opacity: 1, scale: 1}}
                     transition={{delay: 0.1 * index}}
-                    whileHover={{scale: 1.02, y: -5}}
-                    className="cursor-pointer group"
+                    className="cursor-pointer group perspective-1000"
                   >
-                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl md:rounded-2xl overflow-hidden h-full hover:border-blue-400/50 hover:bg-white/10 transition-all duration-300">
-                      {/* Image Section - Square box on mobile, wide on desktop */}
-                      {sport.image && (
-                        <div className="relative w-full h-32 md:h-56 overflow-hidden">
-                          <img
-                            src={sport.image}
-                            alt={sport.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
-                        </div>
-                      )}
-
-                      {/* Content Section - Very compact on mobile */}
-                      <div className="p-2 md:p-6">
-                        {!sport.image && (
-                          <div className="mb-1 md:mb-4 flex justify-center">
-                            <div className="w-12 h-12 md:w-20 md:h-20 rounded-full bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
-                              <sport.icon className="w-8 h-8 md:w-12 md:h-12 text-blue-400" />
-                            </div>
+                    <div
+                      className={`relative w-full h-full transition-transform duration-500 transform-style-3d ${
+                        flippedCards[sport.id] ? "rotate-y-180" : ""
+                      }`}
+                      style={{
+                        transformStyle: "preserve-3d",
+                        transform: flippedCards[sport.id]
+                          ? "rotateY(180deg)"
+                          : "rotateY(0deg)",
+                      }}
+                    >
+                      {/* Front of Card */}
+                      <div
+                        className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl md:rounded-2xl overflow-hidden hover:border-blue-400/50 hover:bg-white/10 transition-all duration-300"
+                        style={{backfaceVisibility: "hidden"}}
+                      >
+                        {/* Image Section */}
+                        {sport.image && (
+                          <div className="relative w-full h-32 md:h-56 overflow-hidden">
+                            <img
+                              src={sport.image}
+                              alt={sport.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+                            {/* Rules Button */}
+                            {sport.rules && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleCardFlip(sport.id);
+                                }}
+                                className="absolute top-2 right-2 md:top-3 md:right-3 px-2 py-1 md:px-3 md:py-1.5 bg-blue-500/90 hover:bg-blue-400 rounded-lg text-[10px] md:text-xs font-bold text-white opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center gap-1 shadow-lg"
+                              >
+                                <svg
+                                  className="w-3 h-3 md:w-4 md:h-4"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                                  />
+                                </svg>
+                                Rules
+                              </button>
+                            )}
                           </div>
                         )}
-                        <h4 className="text-sm md:text-2xl font-bold text-white mb-0.5 md:mb-2 line-clamp-1">
-                          {sport.name}
-                        </h4>
-                        <p className="text-gray-400 text-[10px] md:text-sm mb-1.5 md:mb-4 leading-tight md:leading-relaxed line-clamp-2 hidden md:block">
-                          {sport.description}
-                        </p>
-                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-1 md:gap-0">
-                          <div className="px-1.5 py-0.5 md:px-4 md:py-2 bg-white/10 rounded md:rounded-lg border border-white/10 w-full md:w-auto">
-                            <span className="text-[8px] md:text-xs text-gray-400 block">
-                              Type
-                            </span>
-                            <span className="text-[10px] md:text-sm font-semibold text-white">
-                              {sport.teamSize === 1
-                                ? "Individual"
-                                : `Team ${sport.teamSize}`}
-                            </span>
+
+                        {/* Content Section */}
+                        <div className="p-2 md:p-6">
+                          {!sport.image && (
+                            <div className="mb-1 md:mb-4 flex justify-center relative">
+                              <div className="w-12 h-12 md:w-20 md:h-20 rounded-full bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
+                                <sport.icon className="w-8 h-8 md:w-12 md:h-12 text-blue-400" />
+                              </div>
+                              {sport.rules && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleCardFlip(sport.id);
+                                  }}
+                                  className="absolute top-0 right-0 px-2 py-1 md:px-3 md:py-1.5 bg-blue-500/90 hover:bg-blue-400 rounded-lg text-[10px] md:text-xs font-bold text-white opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center gap-1"
+                                >
+                                  <svg
+                                    className="w-3 h-3 md:w-4 md:h-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                                    />
+                                  </svg>
+                                  Rules
+                                </button>
+                              )}
+                            </div>
+                          )}
+                          <h4 className="text-sm md:text-2xl font-bold text-white mb-0.5 md:mb-2 line-clamp-1">
+                            {sport.name}
+                          </h4>
+                          <p className="text-gray-400 text-[10px] md:text-sm mb-1.5 md:mb-4 leading-tight md:leading-relaxed line-clamp-2 hidden md:block">
+                            {sport.description}
+                          </p>
+                          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-1 md:gap-0">
+                            <div className="px-1.5 py-0.5 md:px-4 md:py-2 bg-white/10 rounded md:rounded-lg border border-white/10 w-full md:w-auto">
+                              <span className="text-[8px] md:text-xs text-gray-400 block">
+                                Type
+                              </span>
+                              <span className="text-[10px] md:text-sm font-semibold text-white">
+                                {sport.teamSize === 1
+                                  ? "Individual"
+                                  : `Team ${sport.teamSize}`}
+                              </span>
+                            </div>
+                            <div className="text-left md:text-right w-full md:w-auto">
+                              <span className="text-[8px] md:text-xs text-gray-400 block">
+                                Price
+                              </span>
+                              <span className="text-base md:text-2xl font-bold text-blue-400">
+                                ₹{sport.fee}
+                              </span>
+                            </div>
                           </div>
-                          <div className="text-left md:text-right w-full md:w-auto">
-                            <span className="text-[8px] md:text-xs text-gray-400 block">
-                              Price
-                            </span>
-                            <span className="text-base md:text-2xl font-bold text-blue-400">
-                              ₹{sport.fee}
-                            </span>
-                          </div>
+                        </div>
+                      </div>
+
+                      {/* Back of Card - Rules */}
+                      <div
+                        className="absolute inset-0 bg-gradient-to-br from-blue-900/90 to-indigo-900/90 backdrop-blur-sm border border-blue-400/30 rounded-xl md:rounded-2xl overflow-hidden p-3 md:p-6 flex flex-col"
+                        style={{
+                          backfaceVisibility: "hidden",
+                          transform: "rotateY(180deg)",
+                        }}
+                      >
+                        <div className="flex items-center justify-between mb-2 md:mb-4">
+                          <h4 className="text-sm md:text-xl font-bold text-blue-400 flex items-center gap-2">
+                            <svg
+                              className="w-4 h-4 md:w-5 md:h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                              />
+                            </svg>
+                            {sport.name}
+                          </h4>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleCardFlip(sport.id);
+                            }}
+                            className="p-1.5 md:p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+                          >
+                            <svg
+                              className="w-4 h-4 md:w-5 md:h-5 text-white"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto">
+                          <ul className="space-y-1.5 md:space-y-2">
+                            {sport.rules?.map((rule, idx) => (
+                              <li
+                                key={idx}
+                                className="flex items-start gap-2 text-[10px] md:text-sm text-white/90"
+                              >
+                                <span className="text-blue-400 mt-0.5">•</span>
+                                {rule}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="mt-2 md:mt-4 pt-2 md:pt-3 border-t border-blue-400/20">
+                          <span className="text-[10px] md:text-xs text-blue-400/70">
+                            Entry Fee: ₹{sport.fee}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -984,54 +1371,185 @@ const WomenTournamentPage = () => {
                     initial={{opacity: 0, scale: 0.9}}
                     animate={{opacity: 1, scale: 1}}
                     transition={{delay: 0.1 * index}}
-                    whileHover={{scale: 1.02, y: -5}}
-                    className="cursor-pointer group"
+                    className="cursor-pointer group perspective-1000"
                   >
-                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl md:rounded-2xl overflow-hidden h-full hover:border-green-400/50 hover:bg-white/10 transition-all duration-300">
-                      {/* Image Section - Square box on mobile, wide on desktop */}
-                      {sport.image && (
-                        <div className="relative w-full h-32 md:h-56 overflow-hidden">
-                          <img
-                            src={sport.image}
-                            alt={sport.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
-                        </div>
-                      )}
-
-                      {/* Content Section - Very compact on mobile */}
-                      <div className="p-2 md:p-6">
-                        {!sport.image && (
-                          <div className="mb-1 md:mb-4 flex justify-center">
-                            <div className="w-12 h-12 md:w-20 md:h-20 rounded-full bg-green-500/10 flex items-center justify-center">
-                              <sport.icon className="w-8 h-8 md:w-12 md:h-12 text-green-400" />
-                            </div>
+                    <div
+                      className={`relative w-full h-full transition-transform duration-500 transform-style-3d ${
+                        flippedCards[sport.id] ? "rotate-y-180" : ""
+                      }`}
+                      style={{
+                        transformStyle: "preserve-3d",
+                        transform: flippedCards[sport.id]
+                          ? "rotateY(180deg)"
+                          : "rotateY(0deg)",
+                      }}
+                    >
+                      {/* Front of Card */}
+                      <div
+                        className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl md:rounded-2xl overflow-hidden hover:border-green-400/50 hover:bg-white/10 transition-all duration-300"
+                        style={{backfaceVisibility: "hidden"}}
+                      >
+                        {/* Image Section */}
+                        {sport.image && (
+                          <div className="relative w-full h-32 md:h-56 overflow-hidden">
+                            <img
+                              src={sport.image}
+                              alt={sport.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+                            {/* Rules Button */}
+                            {sport.rules && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleCardFlip(sport.id);
+                                }}
+                                className="absolute top-2 right-2 md:top-3 md:right-3 px-2 py-1 md:px-3 md:py-1.5 bg-green-500/90 hover:bg-green-400 rounded-lg text-[10px] md:text-xs font-bold text-white opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center gap-1 shadow-lg"
+                              >
+                                <svg
+                                  className="w-3 h-3 md:w-4 md:h-4"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                                  />
+                                </svg>
+                                Rules
+                              </button>
+                            )}
                           </div>
                         )}
-                        <h4 className="text-sm md:text-2xl font-bold text-white mb-0.5 md:mb-2 line-clamp-1">
-                          {sport.name}
-                        </h4>
-                        <p className="text-gray-400 text-[10px] md:text-sm mb-1.5 md:mb-4 leading-tight md:leading-relaxed line-clamp-2 hidden md:block">
-                          {sport.description}
-                        </p>
-                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-1 md:gap-0">
-                          <div className="px-1.5 py-0.5 md:px-4 md:py-2 bg-white/10 rounded md:rounded-lg border border-white/10 w-full md:w-auto">
-                            <span className="text-[8px] md:text-xs text-gray-400 block">
-                              Type
-                            </span>
-                            <span className="text-[10px] md:text-sm font-semibold text-white">
-                              Team {sport.teamSize}
-                            </span>
+
+                        {/* Content Section */}
+                        <div className="p-2 md:p-6">
+                          {!sport.image && (
+                            <div className="mb-1 md:mb-4 flex justify-center relative">
+                              <div className="w-12 h-12 md:w-20 md:h-20 rounded-full bg-green-500/10 flex items-center justify-center">
+                                <sport.icon className="w-8 h-8 md:w-12 md:h-12 text-green-400" />
+                              </div>
+                              {sport.rules && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleCardFlip(sport.id);
+                                  }}
+                                  className="absolute top-0 right-0 px-2 py-1 md:px-3 md:py-1.5 bg-green-500/90 hover:bg-green-400 rounded-lg text-[10px] md:text-xs font-bold text-white opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center gap-1"
+                                >
+                                  <svg
+                                    className="w-3 h-3 md:w-4 md:h-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                                    />
+                                  </svg>
+                                  Rules
+                                </button>
+                              )}
+                            </div>
+                          )}
+                          <h4 className="text-sm md:text-2xl font-bold text-white mb-0.5 md:mb-2 line-clamp-1">
+                            {sport.name}
+                          </h4>
+                          <p className="text-gray-400 text-[10px] md:text-sm mb-1.5 md:mb-4 leading-tight md:leading-relaxed line-clamp-2 hidden md:block">
+                            {sport.description}
+                          </p>
+                          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-1 md:gap-0">
+                            <div className="px-1.5 py-0.5 md:px-4 md:py-2 bg-white/10 rounded md:rounded-lg border border-white/10 w-full md:w-auto">
+                              <span className="text-[8px] md:text-xs text-gray-400 block">
+                                Type
+                              </span>
+                              <span className="text-[10px] md:text-sm font-semibold text-white">
+                                Team {sport.teamSize}
+                              </span>
+                            </div>
+                            <div className="text-left md:text-right w-full md:w-auto">
+                              <span className="text-[8px] md:text-xs text-gray-400 block">
+                                Price
+                              </span>
+                              <span className="text-base md:text-2xl font-bold text-green-400">
+                                ₹{sport.fee}
+                              </span>
+                            </div>
                           </div>
-                          <div className="text-left md:text-right w-full md:w-auto">
-                            <span className="text-[8px] md:text-xs text-gray-400 block">
-                              Price
-                            </span>
-                            <span className="text-base md:text-2xl font-bold text-green-400">
-                              ₹{sport.fee}
-                            </span>
-                          </div>
+                        </div>
+                      </div>
+
+                      {/* Back of Card - Rules */}
+                      <div
+                        className="absolute inset-0 bg-gradient-to-br from-green-900/90 to-emerald-900/90 backdrop-blur-sm border border-green-400/30 rounded-xl md:rounded-2xl overflow-hidden p-3 md:p-6 flex flex-col"
+                        style={{
+                          backfaceVisibility: "hidden",
+                          transform: "rotateY(180deg)",
+                        }}
+                      >
+                        <div className="flex items-center justify-between mb-2 md:mb-4">
+                          <h4 className="text-sm md:text-xl font-bold text-green-400 flex items-center gap-2">
+                            <svg
+                              className="w-4 h-4 md:w-5 md:h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                              />
+                            </svg>
+                            {sport.name}
+                          </h4>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleCardFlip(sport.id);
+                            }}
+                            className="p-1.5 md:p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+                          >
+                            <svg
+                              className="w-4 h-4 md:w-5 md:h-5 text-white"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto">
+                          <ul className="space-y-1.5 md:space-y-2">
+                            {sport.rules?.map((rule, idx) => (
+                              <li
+                                key={idx}
+                                className="flex items-start gap-2 text-[10px] md:text-sm text-white/90"
+                              >
+                                <span className="text-green-400 mt-0.5">•</span>
+                                {rule}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="mt-2 md:mt-4 pt-2 md:pt-3 border-t border-green-400/20">
+                          <span className="text-[10px] md:text-xs text-green-400/70">
+                            Entry Fee: ₹{sport.fee}
+                          </span>
                         </div>
                       </div>
                     </div>

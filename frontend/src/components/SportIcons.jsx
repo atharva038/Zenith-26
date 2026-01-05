@@ -585,3 +585,93 @@ export const BoxCricketIcon = ({className = "w-12 h-12"}) => (
     <rect x="50" y="50" width="4" height="4" fill="currentColor" />
   </svg>
 );
+
+export const SkippingRopeIcon = ({className = "w-12 h-12"}) => (
+  <svg
+    className={className}
+    viewBox="0 0 64 64"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    {/* Rope handles */}
+    <rect x="8" y="16" width="6" height="20" rx="2" fill="currentColor" />
+    <rect x="50" y="16" width="6" height="20" rx="2" fill="currentColor" />
+
+    {/* Handle grips */}
+    <rect
+      x="9"
+      y="18"
+      width="4"
+      height="6"
+      rx="1"
+      fill="currentColor"
+      opacity="0.6"
+    />
+    <rect
+      x="51"
+      y="18"
+      width="4"
+      height="6"
+      rx="1"
+      fill="currentColor"
+      opacity="0.6"
+    />
+
+    {/* Rope arc */}
+    <path
+      d="M11 36C11 50 32 58 32 58C32 58 53 50 53 36"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+      fill="none"
+    />
+
+    {/* Person jumping (simplified stick figure) */}
+    <circle cx="32" cy="18" r="5" fill="currentColor" />
+    <line
+      x1="32"
+      y1="23"
+      x2="32"
+      y2="38"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    <line
+      x1="32"
+      y1="28"
+      x2="24"
+      y2="34"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
+    <line
+      x1="32"
+      y1="28"
+      x2="40"
+      y2="34"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
+    <line
+      x1="32"
+      y1="38"
+      x2="26"
+      y2="48"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
+    <line
+      x1="32"
+      y1="38"
+      x2="38"
+      y2="48"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
+  </svg>
+);
