@@ -1,6 +1,11 @@
 import {motion} from "framer-motion";
 
-const RegistrationCard = ({registration, onViewDetails, onUpdateStatus}) => {
+const RegistrationCard = ({
+  registration,
+  onViewDetails,
+  onUpdateStatus,
+  onReject, // Add reject handler
+}) => {
   const statusColors = {
     confirmed: "bg-green-500/20 text-green-400 border-green-500/30",
     pending: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
@@ -13,12 +18,26 @@ const RegistrationCard = ({registration, onViewDetails, onUpdateStatus}) => {
     cancelled: "❌",
   };
 
+  const isRejected = registration.isRejected;
+
   return (
     <motion.div
       initial={{opacity: 0, y: 20}}
       animate={{opacity: 1, y: 0}}
-      className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-4 space-y-3"
+      className={`backdrop-blur-xl border rounded-xl p-4 space-y-3 ${
+        isRejected
+          ? "bg-red-900/20 border-red-500/30"
+          : "bg-gray-800/50 border-gray-700"
+      }`}
     >
+      {/* Rejected Badge */}
+      {isRejected && (
+        <div className="bg-red-500/20 border border-red-500/30 text-red-400 px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-2 w-fit">
+          <span>🗑️</span>
+          REJECTED
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
@@ -140,12 +159,25 @@ const RegistrationCard = ({registration, onViewDetails, onUpdateStatus}) => {
         >
           View Details
         </button>
-        {registration.status !== "confirmed" && (
+        {!isRejected && registration.status !== "confirmed" && (
           <button
             onClick={() => onUpdateStatus(registration._id, "confirmed")}
             className="px-4 bg-green-500/20 border border-green-500/30 text-green-400 py-2 rounded-lg text-sm font-medium hover:bg-green-500/30 transition-all"
           >
             ✓
+          </button>
+        )}
+        {onReject && (
+          <button
+            onClick={() => onReject(registration._id)}
+            className={`px-4 border py-2 rounded-lg text-sm font-medium transition-all ${
+              isRejected
+                ? "bg-green-500/20 border-green-500/30 text-green-400 hover:bg-green-500/30"
+                : "bg-red-500/20 border-red-500/30 text-red-400 hover:bg-red-500/30"
+            }`}
+            title={isRejected ? "Restore" : "Reject"}
+          >
+            {isRejected ? "↩️" : "🗑️"}
           </button>
         )}
       </div>

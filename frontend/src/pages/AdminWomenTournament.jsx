@@ -324,6 +324,7 @@ const AdminWomenTournament = () => {
               setShowDetailsModal(true);
             }}
             onUpdateStatus={handleStatusUpdate}
+            onReject={handleDelete} // Pass reject handler
           />
         )}
       </div>

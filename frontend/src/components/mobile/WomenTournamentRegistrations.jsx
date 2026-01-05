@@ -7,12 +7,15 @@ const WomenTournamentRegistrations = ({
   loading,
   onViewDetails,
   onUpdateStatus,
+  onReject, // Add reject handler
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterSport, setFilterSport] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
+  const [showRejectedRegistrations, setShowRejectedRegistrations] =
+    useState(false); // Add state for showing rejected registrations
 
   // Category sports mapping (matching WomenTournamentPage)
   const categorySportsMap = {
@@ -56,6 +59,9 @@ const WomenTournamentRegistrations = ({
   // Filter registrations
   const filteredRegistrations = useMemo(() => {
     return registrations.filter((registration) => {
+      // Skip rejected registrations in main list
+      if (registration.isRejected) return false;
+
       // Search filter
       const matchesSearch =
         registration.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -85,6 +91,11 @@ const WomenTournamentRegistrations = ({
       return matchesSearch && matchesStatus && matchesCategory && matchesSport;
     });
   }, [registrations, searchQuery, filterStatus, filterCategory, filterSport]);
+
+  // Separate rejected registrations
+  const rejectedRegistrations = useMemo(() => {
+    return registrations.filter((registration) => registration.isRejected);
+  }, [registrations]);
 
   const handleClearFilters = () => {
     setSearchQuery("");
@@ -282,16 +293,74 @@ const WomenTournamentRegistrations = ({
           )}
         </div>
       ) : (
-        <div className="space-y-4">
-          {filteredRegistrations.map((registration) => (
-            <RegistrationCard
-              key={registration._id}
-              registration={registration}
-              onViewDetails={onViewDetails}
-              onUpdateStatus={onUpdateStatus}
-            />
-          ))}
-        </div>
+        <>
+          <div className="space-y-4">
+            {filteredRegistrations.map((registration) => (
+              <RegistrationCard
+                key={registration._id}
+                registration={registration}
+                onViewDetails={onViewDetails}
+                onUpdateStatus={onUpdateStatus}
+                onReject={onReject}
+              />
+            ))}
+          </div>
+
+          {/* Rejected Registrations Section */}
+          {rejectedRegistrations.length > 0 && (
+            <div className="mt-8">
+              <motion.button
+                onClick={() =>
+                  setShowRejectedRegistrations(!showRejectedRegistrations)
+                }
+                className="w-full bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-center justify-between hover:bg-red-500/20 transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">🗑️</span>
+                  <div className="text-left">
+                    <h3 className="text-white font-semibold">
+                      Rejected Registrations
+                    </h3>
+                    <p className="text-red-400 text-sm">
+                      {rejectedRegistrations.length} rejected registration(s)
+                    </p>
+                  </div>
+                </div>
+                <motion.span
+                  animate={{rotate: showRejectedRegistrations ? 180 : 0}}
+                  transition={{duration: 0.3}}
+                  className="text-white text-2xl"
+                >
+                  ▼
+                </motion.span>
+              </motion.button>
+
+              <AnimatePresence>
+                {showRejectedRegistrations && (
+                  <motion.div
+                    initial={{height: 0, opacity: 0}}
+                    animate={{height: "auto", opacity: 1}}
+                    exit={{height: 0, opacity: 0}}
+                    transition={{duration: 0.3}}
+                    className="overflow-hidden"
+                  >
+                    <div className="space-y-4 mt-4">
+                      {rejectedRegistrations.map((registration) => (
+                        <RegistrationCard
+                          key={registration._id}
+                          registration={registration}
+                          onViewDetails={onViewDetails}
+                          onUpdateStatus={onUpdateStatus}
+                          onReject={onReject}
+                        />
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

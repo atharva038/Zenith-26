@@ -48,16 +48,25 @@ const WomenTournamentAnalytics = ({
   // Calculate KPI data from filtered registrations
   const kpis = useMemo(() => {
     const total = filteredRegistrations?.length || 0;
-    const confirmed =
-      filteredRegistrations?.filter((r) => r.status === "confirmed").length ||
-      0;
+
+    // Only count confirmed and non-rejected registrations
+    const confirmedRegistrations =
+      filteredRegistrations?.filter(
+        (r) => r.status === "confirmed" && !r.isRejected
+      ) || [];
+
+    const confirmed = confirmedRegistrations.length;
+
     const pending =
-      filteredRegistrations?.filter((r) => r.status === "pending").length || 0;
-    const totalRevenue =
-      filteredRegistrations?.reduce(
-        (sum, r) => sum + (r.totalAmount || 0),
-        0
-      ) || 0;
+      filteredRegistrations?.filter(
+        (r) => r.status === "pending" && !r.isRejected
+      ).length || 0;
+
+    // Calculate revenue only from confirmed, non-rejected registrations
+    const totalRevenue = confirmedRegistrations.reduce(
+      (sum, r) => sum + (r.totalAmount || 0),
+      0
+    );
 
     return [
       {
@@ -74,7 +83,7 @@ const WomenTournamentAnalytics = ({
         icon: "💰",
         trend: "up",
         trendValue: `${
-          total > 0 ? "₹" + Math.round(totalRevenue / total) : "₹0"
+          confirmed > 0 ? "₹" + Math.round(totalRevenue / confirmed) : "₹0"
         } avg`,
         color: "green",
       },
@@ -189,8 +198,9 @@ const WomenTournamentAnalytics = ({
             <div className="w-2 h-2 rounded-full bg-green-500 mt-2 flex-shrink-0" />
             <p className="text-sm text-gray-300">
               <span className="text-green-400 font-semibold">
-                {filteredRegistrations?.filter((r) => r.status === "confirmed")
-                  .length || 0}
+                {filteredRegistrations?.filter(
+                  (r) => r.status === "confirmed" && !r.isRejected
+                ).length || 0}
               </span>{" "}
               participants have confirmed their registration
             </p>
@@ -198,25 +208,25 @@ const WomenTournamentAnalytics = ({
           <div className="flex items-start gap-3">
             <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
             <p className="text-sm text-gray-300">
-              Total revenue of{" "}
+              Confirmed revenue of{" "}
               <span className="text-blue-400 font-semibold">
                 ₹
                 {(
-                  filteredRegistrations?.reduce(
-                    (sum, r) => sum + (r.totalAmount || 0),
-                    0
-                  ) || 0
+                  filteredRegistrations
+                    ?.filter((r) => r.status === "confirmed" && !r.isRejected)
+                    ?.reduce((sum, r) => sum + (r.totalAmount || 0), 0) || 0
                 ).toLocaleString()}
               </span>{" "}
-              collected so far
+              collected
             </p>
           </div>
           <div className="flex items-start gap-3">
             <div className="w-2 h-2 rounded-full bg-yellow-500 mt-2 flex-shrink-0" />
             <p className="text-sm text-gray-300">
               <span className="text-yellow-400 font-semibold">
-                {filteredRegistrations?.filter((r) => r.status === "pending")
-                  .length || 0}
+                {filteredRegistrations?.filter(
+                  (r) => r.status === "pending" && !r.isRejected
+                ).length || 0}
               </span>{" "}
               registrations are awaiting confirmation
             </p>

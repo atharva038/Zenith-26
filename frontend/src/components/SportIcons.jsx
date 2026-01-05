@@ -258,22 +258,6 @@ export const WeightliftingIcon = ({className = "w-12 h-12"}) => (
   </svg>
 );
 
-export const HandkerchiefIcon = ({className = "w-12 h-12"}) => (
-  <svg
-    className={className}
-    viewBox="0 0 64 64"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path d="M18 12L32 26L46 12L32 8Z" fill="currentColor" opacity="0.3" />
-    <path d="M46 12L56 22L42 36L32 26Z" fill="currentColor" opacity="0.5" />
-    <path d="M18 12L8 22L22 36L32 26Z" fill="currentColor" opacity="0.5" />
-    <path d="M32 26L42 36L32 56L22 36Z" fill="currentColor" />
-    <path d="M26 30L32 36L38 30" stroke="white" strokeWidth="2" opacity="0.4" />
-    <path d="M28 42L32 46L36 42" stroke="white" strokeWidth="2" opacity="0.4" />
-  </svg>
-);
-
 export const BadmintonIcon = ({className = "w-12 h-12"}) => (
   <svg
     className={className}

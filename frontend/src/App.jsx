@@ -12,8 +12,6 @@ import {AuthProvider} from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CinematicIntro from "./components/CinematicIntro";
 import Homepage from "./pages/Homepage";
-import ParallaxDemo from "./pages/ParallaxDemo";
-import Homepage_ScrollAnimations from "./pages/Homepage_ScrollAnimations";
 import GameVerse from "./pages/GameVerse";
 import MarathonPage from "./pages/MarathonPage";
 import AdminLogin from "./pages/AdminLogin";
@@ -51,11 +49,6 @@ function App() {
               <Route path="/" element={<CinematicIntro />} />
               <Route path="/home" element={<Homepage />} />
               <Route path="/gameverse" element={<GameVerse />} />
-              <Route path="/parallax-demo" element={<ParallaxDemo />} />
-              <Route
-                path="/scroll-animations"
-                element={<Homepage_ScrollAnimations />}
-              />
 
               {/* Public Event Routes */}
               <Route path="/events" element={<EventsPage />} />
