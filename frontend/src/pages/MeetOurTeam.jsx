@@ -42,7 +42,16 @@ const MeetOurTeam = () => {
       return updated;
     });
 
+    // Close the form
     setShowForm(false);
+
+    // Scroll to team members section to show the newly added member
+    setTimeout(() => {
+      const teamSection = document.querySelector("[data-team-section]");
+      if (teamSection) {
+        teamSection.scrollIntoView({behavior: "smooth", block: "start"});
+      }
+    }, 300);
   };
 
   // Sparkle animation component (matching mentors section)
@@ -491,7 +500,7 @@ const MeetOurTeam = () => {
       )}
 
       {/* Team Members Display */}
-      <section className="relative py-12 px-6">
+      <section className="relative py-12 px-6" data-team-section>
         <div className="max-w-7xl mx-auto relative z-10">
           {Object.keys(groupedMembers).length === 0 ? (
             <motion.div
