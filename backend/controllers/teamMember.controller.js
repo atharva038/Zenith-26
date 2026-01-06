@@ -3,16 +3,57 @@ import cloudinary from "../config/cloudinary.js";
 
 // @desc    Create a new team member
 // @route   POST /api/team-members
-// @access  Private (Admin only)
+// @access  Public (Anyone can add)
 export const createTeamMember = async (req, res) => {
   try {
-    const { name, committee, position, phoneNumber } = req.body;
+    const {name, committee, position, phoneNumber} = req.body;
 
     // Check if photo was uploaded
     if (!req.file) {
       return res.status(400).json({
         success: false,
         message: "Photo is required",
+      });
+    }
+
+    // Check for duplicate phone number
+    const existingMember = await TeamMember.findOne({
+      phoneNumber: phoneNumber.trim(),
+      isActive: true,
+    });
+
+    if (existingMember) {
+      // Clean up uploaded photo since we're rejecting the request
+      try {
+        await cloudinary.uploader.destroy(req.file.filename);
+      } catch (cloudinaryError) {
+        console.error("Error cleaning up uploaded file:", cloudinaryError);
+      }
+
+      return res.status(409).json({
+        success: false,
+        message: `A team member with phone number ${phoneNumber} already exists (${existingMember.name} - ${existingMember.committee})`,
+      });
+    }
+
+    // Check for duplicate name in the same committee (optional, more lenient)
+    const duplicateName = await TeamMember.findOne({
+      name: {$regex: new RegExp(`^${name.trim()}$`, "i")},
+      committee: committee,
+      isActive: true,
+    });
+
+    if (duplicateName) {
+      // Clean up uploaded photo
+      try {
+        await cloudinary.uploader.destroy(req.file.filename);
+      } catch (cloudinaryError) {
+        console.error("Error cleaning up uploaded file:", cloudinaryError);
+      }
+
+      return res.status(409).json({
+        success: false,
+        message: `${name} is already registered in ${committee} committee`,
       });
     }
 
@@ -31,7 +72,7 @@ export const createTeamMember = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "Team member created successfully",
-      data: { teamMember },
+      data: {teamMember},
     });
   } catch (error) {
     console.error("Create team member error:", error);
@@ -65,7 +106,7 @@ export const createTeamMember = async (req, res) => {
 // @access  Public
 export const getAllTeamMembers = async (req, res) => {
   try {
-    const teamMembers = await TeamMember.find({ isActive: true }).sort({
+    const teamMembers = await TeamMember.find({isActive: true}).sort({
       committee: 1,
       position: 1,
       createdAt: -1,
@@ -117,7 +158,7 @@ export const getTeamMemberById = async (req, res) => {
 
     res.json({
       success: true,
-      data: { teamMember },
+      data: {teamMember},
     });
   } catch (error) {
     console.error("Get team member error:", error);
@@ -133,7 +174,7 @@ export const getTeamMemberById = async (req, res) => {
 // @access  Private (Admin only)
 export const updateTeamMember = async (req, res) => {
   try {
-    const { name, committee, position, phoneNumber } = req.body;
+    const {name, committee, position, phoneNumber} = req.body;
 
     const teamMember = await TeamMember.findById(req.params.id);
 
@@ -169,7 +210,7 @@ export const updateTeamMember = async (req, res) => {
     res.json({
       success: true,
       message: "Team member updated successfully",
-      data: { teamMember },
+      data: {teamMember},
     });
   } catch (error) {
     console.error("Update team member error:", error);
