@@ -135,10 +135,14 @@ const MeetOurTeam = () => {
       >
         {/* Card Container with enhanced hierarchy styling */}
         <div
-          className={`relative bg-gradient-to-br from-[#2a1a11] to-[#1a0f08] rounded-2xl p-8 border-2 ${
+          className={`relative bg-gradient-to-br from-[#2a1a11] to-[#1a0f08] rounded-2xl ${
+            isLeadership ? "p-10 shadow-2xl" : "p-8 shadow-lg"
+          } border-2 ${
             positionStyle.border
           } hover:border-[#ffb36a] transition-all duration-500 overflow-hidden h-full flex flex-col ${
-            isLeadership ? "ring-1 ring-yellow-500/20" : ""
+            isLeadership
+              ? "ring-2 ring-yellow-500/30 hover:ring-yellow-500/50"
+              : ""
           }`}
         >
           {/* Hover Sparkles */}
@@ -171,7 +175,9 @@ const MeetOurTeam = () => {
               <img
                 src={member.photo}
                 alt={member.name}
-                className={`w-32 h-32 rounded-full object-cover border-4 ${
+                className={`${
+                  isLeadership ? "w-40 h-40" : "w-32 h-32"
+                } rounded-full object-cover border-4 ${
                   isLeadership ? "border-yellow-500/40" : "border-white/20"
                 } shadow-lg`}
                 onError={(e) => {
@@ -181,7 +187,11 @@ const MeetOurTeam = () => {
               />
 
               {/* Position Crown/Star Indicator */}
-              <div className="absolute -top-2 -right-2 text-2xl">
+              <div
+                className={`absolute -top-2 -right-2 ${
+                  isLeadership ? "text-3xl" : "text-2xl"
+                }`}
+              >
                 {positionStyle.icon}
               </div>
             </motion.div>
@@ -189,7 +199,9 @@ const MeetOurTeam = () => {
             {/* Position Badge */}
             <div className="text-center mb-3">
               <span
-                className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-bold ${positionStyle.badge} shadow-lg`}
+                className={`inline-flex items-center ${
+                  isLeadership ? "px-4 py-2 text-base" : "px-3 py-1 text-sm"
+                } rounded-full font-bold ${positionStyle.badge} shadow-lg`}
               >
                 {positionStyle.icon} {positionStyle.title}
               </span>
@@ -197,11 +209,17 @@ const MeetOurTeam = () => {
 
             {/* Name and Committee */}
             <div className="text-center mb-4">
-              <h3 className="text-2xl font-bold text-white mb-1 group-hover:text-[#ffb36a] transition-colors duration-300">
+              <h3
+                className={`${
+                  isLeadership ? "text-3xl" : "text-2xl"
+                } font-bold text-white mb-1 group-hover:text-[#ffb36a] transition-colors duration-300`}
+              >
                 {member.name}
               </h3>
               <p
-                className={`text-lg font-semibold bg-gradient-to-r ${getCommitteeGradient(
+                className={`${
+                  isLeadership ? "text-xl" : "text-lg"
+                } font-semibold bg-gradient-to-r ${getCommitteeGradient(
                   member.committee
                 )} bg-clip-text text-transparent`}
               >
@@ -251,11 +269,12 @@ const MeetOurTeam = () => {
       return a.name.localeCompare(b.name);
     });
 
+    // Filter with case-insensitive and trimmed comparison
     const mainMembers = sortedMembers.filter(
-      (member) => member.position === "main"
+      (member) => member.position?.toString().toLowerCase().trim() === "main"
     );
     const sjcMembers = sortedMembers.filter(
-      (member) => member.position === "sjc"
+      (member) => member.position?.toString().toLowerCase().trim() === "sjc"
     );
 
     return (
@@ -300,8 +319,8 @@ const MeetOurTeam = () => {
           />
         </motion.div>
 
-        {/* Main Position Members */}
-        {mainMembers.length > 0 && (
+        {/* SJC Position Members - NOW FIRST AND LARGER */}
+        {sjcMembers.length > 0 && (
           <div className="mb-12">
             <motion.div
               className="text-center mb-8"
@@ -310,13 +329,13 @@ const MeetOurTeam = () => {
               viewport={{once: true}}
               transition={{duration: 0.5, delay: 0.3}}
             >
-              <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mb-2">
-                🏆 Leadership Team
+              <h3 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-500 mb-2">
+                ⭐ SJC Position
               </h3>
-              <p className="text-gray-500 text-sm">Main Position Holders</p>
+              <p className="text-gray-400 text-base">Core Committee Members</p>
             </motion.div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {mainMembers.map((member, index) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-8">
+              {sjcMembers.map((member, index) => (
                 <MemberCard
                   key={member._id}
                   member={member}
@@ -328,9 +347,20 @@ const MeetOurTeam = () => {
           </div>
         )}
 
-        {/* SJC Position Members */}
-        {sjcMembers.length > 0 && (
-          <div>
+        {/* Main Position Members - NOW SECOND AND SMALLER */}
+        {mainMembers.length > 0 && (
+          <div className="mt-16">
+            {/* Divider */}
+            {sjcMembers.length > 0 && (
+              <motion.div
+                className="mb-12 h-px bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"
+                initial={{scaleX: 0}}
+                whileInView={{scaleX: 1}}
+                viewport={{once: true}}
+                transition={{duration: 0.8}}
+              />
+            )}
+
             <motion.div
               className="text-center mb-8"
               initial={{opacity: 0, y: 20}}
@@ -338,17 +368,17 @@ const MeetOurTeam = () => {
               viewport={{once: true}}
               transition={{duration: 0.5, delay: 0.4}}
             >
-              <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-500 mb-2">
-                ⭐ Core Team
+              <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mb-2">
+                👑 Main Position
               </h3>
-              <p className="text-gray-500 text-sm">SJC Position Holders</p>
+              <p className="text-gray-400 text-sm">Assistant Members</p>
             </motion.div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {sjcMembers.map((member, index) => (
+              {mainMembers.map((member, index) => (
                 <MemberCard
                   key={member._id}
                   member={member}
-                  index={index + mainMembers.length}
+                  index={index + sjcMembers.length}
                   isLeadership={false}
                 />
               ))}
