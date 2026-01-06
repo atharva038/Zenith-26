@@ -1160,20 +1160,72 @@ const AdminWomenTournament = () => {
                       <span>🖼️</span> Payment Screenshot
                     </h3>
                     <div className="relative">
-                      <img
-                        src={selectedRegistration.paymentScreenshot}
-                        alt="Payment Screenshot"
-                        className="w-full max-h-[300px] md:max-h-[400px] object-contain rounded-lg border border-white/10 cursor-pointer hover:opacity-90 transition-opacity bg-black/20"
-                        onClick={() =>
-                          window.open(
-                            selectedRegistration.paymentScreenshot,
-                            "_blank"
-                          )
-                        }
-                      />
-                      <div className="text-xs text-gray-400 mt-2 text-center">
-                        Click image to view full size
-                      </div>
+                      {(() => {
+                        const url =
+                          selectedRegistration.paymentScreenshot.toLowerCase();
+                        const isPDF =
+                          url.includes(".pdf") ||
+                          url.includes("application/pdf") ||
+                          url.includes("/raw/upload/"); // Cloudinary raw resource type
+
+                        return isPDF ? (
+                          // PDF viewer
+                          <div className="bg-gray-900 rounded-lg border border-white/10 p-4">
+                            <div className="flex flex-col items-center gap-4">
+                              <div className="text-6xl">📄</div>
+                              <p className="text-white font-medium">
+                                PDF Payment Receipt
+                              </p>
+                              <p className="text-gray-400 text-sm text-center">
+                                Click button below to view the PDF document
+                              </p>
+                              <button
+                                onClick={() =>
+                                  window.open(
+                                    selectedRegistration.paymentScreenshot,
+                                    "_blank"
+                                  )
+                                }
+                                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium rounded-lg transition-all transform hover:scale-105 flex items-center gap-2"
+                              >
+                                <span>📥</span>
+                                Open PDF Document
+                              </button>
+                              <p className="text-xs text-gray-500 break-all max-w-md text-center">
+                                {selectedRegistration.paymentScreenshot}
+                              </p>
+                            </div>
+                          </div>
+                        ) : (
+                          // Image viewer
+                          <>
+                            <img
+                              src={selectedRegistration.paymentScreenshot}
+                              alt="Payment Screenshot"
+                              className="w-full max-h-[300px] md:max-h-[400px] object-contain rounded-lg border border-white/10 cursor-pointer hover:opacity-90 transition-opacity bg-black/20"
+                              loading="lazy"
+                              onError={(e) => {
+                                console.error(
+                                  "Failed to load payment screenshot:",
+                                  selectedRegistration.paymentScreenshot
+                                );
+                                e.target.onerror = null;
+                                e.target.src =
+                                  'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"%3E%3Crect fill="%23dc2626" width="400" height="300"/%3E%3Ctext x="50%25" y="45%25" font-size="20" fill="white" text-anchor="middle"%3EImage Failed to Load%3C/text%3E%3Ctext x="50%25" y="60%25" font-size="14" fill="white" text-anchor="middle"%3EClick to view original URL%3C/text%3E%3C/svg%3E';
+                              }}
+                              onClick={() =>
+                                window.open(
+                                  selectedRegistration.paymentScreenshot,
+                                  "_blank"
+                                )
+                              }
+                            />
+                            <div className="text-xs text-gray-400 mt-2 text-center">
+                              Click image to view full size
+                            </div>
+                          </>
+                        );
+                      })()}
                     </div>
                   </div>
                 )}
