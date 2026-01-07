@@ -35,9 +35,40 @@ const Gallery = () => {
       const videoItems = allMedia.filter((item) => item.type === "video");
       const imageItems = allMedia.filter((item) => item.type === "image");
 
+      // Legacy images (manually add these if they don't already exist in the API)
+      const legacyImageUrls = [
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739560719/gu3j07b5bqprmlmm0cdw.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739708282/pc4yrj3fx2son9kcbdt8.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739560886/hzy3iqhaf9cnjdqnsdsv.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739610534/mpoijufmccntq4ze73xx.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739611175/reebkxwvpixhanhggpgj.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739561632/dti2euykuc0zwrnwewz2.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739566239/sshcj5wb72fkdeaz1wqj.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739566239/aza9rjeznfgzy2jmdhv4.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739566237/isqbvnzikdqrsw0fypde.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739610646/tj4m2wxliai02jqrsmpi.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739611458/oieljrwcwffnpgmqk3om.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739611653/bo9onfg2i0xqke7czwxu.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739734512/p1sefzpd1cep5xyzktyo.jpg",
+      ];
+
+      const legacyImages = legacyImageUrls.map((url, idx) => ({
+        _id: `legacy-${Date.now()}-${idx}`,
+        type: "image",
+        secureUrl: url,
+        // createdAt left null/undefined; these are just UI-only additions
+      }));
+
+      // Avoid duplicates: only include legacy images whose secureUrl isn't already present
+      const existingUrls = new Set(imageItems.map((it) => it.secureUrl));
+      const newLegacy = legacyImages.filter((it) => !existingUrls.has(it.secureUrl));
+
+      const combinedImages = [...imageItems, ...newLegacy];
+
       setVideos(videoItems);
-      setImages(imageItems);
-      setMedia(allMedia);
+      setImages(combinedImages);
+      // Keep original media list but append the legacy images so counts and UI include them
+      setMedia([...allMedia, ...newLegacy]);
       setError(null);
     } catch (err) {
       setError("Failed to load gallery. Please try again later.");
@@ -233,66 +264,12 @@ const Gallery = () => {
 
         {!loading && media.length > 0 && (
           <div className="space-y-16">
-            {/* Video Section */}
-            {videos.length > 0 && (
-              <motion.section
-                initial={{opacity: 0, y: 20}}
-                animate={{opacity: 1, y: 0}}
-                transition={{duration: 0.6}}
-              >
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="flex items-center gap-3">
-                    <span className="text-4xl">🎬</span>
-                    <h2 className="text-3xl font-bold bg-gradient-to-r from-[#ffb36a] via-[#ff8b1f] to-[#ff6b3d] bg-clip-text text-transparent">
-                      Cinematic Moments
-                    </h2>
-                  </div>
-                  <div className="h-px flex-1 bg-gradient-to-r from-[#ffb36a]/50 to-transparent"></div>
-                  <span className="text-sm text-gray-400 font-medium px-3 py-1 rounded-full bg-[#2a1a11] border border-[#3a2416]">
-                    {videos.length} {videos.length === 1 ? "Video" : "Videos"}
-                  </span>
-                </div>
-
-                <motion.div
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-                  initial={{opacity: 0}}
-                  animate={{opacity: 1}}
-                >
-                  {videos.map((item, index) => (
-                    <motion.div
-                      key={item._id}
-                      initial={{opacity: 0, y: 20}}
-                      animate={{opacity: 1, y: 0}}
-                      transition={{delay: index * 0.05}}
-                      className="relative bg-black rounded-lg overflow-hidden border border-gray-700 hover:border-[#ff8b1f] hover:shadow-lg hover:shadow-[#ff8b1f]/20 transition-all duration-300 cursor-pointer group"
-                      onClick={() => handleMediaClick(item)}
-                    >
-                      {/* Video Container */}
-                      <div className="relative w-full aspect-video">
-                        <video
-                          src={item.secureUrl}
-                          className="w-full h-full object-cover"
-                          preload="metadata"
-                        />
-                        {/* Play Icon Overlay */}
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                          <div className="w-16 h-16 rounded-full bg-[#ff8b1f] flex items-center justify-center">
-                            <span className="text-white text-2xl ml-1">▶</span>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              </motion.section>
-            )}
-
             {/* Image Section */}
             {images.length > 0 && (
               <motion.section
                 initial={{opacity: 0, y: 20}}
                 animate={{opacity: 1, y: 0}}
-                transition={{duration: 0.6, delay: 0.2}}
+                transition={{duration: 0.6}}
               >
                 <div className="flex items-center gap-4 mb-8">
                   <div className="flex items-center gap-3">
@@ -333,6 +310,60 @@ const Gallery = () => {
                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                           <div className="w-16 h-16 rounded-full bg-[#4a9eff] flex items-center justify-center">
                             <span className="text-white text-3xl">🔍</span>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </motion.section>
+            )}
+
+            {/* Video Section */}
+            {videos.length > 0 && (
+              <motion.section
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
+                transition={{duration: 0.6, delay: 0.2}}
+              >
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="flex items-center gap-3">
+                    <span className="text-4xl">🎬</span>
+                    <h2 className="text-3xl font-bold bg-gradient-to-r from-[#ffb36a] via-[#ff8b1f] to-[#ff6b3d] bg-clip-text text-transparent">
+                      Cinematic Moments
+                    </h2>
+                  </div>
+                  <div className="h-px flex-1 bg-gradient-to-r from-[#ffb36a]/50 to-transparent"></div>
+                  <span className="text-sm text-gray-400 font-medium px-3 py-1 rounded-full bg-[#2a1a11] border border-[#3a2416]">
+                    {videos.length} {videos.length === 1 ? "Video" : "Videos"}
+                  </span>
+                </div>
+
+                <motion.div
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                  initial={{opacity: 0}}
+                  animate={{opacity: 1}}
+                >
+                  {videos.map((item, index) => (
+                    <motion.div
+                      key={item._id}
+                      initial={{opacity: 0, y: 20}}
+                      animate={{opacity: 1, y: 0}}
+                      transition={{delay: index * 0.05}}
+                      className="relative bg-black rounded-lg overflow-hidden border border-gray-700 hover:border-[#ff8b1f] hover:shadow-lg hover:shadow-[#ff8b1f]/20 transition-all duration-300 cursor-pointer group"
+                      onClick={() => handleMediaClick(item)}
+                    >
+                      {/* Video Container */}
+                      <div className="relative w-full aspect-video">
+                        <video
+                          src={item.secureUrl}
+                          className="w-full h-full object-cover"
+                          preload="metadata"
+                        />
+                        {/* Play Icon Overlay */}
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="w-16 h-16 rounded-full bg-[#ff8b1f] flex items-center justify-center">
+                            <span className="text-white text-2xl ml-1">▶</span>
                           </div>
                         </div>
                       </div>
