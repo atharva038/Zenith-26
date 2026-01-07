@@ -35,7 +35,26 @@ const TeamPage = () => {
   }, [smoothX, smoothY]);
 
   // Committee configurations with unique vibes
+  // Order: PRC first, then Media & Web, then all others
   const committees = {
+    "PRC/PERMISSION": {
+      title: "PRC / Permission",
+      sjcTitle: "The Strategist",
+      color: "from-slate-600 to-blue-700",
+      bgGradient: "from-slate-600/10 to-blue-700/10",
+      accentColor: "text-slate-400",
+      borderColor: "border-slate-500/30",
+      shadowColor: "shadow-slate-500/20",
+    },
+    "MEDIA & WEB": {
+      title: "Media & Web",
+      sjcTitle: "The Architect",
+      color: "from-indigo-600 to-violet-600",
+      bgGradient: "from-indigo-600/10 to-violet-600/10",
+      accentColor: "text-indigo-400",
+      borderColor: "border-indigo-500/30",
+      shadowColor: "shadow-indigo-500/20",
+    },
     "EVENT MANAGEMENT & FOOD": {
       title: "Event Management & Food",
       sjcTitle: "The Conductor",
@@ -81,24 +100,6 @@ const TeamPage = () => {
       borderColor: "border-green-500/30",
       shadowColor: "shadow-green-500/20",
     },
-    "MEDIA & WEB": {
-      title: "Media & Web",
-      sjcTitle: "The Architect",
-      color: "from-indigo-600 to-violet-600",
-      bgGradient: "from-indigo-600/10 to-violet-600/10",
-      accentColor: "text-indigo-400",
-      borderColor: "border-indigo-500/30",
-      shadowColor: "shadow-indigo-500/20",
-    },
-    "PRC/PERMISSION": {
-      title: "PRC / Permission",
-      sjcTitle: "The Strategist",
-      color: "from-slate-600 to-blue-700",
-      bgGradient: "from-slate-600/10 to-blue-700/10",
-      accentColor: "text-slate-400",
-      borderColor: "border-slate-500/30",
-      shadowColor: "shadow-slate-500/20",
-    },
     FINANCE: {
       title: "Finance",
       sjcTitle: "The Custodian",
@@ -143,9 +144,22 @@ const TeamPage = () => {
     }
   };
 
+  // Desired committee order: PRC first, then Media & Web, then rest
+  const committeeOrder = [
+    "PRC/PERMISSION",
+    "MEDIA & WEB",
+    "EVENT MANAGEMENT & FOOD",
+    "GUEST MANAGEMENT & HOSPITALITY",
+    "GROUND & SITE + DISCIPLINE",
+    "DECORATION",
+    "SPONSORSHIP",
+    "FINANCE",
+  ];
+
   const getFilteredCommittees = () => {
     if (activeCommittee === "ALL") {
-      return Object.keys(teamData);
+      // Return committees in our desired order, filtering to only those with data
+      return committeeOrder.filter(key => teamData[key] && teamData[key].length > 0);
     }
     return [activeCommittee];
   };
@@ -589,10 +603,66 @@ const TeamPage = () => {
           </motion.h1>
           
           <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.25 }}
+            className="text-lg md:text-2xl font-bold leading-tight max-w-3xl mx-auto fire-text"
+          >
+            Zenith is the face. The team is the force.
+          </motion.p>
+
+          {/* Fire text animation styles */}
+          <style>{`
+            .fire-text {
+              background: linear-gradient(
+                to bottom,
+                #fff 0%,
+                #ffec99 15%,
+                #ffcc00 30%,
+                #ff9500 50%,
+                #ff5e00 70%,
+                #ff2200 85%,
+                #cc0000 100%
+              );
+              background-size: 100% 200%;
+              -webkit-background-clip: text;
+              background-clip: text;
+              -webkit-text-fill-color: transparent;
+              animation: fire-flicker 1.5s ease-in-out infinite alternate;
+              text-shadow: 
+                0 0 10px rgba(255, 100, 0, 0.5),
+                0 0 20px rgba(255, 80, 0, 0.3),
+                0 0 40px rgba(255, 50, 0, 0.2);
+              filter: drop-shadow(0 0 8px rgba(255, 120, 0, 0.6));
+            }
+            
+            @keyframes fire-flicker {
+              0% {
+                background-position: 0% 0%;
+                filter: drop-shadow(0 0 8px rgba(255, 120, 0, 0.6)) brightness(1);
+              }
+              25% {
+                filter: drop-shadow(0 0 12px rgba(255, 100, 0, 0.7)) brightness(1.05);
+              }
+              50% {
+                background-position: 0% 30%;
+                filter: drop-shadow(0 0 6px rgba(255, 80, 0, 0.5)) brightness(0.98);
+              }
+              75% {
+                filter: drop-shadow(0 0 10px rgba(255, 120, 0, 0.65)) brightness(1.02);
+              }
+              100% {
+                background-position: 0% 15%;
+                filter: drop-shadow(0 0 14px rgba(255, 140, 0, 0.8)) brightness(1.1);
+              }
+            }
+          `}</style>
+
+          <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="text-base md:text-lg text-white/60 tracking-[0.2em] uppercase"
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="text-base md:text-lg text-white/60 tracking-[0.2em] uppercase mt-4"
           >
             Different roles. One heartbeat.
           </motion.p>
