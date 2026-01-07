@@ -565,11 +565,11 @@ const TeamPage = () => {
         }}
         onMouseLeave={() => setIsInHero(false)}
       >
-        {/* Layer 1: Background Image - revealed through feathered circle */}
+        {/* Layer 1: Background Image - revealed through feathered circle (Desktop) */}
         <div
           className="absolute inset-0 bg-cover hidden md:block"
           style={{
-            backgroundImage: 'url("/img/team-front-optimized.jpg")',
+            backgroundImage: 'url("https://res.cloudinary.com/dvmsho3pj/image/upload/v1767784697/zenith-26/img/team/team-hero-desktop.jpg")',
             backgroundPosition: 'center 60%',
             maskImage: isInHero 
               ? `radial-gradient(circle 160px at ${displayPos.x}px ${displayPos.y}px, black 0%, black 60%, transparent 100%)`
@@ -580,12 +580,12 @@ const TeamPage = () => {
           }}
         />
 
-        {/* Mobile: Show image with dark overlay */}
+        {/* Mobile: Show mobile team image with dark overlay */}
         <div
           className="absolute inset-0 bg-cover md:hidden"
           style={{
-            backgroundImage: 'url("/img/team-front-optimized.jpg")',
-            backgroundPosition: 'center 60%',
+            backgroundImage: 'url("https://res.cloudinary.com/dvmsho3pj/image/upload/v1767784702/zenith-26/img/team/team-hero-mobile.jpg")',
+            backgroundPosition: 'center 50%',
           }}
         />
         <div className="absolute inset-0 bg-black/60 md:hidden" />
