@@ -286,8 +286,7 @@ const WomenTournamentPage = () => {
       id: "shotput",
       name: "Shotput",
       icon: ShotputIcon,
-      image:
-        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767543732/zenith-26/img/category2/Athletics.png",
+      image: "/img/Shotput.png",
       color: "from-gray-600 to-slate-700",
       teamSize: 1,
       category: "category2",
@@ -304,8 +303,7 @@ const WomenTournamentPage = () => {
       id: "discus",
       name: "Discus",
       icon: DiscusIcon,
-      image:
-        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767543732/zenith-26/img/category2/Athletics.png",
+      image: "/img/discus.png",
       color: "from-blue-600 to-indigo-700",
       teamSize: 1,
       category: "category2",
@@ -322,8 +320,7 @@ const WomenTournamentPage = () => {
       id: "javelin",
       name: "Javelin",
       icon: JavelinIcon,
-      image:
-        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767543732/zenith-26/img/category2/Athletics.png",
+      image: "/img/javlin.png",
       color: "from-green-600 to-teal-700",
       teamSize: 1,
       category: "category2",
@@ -340,8 +337,7 @@ const WomenTournamentPage = () => {
       id: "hammer",
       name: "Hammer Throw",
       icon: HammerIcon,
-      image:
-        "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto/v1767543732/zenith-26/img/category2/Athletics.png",
+      image: "/img/hammerthrow.png",
       color: "from-purple-600 to-violet-700",
       teamSize: 1,
       category: "category2",
