@@ -1,6 +1,6 @@
-import {motion, AnimatePresence} from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
-export default function SportModal({isOpen, onClose, sport, onRegister}) {
+export default function SportModal({ isOpen, onClose, sport, onRegister }) {
   if (!sport) return null;
 
   const handleRegisterClick = () => {
@@ -16,9 +16,9 @@ export default function SportModal({isOpen, onClose, sport, onRegister}) {
           {/* Backdrop */}
           <motion.div
             className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40"
-            initial={{opacity: 0}}
-            animate={{opacity: 1}}
-            exit={{opacity: 0}}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             onClick={onClose}
           />
 
@@ -26,10 +26,10 @@ export default function SportModal({isOpen, onClose, sport, onRegister}) {
           <motion.div
             className="fixed inset-0 z-50 flex items-center justify-center 
                        p-2 sm:p-4 md:p-6"
-            initial={{opacity: 0, scale: 0.8}}
-            animate={{opacity: 1, scale: 1}}
-            exit={{opacity: 0, scale: 0.8}}
-            transition={{type: "spring", damping: 25, stiffness: 300}}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
           >
             <div
               className="bg-gradient-to-br from-black via-gray-900 to-black 
@@ -134,6 +134,28 @@ export default function SportModal({isOpen, onClose, sport, onRegister}) {
                                  border border-[#ffb36a]/20"
                   >
                     <p className="text-gray-400 text-[10px] sm:text-xs md:text-sm mb-0.5 sm:mb-1">
+                      Registration Status
+                    </p>
+                    <p
+                      className={`font-semibold text-xs sm:text-sm md:text-base capitalize ${
+                        sport.registrationStatus === "coming soon"
+                          ? "text-yellow-400"
+                          : sport.registrationStatus === "open"
+                          ? "text-green-400"
+                          : sport.registrationStatus === "closed"
+                          ? "text-red-400"
+                          : "text-white"
+                      }`}
+                    >
+                      {sport.registrationStatus || "Coming Soon"}
+                    </p>
+                  </div>
+                  <div
+                    className="bg-black/50 rounded-md sm:rounded-lg 
+                                 p-2 sm:p-3 md:p-4 
+                                 border border-[#ffb36a]/20"
+                  >
+                    <p className="text-gray-400 text-[10px] sm:text-xs md:text-sm mb-0.5 sm:mb-1">
                       Prize Pool
                     </p>
                     <p className="text-white font-semibold text-xs sm:text-sm md:text-base">
@@ -163,16 +185,33 @@ export default function SportModal({isOpen, onClose, sport, onRegister}) {
                 {/* CTA Buttons - Responsive */}
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 pt-2 sm:pt-4">
                   <button
-                    onClick={handleRegisterClick}
-                    className="flex-1 bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] 
-                                    text-black font-bold 
+                    onClick={
+                      sport.registrationStatus === "open"
+                        ? handleRegisterClick
+                        : undefined
+                    }
+                    disabled={sport.registrationStatus !== "open"}
+                    className={`flex-1 font-bold 
                                     py-2.5 sm:py-3 px-4 sm:px-6 
                                     text-sm sm:text-base
                                     rounded-md sm:rounded-lg 
-                                    hover:scale-105 transition-transform duration-300 
-                                    shadow-lg shadow-[#ffb36a]/30"
+                                    transition-all duration-300 
+                                    ${
+                                      sport.registrationStatus === "open"
+                                        ? "bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] text-black hover:scale-105 shadow-lg shadow-[#ffb36a]/30"
+                                        : sport.registrationStatus ===
+                                          "coming soon"
+                                        ? "bg-gradient-to-r from-yellow-600 to-yellow-500 text-white cursor-not-allowed opacity-80"
+                                        : "bg-gradient-to-r from-gray-600 to-gray-500 text-white cursor-not-allowed opacity-80"
+                                    }`}
                   >
-                    Register Now
+                    {sport.registrationStatus === "open"
+                      ? "Register Now"
+                      : sport.registrationStatus === "coming soon"
+                      ? "Coming Soon"
+                      : sport.registrationStatus === "closed"
+                      ? "Registration Closed"
+                      : "Coming Soon"}
                   </button>
                   <button
                     onClick={onClose}
