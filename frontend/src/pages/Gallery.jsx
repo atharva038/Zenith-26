@@ -1,14 +1,14 @@
 import {useState, useEffect} from "react";
-import {Link} from "react-router-dom";
 import {getAllMedia} from "../services/mediaService";
 import {motion, AnimatePresence} from "framer-motion";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 const Gallery = () => {
   const [media, setMedia] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedMedia, setSelectedMedia] = useState(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Separate state for videos and images
   const [videos, setVideos] = useState([]);
@@ -89,142 +89,7 @@ const Gallery = () => {
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-black via-[#0a0604] to-black text-white">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 px-9 py-5 flex justify-between items-center z-[600] bg-black/40 backdrop-blur-md border-b border-[#3a2416]">
-        <Link
-          to="/home"
-          className="text-[#ffb77a] font-bold text-xl tracking-wide"
-          style={{textShadow: "0 2px 12px rgba(255,140,40,0.18)"}}
-        >
-          Zenith 2026
-        </Link>
-
-        {/* Desktop Menu */}
-        <div className="hidden md:flex gap-6">
-          <Link
-            to="/home"
-            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
-          >
-            Home
-          </Link>
-          <a
-            href="/home#about"
-            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
-          >
-            About
-          </a>
-          <a
-            href="/home#events"
-            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
-          >
-            Events
-          </a>
-          <a
-            href="/home#vip-guests"
-            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
-          >
-            VIP Guests
-          </a>
-          <Link
-            to="/gallery"
-            className="text-[#ffd4a8] font-semibold underline decoration-2 underline-offset-4"
-          >
-            Gallery
-          </Link>
-          <Link
-            to="/register"
-            className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
-          >
-            Register
-          </Link>
-        </div>
-
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden text-[#ffb77a] z-[700]"
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            {mobileMenuOpen ? (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            ) : (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            )}
-          </svg>
-        </button>
-
-        {/* BACKDROP */}
-        {mobileMenuOpen && (
-          <div
-            className="fixed inset-0 bg-black/70 z-[650] md:hidden"
-            onClick={() => setMobileMenuOpen(false)}
-          />
-        )}
-
-        {/* MOBILE MENU */}
-        {mobileMenuOpen && (
-          <div className="fixed top-16 left-0 right-0 bg-black/90 backdrop-blur-xl p-6 z-[700] border-b border-[#3a2416] animate-slideDown md:hidden">
-            <div className="flex flex-col gap-4">
-              <Link
-                to="/home"
-                className="text-[#ffb77a] font-semibold"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Home
-              </Link>
-              <a
-                href="/home#about"
-                className="text-[#ffb77a] font-semibold"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                About
-              </a>
-              <a
-                href="/home#events"
-                className="text-[#ffb77a] font-semibold"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Events
-              </a>
-              <a
-                href="/home#vip-guests"
-                className="text-[#ffb77a] font-semibold"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                VIP Guests
-              </a>
-              <Link
-                to="/gallery"
-                className="text-[#ffd4a8] font-semibold"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Gallery
-              </Link>
-              <Link
-                to="/register"
-                className="text-[#ffb77a] font-semibold"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Register
-              </Link>
-            </div>
-          </div>
-        )}
-      </nav>
+      <Navbar />
 
       <div className="container mx-auto px-4 pt-32 pb-20">
         {/* Header */}
@@ -424,38 +289,7 @@ const Gallery = () => {
       </AnimatePresence>
 
       {/* Footer */}
-      <footer className="relative py-12 px-6 bg-black border-t border-[#3a2416]">
-        <div className="max-w-7xl mx-auto text-center">
-          <motion.h3
-            className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] mb-6"
-            initial={{opacity: 0, y: 20}}
-            whileInView={{opacity: 1, y: 0}}
-            viewport={{once: true}}
-            transition={{duration: 0.6, ease: "easeOut"}}
-          >
-            ZENITH 2026
-          </motion.h3>
-          <div className="flex gap-6 justify-center mb-8">
-            {["📘", "📷", "🐦", "▶️", "💼"].map((icon, i) => (
-              <motion.a
-                key={i}
-                href="#"
-                className="w-12 h-12 flex items-center justify-center rounded-full border-2 border-[#3a2416] bg-[#1a0f08] hover:border-[#ffb36a] hover:scale-110 transition-all duration-300"
-                initial={{opacity: 0, y: 20}}
-                whileInView={{opacity: 1, y: 0}}
-                viewport={{once: true}}
-                transition={{duration: 0.4, delay: i * 0.08, ease: "easeOut"}}
-              >
-                <span className="text-2xl">{icon}</span>
-              </motion.a>
-            ))}
-          </div>
-          <p className="text-gray-500 mb-2">
-            © 2026 SGGSIE&T Zenith. All rights reserved.
-          </p>
-          <p className="text-sm text-gray-600">Where Champions Rise 🏆</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

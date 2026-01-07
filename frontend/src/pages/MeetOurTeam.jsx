@@ -4,6 +4,8 @@ import {Phone, Mail, Users, Plus, X} from "lucide-react";
 import {motion} from "framer-motion";
 import api from "../config/api";
 import TeamMemberForm from "../components/TeamMemberForm";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 const MeetOurTeam = () => {
   const [teamMembers, setTeamMembers] = useState([]);
@@ -412,6 +414,9 @@ const MeetOurTeam = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-[#0a0604] to-black overflow-hidden">
+      {/* Navigation */}
+      <Navbar />
+      
       {/* Background Sparkles */}
       <div className="fixed inset-0 pointer-events-none">
         {[...Array(20)].map((_, i) => (
@@ -724,6 +729,9 @@ const MeetOurTeam = () => {
           </div>
         </motion.section>
       )}
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };

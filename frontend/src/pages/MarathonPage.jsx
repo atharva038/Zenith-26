@@ -3,6 +3,8 @@ import {Link, useNavigate} from "react-router-dom";
 import {motion, useInView, AnimatePresence} from "framer-motion";
 import {toast} from "react-toastify";
 import api from "../config/api";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 /**
  * MarathonPage - Full marketing and registration page for Zenith Marathon
@@ -104,50 +106,7 @@ const MarathonPage = () => {
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-orange-500/20">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/home" className="flex items-center gap-2">
-            <span className="text-2xl">🏃</span>
-            <span className="font-bold text-xl text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
-              ZENITH MARATHON
-            </span>
-          </Link>
-
-          <div className="hidden md:flex items-center gap-6">
-            <a
-              href="#about"
-              className="text-gray-300 hover:text-orange-400 transition-colors"
-            >
-              About
-            </a>
-            <a
-              href="#categories"
-              className="text-gray-300 hover:text-orange-400 transition-colors"
-            >
-              Categories
-            </a>
-            <a
-              href="#schedule"
-              className="text-gray-300 hover:text-orange-400 transition-colors"
-            >
-              Schedule
-            </a>
-            <a
-              href="#faq"
-              className="text-gray-300 hover:text-orange-400 transition-colors"
-            >
-              FAQ
-            </a>
-          </div>
-
-          <button
-            onClick={() => navigate("/marathon")}
-            className="px-6 py-2 rounded-full font-bold text-black bg-gradient-to-r from-yellow-400 to-orange-500 hover:shadow-lg hover:shadow-orange-500/30 transition-all"
-          >
-            Register Now
-          </button>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
@@ -607,27 +566,7 @@ const MarathonPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 bg-black border-t border-gray-800">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">🏃</span>
-              <span className="font-bold text-orange-400">
-                ZENITH MARATHON 2026
-              </span>
-            </div>
-            <p className="text-gray-500 text-sm">
-              A pre-event of Zenith 2026 • SGGSIE&T Annual Sports Festival
-            </p>
-            <Link
-              to="/home"
-              className="text-orange-400 hover:text-orange-300 transition-colors"
-            >
-              ← Back to Zenith
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

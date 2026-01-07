@@ -3,6 +3,8 @@ import {Link} from "react-router-dom";
 import {motion, AnimatePresence} from "framer-motion";
 import {toast} from "react-toastify";
 import api from "../config/api";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import {
   SackRaceIcon,
   ThreeLegRaceIcon,
@@ -25,7 +27,6 @@ import {
 } from "../components/SportIcons";
 
 const WomenTournamentPage = () => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedSport, setSelectedSport] = useState(null);
   const [showRegistrationForm, setShowRegistrationForm] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -699,115 +700,7 @@ const WomenTournamentPage = () => {
       {/* Content */}
       <div className="relative z-10">
         {/* Navigation */}
-        <nav className="fixed top-0 left-0 right-0 px-9 py-3 flex justify-between items-center z-[600] bg-black/10 backdrop-blur-md">
-          <span
-            className="text-[#ffb77a] font-bold text-xl tracking-wide"
-            style={{textShadow: "0 2px 12px rgba(255,140,40,0.18)"}}
-          >
-            Zenith 2026
-          </span>
-
-          {/* Desktop Menu */}
-          <div className="hidden md:flex gap-6">
-            <Link
-              to="/home"
-              className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
-            >
-              Home
-            </Link>
-            <a
-              href="/home#wormhole"
-              className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors flex items-center gap-1"
-            >
-              🌀 Gameverse
-            </a>
-            <Link
-              to="/gallery"
-              className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
-            >
-              Gallery
-            </Link>
-            <Link
-              to="/register"
-              className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors"
-            >
-              Register
-            </Link>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-[#ffb77a] z-[700]"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              {mobileMenuOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              )}
-            </svg>
-          </button>
-
-          {/* BACKDROP */}
-          {mobileMenuOpen && (
-            <div
-              className="fixed inset-0 bg-black/70 z-[650] md:hidden"
-              onClick={() => setMobileMenuOpen(false)}
-            />
-          )}
-
-          {/* MOBILE MENU */}
-          {mobileMenuOpen && (
-            <div className="fixed top-16 left-0 right-0 bg-black/90 backdrop-blur-xl p-6 z-[700] border-b border-[#3a2416] animate-slideDown md:hidden">
-              <div className="flex flex-col gap-4">
-                <Link
-                  to="/home"
-                  className="text-[#ffb77a] font-semibold"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Home
-                </Link>
-                <a
-                  href="/home#wormhole"
-                  className="text-[#ffb77a] font-semibold flex items-center gap-1"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  🌀 Gameverse
-                </a>
-                <Link
-                  to="/gallery"
-                  className="text-[#ffb77a] font-semibold"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Gallery
-                </Link>
-                <Link
-                  to="/register"
-                  className="text-[#ffb77a] font-semibold"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Register
-                </Link>
-              </div>
-            </div>
-          )}
-        </nav>
+        <Navbar />
 
         {/* Hero Section */}
         <motion.div
@@ -2257,116 +2150,11 @@ const WomenTournamentPage = () => {
         )}
 
         {/* Footer */}
-        <footer className="bg-black/50 backdrop-blur-md border-t border-white/5 mt-20 py-12">
-          <div className="max-w-7xl mx-auto px-4">
-            {/* Contact Section */}
-            <div className="mb-12">
-              <h3 className="text-2xl md:text-3xl font-bold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-600">
-                📞 Contact Us for Queries
-              </h3>
-              <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                {/* Sports Secretary */}
-                <div className="bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-pink-500/30 rounded-xl p-6 text-center hover:scale-105 transition-transform">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
-                    <span className="text-2xl">🏆</span>
-                  </div>
-                  <h4 className="text-lg font-semibold text-white mb-2">
-                    Sports Secretary
-                  </h4>
-                  <p className="text-pink-300 font-medium mb-3">Sagar Ubale</p>
-                  <a
-                    href="tel:+919545956689"
-                    className="text-white hover:text-pink-300 transition-colors block mb-1"
-                  >
-                    📱 +91 95459 56689
-                  </a>
-                  <p className="text-gray-400 text-sm mt-2">
-                    General Sports Queries & Doubts
-                  </p>
-                </div>
-
-                {/* SJC - Shital Thawre */}
-                <div className="bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-xl p-6 text-center hover:scale-105 transition-transform">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center">
-                    <span className="text-2xl">👥</span>
-                  </div>
-                  <h4 className="text-lg font-semibold text-white mb-2">
-                    SJC Coordinator
-                  </h4>
-                  <p className="text-purple-300 font-medium mb-3">
-                    Shital Thawre
-                  </p>
-                  <a
-                    href="tel:+919665502490"
-                    className="text-white hover:text-purple-300 transition-colors block mb-1"
-                  >
-                    📱 +91 96655 02490
-                  </a>
-                  <p className="text-gray-400 text-sm mt-2">
-                    Tournament Coordination
-                  </p>
-                </div>
-
-                {/* SJC - Isha Punje */}
-                <div className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-xl p-6 text-center hover:scale-105 transition-transform">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full flex items-center justify-center">
-                    <span className="text-2xl">👥</span>
-                  </div>
-                  <h4 className="text-lg font-semibold text-white mb-2">
-                    SJC Coordinator
-                  </h4>
-                  <p className="text-blue-300 font-medium mb-3">Isha Punje</p>
-                  <a
-                    href="tel:+917498374834"
-                    className="text-white hover:text-blue-300 transition-colors block mb-1"
-                  >
-                    📱 +91 74983 74834
-                  </a>
-                  <p className="text-gray-400 text-sm mt-2">
-                    Tournament Coordination
-                  </p>
-                </div>
-              </div>
-
-              {/* Web/Registration Issues */}
-              <div className="mt-8 max-w-2xl mx-auto">
-                <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/30 rounded-xl p-6 text-center hover:scale-105 transition-transform">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center">
-                    <span className="text-2xl">💻</span>
-                  </div>
-                  <h4 className="text-lg font-semibold text-white mb-2">
-                    Web & Technical Support
-                  </h4>
-                  <p className="text-emerald-300 font-medium mb-3">
-                    Atharva Joshi
-                  </p>
-                  <a
-                    href="tel:+919156906881"
-                    className="text-white hover:text-emerald-300 transition-colors block mb-1"
-                  >
-                    📱 +91 91569 06881
-                  </a>
-                  <p className="text-gray-400 text-sm mt-2">
-                    Website Issues, Registration Problems & Technical Support
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Copyright */}
-            <div className="text-center pt-8 border-t border-white/10">
-              <p className="text-gray-400">
-                © 2026 Zenith. All rights reserved.
-              </p>
-              <p className="text-gray-500 text-sm mt-2">
-                Empowering women through sports
-              </p>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </div>
   );
 };
 
 export default WomenTournamentPage;
+
