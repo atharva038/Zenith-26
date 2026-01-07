@@ -536,6 +536,13 @@ const TeamPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-[#0a0604] to-black text-white">
+      {/* Orange ambient glow overlays */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-orange-600/5 rounded-full blur-[150px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-amber-600/5 rounded-full blur-[120px]" />
+        <div className="absolute top-1/2 left-0 w-[400px] h-[400px] bg-red-600/5 rounded-full blur-[100px]" />
+      </div>
+      
       <Navbar />
 
       {/* ============ REVEAL CIRCLE HERO ============ */}
@@ -565,6 +572,13 @@ const TeamPage = () => {
         }}
         onMouseLeave={() => setIsInHero(false)}
       >
+        {/* Orange ambient glow for hero */}
+        <div className="absolute inset-0 pointer-events-none z-10">
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-orange-600/10 rounded-full blur-[150px]" />
+          <div className="absolute bottom-0 left-1/4 w-[400px] h-[300px] bg-amber-500/8 rounded-full blur-[100px]" />
+          <div className="absolute bottom-0 right-1/4 w-[400px] h-[300px] bg-red-600/8 rounded-full blur-[100px]" />
+        </div>
+
         {/* Layer 1: Background Image - revealed through feathered circle (Desktop) */}
         <div
           className="absolute inset-0 bg-cover hidden md:block"
@@ -588,7 +602,7 @@ const TeamPage = () => {
             backgroundPosition: 'center 50%',
           }}
         />
-        <div className="absolute inset-0 bg-black/60 md:hidden" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/70 md:hidden" />
 
         {/* Layer 2: Text Content - Always visible */}
         <div className="relative z-20 text-center px-6">
@@ -696,7 +710,7 @@ const TeamPage = () => {
       </section>
 
       {/* Committee Selector */}
-      <section className="relative py-12 px-6 border-b border-white/10">
+      <section className="relative py-12 px-6 border-b border-orange-500/10 bg-gradient-to-b from-transparent via-orange-950/5 to-transparent">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-wrap justify-center gap-4">
             <button
@@ -728,7 +742,10 @@ const TeamPage = () => {
 
       {/* Team Members */}
       <section className="relative py-20 px-6">
-        <div className="max-w-7xl mx-auto">
+        {/* Subtle orange gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-orange-950/10 via-transparent to-orange-950/5 pointer-events-none" />
+        
+        <div className="max-w-7xl mx-auto relative z-10">
           {loading ? (
             <div className="flex items-center justify-center py-20">
               <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-orange-500" />
@@ -755,54 +772,19 @@ const TeamPage = () => {
         </div>
       </section>
 
-      {/* Behind Zenith Section */}
-      <section className="relative py-20 px-6 border-t border-white/10">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{opacity: 0, y: 20}}
-            whileInView={{opacity: 1, y: 0}}
-            viewport={{once: true}}
-            transition={{duration: 0.8}}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Behind Zenith
-            </h2>
-            <p className="text-gray-400 text-lg">
-              Moments that matter. No names. Just memories.
-            </p>
-          </motion.div>
-
-          {/* Candid Photos Grid - Placeholder */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[...Array(8)].map((_, i) => (
-              <motion.div
-                key={i}
-                initial={{opacity: 0, scale: 0.8}}
-                whileInView={{opacity: 1, scale: 1}}
-                viewport={{once: true}}
-                transition={{duration: 0.5, delay: i * 0.1}}
-                whileHover={{scale: 1.05}}
-                className="relative aspect-square rounded-2xl overflow-hidden bg-white/5 border border-white/10"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-red-500/20" />
-                <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-20">
-                  📸
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* End Message */}
       <section className="relative py-32 px-6">
+        {/* Orange glow behind quote */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="w-[500px] h-[300px] bg-orange-500/10 rounded-full blur-[100px]" />
+        </div>
+        
         <motion.div
           initial={{opacity: 0, y: 30}}
           whileInView={{opacity: 1, y: 0}}
           viewport={{once: true}}
           transition={{duration: 1}}
-          className="max-w-4xl mx-auto text-center"
+          className="max-w-4xl mx-auto text-center relative z-10"
         >
           <p className="text-2xl md:text-3xl text-gray-300 leading-relaxed italic">
             "This page will change every year.
