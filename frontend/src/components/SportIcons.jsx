@@ -659,3 +659,231 @@ export const SkippingRopeIcon = ({className = "w-12 h-12"}) => (
     />
   </svg>
 );
+
+// 100 Meter Sprint Icon
+export const SprintIcon = ({className = "w-12 h-12"}) => (
+  <svg
+    className={className}
+    viewBox="0 0 64 64"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    {/* Running figure */}
+    <circle cx="42" cy="12" r="6" fill="currentColor" />
+    <path
+      d="M36 20L28 32L20 36"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    <path
+      d="M36 20L44 26L52 24"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    <path
+      d="M36 20L40 32L36 44L28 52"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    <path
+      d="M40 32L48 40L56 44"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    {/* Speed lines */}
+    <path
+      d="M8 24H16M8 32H14M8 40H12"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      opacity="0.5"
+    />
+  </svg>
+);
+
+// Shotput Icon
+export const ShotputIcon = ({className = "w-12 h-12"}) => (
+  <svg
+    className={className}
+    viewBox="0 0 64 64"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    {/* Person throwing */}
+    <circle cx="24" cy="14" r="6" fill="currentColor" />
+    <path
+      d="M24 20V32"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    <path
+      d="M24 24L16 32"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    <path
+      d="M24 24L36 20"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    <path
+      d="M24 32L18 44L14 52"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    <path
+      d="M24 32L30 44L34 52"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    {/* Shot ball */}
+    <circle cx="46" cy="16" r="8" fill="currentColor" />
+    <circle cx="43" cy="13" r="2" fill="white" opacity="0.4" />
+  </svg>
+);
+
+// Discus Icon
+export const DiscusIcon = ({className = "w-12 h-12"}) => (
+  <svg
+    className={className}
+    viewBox="0 0 64 64"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    {/* Person throwing */}
+    <circle cx="20" cy="14" r="6" fill="currentColor" />
+    <path
+      d="M20 20L24 28L20 36"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    <path
+      d="M20 24L12 28"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    <path
+      d="M24 28L36 22"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    <path
+      d="M20 36L14 48M20 36L26 48"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    {/* Discus */}
+    <ellipse cx="48" cy="18" rx="10" ry="4" fill="currentColor" transform="rotate(-30 48 18)" />
+    <ellipse cx="46" cy="16" rx="4" ry="1.5" fill="white" opacity="0.3" transform="rotate(-30 46 16)" />
+  </svg>
+);
+
+// Javelin Icon
+export const JavelinIcon = ({className = "w-12 h-12"}) => (
+  <svg
+    className={className}
+    viewBox="0 0 64 64"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    {/* Person throwing */}
+    <circle cx="28" cy="20" r="6" fill="currentColor" />
+    <path
+      d="M28 26V38"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    <path
+      d="M28 30L20 36"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    <path
+      d="M28 30L40 24"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    <path
+      d="M28 38L22 50M28 38L34 50"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    {/* Javelin */}
+    <line
+      x1="40"
+      y1="24"
+      x2="58"
+      y2="8"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    <path
+      d="M58 8L56 12L60 10L58 8Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
+// Hammer Throw Icon
+export const HammerIcon = ({className = "w-12 h-12"}) => (
+  <svg
+    className={className}
+    viewBox="0 0 64 64"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    {/* Person spinning */}
+    <circle cx="32" cy="28" r="6" fill="currentColor" />
+    <path
+      d="M32 34V44"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    <path
+      d="M32 38L24 44"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    <path
+      d="M32 38L40 44"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    <path
+      d="M32 44L26 56M32 44L38 56"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
+    {/* Hammer wire and ball */}
+    <path
+      d="M32 34C32 34 20 20 14 14"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
+    <circle cx="12" cy="12" r="7" fill="currentColor" />
+    <circle cx="10" cy="10" r="2" fill="white" opacity="0.4" />
+  </svg>
+);

@@ -27,6 +27,16 @@ const Navbar = () => {
           </Link>
         )}
         <Link
+          to="/team"
+          className={`font-semibold transition-colors ${
+            location.pathname === "/team"
+              ? "text-[#ffd4a8] underline decoration-2 underline-offset-4"
+              : "text-[#ffb77a] hover:text-[#ffd4a8]"
+          }`}
+        >
+          Team
+        </Link>
+        <Link
           to="/gallery"
           className={`font-semibold transition-colors ${
             location.pathname === "/gallery"
@@ -94,6 +104,17 @@ const Navbar = () => {
                 Home
               </Link>
             )}
+            <Link
+              to="/team"
+              className={`font-semibold ${
+                location.pathname === "/team"
+                  ? "text-[#ffd4a8]"
+                  : "text-[#ffb77a]"
+              }`}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Team
+            </Link>
             <Link
               to="/gallery"
               className={`font-semibold ${

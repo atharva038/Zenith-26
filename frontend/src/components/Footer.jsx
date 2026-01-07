@@ -72,6 +72,12 @@ const Footer = () => {
                 Home
               </Link>
               <Link
+                to="/team"
+                className="text-gray-300 hover:text-[#ffb36a] transition-colors duration-300 font-medium py-2 text-sm text-center block"
+              >
+                Team
+              </Link>
+              <Link
                 to="/gallery"
                 className="text-gray-300 hover:text-[#ffb36a] transition-colors duration-300 font-medium py-2 text-sm text-center block"
               >
@@ -83,12 +89,6 @@ const Footer = () => {
               >
                 Register
               </Link>
-              <a
-                href="#wormhole"
-                className="text-gray-300 hover:text-[#ffb36a] transition-colors duration-300 font-medium py-2 text-sm text-center block"
-              >
-                Portal
-              </a>
             </motion.div>
           </div>
 

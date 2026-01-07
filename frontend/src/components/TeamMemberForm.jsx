@@ -14,8 +14,7 @@ const TeamMemberForm = ({ onMemberAdded, onCancel }) => {
   const [photoPreview, setPhotoPreview] = useState(null);
 
   const committees = [
-    "EVENT MANAGEMENT",
-    "FOOD & SITE",
+    "EVENT MANAGEMENT & FOOD",
     "GUEST MANAGEMENT & HOSPITALITY",
     "GROUND & SITE + DISCIPLINE",
     "DECORATION",

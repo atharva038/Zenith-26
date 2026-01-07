@@ -13,6 +13,7 @@ const teamMemberSchema = new mongoose.Schema(
       enum: [
         "EVENT MANAGEMENT",
         "FOOD & SITE",
+        "EVENT MANAGEMENT & FOOD",
         "GUEST MANAGEMENT & HOSPITALITY",
         "GROUND & SITE + DISCIPLINE",
         "DECORATION",

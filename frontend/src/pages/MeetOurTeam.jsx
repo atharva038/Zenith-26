@@ -89,6 +89,7 @@ const MeetOurTeam = () => {
     // Get gradient based on committee
     const getCommitteeGradient = (committee) => {
       const gradients = {
+        "EVENT MANAGEMENT & FOOD": "from-red-600 to-amber-600",
         "EVENT MANAGEMENT": "from-purple-600 to-blue-600",
         "FOOD & SITE": "from-green-600 to-emerald-600",
         "GUEST MANAGEMENT & HOSPITALITY": "from-pink-600 to-purple-600",

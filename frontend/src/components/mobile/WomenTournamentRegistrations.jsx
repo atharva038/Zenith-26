@@ -30,7 +30,7 @@ const WomenTournamentRegistrations = ({
       "Weightlifting",
       "Skipping Rope",
     ],
-    category2: ["Badminton", "Chess", "Carrom", "Athletics"],
+    category2: ["Badminton", "Chess", "Carrom", "100 Meter", "Shotput", "Discus", "Javelin", "Hammer Throw"],
     category3: [
       "Tug of War",
       "Volleyball",

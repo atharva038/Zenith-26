@@ -33,6 +33,7 @@ import AdminGallery from "./pages/AdminGallery";
 import AdminSettings from "./pages/AdminSettings";
 import Gallery from "./pages/Gallery";
 import MeetOurTeam from "./pages/MeetOurTeam";
+import TeamPage from "./pages/TeamPage";
 import NotFound from "./pages/NotFound";
 import { useSmoothScroll } from "./hooks/useSmoothScroll";
 import "./App.css";
@@ -74,6 +75,9 @@ function App() {
 
               {/* Gallery Route */}
               <Route path="/gallery" element={<Gallery />} />
+
+              {/* Team Page - Public */}
+              <Route path="/team" element={<TeamPage />} />
 
               {/* Team Management Route - Restricted Access */}
               <Route
