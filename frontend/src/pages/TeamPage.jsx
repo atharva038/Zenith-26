@@ -709,6 +709,92 @@ const TeamPage = () => {
         </motion.div>
       </section>
 
+      {/* ============ SPORTS SECRETARY SECTION ============ */}
+      <section className="relative py-20 px-6 border-b border-orange-500/10">
+        {/* Orange ambient glow */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-orange-600/10 rounded-full blur-[150px]" />
+        </div>
+
+        <div className="max-w-4xl mx-auto relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="flex flex-col items-center"
+          >
+            {/* Title */}
+            <motion.p
+              initial={{ opacity: 0, y: -10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-orange-400 text-sm uppercase tracking-[0.3em] mb-6"
+            >
+              The Leadership
+            </motion.p>
+
+            {/* Photo Frame */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="relative group"
+            >
+              {/* Animated border glow */}
+              <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 via-red-500 to-orange-500 rounded-2xl opacity-50 group-hover:opacity-75 blur-sm transition-opacity duration-500" />
+              
+              {/* Photo container */}
+              <div className="relative w-64 h-72 md:w-72 md:h-80 rounded-xl overflow-hidden border-2 border-orange-500/30">
+                <img
+                  src="/img/sportsSecretory.png"
+                  alt="Sagar Ubale - Sports Secretary"
+                  className="w-full h-full object-cover object-top filter saturate-[0.85] group-hover:saturate-100 group-hover:scale-105 transition-all duration-500"
+                />
+                {/* Subtle vignette */}
+                <div className="absolute inset-0 shadow-[inset_0_0_50px_rgba(0,0,0,0.4)]" />
+              </div>
+            </motion.div>
+
+            {/* Name & Title */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="mt-8 text-center"
+            >
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                Sagar Ubale
+              </h2>
+              <p className="text-xl md:text-2xl bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent font-semibold">
+                Sports Secretary
+              </p>
+              <a 
+                href="tel:9545956689"
+                className="inline-flex items-center gap-2 text-gray-400 mt-3 text-sm tracking-wide hover:text-orange-400 transition-colors"
+              >
+                <span>📞</span> 9545956689
+              </a>
+              <p className="text-gray-500 mt-1 text-xs tracking-wide">
+                SGGSIE&T, Nanded
+              </p>
+            </motion.div>
+
+            {/* Decorative line */}
+            <motion.div
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.7 }}
+              className="mt-8 h-px w-32 bg-gradient-to-r from-transparent via-orange-500/50 to-transparent"
+            />
+          </motion.div>
+        </div>
+      </section>
+
       {/* Committee Selector */}
       <section className="relative py-12 px-6 border-b border-orange-500/10 bg-gradient-to-b from-transparent via-orange-950/5 to-transparent">
         <div className="max-w-7xl mx-auto">
