@@ -7,6 +7,8 @@ import AdminLayout from "../components/AdminLayout";
 import MobileTabNavigation from "../components/MobileTabNavigation";
 import WomenTournamentAnalytics from "../components/mobile/WomenTournamentAnalytics";
 import WomenTournamentRegistrations from "../components/mobile/WomenTournamentRegistrations";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const AdminWomenTournament = () => {
   const navigate = useNavigate();
@@ -271,6 +273,114 @@ const AdminWomenTournament = () => {
     }
   };
 
+  const handleExportPDF = () => {
+    try {
+      const doc = new jsPDF();
+      
+      // Add title
+      doc.setFontSize(18);
+      doc.setTextColor(0, 229, 255); // Neon blue color
+      doc.text("Zenith 2026 - Women's Tournament", 14, 20);
+      
+      // Add generation date
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 28);
+      
+      // Add filter info if any
+      if (filters.status || filters.category || filters.sport || filters.search) {
+        doc.setFontSize(9);
+        let filterInfo = "Showing: ";
+        if (filters.status) filterInfo += `${filters.status.toUpperCase()} | `;
+        if (filters.category) {
+          const catLabel = filters.category === "category1" ? "Cat 1 (Individual)" : 
+                          filters.category === "category2" ? "Cat 2 (Indoor)" : "Cat 3 (Team)";
+          filterInfo += `${catLabel} | `;
+        }
+        if (filters.sport) filterInfo += `${filters.sport}`;
+        doc.text(filterInfo, 14, 34);
+      }
+      
+      // Add total count
+      doc.setFontSize(11);
+      doc.setTextColor(0, 0, 0);
+      doc.setFont("helvetica", "bold");
+      doc.text(`Total Participants: ${activeRegistrations.length}`, 14, 42);
+      
+      // Prepare simplified table data - Only essential ground-level info
+      const tableData = activeRegistrations.map((reg, index) => [
+        index + 1,
+        reg.name || "N/A",
+        reg.mobileNumber || "N/A",
+        reg.selectedCategory === "category1" ? "Cat 1" : 
+          reg.selectedCategory === "category2" ? "Cat 2" : "Cat 3",
+        reg.selectedSports?.join(", ") || "N/A",
+        reg.category3TeamName || "-",
+      ]);
+      
+      // Add table with larger, more readable font
+      autoTable(doc, {
+        startY: 50,
+        head: [["#", "Name", "Mobile", "Category", "Sports", "Team Name"]],
+        body: tableData,
+        styles: {
+          fontSize: 9,
+          cellPadding: 3,
+          overflow: 'linebreak',
+        },
+        headStyles: {
+          fillColor: [0, 229, 255],
+          textColor: [0, 0, 0],
+          fontStyle: "bold",
+          fontSize: 10,
+        },
+        alternateRowStyles: {
+          fillColor: [245, 245, 245],
+        },
+        columnStyles: {
+          0: { cellWidth: 10, halign: 'center' },  // #
+          1: { cellWidth: 45 },                     // Name
+          2: { cellWidth: 30 },                     // Mobile
+          3: { cellWidth: 20, halign: 'center' },  // Category
+          4: { cellWidth: 55 },                     // Sports
+          5: { cellWidth: 35 },                     // Team
+        },
+        margin: { left: 7, right: 7 },
+      });
+      
+      // Add footer with page numbers
+      const pageCount = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        doc.text(
+          `Page ${i} of ${pageCount}`,
+          doc.internal.pageSize.width / 2,
+          doc.internal.pageSize.height - 10,
+          { align: "center" }
+        );
+      }
+      
+      // Save the PDF with descriptive name
+      let fileName = "Zenith_2026_Women_Tournament";
+      if (filters.category) {
+        const catName = filters.category === "category1" ? "_Cat1" : 
+                       filters.category === "category2" ? "_Cat2" : "_Cat3";
+        fileName += catName;
+      }
+      if (filters.sport) {
+        fileName += `_${filters.sport.replace(/\s+/g, '_')}`;
+      }
+      fileName += `_${new Date().toISOString().split('T')[0]}.pdf`;
+      doc.save(fileName);
+      toast.success("PDF exported successfully");
+    } catch (error) {
+      console.error("PDF Export Error:", error);
+      toast.error("Failed to export PDF");
+    }
+  };
+
   const getCategoryLabel = (category) => {
     const labels = {
       category1: "Category 1 - Individual Sports",
@@ -488,12 +598,27 @@ const AdminWomenTournament = () => {
               <option value="cancelled">Cancelled</option>
             </select>
 
-            <button
-              onClick={handleExportCSV}
-              className="px-6 py-3 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 rounded-lg font-semibold text-white transition-all"
-            >
-              📥 Export CSV
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={handleExportPDF}
+                disabled={activeRegistrations.length === 0}
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 rounded-lg font-semibold text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                title="Export to PDF"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                PDF
+              </button>
+              <button
+                onClick={handleExportCSV}
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 rounded-lg font-semibold text-white transition-all flex items-center justify-center gap-2"
+                title="Export to CSV"
+              >
+                �
+                CSV
+              </button>
+            </div>
           </div>
 
           {/* Active Filters Display */}
