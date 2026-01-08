@@ -110,7 +110,7 @@ const RegisterPage = () => {
               />
             </svg>
             <span className="text-purple-300 font-semibold">
-              January 24 - 26, 2026
+              February 20 - 22, 2026
             </span>
           </div>
 
