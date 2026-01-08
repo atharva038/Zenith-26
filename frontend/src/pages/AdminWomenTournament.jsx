@@ -429,12 +429,17 @@ const AdminWomenTournament = () => {
           <WomenTournamentRegistrations
             registrations={registrations}
             loading={loading}
+            filters={filters}
+            onFilterChange={(filter) => setFilters({...filters, ...filter})}
+            categorySportsMap={categorySportsMap}
             onViewDetails={(registration) => {
               setSelectedRegistration(registration);
               setShowDetailsModal(true);
             }}
             onUpdateStatus={handleStatusUpdate}
-            onReject={handleDelete} // Pass reject handler
+            onReject={handleDelete}
+            activeRegistrations={activeRegistrations}
+            rejectedRegistrations={rejectedRegistrations}
           />
         )}
       </div>
