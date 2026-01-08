@@ -21,6 +21,12 @@ const AdminSidebar = ({sidebarOpen, setSidebarOpen, admin}) => {
       icon: "👩‍🎓",
       path: "/admin/women-tournament",
     },
+    {
+      id: "onspot-registration",
+      label: "On-Spot Registration",
+      icon: "📝",
+      path: "/admin/onspot-registration",
+    },
     {id: "admins", label: "Admins", icon: "👥", path: "/admin/admins"},
     {id: "gallery", label: "Gallery", icon: "🖼️", path: "/admin/gallery"},
     {id: "settings", label: "Settings", icon: "⚙️", path: "/admin/settings"},

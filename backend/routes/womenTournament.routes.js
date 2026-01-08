@@ -21,6 +21,8 @@ router.post("/register", async (req, res) => {
       selectedSports,
       category3TeamName,
       paymentScreenshot,
+      paymentMethod,
+      isOnSpot,
     } = req.body;
 
     // Validation
@@ -83,6 +85,8 @@ router.post("/register", async (req, res) => {
       selectedSports,
       category3TeamName: category3TeamName || undefined,
       paymentScreenshot: paymentScreenshot || undefined,
+      paymentMethod: paymentMethod || "not_specified",
+      isOnSpot: isOnSpot || false,
       ipAddress: req.ip,
       userAgent: req.get("user-agent"),
     });

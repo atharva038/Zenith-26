@@ -64,6 +64,16 @@ const womenTournamentSchema = new mongoose.Schema(
       trim: true,
       // URL or path to the payment screenshot
     },
+    paymentMethod: {
+      type: String,
+      enum: ["online", "cash", "not_specified"],
+      default: "not_specified",
+      trim: true,
+    },
+    isOnSpot: {
+      type: Boolean,
+      default: false,
+    },
     notes: {
       type: String,
       trim: true,

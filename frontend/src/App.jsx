@@ -28,6 +28,7 @@ import MarathonRegistration from "./pages/MarathonRegistration";
 import WomenTournamentPage from "./pages/WomenTournamentPage";
 import AdminMarathon from "./pages/AdminMarathon";
 import AdminWomenTournament from "./pages/AdminWomenTournament";
+import AdminOnSpotRegistration from "./pages/AdminOnSpotRegistration";
 import AdminAdmins from "./pages/AdminAdmins";
 import AdminGallery from "./pages/AdminGallery";
 import AdminSettings from "./pages/AdminSettings";
@@ -140,6 +141,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <AdminWomenTournament />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/onspot-registration"
+                element={
+                  <ProtectedRoute>
+                    <AdminOnSpotRegistration />
                   </ProtectedRoute>
                 }
               />
