@@ -276,6 +276,28 @@ const AdminWomenTournament = () => {
     }
   };
 
+  // Fetch ALL registrations for export (not paginated)
+  const fetchAllRegistrationsForExport = async () => {
+    try {
+      const response = await api.get("/women-tournament/admin/registrations", {
+        params: {
+          ...filters,
+          page: 1,
+          limit: 10000, // Large number to get all records
+        },
+      });
+
+      if (response.data.success) {
+        return response.data.data.registrations;
+      }
+      return [];
+    } catch (error) {
+      console.error("Fetch all registrations error:", error);
+      toast.error("Failed to fetch all registrations for export");
+      return [];
+    }
+  };
+
   const handleExportCSV = async () => {
     try {
       const response = await api.get(
@@ -284,6 +306,8 @@ const AdminWomenTournament = () => {
           params: {
             category: filters.category,
             status: filters.status,
+            sport: filters.sport,
+            search: filters.search,
           },
           responseType: "blob",
         }
@@ -303,8 +327,18 @@ const AdminWomenTournament = () => {
     }
   };
 
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     try {
+      toast.info("Preparing PDF export...");
+      
+      // Fetch ALL registrations for export (not just current page)
+      const allRegistrations = await fetchAllRegistrationsForExport();
+      
+      if (allRegistrations.length === 0) {
+        toast.warning("No registrations to export");
+        return;
+      }
+
       const doc = new jsPDF();
       
       // Add title
@@ -335,10 +369,10 @@ const AdminWomenTournament = () => {
       doc.setFontSize(11);
       doc.setTextColor(0, 0, 0);
       doc.setFont("helvetica", "bold");
-      doc.text(`Total Participants: ${activeRegistrations.length}`, 14, 42);
+      doc.text(`Total Participants: ${allRegistrations.length}`, 14, 42);
       
       // Prepare simplified table data - Only essential ground-level info
-      const tableData = activeRegistrations.map((reg, index) => [
+      const tableData = allRegistrations.map((reg, index) => [
         index + 1,
         reg.name || "N/A",
         reg.mobileNumber || "N/A",
