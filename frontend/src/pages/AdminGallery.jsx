@@ -127,6 +127,7 @@ const AdminGallery = () => {
 
           // Show progress toast with updating percentage
           const isVideo = file.type.startsWith("video/");
+          const isHEIC = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
           let progressToast = toast.info(
             `Uploading ${file.name}... 0% (${i + 1}/${selectedFiles.length})`,
             {autoClose: false}
@@ -140,10 +141,18 @@ const AdminGallery = () => {
                 })`,
               });
             } else if (progress === 100) {
+              let processingMessage = `Processing ${file.name} on Cloudinary... `;
+              if (isHEIC) {
+                processingMessage += "(Converting HEIC to JPG, may take 30-60s)";
+              } else if (isVideo) {
+                processingMessage += "(may take 20-30s)";
+              } else {
+                processingMessage += "(almost done)";
+              }
+              processingMessage += ` (${i + 1}/${selectedFiles.length})`;
+              
               toast.update(progressToast, {
-                render: `Processing ${file.name} on Cloudinary... ${
-                  isVideo ? "(may take 20-30s)" : ""
-                } (${i + 1}/${selectedFiles.length})`,
+                render: processingMessage,
                 type: "info",
               });
             }
@@ -256,7 +265,7 @@ const AdminGallery = () => {
                 id="file-upload"
                 type="file"
                 multiple
-                accept="image/*,video/*"
+                accept="image/*,video/*,.heic,.heif"
                 onChange={handleFileSelect}
                 className="w-full px-4 py-2.5 bg-gray-800/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:border-neon-orange transition-colors"
               />

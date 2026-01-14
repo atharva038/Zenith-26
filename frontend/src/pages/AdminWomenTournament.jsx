@@ -13,6 +13,7 @@ import autoTable from "jspdf-autotable";
 const AdminWomenTournament = () => {
   const navigate = useNavigate();
   const [registrations, setRegistrations] = useState([]);
+  const [rejectedRegistrations, setRejectedRegistrations] = useState([]);
   const [statistics, setStatistics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -27,7 +28,7 @@ const AdminWomenTournament = () => {
   const [selectedRegistration, setSelectedRegistration] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [mobileActiveTab, setMobileActiveTab] = useState("analytics");
-  const [showRejectedRegistrations, setShowRejectedRegistrations] =
+  const [showRejectedRegistrationsSection, setShowRejectedRegistrationsSection] =
     useState(false);
 
   // Category sports mapping (same as mobile)
@@ -67,6 +68,44 @@ const AdminWomenTournament = () => {
     return categorySportsMap[filters.category] || [];
   };
 
+  // Unified filter handler that resets page when any filter changes
+  const handleFilterChange = (newFilters) => {
+    // Check if category is changing and if so, validate sport
+    if (newFilters.category !== undefined && newFilters.category !== filters.category) {
+      // If category is being cleared, sport should also be cleared
+      if (!newFilters.category) {
+        newFilters.sport = "";
+      } else {
+        // Check if current sport is valid for new category
+        const newCategorySports = categorySportsMap[newFilters.category] || [];
+        if (filters.sport && !newCategorySports.includes(filters.sport)) {
+          newFilters.sport = "";
+        }
+      }
+    }
+
+    // Always reset page to 1 when any filter changes (except page itself)
+    const isOnlyPageChange = Object.keys(newFilters).length === 1 && 'page' in newFilters;
+    
+    setFilters(prev => ({
+      ...prev,
+      ...newFilters,
+      page: isOnlyPageChange ? newFilters.page : 1,
+    }));
+  };
+
+  // Clear all filters
+  const handleClearAllFilters = () => {
+    setFilters({
+      search: "",
+      category: "",
+      sport: "",
+      status: "",
+      page: 1,
+      limit: 50,
+    });
+  };
+
   const fetchRegistrations = useCallback(async () => {
     try {
       setLoading(true);
@@ -76,6 +115,7 @@ const AdminWomenTournament = () => {
 
       if (response.data.success) {
         setRegistrations(response.data.data.registrations);
+        setRejectedRegistrations(response.data.data.rejectedRegistrations || []);
         setPagination(response.data.data.pagination);
         setStatistics(response.data.data.statistics);
       }
@@ -150,19 +190,9 @@ const AdminWomenTournament = () => {
     };
   }, [showDetailsModal]);
 
-  // Filter registrations by sport on client-side (since backend doesn't support it yet)
-  const filteredRegistrations = registrations.filter((reg) => {
-    if (!filters.sport) return true;
-    return reg.selectedSports?.includes(filters.sport);
-  });
-
-  // Separate active and rejected registrations
-  const activeRegistrations = filteredRegistrations.filter(
-    (reg) => !reg.isRejected
-  );
-  const rejectedRegistrations = filteredRegistrations.filter(
-    (reg) => reg.isRejected
-  );
+  // Active registrations are directly from the API (already excludes rejected)
+  // Rejected registrations come separately from the API (all at once, not paginated)
+  const activeRegistrations = registrations;
 
   const handleStatusUpdate = async (id, status, paymentStatus) => {
     try {
@@ -423,14 +453,14 @@ const AdminWomenTournament = () => {
           <WomenTournamentAnalytics
             registrations={registrations}
             statistics={statistics}
-            onFilterChange={(filter) => setFilters({...filters, ...filter})}
+            onFilterChange={handleFilterChange}
           />
         ) : (
           <WomenTournamentRegistrations
             registrations={registrations}
             loading={loading}
             filters={filters}
-            onFilterChange={(filter) => setFilters({...filters, ...filter})}
+            onFilterChange={handleFilterChange}
             categorySportsMap={categorySportsMap}
             onViewDetails={(registration) => {
               setSelectedRegistration(registration);
@@ -539,22 +569,13 @@ const AdminWomenTournament = () => {
               type="text"
               placeholder="Search by name, reg no, mobile..."
               value={filters.search}
-              onChange={(e) =>
-                setFilters({...filters, search: e.target.value, page: 1})
-              }
+              onChange={(e) => handleFilterChange({search: e.target.value})}
               className="px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:border-pink-500 outline-none"
             />
 
             <select
               value={filters.category}
-              onChange={(e) => {
-                setFilters({
-                  ...filters,
-                  category: e.target.value,
-                  sport: "", // Reset sport when category changes
-                  page: 1,
-                });
-              }}
+              onChange={(e) => handleFilterChange({category: e.target.value})}
               className="px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:border-pink-500 outline-none"
             >
               <option value="">All Categories</option>
@@ -567,9 +588,7 @@ const AdminWomenTournament = () => {
 
             <select
               value={filters.sport}
-              onChange={(e) =>
-                setFilters({...filters, sport: e.target.value, page: 1})
-              }
+              onChange={(e) => handleFilterChange({sport: e.target.value})}
               className="px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:border-pink-500 outline-none"
             >
               <option value="">
@@ -592,9 +611,7 @@ const AdminWomenTournament = () => {
 
             <select
               value={filters.status}
-              onChange={(e) =>
-                setFilters({...filters, status: e.target.value, page: 1})
-              }
+              onChange={(e) => handleFilterChange({status: e.target.value})}
               className="px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:border-pink-500 outline-none"
             >
               <option value="">All Status</option>
@@ -637,9 +654,7 @@ const AdminWomenTournament = () => {
                 <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-500/20 text-blue-400 text-sm rounded-full">
                   Search: {filters.search}
                   <button
-                    onClick={() =>
-                      setFilters({...filters, search: "", page: 1})
-                    }
+                    onClick={() => handleFilterChange({search: ""})}
                     className="hover:text-white"
                   >
                     ✕
@@ -655,9 +670,7 @@ const AdminWomenTournament = () => {
                     ? "Cat 2"
                     : "Cat 3"}
                   <button
-                    onClick={() =>
-                      setFilters({...filters, category: "", sport: "", page: 1})
-                    }
+                    onClick={() => handleFilterChange({category: "", sport: ""})}
                     className="hover:text-white"
                   >
                     ✕
@@ -668,7 +681,7 @@ const AdminWomenTournament = () => {
                 <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-500/20 text-green-400 text-sm rounded-full">
                   Sport: {filters.sport}
                   <button
-                    onClick={() => setFilters({...filters, sport: "", page: 1})}
+                    onClick={() => handleFilterChange({sport: ""})}
                     className="hover:text-white"
                   >
                     ✕
@@ -679,9 +692,7 @@ const AdminWomenTournament = () => {
                 <span className="inline-flex items-center gap-1 px-3 py-1 bg-yellow-500/20 text-yellow-400 text-sm rounded-full">
                   Status: {filters.status}
                   <button
-                    onClick={() =>
-                      setFilters({...filters, status: "", page: 1})
-                    }
+                    onClick={() => handleFilterChange({status: ""})}
                     className="hover:text-white"
                   >
                     ✕
@@ -689,16 +700,7 @@ const AdminWomenTournament = () => {
                 </span>
               )}
               <button
-                onClick={() =>
-                  setFilters({
-                    search: "",
-                    category: "",
-                    sport: "",
-                    status: "",
-                    page: 1,
-                    limit: 50,
-                  })
-                }
+                onClick={handleClearAllFilters}
                 className="text-gray-400 text-sm hover:text-white transition-colors underline"
               >
                 Clear all
@@ -716,11 +718,19 @@ const AdminWomenTournament = () => {
           ) : activeRegistrations.length === 0 ? (
             <div className="text-center p-12 text-gray-400">
               <div className="text-6xl mb-4">📋</div>
-              <div className="text-xl">No active registrations found</div>
-              {filters.sport && (
-                <p className="text-sm mt-2">
-                  No registrations found for "{filters.sport}"
-                </p>
+              <div className="text-xl">No registrations found</div>
+              {(filters.search || filters.category || filters.sport || filters.status) && (
+                <div className="mt-4">
+                  <p className="text-sm mb-2">
+                    No results match your current filters
+                  </p>
+                  <button
+                    onClick={handleClearAllFilters}
+                    className="px-4 py-2 bg-pink-500/20 text-pink-400 rounded-lg hover:bg-pink-500/30 transition-colors"
+                  >
+                    Clear All Filters
+                  </button>
+                </div>
               )}
             </div>
           ) : (
@@ -851,48 +861,35 @@ const AdminWomenTournament = () => {
               {pagination.pages > 1 && (
                 <div className="flex items-center justify-between p-6 border-t border-white/10">
                   <div className="text-sm text-gray-400">
-                    {filters.sport ? (
-                      <>
-                        Showing {filteredRegistrations.length} filtered results
-                        <span className="text-blue-400 ml-1">
-                          (from {pagination.total} total)
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        Showing {(pagination.page - 1) * pagination.limit + 1}{" "}
-                        to{" "}
-                        {Math.min(
-                          pagination.page * pagination.limit,
-                          pagination.total
-                        )}{" "}
-                        of {pagination.total} registrations
-                      </>
-                    )}
+                    Showing {(pagination.page - 1) * pagination.limit + 1}{" "}
+                    to{" "}
+                    {Math.min(
+                      pagination.page * pagination.limit,
+                      pagination.total
+                    )}{" "}
+                    of {pagination.total} registrations
                   </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() =>
-                        setFilters({...filters, page: filters.page - 1})
-                      }
-                      disabled={filters.page === 1}
-                      className="px-4 py-2 bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-white transition-all"
-                    >
-                      Previous
-                    </button>
-                    <div className="px-4 py-2 bg-pink-500/20 text-pink-400 rounded-lg">
-                      {pagination.page} / {pagination.pages}
+                  {pagination.pages > 1 && (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleFilterChange({page: filters.page - 1})}
+                        disabled={filters.page === 1}
+                        className="px-4 py-2 bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-white transition-all"
+                      >
+                        Previous
+                      </button>
+                      <div className="px-4 py-2 bg-pink-500/20 text-pink-400 rounded-lg">
+                        {pagination.page} / {pagination.pages}
+                      </div>
+                      <button
+                        onClick={() => handleFilterChange({page: filters.page + 1})}
+                        disabled={filters.page >= pagination.pages}
+                        className="px-4 py-2 bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-white transition-all"
+                      >
+                        Next
+                      </button>
                     </div>
-                    <button
-                      onClick={() =>
-                        setFilters({...filters, page: filters.page + 1})
-                      }
-                      disabled={filters.page >= pagination.pages}
-                      className="px-4 py-2 bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-white transition-all"
-                    >
-                      Next
-                    </button>
-                  </div>
+                  )}
                 </div>
               )}
             </>
@@ -904,7 +901,7 @@ const AdminWomenTournament = () => {
           <div className="mt-8">
             <button
               onClick={() =>
-                setShowRejectedRegistrations(!showRejectedRegistrations)
+                setShowRejectedRegistrationsSection(!showRejectedRegistrationsSection)
               }
               className="w-full bg-red-500/10 border border-red-500/20 rounded-2xl p-4 mb-4 flex items-center justify-between hover:bg-red-500/20 transition-all"
             >
@@ -920,7 +917,7 @@ const AdminWomenTournament = () => {
                 </div>
               </div>
               <motion.div
-                animate={{rotate: showRejectedRegistrations ? 180 : 0}}
+                animate={{rotate: showRejectedRegistrationsSection ? 180 : 0}}
                 transition={{duration: 0.3}}
               >
                 <svg
@@ -940,7 +937,7 @@ const AdminWomenTournament = () => {
             </button>
 
             <AnimatePresence>
-              {showRejectedRegistrations && (
+              {showRejectedRegistrationsSection && (
                 <motion.div
                   initial={{height: 0, opacity: 0}}
                   animate={{height: "auto", opacity: 1}}

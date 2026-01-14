@@ -5,6 +5,8 @@ export const allowedImageTypes = [
   "image/png",
   "image/gif",
   "image/webp",
+  "image/heic",
+  "image/heif",
 ];
 
 // Allowed file types for videos

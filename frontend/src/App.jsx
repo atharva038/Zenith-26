@@ -16,6 +16,8 @@ import GameVerse from "./pages/GameVerse";
 import MarathonPage from "./pages/MarathonPage";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import MediaTeamLogin from "./pages/MediaTeamLogin";
+import MediaTeamDashboard from "./pages/MediaTeamDashboard";
 import "lenis/dist/lenis.css";
 import EventManagement from "./pages/EventManagement";
 import SportEventForm from "./pages/SportEventForm";
@@ -95,6 +97,13 @@ function App() {
                     <AdminDashboard />
                   </ProtectedRoute>
                 }
+              />
+
+              {/* Media Team Routes */}
+              <Route path="/media-team/login" element={<MediaTeamLogin />} />
+              <Route
+                path="/media-team/dashboard"
+                element={<MediaTeamDashboard />}
               />
               <Route
                 path="/admin/events"

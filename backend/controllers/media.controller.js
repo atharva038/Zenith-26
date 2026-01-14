@@ -19,9 +19,23 @@ export const uploadMedia = async (req, res, next) => {
       category: req.body.category,
     };
 
-    // Support both req.user and req.admin for authentication
-    const uploadedBy =
-      req.user?.id || req.user?._id || req.admin?.id || req.admin?._id;
+    // Support admin, media team, and regular user authentication
+    let uploadedBy, uploadedByModel;
+    
+    if (req.admin) {
+      uploadedBy = req.admin.id || req.admin._id;
+      uploadedByModel = "Admin";
+    } else if (req.mediaTeam) {
+      uploadedBy = req.mediaTeam.id || req.mediaTeam._id;
+      uploadedByModel = "MediaTeam";
+      
+      // Increment upload count for media team
+      req.mediaTeam.uploadCount = (req.mediaTeam.uploadCount || 0) + 1;
+      await req.mediaTeam.save();
+    } else if (req.user) {
+      uploadedBy = req.user.id || req.user._id;
+      uploadedByModel = "User";
+    }
 
     if (!uploadedBy) {
       return errorResponse(res, "Authentication required", 401);
@@ -30,7 +44,8 @@ export const uploadMedia = async (req, res, next) => {
     const media = await mediaService.uploadMedia(
       req.file,
       metadata,
-      uploadedBy
+      uploadedBy,
+      uploadedByModel
     );
 
     successResponse(res, { media }, "Media uploaded successfully", 201);

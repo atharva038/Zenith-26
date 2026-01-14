@@ -76,8 +76,14 @@ const MediaSchema = new mongoose.Schema(
     },
     uploadedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Admin", // Changed from "User" to "Admin" since we're using admin authentication
+      refPath: 'uploadedByModel',
       required: true,
+    },
+    uploadedByModel: {
+      type: String,
+      required: true,
+      enum: ['Admin', 'MediaTeam', 'User'],
+      default: 'Admin',
     },
     // Order field for drag-and-drop reordering
     order: {

@@ -2,6 +2,7 @@ import express from "express";
 import {body, query} from "express-validator";
 import * as mediaController from "../controllers/media.controller.js";
 import {authMiddleware, isAdmin} from "../middleware/auth.middleware.js";
+import {verifyAdminOrMediaTeam, hasPermission} from "../middleware/mediaTeam.middleware.js";
 import {upload, handleMulterError} from "../middleware/media.middleware.js";
 import validate from "../middleware/validate.js";
 
@@ -101,11 +102,10 @@ router.put(
 // Public route with ID parameter - must come after specific routes
 router.get("/:id", mediaController.getMediaById);
 
-// Protected routes (Admin only)
+// Protected routes (Admin OR Media Team can upload)
 router.post(
   "/upload",
-  authMiddleware,
-  isAdmin,
+  verifyAdminOrMediaTeam,
   upload.single("file"),
   handleMulterError,
   uploadValidation,
@@ -113,6 +113,7 @@ router.post(
   mediaController.uploadMedia
 );
 
+// Protected routes (Admin only for update and delete)
 router.put(
   "/:id",
   authMiddleware,

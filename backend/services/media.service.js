@@ -9,7 +9,7 @@ import {
 /**
  * Upload media to Cloudinary and save to database
  */
-export const uploadMedia = async (file, metadata, uploadedBy) => {
+export const uploadMedia = async (file, metadata, uploadedBy, uploadedByModel = "Admin") => {
   try {
     // Determine media type and folder
     const isImage = allowedImageTypes.includes(file.mimetype);
@@ -45,7 +45,11 @@ export const uploadMedia = async (file, metadata, uploadedBy) => {
             invalidate: true,
             use_filename: true,
             unique_filename: true,
+            // Add format auto-conversion for HEIC files
+            format: file.mimetype === "image/heic" || file.mimetype === "image/heif" ? "jpg" : undefined,
           }),
+          // Increase timeout for large files and conversions
+          timeout: 120000, // 2 minutes
         },
         (error, result) => {
           if (error) reject(error);
@@ -84,6 +88,7 @@ export const uploadMedia = async (file, metadata, uploadedBy) => {
         : [],
       category: metadata.category || "other",
       uploadedBy,
+      uploadedByModel,
       order: newOrder,
     });
 

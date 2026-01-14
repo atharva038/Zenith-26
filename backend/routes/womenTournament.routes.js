@@ -215,12 +215,16 @@ router.get("/admin/registrations", authMiddleware, async (req, res) => {
       limit = 50,
       status,
       category,
+      sport,
       search,
       sortBy = "createdAt",
       sortOrder = "desc",
     } = req.query;
 
-    const query = {};
+    // Build query for active (non-rejected) registrations
+    const query = {
+      isRejected: {$ne: true}, // Exclude rejected registrations from pagination
+    };
 
     if (status) {
       query.status = status;
@@ -228,6 +232,11 @@ router.get("/admin/registrations", authMiddleware, async (req, res) => {
 
     if (category) {
       query.selectedCategory = category;
+    }
+
+    // Add sport filter - filter by selectedSports array containing the sport
+    if (sport) {
+      query.selectedSports = sport;
     }
 
     if (search) {
@@ -240,13 +249,18 @@ router.get("/admin/registrations", authMiddleware, async (req, res) => {
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
-    const [registrations, total] = await Promise.all([
+    // Fetch paginated active registrations and ALL rejected registrations
+    const [registrations, total, rejectedRegistrations] = await Promise.all([
       WomenTournament.find(query)
         .sort({[sortBy]: sortOrder === "desc" ? -1 : 1})
         .limit(parseInt(limit))
         .skip(skip)
         .lean(),
       WomenTournament.countDocuments(query),
+      // Get ALL rejected registrations (not paginated)
+      WomenTournament.find({isRejected: true})
+        .sort({updatedAt: -1})
+        .lean(),
     ]);
 
     // Calculate statistics
@@ -312,6 +326,7 @@ router.get("/admin/registrations", authMiddleware, async (req, res) => {
       success: true,
       data: {
         registrations,
+        rejectedRegistrations, // Include ALL rejected registrations (not paginated)
         pagination: {
           total,
           page: parseInt(page),
@@ -326,6 +341,7 @@ router.get("/admin/registrations", authMiddleware, async (req, res) => {
           totalRevenue: revenueStats.totalRevenue || 0,
           confirmedCount: overallStats.confirmedCount || 0,
           pendingCount: overallStats.pendingCount || 0,
+          rejectedCount: rejectedRegistrations.length,
         },
       },
     });
