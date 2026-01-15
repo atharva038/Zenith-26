@@ -2,6 +2,9 @@ import {motion} from "framer-motion";
 import {Link} from "react-router-dom";
 
 const WomenTournamentPreview = () => {
+  // Tournament completed - registration closed
+  const isTournamentCompleted = true;
+
   return (
     <section className="relative py-32 px-6 overflow-hidden bg-gradient-to-br from-purple-950 via-pink-950 to-black">
       {/* Background Image with Overlay */}
@@ -56,9 +59,12 @@ const WomenTournamentPreview = () => {
             transition={{delay: 0.2, type: "spring"}}
             className="inline-block mb-8"
           >
-            <div className="bg-gradient-to-r from-pink-600/80 to-purple-700/80 backdrop-blur-sm px-8 py-3 rounded-full border border-pink-400/30">
-              <p className="text-white font-black text-lg tracking-wider uppercase">
-                ✨ For The Very First Time! ✨
+            <div className="bg-gradient-to-r from-green-600/80 to-emerald-700/80 backdrop-blur-sm px-8 py-3 rounded-full border border-green-400/30">
+              <p className="text-white font-black text-lg tracking-wider uppercase flex items-center gap-2 justify-center">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                🎉 Tournament Completed Successfully! 🎉
               </p>
             </div>
           </motion.div>
@@ -86,11 +92,11 @@ const WomenTournamentPreview = () => {
             className="max-w-3xl mx-auto"
           >
             <p className="text-2xl md:text-3xl text-pink-300/90 font-bold mb-4">
-              OPEN FOR GIRLS AND ALL FEMALE FACULTIES
+              THANK YOU TO ALL PARTICIPANTS!
             </p>
             <p className="text-lg text-gray-400">
-              Celebrating strength, skill, and sportsmanship in a spectacular
-              tournament
+              We celebrated strength, skill, and sportsmanship in a spectacular
+              tournament held on January 11-12, 2026
             </p>
           </motion.div>
         </motion.div>
@@ -107,16 +113,16 @@ const WomenTournamentPreview = () => {
             <div className="grid md:grid-cols-2 gap-8">
               {/* Date */}
               <div className="text-center md:text-left">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-pink-600/70 to-purple-700/70 backdrop-blur-sm rounded-2xl mb-4">
-                  <span className="text-3xl">📅</span>
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-600/70 to-emerald-700/70 backdrop-blur-sm rounded-2xl mb-4">
+                  <span className="text-3xl">✅</span>
                 </div>
-                <h3 className="text-lg text-pink-400/90 font-semibold mb-2 uppercase tracking-wider">
-                  Tournament Dates
+                <h3 className="text-lg text-green-400/90 font-semibold mb-2 uppercase tracking-wider">
+                  Event Completed
                 </h3>
                 <p className="text-4xl md:text-5xl font-black text-white mb-2">
-                  JAN 10-11
+                  JAN 11-12
                 </p>
-                <p className="text-pink-300/80 text-lg">2026</p>
+                <p className="text-green-300/80 text-lg">2026</p>
               </div>
 
               {/* Venue */}
@@ -211,23 +217,20 @@ const WomenTournamentPreview = () => {
         >
           <div className="bg-gradient-to-r from-pink-600/10 via-purple-700/10 to-pink-600/10 backdrop-blur-xl border-2 border-pink-500/20 rounded-3xl p-12 max-w-4xl mx-auto">
             <h3 className="text-3xl md:text-4xl font-black text-white mb-4">
-              READY TO COMPETE?
+              🏆 WHAT A TOURNAMENT! 🏆
             </h3>
             <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
-              Register now and be part of this historic event. Show your skills
-              and make history!
+              Thank you to all the incredible athletes who made this event memorable.
+              Stay tuned for more exciting events from Zenith 2026!
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link to="/women-tournament">
-                <motion.button
-                  whileHover={{scale: 1.05}}
-                  whileTap={{scale: 0.95}}
-                  className="px-12 py-5 bg-gradient-to-r from-pink-600 to-purple-700 text-white font-black text-xl rounded-full shadow-2xl shadow-pink-600/40 hover:shadow-pink-600/60 transition-all"
-                >
-                  REGISTER NOW
-                </motion.button>
-              </Link>
+              <div className="px-12 py-5 bg-gray-600/50 text-gray-300 font-black text-xl rounded-full cursor-not-allowed flex items-center gap-2">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                REGISTRATIONS CLOSED
+              </div>
 
               <Link to="/women-tournament">
                 <motion.button

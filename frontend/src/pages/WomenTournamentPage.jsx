@@ -32,6 +32,9 @@ import {
 } from "../components/SportIcons";
 
 const WomenTournamentPage = () => {
+  // Registration is now closed - tournament completed on January 12, 2026
+  const isRegistrationClosed = true;
+  
   const [selectedSport, setSelectedSport] = useState(null);
   const [showRegistrationForm, setShowRegistrationForm] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -781,33 +784,95 @@ const WomenTournamentPage = () => {
           animate={{opacity: 1, y: 0}}
           className="max-w-7xl mx-auto px-4 py-20 md:py-28 text-center"
         >
-          <motion.div
-            initial={{opacity: 0, y: -20}}
-            animate={{opacity: 1, y: 0}}
-            transition={{delay: 0.2}}
-            className="inline-block px-6 py-2 bg-pink-500/20 border border-pink-500/30 rounded-full mb-6"
-          >
-            <span className="text-pink-400 font-semibold text-sm uppercase tracking-wider">
-              Women's Tournament 2026
-            </span>
-          </motion.div>
+          {/* Tournament Completed Badge */}
+          {isRegistrationClosed && (
+            <motion.div
+              initial={{opacity: 0, scale: 0.9}}
+              animate={{opacity: 1, scale: 1}}
+              transition={{delay: 0.1}}
+              className="inline-block px-6 py-3 bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-full mb-6"
+            >
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-green-400 font-semibold text-sm uppercase tracking-wider">
+                  Tournament Completed Successfully! 🎉
+                </span>
+              </div>
+            </motion.div>
+          )}
+
+          {!isRegistrationClosed && (
+            <motion.div
+              initial={{opacity: 0, y: -20}}
+              animate={{opacity: 1, y: 0}}
+              transition={{delay: 0.2}}
+              className="inline-block px-6 py-2 bg-pink-500/20 border border-pink-500/30 rounded-full mb-6"
+            >
+              <span className="text-pink-400 font-semibold text-sm uppercase tracking-wider">
+                Women's Tournament 2026
+              </span>
+            </motion.div>
+          )}
 
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 text-white leading-tight">
             Women's Tournament <span className="text-pink-400">2026</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
-            Celebrating strength, skill, and sportsmanship. Join us for an
-            unforgettable tournament experience!
-          </p>
+          {isRegistrationClosed ? (
+            <div className="space-y-6 mb-10">
+              <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                Thank you to all the amazing participants who made this tournament a grand success! 
+                Your energy, sportsmanship, and competitive spirit made this event truly memorable.
+              </p>
+              
+              {/* Success Message Card */}
+              <motion.div
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
+                transition={{delay: 0.3}}
+                className="max-w-2xl mx-auto bg-gradient-to-br from-pink-500/10 via-purple-500/10 to-cyan-500/10 border border-pink-500/20 rounded-2xl p-6 backdrop-blur-sm"
+              >
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <span className="text-3xl">🏆</span>
+                  <h3 className="text-xl font-bold text-white">Event Highlights</h3>
+                  <span className="text-3xl">🏆</span>
+                </div>
+                <p className="text-gray-300 text-center">
+                  The Women's Sports Tournament 2026 was held on <span className="text-pink-400 font-semibold">January 11-12, 2026</span>.
+                  We witnessed incredible performances across all categories - from fun games to team sports!
+                </p>
+                <div className="mt-4 pt-4 border-t border-white/10">
+                  <p className="text-gray-400 text-sm text-center">
+                    Stay tuned for more exciting events from Zenith 2026! 🚀
+                  </p>
+                </div>
+              </motion.div>
+            </div>
+          ) : (
+            <p className="text-lg md:text-xl text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
+              Celebrating strength, skill, and sportsmanship. Join us for an
+              unforgettable tournament experience!
+            </p>
+          )}
 
           <div className="flex flex-wrap justify-center gap-4">
-            <button
-              onClick={scrollToForm}
-              className="px-8 py-4 bg-pink-500 hover:bg-pink-600 rounded-xl font-semibold text-white transition-all transform hover:scale-105 shadow-lg shadow-pink-500/50"
-            >
-              Register Now
-            </button>
+            {isRegistrationClosed ? (
+              <div className="px-8 py-4 bg-gray-600/50 rounded-xl font-semibold text-gray-300 cursor-not-allowed flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                Registrations Closed
+              </div>
+            ) : (
+              <button
+                onClick={scrollToForm}
+                className="px-8 py-4 bg-pink-500 hover:bg-pink-600 rounded-xl font-semibold text-white transition-all transform hover:scale-105 shadow-lg shadow-pink-500/50"
+              >
+                Register Now
+              </button>
+            )}
             <Link
               to="/home"
               className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl font-semibold hover:bg-white/20 transition-all text-white"
@@ -852,12 +917,12 @@ const WomenTournamentPage = () => {
                     multiple sports.
                   </p>
                 </div>
-                <button
-                  onClick={scrollToForm}
-                  className="px-8 py-4 bg-yellow-500 hover:bg-yellow-600 rounded-xl font-bold text-black transition-all transform hover:scale-105 shadow-lg shadow-yellow-500/30 whitespace-nowrap"
-                >
-                  Register Now
-                </button>
+                <div className="px-8 py-4 bg-gray-600/50 rounded-xl font-bold text-gray-300 cursor-not-allowed flex items-center gap-2 whitespace-nowrap">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  Registrations Closed
+                </div>
               </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
@@ -1077,12 +1142,12 @@ const WomenTournamentPage = () => {
                     Individual sport competitions - Pay per game basis.
                   </p>
                 </div>
-                <button
-                  onClick={scrollToForm}
-                  className="px-8 py-4 bg-blue-500 hover:bg-blue-600 rounded-xl font-bold text-white transition-all transform hover:scale-105 shadow-lg shadow-blue-500/30 whitespace-nowrap"
-                >
-                  Register Now
-                </button>
+                <div className="px-8 py-4 bg-gray-600/50 rounded-xl font-bold text-gray-300 cursor-not-allowed flex items-center gap-2 whitespace-nowrap">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  Registrations Closed
+                </div>
               </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
@@ -1300,12 +1365,12 @@ const WomenTournamentPage = () => {
                     Team sports for competitive group events.
                   </p>
                 </div>
-                <button
-                  onClick={scrollToForm}
-                  className="px-8 py-4 bg-green-500 hover:bg-green-600 rounded-xl font-bold text-white transition-all transform hover:scale-105 shadow-lg shadow-green-500/30 whitespace-nowrap"
-                >
-                  Register Now
-                </button>
+                <div className="px-8 py-4 bg-gray-600/50 rounded-xl font-bold text-gray-300 cursor-not-allowed flex items-center gap-2 whitespace-nowrap">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  Registrations Closed
+                </div>
               </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
@@ -1506,7 +1571,7 @@ const WomenTournamentPage = () => {
         </motion.div>
 
         {/* Registration Form - Google Forms Style */}
-        {showRegistrationForm && (
+        {showRegistrationForm && !isRegistrationClosed && (
           <motion.div
             initial={{opacity: 0, y: 30}}
             animate={{opacity: 1, y: 0}}

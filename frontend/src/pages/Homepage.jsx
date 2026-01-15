@@ -292,9 +292,9 @@ export default function Homepage() {
                 className="inline-block px-8 py-3 rounded-full font-extrabold text-white no-underline transition-transform hover:scale-105"
                 style={{
                   background:
-                    "linear-gradient(135deg, #ec4899, #8b5cf6, #6366f1)",
+                    "linear-gradient(135deg, #6b7280, #4b5563, #374151)",
                   boxShadow:
-                    "0 12px 28px rgba(236,72,153,0.4), inset 0 -2px 6px rgba(0,0,0,0.12)",
+                    "0 12px 28px rgba(107,114,128,0.3), inset 0 -2px 6px rgba(0,0,0,0.12)",
                   willChange: "transform",
                   transform: "translate3d(0,0,0)",
                 }}
@@ -304,7 +304,7 @@ export default function Homepage() {
                 whileHover={{scale: 1.05}}
                 whileTap={{scale: 0.95}}
               >
-                ⚡ Women's Tournament
+                ✅ Women's Tournament (Completed)
               </motion.button>
             </Link>
           </div>

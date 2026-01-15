@@ -132,22 +132,24 @@ const RegisterPage = () => {
           {/* Divider */}
           <div className="flex items-center justify-center gap-4 mb-12">
             <div className="h-px w-24 bg-gradient-to-r from-transparent to-purple-500/50"></div>
-            <span className="text-gray-500 text-sm">BUT WAIT</span>
+            <span className="text-gray-500 text-sm">PAST EVENT</span>
             <div className="h-px w-24 bg-gradient-to-l from-transparent to-purple-500/50"></div>
           </div>
 
-          {/* Women Tournament Section */}
+          {/* Women Tournament Section - COMPLETED */}
           <motion.div
             initial={{opacity: 0, y: 30}}
             animate={{opacity: 1, y: 0}}
             transition={{delay: 0.5, duration: 0.8}}
-            className="bg-gradient-to-br from-pink-500/10 via-purple-500/10 to-cyan-500/10 border border-pink-500/20 rounded-3xl p-8 md:p-12 max-w-3xl mx-auto backdrop-blur-sm"
+            className="bg-gradient-to-br from-pink-500/10 via-purple-500/10 to-cyan-500/10 border border-pink-500/20 rounded-3xl p-8 md:p-12 max-w-3xl mx-auto backdrop-blur-sm relative overflow-hidden"
           >
-            {/* Live Badge */}
+            {/* Completed Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 rounded-full border border-green-500/30 mb-6">
-              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+              <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
               <span className="text-green-300 text-sm font-medium">
-                Registration Open Now!
+                Tournament Completed Successfully! 🎉
               </span>
             </div>
 
@@ -173,35 +175,31 @@ const RegisterPage = () => {
             </h2>
 
             <p className="text-gray-300 text-lg mb-6 max-w-xl mx-auto">
-              Exclusively for the women of SGGSIE&T! Register now for exciting
-              sports competitions including fun games, individual sports, and
-              team events.
+              Thank you to all the incredible athletes who participated! The tournament 
+              was a huge success, showcasing amazing talent and sportsmanship from the 
+              women of SGGSIE&T.
             </p>
 
-            {/* Highlights */}
+            {/* Event Recap */}
             <div className="flex flex-wrap justify-center gap-4 mb-8">
               <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-lg">
                 <span className="text-yellow-400">🎮</span>
-                <span className="text-gray-300 text-sm">Fun Games @ ₹49</span>
+                <span className="text-gray-300 text-sm">Fun Games</span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-lg">
                 <span className="text-blue-400">🏸</span>
-                <span className="text-gray-300 text-sm">
-                  Individual Sports @ ₹49
-                </span>
+                <span className="text-gray-300 text-sm">Individual Sports</span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-lg">
                 <span className="text-green-400">⚽</span>
-                <span className="text-gray-300 text-sm">
-                  Team Sports @ ₹199
-                </span>
+                <span className="text-gray-300 text-sm">Team Sports</span>
               </div>
             </div>
 
-            {/* Event Date */}
+            {/* Event Date - Completed */}
             <div className="flex items-center justify-center gap-3 mb-8 text-gray-400">
               <svg
-                className="w-5 h-5"
+                className="w-5 h-5 text-green-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -210,18 +208,18 @@ const RegisterPage = () => {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <span>Event Date: January 12, 2026</span>
+              <span>Held on: January 11-12, 2026</span>
             </div>
 
-            {/* CTA Button */}
+            {/* View Gallery Button */}
             <Link
               to="/women-tournament"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 rounded-xl text-white font-bold text-lg transition-all transform hover:scale-105 shadow-lg shadow-pink-500/30"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-white font-bold text-lg transition-all"
             >
-              <span>Register for Women Tournament</span>
+              <span>View Tournament Details</span>
               <svg
                 className="w-5 h-5"
                 fill="none"
