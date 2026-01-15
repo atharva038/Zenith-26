@@ -431,12 +431,26 @@ const AdminWomenTournament = () => {
         financialSummary.total.amount += amount;
       });
       
+      // Format amount helper function - simple Indian format
+      const formatAmount = (amount) => {
+        // Convert to string and add commas for Indian format (1,00,000)
+        const num = Math.floor(amount);
+        const str = num.toString();
+        let lastThree = str.substring(str.length - 3);
+        const otherNumbers = str.substring(0, str.length - 3);
+        if (otherNumbers !== '') {
+          lastThree = ',' + lastThree;
+        }
+        const formatted = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
+        return 'Rs ' + formatted;
+      };
+      
       // Add new page for financial summary
       doc.addPage();
       const summaryY = 20;
       
       // Summary Title
-      doc.setFontSize(16);
+      doc.setFontSize(18);
       doc.setTextColor(0, 0, 0);
       doc.setFont("helvetica", "bold");
       doc.text("Financial Summary", 14, summaryY);
@@ -445,29 +459,28 @@ const AdminWomenTournament = () => {
       doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(100, 100, 100);
-      doc.text(`Generated on: ${new Date().toLocaleDateString('en-IN', { 
+      const dateStr = new Date().toLocaleDateString('en-GB', { 
         day: '2-digit', 
         month: 'long', 
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      })}`, 14, summaryY + 8);
+        year: 'numeric'
+      });
+      doc.text("Generated on: " + dateStr, 14, summaryY + 8);
       
       // Financial breakdown table
       const summaryTableData = [
-        ["Category 1 (Individual Sports)", financialSummary.category1.count.toString(), `₹${financialSummary.category1.amount.toLocaleString('en-IN')}`],
-        ["Category 2 (Indoor Sports)", financialSummary.category2.count.toString(), `₹${financialSummary.category2.amount.toLocaleString('en-IN')}`],
-        ["Category 3 (Team Sports)", financialSummary.category3.count.toString(), `₹${financialSummary.category3.amount.toLocaleString('en-IN')}`],
+        ["Category 1 (Individual Sports)", financialSummary.category1.count.toString(), formatAmount(financialSummary.category1.amount)],
+        ["Category 2 (Indoor Sports)", financialSummary.category2.count.toString(), formatAmount(financialSummary.category2.amount)],
+        ["Category 3 (Team Sports)", financialSummary.category3.count.toString(), formatAmount(financialSummary.category3.amount)],
       ];
       
       autoTable(doc, {
         startY: summaryY + 18,
         head: [["Category", "Registrations", "Amount Collected"]],
         body: summaryTableData,
-        foot: [["GRAND TOTAL", financialSummary.total.count.toString(), `₹${financialSummary.total.amount.toLocaleString('en-IN')}`]],
+        foot: [["GRAND TOTAL", financialSummary.total.count.toString(), formatAmount(financialSummary.total.amount)]],
         styles: {
           fontSize: 11,
-          cellPadding: 5,
+          cellPadding: 6,
         },
         headStyles: {
           fillColor: [0, 229, 255],
@@ -485,58 +498,7 @@ const AdminWomenTournament = () => {
           fillColor: [245, 245, 245],
         },
         columnStyles: {
-          0: { cellWidth: 80 },
-          1: { cellWidth: 40, halign: 'center' },
-          2: { cellWidth: 50, halign: 'right' },
-        },
-        margin: { left: 14, right: 14 },
-      });
-      
-      // Add payment status breakdown
-      const paymentStatusSummary = {
-        completed: { count: 0, amount: 0 },
-        pending: { count: 0, amount: 0 },
-        failed: { count: 0, amount: 0 },
-      };
-      
-      allRegistrations.forEach(reg => {
-        const status = reg.paymentStatus || 'pending';
-        const amount = reg.totalAmount || 0;
-        if (paymentStatusSummary[status]) {
-          paymentStatusSummary[status].count++;
-          paymentStatusSummary[status].amount += amount;
-        }
-      });
-      
-      const paymentStatusY = doc.lastAutoTable.finalY + 15;
-      
-      doc.setFontSize(14);
-      doc.setTextColor(0, 0, 0);
-      doc.setFont("helvetica", "bold");
-      doc.text("Payment Status Breakdown", 14, paymentStatusY);
-      
-      const paymentTableData = [
-        ["✅ Completed", paymentStatusSummary.completed.count.toString(), `₹${paymentStatusSummary.completed.amount.toLocaleString('en-IN')}`],
-        ["⏳ Pending", paymentStatusSummary.pending.count.toString(), `₹${paymentStatusSummary.pending.amount.toLocaleString('en-IN')}`],
-        ["❌ Failed", paymentStatusSummary.failed.count.toString(), `₹${paymentStatusSummary.failed.amount.toLocaleString('en-IN')}`],
-      ];
-      
-      autoTable(doc, {
-        startY: paymentStatusY + 8,
-        head: [["Status", "Registrations", "Amount"]],
-        body: paymentTableData,
-        styles: {
-          fontSize: 11,
-          cellPadding: 5,
-        },
-        headStyles: {
-          fillColor: [100, 100, 100],
-          textColor: [255, 255, 255],
-          fontStyle: "bold",
-          fontSize: 12,
-        },
-        columnStyles: {
-          0: { cellWidth: 80 },
+          0: { cellWidth: 90 },
           1: { cellWidth: 40, halign: 'center' },
           2: { cellWidth: 50, halign: 'right' },
         },
@@ -544,17 +506,17 @@ const AdminWomenTournament = () => {
       });
       
       // Add grand total highlight box
-      const boxY = doc.lastAutoTable.finalY + 20;
+      const boxY = doc.lastAutoTable.finalY + 25;
       doc.setFillColor(34, 197, 94);
-      doc.roundedRect(14, boxY, 180, 25, 3, 3, 'F');
-      doc.setFontSize(14);
+      doc.roundedRect(14, boxY, 180, 30, 3, 3, 'F');
+      doc.setFontSize(12);
       doc.setTextColor(255, 255, 255);
       doc.setFont("helvetica", "bold");
-      doc.text("TOTAL COLLECTION", 24, boxY + 10);
-      doc.setFontSize(18);
-      doc.text(`₹${financialSummary.total.amount.toLocaleString('en-IN')}`, 24, boxY + 20);
-      doc.setFontSize(10);
-      doc.text(`from ${financialSummary.total.count} registrations`, 100, boxY + 15);
+      doc.text("TOTAL COLLECTION", 24, boxY + 12);
+      doc.setFontSize(20);
+      doc.text(formatAmount(financialSummary.total.amount), 24, boxY + 24);
+      doc.setFontSize(11);
+      doc.text(`from ${financialSummary.total.count} registrations`, 110, boxY + 18);
       
       // Add footer with page numbers
       const pageCount = doc.internal.getNumberOfPages();
