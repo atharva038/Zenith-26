@@ -412,6 +412,150 @@ const AdminWomenTournament = () => {
         margin: { left: 7, right: 7 },
       });
       
+      // Calculate financial summary
+      const financialSummary = {
+        category1: { count: 0, amount: 0 },
+        category2: { count: 0, amount: 0 },
+        category3: { count: 0, amount: 0 },
+        total: { count: 0, amount: 0 }
+      };
+      
+      allRegistrations.forEach(reg => {
+        const cat = reg.selectedCategory;
+        const amount = reg.totalAmount || 0;
+        if (cat && financialSummary[cat]) {
+          financialSummary[cat].count++;
+          financialSummary[cat].amount += amount;
+        }
+        financialSummary.total.count++;
+        financialSummary.total.amount += amount;
+      });
+      
+      // Add new page for financial summary
+      doc.addPage();
+      const summaryY = 20;
+      
+      // Summary Title
+      doc.setFontSize(16);
+      doc.setTextColor(0, 0, 0);
+      doc.setFont("helvetica", "bold");
+      doc.text("Financial Summary", 14, summaryY);
+      
+      // Subtitle with date
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(100, 100, 100);
+      doc.text(`Generated on: ${new Date().toLocaleDateString('en-IN', { 
+        day: '2-digit', 
+        month: 'long', 
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })}`, 14, summaryY + 8);
+      
+      // Financial breakdown table
+      const summaryTableData = [
+        ["Category 1 (Individual Sports)", financialSummary.category1.count.toString(), `₹${financialSummary.category1.amount.toLocaleString('en-IN')}`],
+        ["Category 2 (Indoor Sports)", financialSummary.category2.count.toString(), `₹${financialSummary.category2.amount.toLocaleString('en-IN')}`],
+        ["Category 3 (Team Sports)", financialSummary.category3.count.toString(), `₹${financialSummary.category3.amount.toLocaleString('en-IN')}`],
+      ];
+      
+      autoTable(doc, {
+        startY: summaryY + 18,
+        head: [["Category", "Registrations", "Amount Collected"]],
+        body: summaryTableData,
+        foot: [["GRAND TOTAL", financialSummary.total.count.toString(), `₹${financialSummary.total.amount.toLocaleString('en-IN')}`]],
+        styles: {
+          fontSize: 11,
+          cellPadding: 5,
+        },
+        headStyles: {
+          fillColor: [0, 229, 255],
+          textColor: [0, 0, 0],
+          fontStyle: "bold",
+          fontSize: 12,
+        },
+        footStyles: {
+          fillColor: [34, 197, 94],
+          textColor: [255, 255, 255],
+          fontStyle: "bold",
+          fontSize: 12,
+        },
+        alternateRowStyles: {
+          fillColor: [245, 245, 245],
+        },
+        columnStyles: {
+          0: { cellWidth: 80 },
+          1: { cellWidth: 40, halign: 'center' },
+          2: { cellWidth: 50, halign: 'right' },
+        },
+        margin: { left: 14, right: 14 },
+      });
+      
+      // Add payment status breakdown
+      const paymentStatusSummary = {
+        completed: { count: 0, amount: 0 },
+        pending: { count: 0, amount: 0 },
+        failed: { count: 0, amount: 0 },
+      };
+      
+      allRegistrations.forEach(reg => {
+        const status = reg.paymentStatus || 'pending';
+        const amount = reg.totalAmount || 0;
+        if (paymentStatusSummary[status]) {
+          paymentStatusSummary[status].count++;
+          paymentStatusSummary[status].amount += amount;
+        }
+      });
+      
+      const paymentStatusY = doc.lastAutoTable.finalY + 15;
+      
+      doc.setFontSize(14);
+      doc.setTextColor(0, 0, 0);
+      doc.setFont("helvetica", "bold");
+      doc.text("Payment Status Breakdown", 14, paymentStatusY);
+      
+      const paymentTableData = [
+        ["✅ Completed", paymentStatusSummary.completed.count.toString(), `₹${paymentStatusSummary.completed.amount.toLocaleString('en-IN')}`],
+        ["⏳ Pending", paymentStatusSummary.pending.count.toString(), `₹${paymentStatusSummary.pending.amount.toLocaleString('en-IN')}`],
+        ["❌ Failed", paymentStatusSummary.failed.count.toString(), `₹${paymentStatusSummary.failed.amount.toLocaleString('en-IN')}`],
+      ];
+      
+      autoTable(doc, {
+        startY: paymentStatusY + 8,
+        head: [["Status", "Registrations", "Amount"]],
+        body: paymentTableData,
+        styles: {
+          fontSize: 11,
+          cellPadding: 5,
+        },
+        headStyles: {
+          fillColor: [100, 100, 100],
+          textColor: [255, 255, 255],
+          fontStyle: "bold",
+          fontSize: 12,
+        },
+        columnStyles: {
+          0: { cellWidth: 80 },
+          1: { cellWidth: 40, halign: 'center' },
+          2: { cellWidth: 50, halign: 'right' },
+        },
+        margin: { left: 14, right: 14 },
+      });
+      
+      // Add grand total highlight box
+      const boxY = doc.lastAutoTable.finalY + 20;
+      doc.setFillColor(34, 197, 94);
+      doc.roundedRect(14, boxY, 180, 25, 3, 3, 'F');
+      doc.setFontSize(14);
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.text("TOTAL COLLECTION", 24, boxY + 10);
+      doc.setFontSize(18);
+      doc.text(`₹${financialSummary.total.amount.toLocaleString('en-IN')}`, 24, boxY + 20);
+      doc.setFontSize(10);
+      doc.text(`from ${financialSummary.total.count} registrations`, 100, boxY + 15);
+      
       // Add footer with page numbers
       const pageCount = doc.internal.getNumberOfPages();
       for (let i = 1; i <= pageCount; i++) {
