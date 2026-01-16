@@ -187,7 +187,7 @@ const MarathonRegistration = () => {
               🏃 Zenith Marathon 2026
             </motion.h1>
             <p className="text-[#ffdcb3] text-lg">
-              Join us for an unforgettable running experience! • February 8,
+              Join us for an unforgettable running experience! • February 14,
               2026
             </p>
           </div>

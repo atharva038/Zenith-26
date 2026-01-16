@@ -10,8 +10,8 @@ const MarathonPreview = () => {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, {once: true, margin: "-100px"});
 
-  // Marathon date - February 8, 2026 (before main event)
-  const marathonDate = new Date("2026-02-08T06:00:00");
+  // Marathon date - February 14, 2026 (before main event)
+  const marathonDate = new Date("2026-02-14T06:00:00");
 
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -47,14 +47,22 @@ const MarathonPreview = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative py-16 md:py-24 overflow-hidden"
-      style={{
-        background:
-          "linear-gradient(180deg, #0a0604 0%, #1a0f08 50%, #0a0604 100%)",
-      }}
+      className="relative py-16 md:py-24 overflow-hidden min-h-[90vh]"
     >
+      {/* Marathon Background Image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: "url('https://res.cloudinary.com/dvmsho3pj/image/upload/v1768496483/zenith-26/marathon/marathon-bg.png')",
+        }}
+      />
+      
+      {/* Dark Overlays for Text Visibility */}
+      <div className="absolute inset-0 bg-black/65" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/70" />
+      
       {/* Animated background pattern */}
-      <div className="absolute inset-0 opacity-10">
+      <div className="absolute inset-0 opacity-20">
         <div
           className="absolute inset-0"
           style={{
@@ -90,16 +98,6 @@ const MarathonPreview = () => {
         ))}
       </div>
 
-      {/* Glowing orb effect */}
-      <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-20 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(255,100,50,0.4) 0%, transparent 70%)",
-          filter: "blur(60px)",
-        }}
-      />
-
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
         {/* Section header */}
         <motion.div
@@ -109,7 +107,7 @@ const MarathonPreview = () => {
           transition={{duration: 0.6}}
         >
           <motion.span
-            className="inline-block px-4 py-1.5 mb-4 text-xs font-bold tracking-[3px] text-yellow-300 border border-yellow-500/30 rounded-full bg-yellow-500/10"
+            className="inline-block px-5 py-2 mb-6 text-sm font-bold tracking-[3px] text-orange-300 border border-orange-500/40 rounded-full bg-orange-500/20 backdrop-blur-sm"
             initial={{opacity: 0, scale: 0.8}}
             animate={isInView ? {opacity: 1, scale: 1} : {}}
             transition={{duration: 0.4, delay: 0.2}}
@@ -117,15 +115,22 @@ const MarathonPreview = () => {
             🔥 COMING SOON
           </motion.span>
 
-          <h2 className="text-4xl md:text-6xl font-extrabold mb-4">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-400 to-red-500">
-              ZENITH MARATHON
+          <h2 
+            className="text-5xl md:text-7xl font-black mb-4"
+            style={{ textShadow: "0 4px 20px rgba(0,0,0,0.5)" }}
+          >
+            <span className="text-white">ZENITH</span>
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500">
+              MARATHON
             </span>
           </h2>
 
-          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+          <p 
+            className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto font-light"
+            style={{ textShadow: "0 2px 10px rgba(0,0,0,0.5)" }}
+          >
             Kick off the Zenith festivities with our first-ever marathon! Run
-            through the historic SGGSIE&T campus before the main sports event.
+            through the historic SGGSIE&T campus.
           </p>
         </motion.div>
 
@@ -139,22 +144,24 @@ const MarathonPreview = () => {
             transition={{duration: 0.6, delay: 0.2}}
           >
             <div
-              className="relative aspect-square max-w-md mx-auto rounded-2xl overflow-hidden"
+              className="relative aspect-square max-w-md mx-auto rounded-2xl overflow-hidden backdrop-blur-md"
               style={{
                 background:
-                  "linear-gradient(145deg, rgba(255,100,50,0.1) 0%, rgba(0,0,0,0.5) 100%)",
-                border: "1px solid rgba(255,140,50,0.2)",
+                  "linear-gradient(145deg, rgba(255,100,50,0.15) 0%, rgba(0,0,0,0.7) 100%)",
+                border: "1px solid rgba(255,140,50,0.3)",
+                boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
               }}
             >
               {/* Animated runner silhouette */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <motion.div
-                  className="text-[150px] md:text-[200px]"
+                  className="text-[150px] md:text-[200px] drop-shadow-2xl"
+                  style={{ filter: "drop-shadow(0 10px 30px rgba(0,0,0,0.5))" }}
                   animate={{
-                    y: [0, -10, 0],
+                    y: [0, -15, 0],
                   }}
                   transition={{
-                    duration: 0.6,
+                    duration: 0.7,
                     repeat: Infinity,
                     ease: "easeInOut",
                   }}
@@ -168,7 +175,7 @@ const MarathonPreview = () => {
                 {[...Array(8)].map((_, i) => (
                   <motion.div
                     key={i}
-                    className="absolute h-[2px] rounded-full"
+                    className="absolute h-[3px] rounded-full"
                     style={{
                       top: `${15 + i * 10}%`,
                       right: "20%",
@@ -201,9 +208,9 @@ const MarathonPreview = () => {
                   }}
                 >
                   <p className="text-orange-300 font-bold text-lg">
-                    📅 February 8, 2026
+                    📅 February 14, 2026
                   </p>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-white/60 text-sm">
                     Race starts at 6:00 AM
                   </p>
                 </div>
@@ -219,7 +226,10 @@ const MarathonPreview = () => {
           >
             {/* Mini countdown */}
             <div className="mb-8">
-              <p className="text-sm text-orange-300/70 mb-3 tracking-wider">
+              <p 
+                className="text-sm text-orange-300 mb-3 tracking-wider font-semibold"
+                style={{ textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}
+              >
                 RACE STARTS IN
               </p>
               <div className="flex gap-4">
@@ -230,16 +240,17 @@ const MarathonPreview = () => {
                 ].map((item, i) => (
                   <div
                     key={i}
-                    className="text-center px-4 py-3 rounded-lg"
+                    className="text-center px-4 py-3 rounded-xl backdrop-blur-md"
                     style={{
-                      background: "rgba(255,140,50,0.1)",
-                      border: "1px solid rgba(255,140,50,0.2)",
+                      background: "rgba(0,0,0,0.5)",
+                      border: "1px solid rgba(255,140,50,0.3)",
+                      boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
                     }}
                   >
-                    <span className="block text-2xl md:text-3xl font-bold text-white">
+                    <span className="block text-2xl md:text-3xl font-black text-white">
                       {String(item.value).padStart(2, "0")}
                     </span>
-                    <span className="text-xs text-orange-300/70">
+                    <span className="text-xs text-orange-300 font-medium">
                       {item.label}
                     </span>
                   </div>
@@ -252,45 +263,47 @@ const MarathonPreview = () => {
               {highlights.map((item, i) => (
                 <motion.div
                   key={i}
-                  className="flex items-center gap-2 p-3 rounded-lg"
+                  className="flex items-center gap-3 p-4 rounded-xl backdrop-blur-md"
                   style={{
-                    background: "rgba(255,255,255,0.03)",
-                    border: "1px solid rgba(255,255,255,0.05)",
+                    background: "rgba(0,0,0,0.4)",
+                    border: "1px solid rgba(255,255,255,0.1)",
                   }}
                   initial={{opacity: 0, y: 20}}
                   animate={isInView ? {opacity: 1, y: 0} : {}}
                   transition={{duration: 0.4, delay: 0.4 + i * 0.1}}
+                  whileHover={{ background: "rgba(255,140,50,0.15)" }}
                 >
-                  <span className="text-xl">{item.icon}</span>
-                  <span className="text-sm text-gray-300">{item.text}</span>
+                  <span className="text-2xl">{item.icon}</span>
+                  <span className="text-sm text-white font-medium">{item.text}</span>
                 </motion.div>
               ))}
             </div>
 
             {/* Registration fee */}
             <div
-              className="mb-6 p-4 rounded-xl"
+              className="mb-6 p-5 rounded-xl backdrop-blur-md"
               style={{
                 background:
-                  "linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(255,140,50,0.1) 100%)",
-                border: "1px solid rgba(255,215,0,0.2)",
+                  "linear-gradient(135deg, rgba(255,215,0,0.15) 0%, rgba(255,140,50,0.15) 100%)",
+                border: "1px solid rgba(255,215,0,0.3)",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
               }}
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-400 text-sm">Registration Fee</p>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-white/70 text-sm font-medium">Registration Fee</p>
+                  <p className="text-3xl font-black text-white">
                     ₹500{" "}
-                    <span className="text-sm text-gray-400 font-normal">
+                    <span className="text-sm text-white/60 font-normal">
                       only
                     </span>
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-yellow-400 text-sm font-semibold">
-                    Early Bird
+                  <p className="text-yellow-400 text-sm font-bold">
+                    ✨ Early Bird
                   </p>
-                  <p className="text-gray-400 text-xs">
+                  <p className="text-white/60 text-xs">
                     Limited slots available
                   </p>
                 </div>
@@ -305,11 +318,11 @@ const MarathonPreview = () => {
                   style={{
                     background:
                       "linear-gradient(135deg, #ffd700 0%, #ffa500 50%, #ff6b1f 100%)",
-                    boxShadow: "0 10px 30px rgba(255,165,0,0.3)",
+                    boxShadow: "0 10px 40px rgba(255,165,0,0.4)",
                   }}
                   whileHover={{
-                    scale: 1.02,
-                    boxShadow: "0 15px 40px rgba(255,165,0,0.4)",
+                    scale: 1.03,
+                    boxShadow: "0 15px 50px rgba(255,165,0,0.5)",
                   }}
                   whileTap={{scale: 0.98}}
                 >
@@ -319,13 +332,14 @@ const MarathonPreview = () => {
 
               <Link to="/marathon-event" className="flex-1">
                 <motion.button
-                  className="w-full py-4 px-6 rounded-xl font-bold text-lg text-orange-300 border border-orange-500/30 transition-all"
+                  className="w-full py-4 px-6 rounded-xl font-bold text-lg text-orange-200 border-2 border-orange-500/40 transition-all backdrop-blur-md"
                   style={{
-                    background: "rgba(255,140,50,0.1)",
+                    background: "rgba(255,140,50,0.15)",
                   }}
                   whileHover={{
-                    background: "rgba(255,140,50,0.2)",
-                    borderColor: "rgba(255,140,50,0.5)",
+                    background: "rgba(255,140,50,0.25)",
+                    borderColor: "rgba(255,140,50,0.6)",
+                    scale: 1.03,
                   }}
                   whileTap={{scale: 0.98}}
                 >

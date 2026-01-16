@@ -182,6 +182,47 @@ const Footer = () => {
                 +91 93564 63943
               </p>
             </motion.div>
+
+            {/* Mini Map */}
+            <motion.div
+              className="mt-6"
+              initial={{opacity: 0, y: 20}}
+              whileInView={{opacity: 1, y: 0}}
+              viewport={{once: true}}
+              transition={{duration: 0.5, ease: "easeOut", delay: 0.3}}
+            >
+              <a
+                href="https://goo.gl/maps/qdH2ab7UjYGfyPJs6"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block group"
+              >
+                <div className="relative mx-auto w-full max-w-[280px] h-[120px] rounded-xl overflow-hidden border border-[#3a2416]/50 hover:border-[#ffb36a]/40 transition-all duration-300">
+                  {/* Map iframe */}
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3766.123456789!2d77.31389!3d19.1028!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bd1d9a9a9a9a9a9%3A0x1234567890abcdef!2sSGGSIE%26T%2C%20Nanded!5e0!3m2!1sen!2sin!4v1234567890123"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0, filter: "grayscale(0.7) contrast(1.1)" }}
+                    allowFullScreen=""
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="SGGSIE&T Location"
+                    className="pointer-events-none"
+                  />
+                  {/* Hover overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-100 group-hover:opacity-80 transition-opacity duration-300" />
+                  {/* Location label */}
+                  <div className="absolute bottom-2 left-2 right-2 flex items-center gap-2">
+                    <MapPin size={12} className="text-[#ffb36a]" />
+                    <span className="text-white/80 text-xs font-medium truncate">SGGSIE&T, Nanded</span>
+                    <span className="ml-auto text-[#ffb36a] text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      View →
+                    </span>
+                  </div>
+                </div>
+              </a>
+            </motion.div>
           </div>
         </div>
 
@@ -197,17 +238,11 @@ const Footer = () => {
             <p className="text-gray-500 text-sm">
               © 2026 SGGSIE&T Zenith. All rights reserved.
             </p>
-            <div className="flex flex-wrap gap-6 justify-center text-sm text-gray-400">
-              <span className="hover:text-[#ffb36a] transition-colors cursor-pointer">
-                Privacy Policy
-              </span>
-              <span className="hover:text-[#ffb36a] transition-colors cursor-pointer">
-                Terms of Service
-              </span>
-              <span className="hover:text-[#ffb36a] transition-colors cursor-pointer">
-                Support
-              </span>
-            </div>
+            <p className="text-gray-400 text-sm">
+              Made with <span className="text-red-500">❤️</span> by{" "}
+              <span className="text-[#ffb36a] font-medium">Atharva Joshi</span>{" "}
+              & <span className="text-[#ffb36a] font-medium">Zenith Web Team</span>
+            </p>
           </div>
         </motion.div>
       </div>

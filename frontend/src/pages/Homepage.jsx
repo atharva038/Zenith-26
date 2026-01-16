@@ -19,6 +19,7 @@ import VIPCarousel from "../components/VIPCarousel";
 import WormholePortal from "../components/WormholePortal";
 import NextLevelCountdown from "../components/NextLevelCountdown";
 // import MarathonPreview from "../components/MarathonPreview"; // COMMENTED OUT
+import MarathonPreview from "../components/MarathonPreview";
 import WomenTournamentPreview from "../components/WomenTournamentPreview";
 import MentorsSection from "../components/MentorsSection";
 import Navbar from "../components/Navbar";
@@ -265,7 +266,7 @@ export default function Homepage() {
               </motion.button>
             </Link>
 
-            {/* MARATHON BUTTON COMMENTED OUT
+            {/* MARATHON BUTTON */}
             <Link to="/marathon">
               <motion.button
                 className="inline-block px-8 py-3 rounded-full font-extrabold text-[#2c1506] no-underline transition-transform hover:scale-105"
@@ -285,7 +286,6 @@ export default function Homepage() {
                 🏃 Marathon Registration
               </motion.button>
             </Link>
-            */}
 
             <Link to="/women-tournament">
               <motion.button
@@ -326,8 +326,8 @@ export default function Homepage() {
         />
       </section>
 
-      {/* Marathon Preview Section - COMMENTED OUT */}
-      {/* <MarathonPreview /> */}
+      {/* Marathon Preview Section */}
+      <MarathonPreview />
 
       {/* Women's Tournament Preview Section - NEW */}
       <WomenTournamentPreview />

@@ -66,9 +66,9 @@ function App() {
               {/* Universal Registration - Hidden for now */}
               {/* <Route path="/register-sports" element={<UniversalRegistration />} /> */}
 
-              {/* Marathon Routes - COMMENTED OUT */}
-              {/* <Route path="/marathon-event" element={<MarathonPage />} /> */}
-              {/* <Route path="/marathon" element={<MarathonRegistration />} /> */}
+              {/* Marathon Routes */}
+              <Route path="/marathon-event" element={<MarathonPage />} />
+              <Route path="/marathon" element={<MarathonRegistration />} />
 
               {/* Women's Tournament Route - NEW */}
               <Route
