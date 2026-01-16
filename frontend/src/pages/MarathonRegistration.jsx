@@ -29,6 +29,8 @@ const MarathonRegistration = () => {
   const [paymentScreenshot, setPaymentScreenshot] = useState(null);
   const [screenshotPreview, setScreenshotPreview] = useState(null);
   const [isUploadingScreenshot, setIsUploadingScreenshot] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [registrationDetails, setRegistrationDetails] = useState(null);
   
   const [formData, setFormData] = useState({
     fullName: "",
@@ -44,6 +46,25 @@ const MarathonRegistration = () => {
     medicalConditions: "",
     paymentScreenshotUrl: "",
   });
+
+  // Fill test data function
+  const fillTestData = () => {
+    setFormData({
+      fullName: "Test Runner",
+      email: "testrunner@gmail.com",
+      phone: "9876543210",
+      age: "22",
+      gender: "Male",
+      college: "Test Engineering College",
+      emergencyContact: {
+        name: "Test Emergency Contact",
+        phone: "9123456780",
+      },
+      medicalConditions: "None",
+      paymentScreenshotUrl: formData.paymentScreenshotUrl, // Keep existing screenshot if any
+    });
+    toast.success("Test data filled!");
+  };
 
   const handleChange = (e) => {
     const {name, value} = e.target;
@@ -159,8 +180,6 @@ const MarathonRegistration = () => {
       // Prepare data with payment details
       const registrationData = {
         ...formData,
-        category: "5K", // Fixed category - only 5K marathon
-        tshirtSize: "M", // Default tshirt size (not collected anymore)
         paymentDetails: {
           amount: 99,
           paymentDate: new Date().toISOString(),
@@ -171,12 +190,16 @@ const MarathonRegistration = () => {
       const response = await api.post("/marathon/register", registrationData);
 
       if (response.data.success) {
-        toast.success(
-          `Registration Successful! Your Registration Number: ${response.data.data.registrationNumber}`
-        );
-        toast.info(
-          "Your payment will be verified by admin. You'll receive confirmation via email."
-        );
+        // Store registration details for confirmation screen
+        setRegistrationDetails({
+          registrationNumber: response.data.data.registrationNumber,
+          fullName: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+        });
+        
+        // Show confirmation screen
+        setShowConfirmation(true);
 
         // Reset form
         setFormData({
@@ -195,8 +218,6 @@ const MarathonRegistration = () => {
         });
         setPaymentScreenshot(null);
         setScreenshotPreview(null);
-
-        setTimeout(() => navigate("/marathon-event"), 3000);
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Registration failed");
@@ -207,6 +228,236 @@ const MarathonRegistration = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-[#0a0604] to-black">
+      {/* Registration Confirmation Screen */}
+      <AnimatePresence>
+        {showConfirmation && registrationDetails && (
+          <motion.div
+            initial={{opacity: 0}}
+            animate={{opacity: 1}}
+            exit={{opacity: 0}}
+            className="fixed inset-0 z-[100] overflow-y-auto"
+            style={{
+              backgroundColor: "rgba(0, 0, 0, 0.75)",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
+            }}
+          >
+            <div className="min-h-screen flex items-center justify-center p-4 py-8">
+              <motion.div
+                initial={{scale: 0.9, opacity: 0, y: 30}}
+                animate={{scale: 1, opacity: 1, y: 0}}
+                exit={{scale: 0.9, opacity: 0, y: 30}}
+                transition={{type: "spring", damping: 25, stiffness: 300}}
+                className="w-full max-w-lg mx-auto"
+                style={{
+                  background: "linear-gradient(145deg, #1a0f08 0%, #0d0705 50%, #0a0604 100%)",
+                  border: "1px solid rgba(255, 139, 31, 0.3)",
+                  borderRadius: "24px",
+                  padding: "24px",
+                  boxShadow: "0 25px 80px rgba(255, 139, 31, 0.15), 0 0 40px rgba(0, 0, 0, 0.5)",
+                }}
+              >
+                {/* Success Icon */}
+                <motion.div
+                  initial={{scale: 0}}
+                  animate={{scale: 1}}
+                  transition={{delay: 0.2, type: "spring", stiffness: 200}}
+                  className="flex justify-center mb-5"
+                >
+                  <div 
+                    className="w-20 h-20 rounded-full flex items-center justify-center"
+                    style={{
+                      background: "linear-gradient(135deg, #22c55e 0%, #10b981 100%)",
+                      boxShadow: "0 8px 32px rgba(34, 197, 94, 0.4)",
+                    }}
+                  >
+                    <motion.span
+                      initial={{scale: 0}}
+                      animate={{scale: 1}}
+                      transition={{delay: 0.4}}
+                      className="text-4xl text-white"
+                    >
+                      ✓
+                    </motion.span>
+                  </div>
+                </motion.div>
+
+                {/* Success Message */}
+                <motion.div
+                  initial={{opacity: 0, y: 20}}
+                  animate={{opacity: 1, y: 0}}
+                  transition={{delay: 0.3}}
+                  className="text-center mb-5"
+                >
+                  <h2 className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-500 mb-2">
+                    Registration Successful! 🎉
+                  </h2>
+                  <p className="text-gray-400 text-sm sm:text-base">
+                    Thank you for registering for ZENITH Marathon 2026
+                  </p>
+                </motion.div>
+
+                {/* Registration Details Card */}
+                <motion.div
+                  initial={{opacity: 0, y: 20}}
+                  animate={{opacity: 1, y: 0}}
+                  transition={{delay: 0.4}}
+                  className="rounded-xl p-4 mb-4"
+                  style={{
+                    backgroundColor: "rgba(0, 0, 0, 0.4)",
+                    border: "1px solid rgba(255, 139, 31, 0.2)",
+                  }}
+                >
+                  <h3 className="text-base font-semibold text-[#ffb36a] mb-3 flex items-center gap-2">
+                    <span>📋</span> Your Registration Details
+                  </h3>
+                  <div className="space-y-2.5 text-sm">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Registration No:</span>
+                      <span className="text-[#ff8b1f] font-mono font-bold">
+                        {registrationDetails.registrationNumber}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Name:</span>
+                      <span className="text-white font-semibold">
+                        {registrationDetails.fullName}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Event:</span>
+                      <span className="text-orange-400 font-semibold">5K Marathon</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Amount Paid:</span>
+                      <span className="text-green-400 font-bold">₹99</span>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Important Information */}
+                <motion.div
+                  initial={{opacity: 0, y: 20}}
+                  animate={{opacity: 1, y: 0}}
+                  transition={{delay: 0.5}}
+                  className="rounded-xl p-4 mb-4"
+                  style={{
+                    backgroundColor: "rgba(59, 130, 246, 0.1)",
+                    border: "1px solid rgba(59, 130, 246, 0.3)",
+                  }}
+                >
+                  <h3 className="text-blue-400 font-semibold mb-2.5 flex items-center gap-2 text-sm sm:text-base">
+                    <span>📧</span> What's Next?
+                  </h3>
+                  <ul className="space-y-1.5 text-sm text-gray-300">
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-400 mt-0.5">•</span>
+                      <span>Payment screenshot under verification.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-400 mt-0.5">•</span>
+                      <span>Confirmation email will be sent to <strong className="text-[#ff8b1f]">{registrationDetails.email}</strong></span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-400 mt-0.5">•</span>
+                      <span>Save your registration number & bring valid ID.</span>
+                    </li>
+                  </ul>
+                </motion.div>
+
+                {/* Contact Information */}
+                <motion.div
+                  initial={{opacity: 0, y: 20}}
+                  animate={{opacity: 1, y: 0}}
+                  transition={{delay: 0.6}}
+                  className="rounded-xl p-4 mb-4"
+                  style={{
+                    backgroundColor: "rgba(168, 85, 247, 0.1)",
+                    border: "1px solid rgba(168, 85, 247, 0.3)",
+                  }}
+                >
+                  <h3 className="text-purple-400 font-semibold mb-2.5 flex items-center gap-2 text-sm sm:text-base">
+                    <span>📞</span> For Queries, Contact:
+                  </h3>
+                  <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-300">Sagar:</span>
+                      <a href="tel:+919876543210" className="text-purple-300 hover:text-purple-200">+91 98765 43210</a>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-300">Atharva:</span>
+                      <a href="tel:+919123456789" className="text-purple-300 hover:text-purple-200">+91 91234 56789</a>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Team Page Link */}
+                <motion.div
+                  initial={{opacity: 0, y: 20}}
+                  animate={{opacity: 1, y: 0}}
+                  transition={{delay: 0.7}}
+                  className="rounded-xl p-3 mb-4 text-center"
+                  style={{
+                    background: "linear-gradient(90deg, rgba(255, 139, 31, 0.1), rgba(249, 115, 22, 0.1))",
+                    border: "1px solid rgba(255, 139, 31, 0.3)",
+                  }}
+                >
+                  <Link
+                    to="/team"
+                    className="inline-flex items-center gap-2 text-[#ff8b1f] hover:text-orange-400 transition-colors font-semibold text-sm"
+                  >
+                    <span>👥</span> Meet Our Team <span>→</span>
+                  </Link>
+                </motion.div>
+
+                {/* Action Buttons */}
+                <motion.div
+                  initial={{opacity: 0, y: 20}}
+                  animate={{opacity: 1, y: 0}}
+                  transition={{delay: 0.8}}
+                  className="flex gap-3"
+                >
+                  <motion.button
+                    whileHover={{scale: 1.02}}
+                    whileTap={{scale: 0.98}}
+                    onClick={() => navigate("/marathon-event")}
+                    className="flex-1 py-3 text-white font-semibold rounded-xl transition-all text-sm"
+                    style={{
+                      background: "linear-gradient(90deg, #ff8b1f, #ea580c)",
+                      boxShadow: "0 8px 24px rgba(255, 139, 31, 0.3)",
+                    }}
+                  >
+                    🏃 Marathon Page
+                  </motion.button>
+                  <motion.button
+                    whileHover={{scale: 1.02}}
+                    whileTap={{scale: 0.98}}
+                    onClick={() => navigate("/home")}
+                    className="flex-1 py-3 font-semibold rounded-xl transition-all text-sm text-white"
+                    style={{
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      border: "1px solid rgba(255, 255, 255, 0.2)",
+                    }}
+                  >
+                    🏠 Home
+                  </motion.button>
+                </motion.div>
+
+                {/* Footer */}
+                <motion.div
+                  initial={{opacity: 0}}
+                  animate={{opacity: 1}}
+                  transition={{delay: 0.9}}
+                  className="text-center mt-4 pt-4 border-t border-white/10"
+                >
+                  <p className="text-gray-500 text-xs">Share your registration! 🎊 🏃‍♂️ 🏆</p>
+                </motion.div>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Navigation Bar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-orange-500/20">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -287,6 +538,19 @@ const MarathonRegistration = () => {
             animate={{opacity: 1, scale: 1}}
             className="bg-gradient-to-br from-[#1a0f08] to-[#0a0604] backdrop-blur-md rounded-2xl shadow-2xl p-8 border-2 border-[#ff8b1f]/20"
           >
+            {/* Test Data Button - For Development */}
+            <div className="flex justify-end mb-4">
+              <motion.button
+                type="button"
+                onClick={fillTestData}
+                whileHover={{scale: 1.05}}
+                whileTap={{scale: 0.95}}
+                className="px-4 py-2 bg-purple-600/30 border border-purple-500/50 rounded-lg text-purple-300 hover:bg-purple-600/50 transition-all text-sm font-semibold"
+              >
+                🧪 Fill Test Data
+              </motion.button>
+            </div>
+
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Personal Information */}
               <div className="space-y-4">
@@ -730,10 +994,10 @@ const MarathonRegistration = () => {
               {/* Submit Button */}
               <div className="flex gap-4">
                 <motion.button
-                  whileHover={{scale: 1.02}}
-                  whileTap={{scale: 0.98}}
+                  whileHover={{scale: loading || isUploadingScreenshot ? 1 : 1.02}}
+                  whileTap={{scale: loading || isUploadingScreenshot ? 1 : 0.98}}
                   type="submit"
-                  disabled={loading || !formData.paymentScreenshotUrl}
+                  disabled={loading || isUploadingScreenshot || !formData.paymentScreenshotUrl}
                   className="flex-1 font-semibold py-4 px-6 rounded-lg transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-[#2c1506]"
                   style={{
                     background: "linear-gradient(90deg, #ffb36a, #ff8b1f)",
@@ -741,7 +1005,25 @@ const MarathonRegistration = () => {
                       "0 12px 28px rgba(255,140,40,0.3), inset 0 -2px 6px rgba(0,0,0,0.12)",
                   }}
                 >
-                  {loading ? "Registering..." : "🏃 Register for Marathon"}
+                  {isUploadingScreenshot ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                      </svg>
+                      Uploading Screenshot...
+                    </span>
+                  ) : loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                      </svg>
+                      Registering...
+                    </span>
+                  ) : (
+                    "🏃 Register for Marathon"
+                  )}
                 </motion.button>
 
                 <motion.button

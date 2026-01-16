@@ -39,18 +39,9 @@ const marathonSchema = new mongoose.Schema(
       trim: true,
     },
     
-    // Marathon Details
-    category: {
-      type: String,
-      required: [true, "Marathon category is required"],
-      enum: ["5K", "10K", "Half Marathon"],
-      default: "5K",
-    },
-    
-    // T-Shirt Size
+    // T-Shirt Size (optional for backward compatibility)
     tshirtSize: {
       type: String,
-      required: [true, "T-shirt size is required"],
       enum: ["S", "M", "L", "XL", "XXL"],
     },
     

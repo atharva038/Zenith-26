@@ -14,7 +14,7 @@ const AdminSidebar = ({sidebarOpen, setSidebarOpen, admin}) => {
   const menuItems = [
     {id: "dashboard", label: "Dashboard", icon: "📊", path: "/admin/dashboard"},
     {id: "events", label: "Events", icon: "🎪", path: "/admin/events"},
-    // {id: "marathon", label: "Marathon", icon: "🏃", path: "/admin/marathon"}, // Hidden due to faults
+    {id: "marathon", label: "Marathon", icon: "🏃", path: "/admin/marathon"},
     {
       id: "women-tournament",
       label: "Women's Tournament",
