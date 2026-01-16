@@ -90,7 +90,7 @@ const marathonSchema = new mongoose.Schema(
       },
       amount: {
         type: Number,
-        default: 500,
+        default: 99,
       },
       paymentDate: {
         type: Date,
@@ -100,6 +100,10 @@ const marathonSchema = new mongoose.Schema(
         type: String,
         enum: ["pending", "verified", "failed"],
         default: "pending",
+      },
+      paymentScreenshot: {
+        type: String,
+        trim: true,
       },
     },
     

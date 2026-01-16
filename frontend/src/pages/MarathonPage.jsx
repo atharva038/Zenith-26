@@ -1,6 +1,6 @@
 import {useState, useEffect, useRef} from "react";
 import {Link, useNavigate} from "react-router-dom";
-import {motion, AnimatePresence, useScroll, useTransform} from "framer-motion";
+import {motion, AnimatePresence, useScroll, useTransform, useSpring} from "framer-motion";
 import {toast} from "react-toastify";
 import api from "../config/api";
 import Navbar from "../components/Navbar";
@@ -152,7 +152,7 @@ const translations = {
     // Final CTA
     finalCtaTitle: "Ready to Run?",
     finalCtaSubtitle: "Join 500+ runners in making history at the first-ever SGGSIE&T campus marathon.",
-    finalCtaButton: "Register for ₹49",
+    finalCtaButton: "Register for ₹99",
     finalCtaNote: "Limited slots available. Register now!",
     
     // Language toggle
@@ -250,7 +250,7 @@ const translations = {
     // Final CTA
     finalCtaTitle: "धावायला तयार?",
     finalCtaSubtitle: "SGGSIE&T कॅम्पसच्या पहिल्या मॅरेथॉनमध्ये ५००+ धावपटूंसोबत इतिहास घडवा.",
-    finalCtaButton: "₹४९ मध्ये नोंदणी करा",
+    finalCtaButton: "₹९९ मध्ये नोंदणी करा",
     finalCtaNote: "मर्यादित जागा उपलब्ध. आत्ताच नोंदणी करा!",
     
     // Language toggle
@@ -309,15 +309,24 @@ const MarathonPage = () => {
   const heroRef = useRef(null);
   const aboutRef = useRef(null);
   
-  // Parallax effect for hero background
+  // Smooth scroll-based parallax effect for hero
   const { scrollY } = useScroll();
-  const heroBackgroundY = useTransform(scrollY, [0, 500], [0, 150]);
-  const heroContentY = useTransform(scrollY, [0, 500], [0, -50]);
-  const heroOpacity = useTransform(scrollY, [0, 300], [1, 0]);
+  
+  // Smooth the scroll value to prevent jitter
+  const smoothScrollY = useSpring(scrollY, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+  
+  // Parallax transforms using smoothed scroll value
+  const heroBackgroundY = useTransform(smoothScrollY, [0, 600], [0, 120]);
+  const heroContentY = useTransform(smoothScrollY, [0, 600], [0, -40]);
+  const heroOpacity = useTransform(smoothScrollY, [0, 400], [1, 0]);
   
   // Parallax effect for about section
-  const aboutBackgroundY = useTransform(scrollY, [500, 1500], [0, 100]);
-  const aboutContentY = useTransform(scrollY, [500, 1500], [0, -30]);
+  const aboutBackgroundY = useTransform(smoothScrollY, [500, 1500], [0, 100]);
+  const aboutContentY = useTransform(smoothScrollY, [500, 1500], [0, -30]);
   
   // Get current translations
   const t = translations[language];
@@ -363,7 +372,7 @@ const MarathonPage = () => {
       name: "Zenith Marathon",
       distance: "5 KM",
       difficulty: "All Levels",
-      price: "₹49",
+      price: "₹99",
       color: "from-orange-400 to-red-600",
       icon: "🏃",
       description: "Run through the heart of Nanded with us",
@@ -507,14 +516,18 @@ const MarathonPage = () => {
       >
         {/* Cinematic Dawn Background - Parallax Layer */}
         <motion.div 
-          className="absolute inset-0"
-          style={{ y: heroBackgroundY }}
+          className="absolute inset-0 will-change-transform"
+          style={{ 
+            y: heroBackgroundY,
+            transform: 'translateZ(0)', // Force GPU acceleration
+          }}
         >
           {/* Background Image - moves slower than content */}
-          <motion.div
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat will-change-transform scale-110"
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110"
             style={{
               backgroundImage: "url('https://res.cloudinary.com/dvmsho3pj/image/upload/v1768496483/zenith-26/marathon/marathon-bg.png')",
+              transform: 'translateZ(0)', // Force GPU acceleration
             }}
           />
           
@@ -572,8 +585,12 @@ const MarathonPage = () => {
 
         {/* Hero Content - Parallax Layer (moves at different speed) */}
         <motion.div 
-          className="relative z-10 max-w-4xl mx-auto px-6 text-center"
-          style={{ y: heroContentY, opacity: heroOpacity }}
+          className="relative z-10 max-w-4xl mx-auto px-6 text-center will-change-transform"
+          style={{ 
+            y: heroContentY, 
+            opacity: heroOpacity,
+            transform: 'translateZ(0)', // Force GPU acceleration
+          }}
         >
           {/* Micro Text - Whispered */}
           <motion.p
@@ -1705,7 +1722,7 @@ const MarathonPage = () => {
                     className="text-4xl font-black text-white"
                     style={{ fontFamily: language === 'mr' ? marathiFonts.headline : "'Oswald', sans-serif" }}
                   >
-                    {language === 'mr' ? '₹४९' : '₹49'}
+                    {language === 'mr' ? '₹९९' : '₹99'}
                   </span>
                   <span 
                     className="text-white/40"
