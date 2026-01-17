@@ -129,6 +129,7 @@ const translations = {
     finishPoint: "Finish Point",
     whatsIncluded: "What's Included",
     finisherMedal: "Finisher Medal",
+    tShirt: "T-Shirt",
     refreshments: "Refreshments",
     eCertificate: "E-Certificate",
     cashPrizes: "Cash Prizes (Top 3)",
@@ -227,6 +228,7 @@ const translations = {
     finishPoint: "समाप्तीचा बिंदू",
     whatsIncluded: "समाविष्ट आहे",
     finisherMedal: "फिनिशर मेडल",
+    tShirt: "टी-शर्ट",
     refreshments: "रिफ्रेशमेंट्स",
     eCertificate: "ई-सर्टिफिकेट",
     cashPrizes: "रोख बक्षिसे (टॉप ३)",
@@ -1574,7 +1576,7 @@ const MarathonPage = () => {
       </section>
 
       {/* Race Information Section */}
-      <section id="race-info" className="py-20 bg-gray-900">
+      <section id="race-info" className="py-20 bg-black">
         <div className="max-w-4xl mx-auto px-4">
           <SectionTitle
             title={t.raceInfoTitle}
@@ -1691,15 +1693,15 @@ const MarathonPage = () => {
                 >
                   {t.whatsIncluded}
                 </h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {[t.finisherMedal, t.refreshments, t.eCertificate, t.cashPrizes].map((item, i) => (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                  {[t.finisherMedal, t.tShirt, t.refreshments, t.eCertificate, t.cashPrizes].map((item, i) => (
                     <div 
                       key={i}
-                      className="flex items-center gap-2 bg-green-500/10 rounded-lg px-3 py-2 border border-green-500/20"
+                      className="flex items-center gap-2 bg-orange-500/10 rounded-lg px-3 py-2.5 border border-orange-500/30 hover:bg-orange-500/20 hover:border-orange-500/50 transition-all duration-300"
                     >
-                      <span className="text-green-400 text-sm">✓</span>
+                      <span className="text-orange-400 text-base">✓</span>
                       <span 
-                        className="text-white/80 text-sm"
+                        className="text-white text-sm font-medium"
                         style={{ fontFamily: language === 'mr' ? marathiFonts.body : undefined }}
                       >
                         {item}
