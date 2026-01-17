@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {useNavigate, Link} from "react-router-dom";
 import {toast} from "react-toastify";
 import api from "../config/api";
@@ -32,6 +32,11 @@ const MarathonRegistration = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [registrationDetails, setRegistrationDetails] = useState(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  
+  // Scroll to top on component mount
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
   
   const [formData, setFormData] = useState({
     fullName: "",

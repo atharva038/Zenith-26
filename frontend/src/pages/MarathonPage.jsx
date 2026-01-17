@@ -341,6 +341,11 @@ const MarathonPage = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Scroll to top on component mount
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   // Marathon date
   const marathonDate = new Date("2026-02-14T06:00:00");
   const [timeLeft, setTimeLeft] = useState({
