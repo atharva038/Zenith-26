@@ -129,6 +129,158 @@ const RegisterPage = () => {
             </p>
           </motion.div>
 
+          {/* Marathon Registration - NOW OPEN! */}
+          <motion.div
+            initial={{opacity: 0, y: 30}}
+            animate={{opacity: 1, y: 0}}
+            transition={{delay: 0.4, duration: 0.8}}
+            className="mb-12 bg-gradient-to-br from-orange-500/10 via-red-500/10 to-yellow-500/10 border border-orange-500/30 rounded-3xl p-8 md:p-12 max-w-3xl mx-auto backdrop-blur-sm relative overflow-hidden"
+          >
+            {/* Animated glow effect */}
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-orange-500/20 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-red-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+
+            {/* NOW OPEN Badge with pulse animation */}
+            <motion.div
+              initial={{scale: 0}}
+              animate={{scale: 1}}
+              transition={{delay: 0.5, type: "spring", stiffness: 200}}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500/30 to-red-500/30 rounded-full border border-orange-500/50 mb-6 relative"
+            >
+              <motion.span 
+                className="w-2 h-2 bg-orange-400 rounded-full"
+                animate={{
+                  scale: [1, 1.5, 1],
+                  opacity: [1, 0.5, 1],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                }}
+              ></motion.span>
+              <span className="text-orange-300 text-sm font-bold uppercase tracking-wider">
+                Registration Now Open! 🎉
+              </span>
+            </motion.div>
+
+            {/* Marathon Icon */}
+            <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center shadow-lg shadow-orange-500/50">
+              <span className="text-4xl">🏃</span>
+            </div>
+
+            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+              <span className="bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
+                Zenith Marathon 2026
+              </span>
+            </h2>
+
+            <p className="text-gray-300 text-lg mb-6 max-w-xl mx-auto leading-relaxed">
+              While general ZENITH registrations are coming soon, you can register now for our exciting 5K Marathon!
+            </p>
+
+            {/* Marathon Details Grid */}
+            <div className="grid sm:grid-cols-3 gap-4 mb-8 max-w-2xl mx-auto">
+              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-orange-500/20">
+                <div className="text-3xl mb-2">📅</div>
+                <div className="text-orange-400 font-bold text-sm mb-1">Date</div>
+                <div className="text-white text-sm">Feb 14, 2026</div>
+              </div>
+              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-orange-500/20">
+                <div className="text-3xl mb-2">🏃</div>
+                <div className="text-orange-400 font-bold text-sm mb-1">Distance</div>
+                <div className="text-white text-sm">5 KM Run</div>
+              </div>
+              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-orange-500/20">
+                <div className="text-3xl mb-2">💰</div>
+                <div className="text-orange-400 font-bold text-sm mb-1">Entry Fee</div>
+                <div className="text-white font-bold text-lg">₹99</div>
+              </div>
+            </div>
+
+            {/* What's Included - Quick Summary */}
+            <div className="mb-8">
+              <h3 className="text-orange-400 font-semibold mb-4 text-sm uppercase tracking-wider">What You Get</h3>
+              <div className="flex flex-wrap justify-center gap-3">
+                {[
+                  { icon: "🏅", name: "Medal" },
+                  { icon: "👕", name: "T-Shirt" },
+                  { icon: "🥤", name: "Refreshments" },
+                  { icon: "📜", name: "Certificate" },
+                  { icon: "💵", name: "Cash Prizes" },
+                ].map((item, index) => (
+                  <motion.div
+                    key={item.name}
+                    initial={{opacity: 0, scale: 0}}
+                    animate={{opacity: 1, scale: 1}}
+                    transition={{delay: 0.6 + index * 0.1}}
+                    className="flex items-center gap-2 px-4 py-2 bg-orange-500/10 rounded-lg border border-orange-500/20"
+                  >
+                    <span className="text-xl">{item.icon}</span>
+                    <span className="text-gray-300 text-sm font-medium">{item.name}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link
+                to="/marathon"
+                className="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 rounded-xl text-white font-bold text-lg transition-all shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:scale-105"
+              >
+                <span>Register Now</span>
+                <motion.svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  animate={{x: [0, 5, 0]}}
+                  transition={{duration: 1.5, repeat: Infinity}}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                  />
+                </motion.svg>
+              </Link>
+
+              <Link
+                to="/marathon-event"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 border border-orange-500/30 hover:border-orange-500/50 rounded-xl text-orange-300 font-semibold transition-all"
+              >
+                <span>Learn More</span>
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </Link>
+            </div>
+
+            {/* Limited Spots Notice */}
+            <motion.div
+              initial={{opacity: 0}}
+              animate={{opacity: 1}}
+              transition={{delay: 1}}
+              className="mt-6 flex items-center justify-center gap-2 text-yellow-400/80 text-sm"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+              <span className="font-medium">Registration closes on February 10, 2026</span>
+            </motion.div>
+          </motion.div>
+
           {/* Divider */}
           <div className="flex items-center justify-center gap-4 mb-12">
             <div className="h-px w-24 bg-gradient-to-r from-transparent to-purple-500/50"></div>
