@@ -15,11 +15,11 @@ const BACKUP_QR_URLS = [
     upiId: "atharvsjoshi2005-1@okicici",
     url: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1767630215/zenith-26/img/payment/backup-qr-atharva-okicici.png",
   },
-  {
-    name: "Atharva Joshi (Axis)",
-    upiId: "atharvsjoshi2005@okaxis",
-    url: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1767630220/zenith-26/img/payment/backup-qr-atharva-okaxis.png",
-  },
+  // {
+  //   name: "Atharva Joshi (Axis)",
+  //   upiId: "atharvsjoshi2005@okaxis",
+  //   url: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1767630220/zenith-26/img/payment/backup-qr-atharva-okaxis.png",
+  // },
 ];
 
 const MarathonRegistration = () => {
@@ -31,6 +31,7 @@ const MarathonRegistration = () => {
   const [isUploadingScreenshot, setIsUploadingScreenshot] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [registrationDetails, setRegistrationDetails] = useState(null);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   
   const [formData, setFormData] = useState({
     fullName: "",
@@ -174,6 +175,12 @@ const MarathonRegistration = () => {
       return;
     }
 
+    // Validate terms acceptance
+    if (!termsAccepted) {
+      toast.error("Please accept the terms and conditions to proceed!");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -218,6 +225,7 @@ const MarathonRegistration = () => {
         });
         setPaymentScreenshot(null);
         setScreenshotPreview(null);
+        setTermsAccepted(false);
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Registration failed");
@@ -991,13 +999,57 @@ const MarathonRegistration = () => {
                 </div>
               </div>
 
+              {/* Terms and Conditions Checkbox */}
+              <motion.div
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
+                transition={{delay: 0.6}}
+                className="bg-white/5 border border-orange-500/30 rounded-lg p-4"
+              >
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <div className="relative flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={termsAccepted}
+                      onChange={(e) => setTermsAccepted(e.target.checked)}
+                      className="w-5 h-5 rounded border-2 border-orange-500/50 bg-black/50 checked:bg-orange-500 checked:border-orange-500 cursor-pointer appearance-none flex items-center justify-center"
+                      style={{
+                        accentColor: "#ff8b1f",
+                      }}
+                    />
+                    {termsAccepted && (
+                      <svg
+                        className="w-5 h-5 absolute pointer-events-none text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={3}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-gray-300 text-sm leading-relaxed">
+                      I hereby declare that I am physically fit to participate in the ZENITH Marathon 2026. 
+                      I understand that participation is at my own risk and I release the organizers from any liability. 
+                      I agree to follow all event rules and safety guidelines. The information provided above is accurate and complete.
+                    </p>
+                  </div>
+                </label>
+              </motion.div>
+
               {/* Submit Button */}
               <div className="flex gap-4">
                 <motion.button
                   whileHover={{scale: loading || isUploadingScreenshot ? 1 : 1.02}}
                   whileTap={{scale: loading || isUploadingScreenshot ? 1 : 0.98}}
                   type="submit"
-                  disabled={loading || isUploadingScreenshot || !formData.paymentScreenshotUrl}
+                  disabled={loading || isUploadingScreenshot || !formData.paymentScreenshotUrl || !termsAccepted}
                   className="flex-1 font-semibold py-4 px-6 rounded-lg transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-[#2c1506]"
                   style={{
                     background: "linear-gradient(90deg, #ffb36a, #ff8b1f)",
