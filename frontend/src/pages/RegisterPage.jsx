@@ -202,10 +202,9 @@ const RegisterPage = () => {
               <h3 className="text-orange-400 font-semibold mb-4 text-sm uppercase tracking-wider">What You Get</h3>
               <div className="flex flex-wrap justify-center gap-3">
                 {[
-                  { icon: "🏅", name: "Medal" },
+                  { icon: "🏅", name: "Medals for Winners" },
                   { icon: "👕", name: "T-Shirt" },
-                  { icon: "🥤", name: "Refreshments" },
-                  { icon: "📜", name: "Certificate" },
+                  { icon: "📜", name: "E-Certificate" },
                   { icon: "💵", name: "Cash Prizes" },
                 ].map((item, index) => (
                   <motion.div

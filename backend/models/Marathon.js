@@ -103,6 +103,21 @@ const marathonSchema = new mongoose.Schema(
       type: String,
       unique: true,
     },
+    
+    // T-Shirt Distribution Tracking
+    tshirtDistributed: {
+      type: Boolean,
+      default: false,
+    },
+    tshirtDistributedBy: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    tshirtDistributedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

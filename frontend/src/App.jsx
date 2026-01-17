@@ -34,6 +34,7 @@ import AdminOnSpotRegistration from "./pages/AdminOnSpotRegistration";
 import AdminAdmins from "./pages/AdminAdmins";
 import AdminGallery from "./pages/AdminGallery";
 import AdminSettings from "./pages/AdminSettings";
+import TshirtDistribution from "./pages/TshirtDistribution";
 import Gallery from "./pages/Gallery";
 import MeetOurTeam from "./pages/MeetOurTeam";
 import TeamPage from "./pages/TeamPage";
@@ -161,6 +162,13 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              
+              {/* T-shirt Distribution - Public access for team members */}
+              <Route
+                path="/tshirt-distribution"
+                element={<TshirtDistribution />}
+              />
+              
               <Route
                 path="/admin/admins"
                 element={

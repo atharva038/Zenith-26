@@ -128,9 +128,8 @@ const translations = {
     startPoint: "Start Point",
     finishPoint: "Finish Point",
     whatsIncluded: "What's Included",
-    finisherMedal: "Finisher Medal",
+    finisherMedal: "Medals for Winners",
     tShirt: "T-Shirt",
-    refreshments: "Refreshments",
     eCertificate: "E-Certificate",
     cashPrizes: "Cash Prizes (Top 3)",
     registrationFee: "Registration Fee:",
@@ -227,9 +226,8 @@ const translations = {
     startPoint: "सुरुवातीचा बिंदू",
     finishPoint: "समाप्तीचा बिंदू",
     whatsIncluded: "समाविष्ट आहे",
-    finisherMedal: "फिनिशर मेडल",
+    finisherMedal: "विजेत्यांसाठी मेडल",
     tShirt: "टी-शर्ट",
-    refreshments: "रिफ्रेशमेंट्स",
     eCertificate: "ई-सर्टिफिकेट",
     cashPrizes: "रोख बक्षिसे (टॉप ३)",
     registrationFee: "नोंदणी शुल्क:",
@@ -414,7 +412,7 @@ const MarathonPage = () => {
     },
     {
       thought: "What do I get when I register?",
-      voice: "A finisher medal that proves you showed up. Refreshments to refuel. An e-certificate to remember this day. And for the top 3? Cash prizes. But honestly, the real reward is crossing that line.",
+      voice: "A T-shirt to wear with pride. An e-certificate to remember this day. And for the top 3? Medals and cash prizes. But honestly, the real reward is crossing that line.",
       icon: "🏅",
     },
     {
@@ -1698,8 +1696,8 @@ const MarathonPage = () => {
                 >
                   {t.whatsIncluded}
                 </h4>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                  {[t.finisherMedal, t.tShirt, t.refreshments, t.eCertificate, t.cashPrizes].map((item, i) => (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {[t.finisherMedal, t.tShirt, t.eCertificate, t.cashPrizes].map((item, i) => (
                     <div 
                       key={i}
                       className="flex items-center gap-2 bg-orange-500/10 rounded-lg px-3 py-2.5 border border-orange-500/30 hover:bg-orange-500/20 hover:border-orange-500/50 transition-all duration-300"

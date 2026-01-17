@@ -582,3 +582,160 @@ export const getMarathonStats = async (req, res) => {
     });
   }
 };
+
+// Mark T-shirt as distributed
+export const markTshirtDistributed = async (req, res) => {
+  try {
+    const { id } = req.params;
+    // const { distributedBy } = req.body; // COMMENTED OUT - Team member tracking
+
+    // COMMENTED OUT - Team member name validation
+    // if (!distributedBy || !distributedBy.trim()) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Team member name is required",
+    //   });
+    // }
+
+    const registration = await Marathon.findById(id);
+
+    if (!registration) {
+      return res.status(404).json({
+        success: false,
+        message: "Registration not found",
+      });
+    }
+
+    // Only allow for confirmed registrations
+    if (registration.status !== "confirmed") {
+      return res.status(400).json({
+        success: false,
+        message: "Can only distribute T-shirts for confirmed registrations",
+      });
+    }
+
+    // Check if already distributed
+    if (registration.tshirtDistributed) {
+      return res.status(400).json({
+        success: false,
+        message: "T-shirt already marked as distributed",
+      });
+    }
+
+    // Update T-shirt distribution status
+    registration.tshirtDistributed = true;
+    // registration.tshirtDistributedBy = distributedBy.trim(); // COMMENTED OUT
+    registration.tshirtDistributedAt = new Date();
+
+    await registration.save();
+
+    res.status(200).json({
+      success: true,
+      message: "T-shirt marked as distributed",
+      data: registration,
+    });
+  } catch (error) {
+    console.error("Error marking T-shirt distributed:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update T-shirt distribution status",
+      error: error.message,
+    });
+  }
+};
+
+// Undo T-shirt distribution (in case of mistake)
+export const undoTshirtDistribution = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const registration = await Marathon.findById(id);
+
+    if (!registration) {
+      return res.status(404).json({
+        success: false,
+        message: "Registration not found",
+      });
+    }
+
+    if (!registration.tshirtDistributed) {
+      return res.status(400).json({
+        success: false,
+        message: "T-shirt is not marked as distributed",
+      });
+    }
+
+    // Reset distribution status
+    registration.tshirtDistributed = false;
+    registration.tshirtDistributedBy = null;
+    registration.tshirtDistributedAt = null;
+
+    await registration.save();
+
+    res.status(200).json({
+      success: true,
+      message: "T-shirt distribution undone",
+      data: registration,
+    });
+  } catch (error) {
+    console.error("Error undoing T-shirt distribution:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to undo T-shirt distribution",
+      error: error.message,
+    });
+  }
+};
+
+// Get T-shirt distribution statistics
+export const getTshirtDistributionStats = async (req, res) => {
+  try {
+    const totalConfirmed = await Marathon.countDocuments({
+      status: "confirmed",
+    });
+
+    const distributed = await Marathon.countDocuments({
+      status: "confirmed",
+      tshirtDistributed: true,
+    });
+
+    const pending = totalConfirmed - distributed;
+
+    // Get distribution by team member
+    const distributionByMember = await Marathon.aggregate([
+      {
+        $match: {
+          status: "confirmed",
+          tshirtDistributed: true,
+        },
+      },
+      {
+        $group: {
+          _id: "$tshirtDistributedBy",
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { count: -1 },
+      },
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalConfirmed,
+        distributed,
+        pending,
+        percentage: totalConfirmed > 0 ? ((distributed / totalConfirmed) * 100).toFixed(1) : 0,
+        distributionByMember,
+      },
+    });
+  } catch (error) {
+    console.error("Error getting T-shirt distribution stats:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to get T-shirt distribution statistics",
+      error: error.message,
+    });
+  }
+};

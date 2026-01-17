@@ -38,10 +38,10 @@ const MarathonPreview = () => {
   }, []);
 
   const highlights = [
-    {icon: "🏃", text: "5K & 10K Categories"},
-    {icon: "🎽", text: "Free T-Shirt & Medal"},
-    {icon: "🏆", text: "Cash Prizes"},
-    {icon: "📍", text: "SGGSIE&T Campus"},
+    {icon: "🏃", text: "5K Run"},
+    {icon: "👕", text: "Free T-Shirt"},
+    {icon: "�", text: "Medals for Winners"},
+    {icon: "�", text: "Cash Prizes"},
   ];
 
   return (
@@ -293,15 +293,15 @@ const MarathonPreview = () => {
                 <div>
                   <p className="text-white/70 text-sm font-medium">Registration Fee</p>
                   <p className="text-3xl font-black text-white">
-                    ₹500{" "}
+                    ₹99{" "}
                     <span className="text-sm text-white/60 font-normal">
                       only
                     </span>
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-yellow-400 text-sm font-bold">
-                    ✨ Early Bird
+                  <p className="text-orange-400 text-sm font-bold">
+                    🎉 Register Now
                   </p>
                   <p className="text-white/60 text-xs">
                     Limited slots available

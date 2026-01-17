@@ -7,6 +7,9 @@ import {
   deleteRegistration,
   exportRegistrations,
   getMarathonStats,
+  markTshirtDistributed,
+  undoTshirtDistribution,
+  getTshirtDistributionStats,
 } from "../controllers/marathon.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 import { uploadPaymentScreenshot } from "../middleware/cloudinaryUpload.middleware.js";
@@ -57,5 +60,10 @@ router.put("/registrations/:id", authMiddleware, updateRegistrationStatus);
 router.delete("/registrations/:id", authMiddleware, deleteRegistration);
 router.get("/export", authMiddleware, exportRegistrations);
 router.get("/stats", authMiddleware, getMarathonStats);
+
+// T-shirt distribution routes
+router.get("/tshirt-distribution/stats", getTshirtDistributionStats);
+router.patch("/:id/tshirt-distributed", markTshirtDistributed);
+router.patch("/:id/undo-tshirt-distribution", undoTshirtDistribution);
 
 export default router;
