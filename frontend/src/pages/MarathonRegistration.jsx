@@ -1044,6 +1044,14 @@ const MarathonRegistration = () => {
                       I understand that participation is at my own risk and I release the organizers from any liability. 
                       I agree to follow all event rules and safety guidelines. The information provided above is accurate and complete.
                     </p>
+                    <a
+                      href="/marathon/terms-and-conditions"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block mt-2 text-orange-400 hover:text-orange-300 text-sm font-semibold underline transition-colors"
+                    >
+                      📋 Read Full Terms & Conditions →
+                    </a>
                   </div>
                 </label>
               </motion.div>

@@ -27,6 +27,7 @@ import EventRegistrationPage from "./pages/EventRegistrationPage";
 import UniversalRegistration from "./pages/UniversalRegistration";
 import RegisterPage from "./pages/RegisterPage";
 import MarathonRegistration from "./pages/MarathonRegistration";
+import MarathonTermsAndConditions from "./pages/MarathonTermsAndConditions";
 import WomenTournamentPage from "./pages/WomenTournamentPage";
 import AdminMarathon from "./pages/AdminMarathon";
 import AdminWomenTournament from "./pages/AdminWomenTournament";
@@ -70,6 +71,10 @@ function App() {
               {/* Marathon Routes */}
               <Route path="/marathon-event" element={<MarathonPage />} />
               <Route path="/marathon" element={<MarathonRegistration />} />
+              <Route
+                path="/marathon/terms-and-conditions"
+                element={<MarathonTermsAndConditions />}
+              />
 
               {/* Women's Tournament Route - NEW */}
               <Route
