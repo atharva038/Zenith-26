@@ -1,116 +1,72 @@
-# Backend Utility Scripts
+# Backend Scripts
 
-This folder contains one-time setup scripts and utility tools for managing the Zenith 2026 backend.
+Organized utility scripts for Zenith-26 backend management.
 
-## Marathon Testing Scripts
+## 📁 Folder Structure
 
-### `createFakeMarathonData.js` ⭐ NEW
-Create 500 fake marathon participants for testing the T-shirt distribution system.
-
-**Features:**
-- Creates 500 realistic fake participants with Indian names
-- Random distribution of confirmed/pending registrations
-- 30% of confirmed registrations have T-shirts already distributed
-- Random colleges, ages, phone numbers, emails
-- Realistic emergency contacts and medical conditions
+### `/admin/` - Admin Management Scripts
+Scripts for managing admin accounts and authentication:
+- `createAdmin.js` - Create new admin accounts
+- `resetAdminPassword.js` - Reset admin password
+- `resetAllAdmins.js` - Bulk admin management
+- `setupProductionAdmin.js` - Setup production admin account
 
 **Usage:**
 ```bash
 cd backend
-node scripts/createFakeMarathonData.js
+node scripts/admin/createAdmin.js
 ```
 
-**⚠️ Warning:** This script will DELETE all existing marathon registrations before creating fake data!
+### `/media-team/` - Media Team Scripts
+Scripts for managing media team accounts:
+- `createMediaTeam.js` - Create media team accounts
 
-**What it creates:**
-- ~400 confirmed registrations
-- ~100 pending registrations
-- ~120 T-shirts already distributed (for testing)
-- Random distribution of male/female participants
-- Random T-shirt sizes, ages, colleges
-
-**After running:**
-Visit `/tshirt-distribution` to see the fake data in action!
-
----
-
-## Admin Management Scripts
-
-### `createAdmin.js`
-Create a new admin account.
-
+**Usage:**
 ```bash
 cd backend
-node scripts/createAdmin.js
+node scripts/media-team/createMediaTeam.js
 ```
 
-### `resetAdminPassword.js`
-Reset password for a specific admin account.
+### `/testing/` - Testing & Demo Scripts
+Scripts for generating test data:
+- `createFakeMarathonData.js` - Generate 500 fake marathon participants
 
+**⚠️ Warning:** This script will DELETE all existing marathon registrations!
+
+**Usage:**
 ```bash
 cd backend
-node scripts/resetAdminPassword.js
+node scripts/testing/createFakeMarathonData.js
 ```
 
-### `resetAllAdmins.js`
-Reset passwords for all admin accounts (use with caution).
+### `/archived-uploads/` - Archived Upload Scripts
+Old scripts for uploading images to Cloudinary (already executed, kept for reference).
+
+**Note:** These scripts have already been executed. Images are now on Cloudinary. Keep for reference only.
+
+## 🚀 Quick Commands
 
 ```bash
-cd backend
-node scripts/resetAllAdmins.js
+# Create admin
+node scripts/admin/createAdmin.js
+
+# Reset admin password
+node scripts/admin/resetAdminPassword.js
+
+# Create media team member
+node scripts/media-team/createMediaTeam.js
+
+# Generate test marathon data
+node scripts/testing/createFakeMarathonData.js
 ```
 
-### `setupProductionAdmin.js`
-Setup admin account for production environment.
+## ⚠️ Important Notes
 
-```bash
-cd backend
-node scripts/setupProductionAdmin.js
-```
+1. All scripts require `.env` file to be configured
+2. Database connection must be active
+3. Run scripts from the backend directory
+4. Backup database before running management scripts
 
-### `testAdmin.js`
-Test admin authentication and functionality.
-
-```bash
-cd backend
-node scripts/testAdmin.js
-```
-
-## Image Upload Scripts
-
-These scripts upload images to Cloudinary for the Women's Tournament section.
-
-### `upload1stCategoryImages.js`
-Upload 1st category sport images to Cloudinary.
-
-```bash
-cd backend
-node scripts/upload1stCategoryImages.js
-```
-
-### `uploadFemaleTournamentImages.js`
-Upload female tournament related images.
-
-```bash
-cd backend
-node scripts/uploadFemaleTournamentImages.js
-```
-
-### `uploadWomenTournamentBg.js`
-Upload women's tournament background images.
-
-```bash
-cd backend
-node scripts/uploadWomenTournamentBg.js
-```
-
-### Individual Image Upload Scripts
-- `uploadAtharvQRCodes.js` - Upload Atharva QR codes
-- `uploadBackupQRCodes.js` - Upload backup QR codes
-- `uploadBackupQRs.js` - Upload backup QR images
-- `uploadDeanImage.js` - Upload dean's image
-- `uploadDirectorImage.js` - Upload director's image
-- `uploadJeetPatilImage.js` - Upload Jeet Patil's image
 - `uploadKadamImage.js` - Upload Kadam's image
 - `uploadLogo.js` - Upload Zenith logo
 - `uploadPaymentQR.js` - Upload payment QR codes
