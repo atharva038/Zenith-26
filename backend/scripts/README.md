@@ -2,6 +2,38 @@
 
 This folder contains one-time setup scripts and utility tools for managing the Zenith 2026 backend.
 
+## Marathon Testing Scripts
+
+### `createFakeMarathonData.js` ⭐ NEW
+Create 500 fake marathon participants for testing the T-shirt distribution system.
+
+**Features:**
+- Creates 500 realistic fake participants with Indian names
+- Random distribution of confirmed/pending registrations
+- 30% of confirmed registrations have T-shirts already distributed
+- Random colleges, ages, phone numbers, emails
+- Realistic emergency contacts and medical conditions
+
+**Usage:**
+```bash
+cd backend
+node scripts/createFakeMarathonData.js
+```
+
+**⚠️ Warning:** This script will DELETE all existing marathon registrations before creating fake data!
+
+**What it creates:**
+- ~400 confirmed registrations
+- ~100 pending registrations
+- ~120 T-shirts already distributed (for testing)
+- Random distribution of male/female participants
+- Random T-shirt sizes, ages, colleges
+
+**After running:**
+Visit `/tshirt-distribution` to see the fake data in action!
+
+---
+
 ## Admin Management Scripts
 
 ### `createAdmin.js`

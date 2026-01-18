@@ -58,14 +58,14 @@ const AdminOnSpotRegistration = () => {
 
   const BACKUP_QR_CODES = [
     {
-      name: "ICICI Bank - Atharva Joshi",
-      upi: "atharvajoshi038@okicici",
-      url: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1767630215/zenith-26/img/payment/backup-qr-atharva-okicici.png",
+      name: "Balaji Anil Kalyankar (PhonePe)",
+      upi: "balajianil.kalyankar@ybl",
+      url: "/img/balajiQR.png",
     },
     {
-      name: "Axis Bank - Atharva Joshi",
-      upi: "atharvajoshi038@okaxis",
-      url: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1767630220/zenith-26/img/payment/backup-qr-atharva-okaxis.png",
+      name: "Atharva Joshi (Bank of Baroda)",
+      upi: "atharvsjoshi2005-1@okicici",
+      url: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1768722815/zenith-26/img/payment/backup-qr-atharva-bob.png",
     },
   ];
 

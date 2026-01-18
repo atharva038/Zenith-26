@@ -8,18 +8,18 @@ import {motion, AnimatePresence} from "framer-motion";
 const PAYMENT_QR_URL =
   "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto:best/v1767592627/zenith-26/img/payment/payment-qr-sagar-ubale";
 
-// Backup QR Codes - Atharva Joshi
+// Backup QR Codes
 const BACKUP_QR_URLS = [
   {
-    name: "Atharva Joshi (ICICI)",
-    upiId: "atharvsjoshi2005-1@okicici",
-    url: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1767630215/zenith-26/img/payment/backup-qr-atharva-okicici.png",
+    name: "Balaji Anil Kalyankar (PhonePe)",
+    upiId: "balajianil.kalyankar@ybl",
+    url: "/img/balajiQR.png", // Local image from public/img folder
   },
-  // {
-  //   name: "Atharva Joshi (Axis)",
-  //   upiId: "atharvsjoshi2005@okaxis",
-  //   url: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1767630220/zenith-26/img/payment/backup-qr-atharva-okaxis.png",
-  // },
+  {
+    name: "Atharva Joshi (Bank of Baroda)",
+    upiId: "atharvsjoshi2005-1@okicici",
+    url: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1768722815/zenith-26/img/payment/backup-qr-atharva-bob.png",
+  },
 ];
 
 const MarathonRegistration = () => {
