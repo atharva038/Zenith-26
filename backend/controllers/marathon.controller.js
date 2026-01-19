@@ -301,12 +301,16 @@ export const registerMarathon = async (req, res) => {
 // @access  Private/Admin
 export const getAllRegistrations = async (req, res) => {
   try {
-    const { status, search, gender } = req.query;
+    const { status, search, gender, tshirtSize, tshirtDistributed, page = 1, limit = 50 } = req.query;
 
     // Build filter
     const filter = {};
     if (status) filter.status = status;
     if (gender) filter.gender = gender;
+    if (tshirtSize) filter.tshirtSize = tshirtSize;
+    if (tshirtDistributed) {
+      filter.tshirtDistributed = tshirtDistributed === 'true';
+    }
     if (search) {
       filter.$or = [
         { fullName: { $regex: search, $options: "i" } },
@@ -316,9 +320,22 @@ export const getAllRegistrations = async (req, res) => {
       ];
     }
 
-    const registrations = await Marathon.find(filter).sort({ createdAt: -1 });
+    // Calculate pagination
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
 
-    // Get statistics
+    // Get total count for pagination
+    const total = await Marathon.countDocuments(filter);
+    const totalPages = Math.ceil(total / limitNum);
+
+    // Get paginated registrations
+    const registrations = await Marathon.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum);
+
+    // Get statistics (for all data, not just current page)
     const stats = {
       total: await Marathon.countDocuments(),
       pending: await Marathon.countDocuments({ status: "pending" }),
@@ -336,6 +353,14 @@ export const getAllRegistrations = async (req, res) => {
       count: registrations.length,
       stats,
       data: registrations,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages,
+        hasNextPage: pageNum < totalPages,
+        hasPrevPage: pageNum > 1,
+      },
     });
   } catch (error) {
     console.error("Get registrations error:", error);

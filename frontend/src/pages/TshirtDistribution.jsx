@@ -11,6 +11,8 @@ const TshirtDistribution = () => {
   const [filterDistributed, setFilterDistributed] = useState("all"); // all, distributed, pending
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedRegistration, setSelectedRegistration] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(50); // Show 50 items per page
   // COMMENTED OUT - Team member name tracking
   // const [memberName, setMemberName] = useState("");
   // const [showNameModal, setShowNameModal] = useState(false);
@@ -24,6 +26,7 @@ const TshirtDistribution = () => {
         params: {
           status: "confirmed",
           search: searchQuery,
+          limit: 10000, // Request all registrations (high limit to get everything)
         },
       });
 
@@ -63,6 +66,17 @@ const TshirtDistribution = () => {
     fetchRegistrations();
     fetchStats();
   }, [fetchRegistrations]);
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = registrations.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(registrations.length / itemsPerPage);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filterDistributed]);
 
   // Mark T-shirt as distributed
   const markDistributed = async (id) => {
@@ -228,13 +242,13 @@ const TshirtDistribution = () => {
 
         {/* Registrations List */}
         <div className="space-y-3">
-          {registrations.length === 0 ? (
+          {currentItems.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">🎽</div>
               <p className="text-gray-400 text-lg">No registrations found</p>
             </div>
           ) : (
-            registrations.map((registration) => (
+            currentItems.map((registration) => (
               <motion.div
                 key={registration._id}
                 initial={{ opacity: 0, y: 20 }}
@@ -404,6 +418,42 @@ const TshirtDistribution = () => {
             ))
           )}
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-500/20 rounded-xl p-4">
+            <p className="text-gray-400 text-sm">
+              Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, registrations.length)} of {registrations.length} registrations
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  currentPage === 1
+                    ? "bg-gray-700/50 text-gray-500 cursor-not-allowed"
+                    : "bg-orange-500 text-white hover:bg-orange-600"
+                }`}
+              >
+                ← Previous
+              </button>
+              <span className="px-4 py-2 bg-white/5 text-white rounded-lg font-medium">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  currentPage === totalPages
+                    ? "bg-gray-700/50 text-gray-500 cursor-not-allowed"
+                    : "bg-orange-500 text-white hover:bg-orange-600"
+                }`}
+              >
+                Next →
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Confirmation Modal */}

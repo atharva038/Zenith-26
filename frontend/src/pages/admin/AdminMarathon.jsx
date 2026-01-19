@@ -383,8 +383,10 @@ const AdminMarathon = () => {
   };
 
   // Use server-side pagination if available, otherwise fall back to client-side
-  const currentItems = pagination.total 
-    ? registrations.filter(reg => reg.status !== "cancelled")
+  // Server returns only the items for current page, so no need to slice
+  // Client-side: slice the full array based on page/limit
+  const currentItems = pagination.totalPages 
+    ? registrations.filter(reg => reg.status !== "cancelled") // Server already paginated
     : registrations.filter(reg => reg.status !== "cancelled").slice(
         (filters.page - 1) * filters.limit, 
         filters.page * filters.limit
