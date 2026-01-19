@@ -1,12 +1,12 @@
 import {useState, useEffect} from "react";
 import {motion, AnimatePresence} from "framer-motion";
-import AdminLayout from "../components/AdminLayout";
+import AdminLayout from "../../components/AdminLayout";
 import {
   uploadMedia,
   getAllMedia,
   deleteMedia,
   updateMedia,
-} from "../services/mediaService";
+} from "../../services/mediaService";
 import {toast} from "react-toastify";
 
 const AdminGallery = () => {

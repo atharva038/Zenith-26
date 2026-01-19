@@ -6,7 +6,7 @@ import {
   getAllMedia,
   deleteMedia,
   updateMedia,
-} from "../services/mediaService";
+} from "../../services/mediaService";
 import {toast} from "react-toastify";
 
 const MediaTeamDashboard = () => {

@@ -4,25 +4,60 @@ import {motion, AnimatePresence} from "framer-motion";
 import {toast} from "react-toastify";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import api from "../config/api";
-import AdminLayout from "../components/AdminLayout";
+import api from "../../config/api";
+import AdminLayout from "../../components/AdminLayout";
 
 const AdminMarathon = () => {
   const navigate = useNavigate();
   const [registrations, setRegistrations] = useState([]);
   const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true); // For full-page spinner on first load
+  const [loading, setLoading] = useState(false); // For filter/search operations
   const [selectedRegistration, setSelectedRegistration] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showScreenshotModal, setShowScreenshotModal] = useState(false);
   const [selectedScreenshot, setSelectedScreenshot] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
   const [filters, setFilters] = useState({
     status: "",
     search: "",
     gender: "",
+    tshirtSize: "",
+    tshirtDistributed: "",
+    page: 1,
+    limit: 50,
   });
+  const [pagination, setPagination] = useState({});
+
+  // Unified filter handler that resets page when any filter changes
+  const handleFilterChange = (newFilters) => {
+    // Always reset page to 1 when any filter changes (except page itself)
+    const isOnlyPageChange = Object.keys(newFilters).length === 1 && 'page' in newFilters;
+    
+    setFilters(prev => ({
+      ...prev,
+      ...newFilters,
+      page: isOnlyPageChange ? newFilters.page : 1,
+    }));
+  };
+
+  // Clear all filters
+  const handleClearAllFilters = () => {
+    setFilters({
+      status: "",
+      search: "",
+      gender: "",
+      tshirtSize: "",
+      tshirtDistributed: "",
+      page: 1,
+      limit: 50,
+    });
+  };
+
+  // Check if any filters are active
+  const hasActiveFilters = () => {
+    return filters.status || filters.search || filters.gender || 
+           filters.tshirtSize || filters.tshirtDistributed;
+  };
 
   // Fetch registrations
   const fetchRegistrations = useCallback(async () => {
@@ -32,20 +67,27 @@ const AdminMarathon = () => {
       if (filters.status) queryParams.append("status", filters.status);
       if (filters.search) queryParams.append("search", filters.search);
       if (filters.gender) queryParams.append("gender", filters.gender);
+      if (filters.tshirtSize) queryParams.append("tshirtSize", filters.tshirtSize);
+      if (filters.tshirtDistributed) queryParams.append("tshirtDistributed", filters.tshirtDistributed);
+      queryParams.append("page", filters.page);
+      queryParams.append("limit", filters.limit);
 
       const response = await api.get(`/marathon/registrations?${queryParams}`);
       if (response.data.success) {
         setRegistrations(response.data.data);
         setStats(response.data.stats);
+        setPagination(response.data.pagination || {});
       }
     } catch (error) {
       toast.error("Failed to fetch registrations");
       console.error(error);
     } finally {
       setLoading(false);
+      setInitialLoading(false); // Turn off initial loading after first fetch
     }
   }, [filters]);
 
+  // Fetch registrations when the memoized function changes (which happens when filters change)
   useEffect(() => {
     fetchRegistrations();
   }, [fetchRegistrations]);
@@ -340,14 +382,22 @@ const AdminMarathon = () => {
     }
   };
 
-  // Pagination
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = registrations.filter(reg => reg.status !== "cancelled").slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(registrations.filter(reg => reg.status !== "cancelled").length / itemsPerPage);
+  // Use server-side pagination if available, otherwise fall back to client-side
+  const currentItems = pagination.total 
+    ? registrations.filter(reg => reg.status !== "cancelled")
+    : registrations.filter(reg => reg.status !== "cancelled").slice(
+        (filters.page - 1) * filters.limit, 
+        filters.page * filters.limit
+      );
+  
+  const totalPages = pagination.totalPages || Math.ceil(
+    registrations.filter(reg => reg.status !== "cancelled").length / filters.limit
+  );
+  
   const rejectedRegistrations = registrations.filter(reg => reg.status === "cancelled");
 
-  if (loading) {
+  // Only show full-page spinner on initial load, not during filtering
+  if (initialLoading) {
     return (
       <AdminLayout title="Marathon">
         <div className="flex items-center justify-center min-h-[60vh]">
@@ -487,21 +537,40 @@ const AdminMarathon = () => {
             animate={{opacity: 1, y: 0}}
             className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm border border-neon-blue/20 rounded-2xl p-6 mb-6"
           >
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            {/* Filter Header with Clear Button */}
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-neon-blue font-rajdhani">
+                🔍 Filters {hasActiveFilters() && `(${Object.values(filters).filter(v => v && v !== 1 && v !== 50).length} active)`}
+              </h3>
+              {hasActiveFilters() && (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleClearAllFilters}
+                  className="px-4 py-2 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300 hover:bg-red-500/30 transition-all text-sm font-semibold"
+                >
+                  ✕ Clear All
+                </motion.button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+              {/* Search Input */}
               <input
                 type="text"
                 placeholder="🔍 Search by name, email, or reg number..."
                 value={filters.search}
                 onChange={(e) =>
-                  setFilters({...filters, search: e.target.value})
+                  handleFilterChange({ search: e.target.value })
                 }
                 className="px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-neon-blue/50 font-rajdhani md:col-span-2"
               />
 
+              {/* Gender Filter */}
               <select
                 value={filters.gender}
                 onChange={(e) =>
-                  setFilters({...filters, gender: e.target.value})
+                  handleFilterChange({ gender: e.target.value })
                 }
                 className="px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-neon-blue/50 font-rajdhani"
               >
@@ -511,10 +580,11 @@ const AdminMarathon = () => {
                 <option value="Other">Other</option>
               </select>
 
+              {/* Status Filter */}
               <select
                 value={filters.status}
                 onChange={(e) =>
-                  setFilters({...filters, status: e.target.value})
+                  handleFilterChange({ status: e.target.value })
                 }
                 className="px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-neon-blue/50 font-rajdhani"
               >
@@ -524,24 +594,56 @@ const AdminMarathon = () => {
                 <option value="cancelled">Cancelled</option>
               </select>
 
-              <div className="flex gap-2">
-                <motion.button
-                  whileHover={{scale: 1.02}}
-                  whileTap={{scale: 0.98}}
-                  onClick={exportToCSV}
-                  className="flex-1 bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-3 rounded-lg hover:from-green-700 hover:to-green-600 transition-all font-rajdhani font-semibold shadow-lg shadow-green-500/20"
-                >
-                  📥 CSV
-                </motion.button>
-                <motion.button
-                  whileHover={{scale: 1.02}}
-                  whileTap={{scale: 0.98}}
-                  onClick={exportToPDF}
-                  className="flex-1 bg-gradient-to-r from-red-600 to-red-500 text-white px-4 py-3 rounded-lg hover:from-red-700 hover:to-red-600 transition-all font-rajdhani font-semibold shadow-lg shadow-red-500/20"
-                >
-                  📄 PDF
-                </motion.button>
-              </div>
+              {/* T-shirt Size Filter */}
+              <select
+                value={filters.tshirtSize}
+                onChange={(e) =>
+                  handleFilterChange({ tshirtSize: e.target.value })
+                }
+                className="px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-neon-blue/50 font-rajdhani"
+              >
+                <option value="">All T-shirt Sizes</option>
+                <option value="XS">XS</option>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="XXL">XXL</option>
+                <option value="XXXL">XXXL</option>
+              </select>
+
+              {/* T-shirt Distributed Filter */}
+              <select
+                value={filters.tshirtDistributed}
+                onChange={(e) =>
+                  handleFilterChange({ tshirtDistributed: e.target.value })
+                }
+                className="px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-neon-blue/50 font-rajdhani"
+              >
+                <option value="">T-shirt Status</option>
+                <option value="true">Distributed ✅</option>
+                <option value="false">Pending 📦</option>
+              </select>
+            </div>
+
+            {/* Export Buttons */}
+            <div className="flex gap-2 mt-4">
+              <motion.button
+                whileHover={{scale: 1.02}}
+                whileTap={{scale: 0.98}}
+                onClick={exportToCSV}
+                className="flex-1 bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-3 rounded-lg hover:from-green-700 hover:to-green-600 transition-all font-rajdhani font-semibold shadow-lg shadow-green-500/20"
+              >
+                📥 Export CSV
+              </motion.button>
+              <motion.button
+                whileHover={{scale: 1.02}}
+                whileTap={{scale: 0.98}}
+                onClick={exportToPDF}
+                className="flex-1 bg-gradient-to-r from-red-600 to-red-500 text-white px-4 py-3 rounded-lg hover:from-red-700 hover:to-red-600 transition-all font-rajdhani font-semibold shadow-lg shadow-red-500/20"
+              >
+                📄 Export PDF
+              </motion.button>
             </div>
           </motion.div>
 
@@ -549,8 +651,19 @@ const AdminMarathon = () => {
           <motion.div
             initial={{opacity: 0, y: 20}}
             animate={{opacity: 1, y: 0}}
-            className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm border border-neon-blue/20 rounded-2xl overflow-hidden"
+            className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm border border-neon-blue/20 rounded-2xl overflow-hidden relative"
           >
+            {/* Loading Overlay for filtering - only shows during filter operations, not initial load */}
+            {loading && (
+              <div className="absolute inset-0 bg-black/50 backdrop-blur-sm z-10 flex items-center justify-center">
+                <motion.div
+                  animate={{rotate: 360}}
+                  transition={{duration: 1, repeat: Infinity, ease: "linear"}}
+                  className="w-12 h-12 border-4 border-neon-blue border-t-transparent rounded-full"
+                />
+              </div>
+            )}
+
             {currentItems.length === 0 ? (
               <div className="p-12 text-center">
                 <p className="text-gray-400 text-lg font-rajdhani">
@@ -805,16 +918,20 @@ const AdminMarathon = () => {
                 {totalPages > 1 && (
                   <div className="flex items-center justify-between px-6 py-4 border-t border-neon-blue/20">
                     <p className="text-gray-400 text-sm font-rajdhani">
-                      Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, registrations.filter(r => r.status !== "cancelled").length)} of {registrations.filter(r => r.status !== "cancelled").length}
+                      {pagination.total ? (
+                        <>Showing {((filters.page - 1) * filters.limit) + 1} to {Math.min(filters.page * filters.limit, pagination.total)} of {pagination.total}</>
+                      ) : (
+                        <>Showing {((filters.page - 1) * filters.limit) + 1} to {Math.min(filters.page * filters.limit, registrations.filter(r => r.status !== "cancelled").length)} of {registrations.filter(r => r.status !== "cancelled").length}</>
+                      )}
                     </p>
                     <div className="flex gap-2">
                       <motion.button
                         whileHover={{scale: 1.05}}
                         whileTap={{scale: 0.95}}
-                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                        disabled={currentPage === 1}
+                        onClick={() => handleFilterChange({ page: Math.max(filters.page - 1, 1) })}
+                        disabled={filters.page === 1}
                         className={`px-4 py-2 rounded-lg font-rajdhani font-semibold transition-all ${
-                          currentPage === 1
+                          filters.page === 1
                             ? "bg-gray-700/50 text-gray-500 cursor-not-allowed"
                             : "bg-neon-blue/20 border border-neon-blue/50 text-neon-blue hover:bg-neon-blue/30"
                         }`}
@@ -822,15 +939,15 @@ const AdminMarathon = () => {
                         ← Prev
                       </motion.button>
                       <span className="px-4 py-2 text-white font-rajdhani">
-                        {currentPage} / {totalPages}
+                        {filters.page} / {totalPages}
                       </span>
                       <motion.button
                         whileHover={{scale: 1.05}}
                         whileTap={{scale: 0.95}}
-                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                        disabled={currentPage === totalPages}
+                        onClick={() => handleFilterChange({ page: Math.min(filters.page + 1, totalPages) })}
+                        disabled={filters.page === totalPages}
                         className={`px-4 py-2 rounded-lg font-rajdhani font-semibold transition-all ${
-                          currentPage === totalPages
+                          filters.page === totalPages
                             ? "bg-gray-700/50 text-gray-500 cursor-not-allowed"
                             : "bg-neon-blue/20 border border-neon-blue/50 text-neon-blue hover:bg-neon-blue/30"
                         }`}

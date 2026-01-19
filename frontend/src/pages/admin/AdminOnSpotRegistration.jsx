@@ -1,8 +1,8 @@
 import {useState, useEffect, useRef} from "react";
 import {motion, AnimatePresence} from "framer-motion";
 import {toast} from "react-toastify";
-import api from "../config/api";
-import AdminLayout from "../components/AdminLayout";
+import api from "../../config/api";
+import AdminLayout from "../../components/AdminLayout";
 import {
   SackRaceIcon,
   ThreeLegRaceIcon,
@@ -27,7 +27,7 @@ import {
   BasketballIcon,
   FootballIcon,
   BoxCricketIcon,
-} from "../components/SportIcons";
+} from "../../components/SportIcons";
 
 const AdminOnSpotRegistration = () => {
   const [paymentMethod, setPaymentMethod] = useState("");

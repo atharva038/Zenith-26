@@ -1,7 +1,7 @@
 import {useState, useEffect, useCallback} from "react";
 import {motion} from "framer-motion";
-import api from "../config/api";
-import AdminLayout from "../components/AdminLayout";
+import api from "../../config/api";
+import AdminLayout from "../../components/AdminLayout";
 
 const AdminDashboard = () => {
   const [admin, setAdmin] = useState(null);

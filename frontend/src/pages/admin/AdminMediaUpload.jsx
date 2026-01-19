@@ -2,8 +2,8 @@ import {useState, useEffect, useRef} from "react";
 import {useNavigate, Link} from "react-router-dom";
 import {motion, AnimatePresence} from "framer-motion";
 import {toast} from "react-toastify";
-import {uploadMedia, getAllMedia, deleteMedia} from "../services/mediaService";
-import AdminSidebar from "../components/AdminSidebar";
+import {uploadMedia, getAllMedia, deleteMedia} from "../../services/mediaService";
+import AdminSidebar from "../../components/AdminSidebar";
 
 const AdminMediaUpload = () => {
   const navigate = useNavigate();

@@ -1,5 +1,5 @@
 import {motion} from "framer-motion";
-import AdminLayout from "../components/AdminLayout";
+import AdminLayout from "../../components/AdminLayout";
 
 const AdminSettings = () => {
   return (

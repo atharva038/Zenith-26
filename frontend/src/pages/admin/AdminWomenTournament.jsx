@@ -2,11 +2,11 @@ import {useState, useEffect, useCallback} from "react";
 import {motion, AnimatePresence} from "framer-motion";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
-import api from "../config/api";
-import AdminLayout from "../components/AdminLayout";
-import MobileTabNavigation from "../components/MobileTabNavigation";
-import WomenTournamentAnalytics from "../components/mobile/WomenTournamentAnalytics";
-import WomenTournamentRegistrations from "../components/mobile/WomenTournamentRegistrations";
+import api from "../../config/api";
+import AdminLayout from "../../components/AdminLayout";
+import MobileTabNavigation from "../../components/MobileTabNavigation";
+import WomenTournamentAnalytics from "../../components/mobile/WomenTournamentAnalytics";
+import WomenTournamentRegistrations from "../../components/mobile/WomenTournamentRegistrations";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 

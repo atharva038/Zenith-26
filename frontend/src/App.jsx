@@ -14,10 +14,20 @@ import CinematicIntro from "./components/CinematicIntro";
 import Homepage from "./pages/Homepage";
 import GameVerse from "./pages/GameVerse";
 import MarathonPage from "./pages/MarathonPage";
-import AdminLogin from "./pages/AdminLogin";
-import AdminDashboard from "./pages/AdminDashboard";
-import MediaTeamLogin from "./pages/MediaTeamLogin";
-import MediaTeamDashboard from "./pages/MediaTeamDashboard";
+
+// Admin Pages
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminMarathon from "./pages/admin/AdminMarathon";
+import AdminWomenTournament from "./pages/admin/AdminWomenTournament";
+import AdminOnSpotRegistration from "./pages/admin/AdminOnSpotRegistration";
+import AdminAdmins from "./pages/admin/AdminAdmins";
+import AdminGallery from "./pages/admin/AdminGallery";
+import AdminSettings from "./pages/admin/AdminSettings";
+
+// Media Team
+import MediaTeamLogin from "./pages/media-team/MediaTeamLogin";
+import MediaTeamDashboard from "./pages/media-team/MediaTeamDashboard";
 import "lenis/dist/lenis.css";
 import EventManagement from "./pages/EventManagement";
 import SportEventForm from "./pages/SportEventForm";
@@ -29,12 +39,6 @@ import RegisterPage from "./pages/RegisterPage";
 import MarathonRegistration from "./pages/MarathonRegistration";
 import MarathonTermsAndConditions from "./pages/MarathonTermsAndConditions";
 import WomenTournamentPage from "./pages/WomenTournamentPage";
-import AdminMarathon from "./pages/AdminMarathon";
-import AdminWomenTournament from "./pages/AdminWomenTournament";
-import AdminOnSpotRegistration from "./pages/AdminOnSpotRegistration";
-import AdminAdmins from "./pages/AdminAdmins";
-import AdminGallery from "./pages/AdminGallery";
-import AdminSettings from "./pages/AdminSettings";
 import TshirtDistribution from "./pages/TshirtDistribution";
 import Gallery from "./pages/Gallery";
 import MeetOurTeam from "./pages/MeetOurTeam";
