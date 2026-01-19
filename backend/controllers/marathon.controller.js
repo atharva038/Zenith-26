@@ -403,7 +403,7 @@ export const getRegistrationById = async (req, res) => {
 // @access  Private/Admin
 export const updateRegistrationStatus = async (req, res) => {
   try {
-    const { status, paymentStatus } = req.body;
+    const { status } = req.body;
 
     const registration = await Marathon.findById(req.params.id);
 
@@ -418,28 +418,6 @@ export const updateRegistrationStatus = async (req, res) => {
 
     if (status) {
       registration.status = status;
-      
-      // When admin confirms registration, also verify payment
-      if (status === "confirmed") {
-        if (registration.paymentDetails) {
-          registration.paymentDetails.paymentStatus = "verified";
-        }
-      }
-      
-      // When admin cancels/rejects registration, mark payment as failed
-      if (status === "cancelled") {
-        if (registration.paymentDetails) {
-          registration.paymentDetails.paymentStatus = "failed";
-        }
-      }
-    }
-
-    // Handle payment status update separately
-    if (paymentStatus) {
-      if (!registration.paymentDetails) {
-        registration.paymentDetails = {};
-      }
-      registration.paymentDetails.paymentStatus = paymentStatus;
     }
 
     await registration.save();
@@ -552,7 +530,6 @@ export const exportRegistrations = async (req, res) => {
       "Emergency Contact Phone": reg.emergencyContact.phone,
       "Medical Conditions": reg.medicalConditions || "None",
       Status: reg.status,
-      "Payment Status": reg.paymentDetails?.paymentStatus || "pending",
       "Registered On": new Date(reg.createdAt).toLocaleString("en-IN"),
     }));
 

@@ -66,14 +66,17 @@ const marathonSchema = new mongoose.Schema(
       default: "None",
     },
     
-    // Registration Status
+    // Registration Status (Single source of truth)
+    // pending: User registered, waiting for admin approval
+    // confirmed: Admin approved (payment verified)
+    // cancelled: Registration rejected
     status: {
       type: String,
       enum: ["pending", "confirmed", "cancelled"],
       default: "pending",
     },
     
-    // Payment Information
+    // Payment Information (for reference only, status field is the source of truth)
     paymentDetails: {
       transactionId: {
         type: String,
@@ -86,11 +89,6 @@ const marathonSchema = new mongoose.Schema(
       paymentDate: {
         type: Date,
         default: Date.now,
-      },
-      paymentStatus: {
-        type: String,
-        enum: ["pending", "verified", "failed"],
-        default: "pending",
       },
       paymentScreenshot: {
         type: String,

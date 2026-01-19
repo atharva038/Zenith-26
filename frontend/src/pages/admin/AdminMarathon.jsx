@@ -169,32 +169,6 @@ const AdminMarathon = () => {
     }
   };
 
-  // Verify payment
-  const verifyPayment = async (id) => {
-    try {
-      const response = await api.put(`/marathon/registrations/${id}`, {
-        paymentStatus: "verified",
-      });
-      if (response.data.success) {
-        toast.success("Payment verified successfully");
-        fetchRegistrations();
-        // Update the modal data
-        if (selectedRegistration && selectedRegistration._id === id) {
-          setSelectedRegistration({
-            ...selectedRegistration,
-            paymentDetails: {
-              ...selectedRegistration.paymentDetails,
-              paymentStatus: "verified",
-            },
-          });
-        }
-      }
-    } catch (error) {
-      toast.error("Failed to verify payment");
-      console.error(error);
-    }
-  };
-
   // View details
   const viewDetails = (registration) => {
     setSelectedRegistration(registration);
