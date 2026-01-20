@@ -4,7 +4,6 @@ import {
   getAllRegistrations,
   getRegistrationById,
   updateRegistrationStatus,
-  deleteRegistration,
   exportRegistrations,
   getMarathonStats,
   markTshirtDistributed,
@@ -57,7 +56,6 @@ router.post(
 router.get("/registrations", authMiddleware, getAllRegistrations);
 router.get("/registrations/:id", authMiddleware, getRegistrationById);
 router.put("/registrations/:id", authMiddleware, updateRegistrationStatus);
-router.delete("/registrations/:id", authMiddleware, deleteRegistration);
 router.get("/export", authMiddleware, exportRegistrations);
 router.get("/stats", authMiddleware, getMarathonStats);
 

@@ -468,9 +468,12 @@ export const updateRegistrationStatus = async (req, res) => {
   }
 };
 
-// @desc    Delete marathon registration
+// @desc    Delete marathon registration - DISABLED (Use reject instead)
 // @route   DELETE /api/marathon/registrations/:id
 // @access  Private/Admin
+// NOTE: This function is disabled to prevent data tampering.
+// Use status="cancelled" to reject registrations instead.
+/*
 export const deleteRegistration = async (req, res) => {
   try {
     const registration = await Marathon.findById(req.params.id);
@@ -496,6 +499,7 @@ export const deleteRegistration = async (req, res) => {
     });
   }
 };
+*/
 
 // @desc    Export marathon registrations to CSV
 // @route   GET /api/marathon/export

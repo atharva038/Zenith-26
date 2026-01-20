@@ -2,11 +2,16 @@ import {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {motion, AnimatePresence} from "framer-motion";
 import AdminSidebar from "./AdminSidebar";
+import useScrollLock from "../hooks/useScrollLock";
 
 const AdminLayout = ({children, title}) => {
   const navigate = useNavigate();
   const [admin, setAdmin] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  
+  // Lock scroll when sidebar is open on mobile (< 1024px)
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
+  useScrollLock(sidebarOpen && isMobile, 'admin-sidebar');
 
   // Set initial sidebar state based on screen size
   useEffect(() => {

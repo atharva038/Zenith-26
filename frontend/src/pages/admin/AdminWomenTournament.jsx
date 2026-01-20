@@ -9,6 +9,7 @@ import WomenTournamentAnalytics from "../../components/mobile/WomenTournamentAna
 import WomenTournamentRegistrations from "../../components/mobile/WomenTournamentRegistrations";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import useScrollLock from "../../hooks/useScrollLock";
 
 const AdminWomenTournament = () => {
   const navigate = useNavigate();
@@ -27,6 +28,10 @@ const AdminWomenTournament = () => {
   const [pagination, setPagination] = useState({});
   const [selectedRegistration, setSelectedRegistration] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  
+  // Centralized scroll locking for modal
+  useScrollLock(showDetailsModal, 'women-tournament-details-modal');
+  
   const [mobileActiveTab, setMobileActiveTab] = useState("analytics");
   const [showRejectedRegistrationsSection, setShowRejectedRegistrationsSection] =
     useState(false);
@@ -141,54 +146,6 @@ const AdminWomenTournament = () => {
   useEffect(() => {
     fetchRegistrations();
   }, [fetchRegistrations]);
-
-  // Prevent background scroll when modal is open
-  useEffect(() => {
-    const body = document.body;
-
-    if (showDetailsModal) {
-      // Get current scroll position
-      const scrollY = window.pageYOffset;
-
-      // Apply styles to lock body
-      body.style.position = "fixed";
-      body.style.top = `-${scrollY}px`;
-      body.style.left = "0";
-      body.style.right = "0";
-      body.style.width = "100%";
-
-      // Store scroll position as data attribute
-      body.setAttribute("data-scroll-lock", scrollY.toString());
-    } else {
-      // Get stored scroll position
-      const scrollY = body.getAttribute("data-scroll-lock");
-
-      // Remove all styles
-      body.style.position = "";
-      body.style.top = "";
-      body.style.left = "";
-      body.style.right = "";
-      body.style.width = "";
-
-      // Remove data attribute
-      body.removeAttribute("data-scroll-lock");
-
-      // Restore scroll position
-      if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY, 10));
-      }
-    }
-
-    // Cleanup function
-    return () => {
-      body.style.position = "";
-      body.style.top = "";
-      body.style.left = "";
-      body.style.right = "";
-      body.style.width = "";
-      body.removeAttribute("data-scroll-lock");
-    };
-  }, [showDetailsModal]);
 
   // Active registrations are directly from the API (already excludes rejected)
   // Rejected registrations come separately from the API (all at once, not paginated)

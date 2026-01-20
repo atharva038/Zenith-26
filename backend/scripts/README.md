@@ -4,6 +4,31 @@ Organized utility scripts for Zenith-26 backend management.
 
 ## 📁 Folder Structure
 
+### Root Scripts
+
+#### `resetMarathonData.js` - Marathon Data Reset (NEW)
+Resets marathon registrations with fresh testing data using the simplified model (no paymentStatus field).
+
+**Purpose**:
+- Delete all existing marathon registrations
+- Create 21 sample registrations with new simplified schema
+- Generate realistic test data for development
+
+**Usage**:
+```bash
+cd backend
+node scripts/resetMarathonData.js
+```
+
+**What it creates**:
+- 10 Pending registrations (awaiting approval)
+- 8 Confirmed registrations (2 with T-shirts distributed)
+- 3 Cancelled registrations (rejected)
+
+⚠️ **Warning:** This script will DELETE all existing marathon registrations!
+
+---
+
 ### `/admin/` - Admin Management Scripts
 Scripts for managing admin accounts and authentication:
 - `createAdmin.js` - Create new admin accounts

@@ -12,7 +12,7 @@ const AdminSidebar = ({sidebarOpen, setSidebarOpen, admin}) => {
   };
 
   const menuItems = [
-    {id: "dashboard", label: "Dashboard", icon: "📊", path: "/admin/dashboard"},
+    // {id: "dashboard", label: "Dashboard", icon: "📊", path: "/admin/dashboard"},
     {id: "events", label: "Events", icon: "🎪", path: "/admin/events"},
     {id: "marathon", label: "Marathon", icon: "🏃", path: "/admin/marathon"},
     {
@@ -27,9 +27,9 @@ const AdminSidebar = ({sidebarOpen, setSidebarOpen, admin}) => {
       icon: "📝",
       path: "/admin/onspot-registration",
     },
-    {id: "admins", label: "Admins", icon: "👥", path: "/admin/admins"},
+    // {id: "admins", label: "Admins", icon: "👥", path: "/admin/admins"},
     {id: "gallery", label: "Gallery", icon: "🖼️", path: "/admin/gallery"},
-    {id: "settings", label: "Settings", icon: "⚙️", path: "/admin/settings"},
+    // {id: "settings", label: "Settings", icon: "⚙️", path: "/admin/settings"},
   ];
 
   const isActive = (path) => {
