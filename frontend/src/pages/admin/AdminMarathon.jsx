@@ -849,17 +849,6 @@ const AdminMarathon = () => {
                               </motion.button>
                             </>
                           )}
-                          {reg.status === "confirmed" && (
-                            <motion.button
-                              whileHover={{scale: 1.1}}
-                              whileTap={{scale: 0.9}}
-                              onClick={() => rejectRegistration(reg._id)}
-                              className="text-red-400 hover:text-red-300 transition-colors"
-                              title="Reject Registration"
-                            >
-                              ❌
-                            </motion.button>
-                          )}
                         </div>
                       </td>
                     </motion.tr>
@@ -966,15 +955,6 @@ const AdminMarathon = () => {
                           ❌
                         </motion.button>
                       </>
-                    )}
-                    {reg.status === "confirmed" && (
-                      <motion.button
-                        whileTap={{scale: 0.95}}
-                        onClick={() => rejectRegistration(reg._id)}
-                        className="flex-1 px-3 py-2 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300 text-sm font-semibold"
-                      >
-                        ❌ Reject
-                      </motion.button>
                     )}
                   </div>
                 </motion.div>
