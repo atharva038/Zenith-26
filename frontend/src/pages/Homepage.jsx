@@ -216,13 +216,18 @@ export default function Homepage() {
           }}
         >
           <motion.h1
-            className="m-0 text-[#ffe7c3] tracking-[6px] font-bold"
+            className="m-0 tracking-[6px] font-black"
             style={{
               fontSize: "clamp(2.4rem, 6vw, 5rem)",
+              background: "linear-gradient(180deg, #ffffff 0%, #ffe7c3 50%, #ffb347 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
               textShadow:
-                "0 18px 40px rgba(255,120,40,0.12), 0 0 30px rgba(255,150,50,0.18)",
-              willChange: "opacity, transform, filter", // Performance hints
-              transform: "translate3d(0,0,0)", // GPU layer
+                "0 0 40px rgba(255,215,0,0.8), 0 0 80px rgba(255,140,0,0.6), 0 8px 32px rgba(0,0,0,0.9), 0 20px 60px rgba(255,120,40,0.4)",
+              filter: "drop-shadow(0 0 20px rgba(255,215,0,0.6)) drop-shadow(0 4px 8px rgba(0,0,0,0.8))",
+              willChange: "opacity, transform, filter",
+              transform: "translate3d(0,0,0)",
             }}
             initial={{opacity: 0, y: 30, filter: "blur(8px)"}}
             animate={{opacity: 1, y: 0, filter: "blur(0px)"}}
@@ -231,11 +236,14 @@ export default function Homepage() {
             ZENITH 2026
           </motion.h1>
           <motion.p
-            className="mt-3 mb-0 text-[#ffdcb3]"
+            className="mt-3 mb-0 font-bold"
             style={{
               fontSize: "clamp(1rem, 2vw, 1.2rem)",
-              willChange: "opacity, transform", // Performance hints
-              transform: "translate3d(0,0,0)", // GPU layer
+              color: "#ffdcb3",
+              textShadow:
+                "0 0 20px rgba(255,215,0,0.5), 0 0 40px rgba(255,140,0,0.3), 0 2px 8px rgba(0,0,0,0.9)",
+              willChange: "opacity, transform",
+              transform: "translate3d(0,0,0)",
             }}
             initial={{opacity: 0, y: 20}}
             animate={{opacity: 1, y: 0}}
@@ -248,63 +256,237 @@ export default function Homepage() {
           <div className="flex flex-col sm:flex-row gap-4 mt-6 justify-center items-center">
             <Link to="/register">
               <motion.button
-                className="inline-block px-8 py-3 rounded-full font-extrabold text-[#2c1506] no-underline transition-transform hover:scale-105"
+                className="relative inline-block px-12 py-4 rounded-2xl font-black no-underline overflow-hidden group"
                 style={{
-                  background: "linear-gradient(90deg, #ffb36a, #ff8b1f)",
+                  background: "linear-gradient(135deg, #1a0500 0%, #2d0a00 50%, #1a0500 100%)",
                   boxShadow:
-                    "0 12px 28px rgba(255,140,40,0.18), inset 0 -2px 6px rgba(0,0,0,0.12)",
-                  willChange: "transform", // Performance hint
-                  transform: "translate3d(0,0,0)", // GPU layer
+                    "0 0 40px rgba(255,140,0,0.5), 0 0 80px rgba(255,69,0,0.3), 0 8px 32px rgba(0,0,0,0.8), inset 0 1px 2px rgba(255,140,0,0.3)",
+                  willChange: "transform, filter, box-shadow",
+                  transform: "translate3d(0,0,0)",
+                  fontSize: "1.15rem",
+                  letterSpacing: "1.8px",
+                  textTransform: "uppercase",
+                  border: "2px solid rgba(255,140,0,0.6)",
+                  color: "#ffb347",
+                  textShadow: "0 0 20px rgba(255,140,0,0.8), 0 0 40px rgba(255,69,0,0.5), 0 2px 8px rgba(0,0,0,0.9)",
                 }}
-                initial={{opacity: 0, scale: 0.9}}
+                initial={{opacity: 0, scale: 0.95}}
                 animate={{opacity: 1, scale: 1}}
-                transition={{duration: 0.6, delay: 0.6, ease: "easeOut"}}
-                whileHover={{scale: 1.05}}
-                whileTap={{scale: 0.95}}
+                transition={{duration: 0.5, delay: 0.6, ease: "easeOut"}}
+                whileHover={{
+                  scale: 1.07,
+                  boxShadow: "0 0 60px rgba(255,140,0,0.7), 0 0 120px rgba(255,69,0,0.5), 0 10px 40px rgba(0,0,0,0.9), inset 0 1px 3px rgba(255,140,0,0.5)",
+                  filter: "brightness(1.25) saturate(1.3)",
+                }}
+                whileTap={{scale: 0.98}}
               >
-                🏆 Register for Sports
+                {/* Flame energy particles rising - optimized */}
+                <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
+                  {[...Array(8)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute rounded-full"
+                      style={{
+                        width: "3px",
+                        height: "5px",
+                        background: i % 2 === 0 ? "#ff8c00" : "#ff4500",
+                        boxShadow: `0 0 8px currentColor`,
+                        left: `${(i + 1) * 12}%`,
+                        bottom: `-10%`,
+                        opacity: 0,
+                      }}
+                      animate={{
+                        y: [-20, -100],
+                        opacity: [0, 0.7, 0],
+                        scale: [0.8, 1.2, 0.5],
+                      }}
+                      transition={{
+                        duration: 2.5,
+                        repeat: Infinity,
+                        delay: i * 0.3,
+                        ease: "easeOut",
+                      }}
+                    />
+                  ))}
+                </div>
+                
+                {/* Glowing core - simplified */}
+                <motion.div
+                  className="absolute inset-0 rounded-2xl pointer-events-none"
+                  style={{
+                    background: "radial-gradient(circle at 50% 50%, rgba(255,140,0,0.25) 0%, transparent 70%)",
+                  }}
+                  animate={{
+                    opacity: [0.4, 0.7, 0.4],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                />
+                
+                <span className="relative z-10 flex items-center gap-3 font-black">
+                  <span className="text-2xl">🏆</span>
+                  <span>Register for Sports</span>
+                </span>
               </motion.button>
             </Link>
 
             {/* MARATHON BUTTON */}
             <Link to="/marathon">
               <motion.button
-                className="inline-block px-8 py-3 rounded-full font-extrabold text-[#2c1506] no-underline transition-transform hover:scale-105"
+                className="relative inline-block px-10 py-4 rounded-2xl font-black no-underline overflow-hidden group"
                 style={{
-                  background: "linear-gradient(90deg, #ffd700, #ffa500)",
+                  background: "linear-gradient(135deg, #001a33 0%, #002d52 50%, #001a33 100%)",
                   boxShadow:
-                    "0 12px 28px rgba(255,165,0,0.25), inset 0 -2px 6px rgba(0,0,0,0.12)",
-                  willChange: "transform",
+                    "0 0 40px rgba(0,191,255,0.4), 0 0 80px rgba(30,144,255,0.25), 0 8px 32px rgba(0,0,0,0.8), inset 0 1px 2px rgba(0,191,255,0.25)",
+                  willChange: "transform, filter, box-shadow",
                   transform: "translate3d(0,0,0)",
+                  fontSize: "1.1rem",
+                  letterSpacing: "1.5px",
+                  textTransform: "uppercase",
+                  border: "2px solid rgba(0,191,255,0.5)",
+                  color: "#00bfff",
+                  textShadow: "0 0 20px rgba(0,191,255,0.8), 0 0 40px rgba(30,144,255,0.5), 0 2px 8px rgba(0,0,0,0.9)",
                 }}
-                initial={{opacity: 0, scale: 0.9}}
+                initial={{opacity: 0, scale: 0.95}}
                 animate={{opacity: 1, scale: 1}}
-                transition={{duration: 0.6, delay: 0.7, ease: "easeOut"}}
-                whileHover={{scale: 1.05}}
-                whileTap={{scale: 0.95}}
+                transition={{duration: 0.5, delay: 0.7, ease: "easeOut"}}
+                whileHover={{
+                  scale: 1.07,
+                  boxShadow: "0 0 60px rgba(0,191,255,0.6), 0 0 120px rgba(30,144,255,0.4), 0 10px 40px rgba(0,0,0,0.9), inset 0 1px 3px rgba(0,191,255,0.4)",
+                  filter: "brightness(1.25) saturate(1.3)",
+                }}
+                whileTap={{scale: 0.98}}
               >
-                🏃 Marathon Registration
+                {/* Speed trail particles - optimized */}
+                <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
+                  {[...Array(6)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute rounded-full"
+                      style={{
+                        width: "3px",
+                        height: "3px",
+                        background: i % 2 === 0 ? "#00bfff" : "#1e90ff",
+                        boxShadow: `0 0 6px currentColor`,
+                        left: "0%",
+                        top: `${(i + 1) * 15}%`,
+                        opacity: 0,
+                      }}
+                      animate={{
+                        x: [0, 100],
+                        opacity: [0, 0.7, 0],
+                      }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        delay: i * 0.25,
+                        ease: "easeOut",
+                      }}
+                    />
+                  ))}
+                </div>
+                
+                {/* Glowing core - simplified */}
+                <motion.div
+                  className="absolute inset-0 rounded-2xl pointer-events-none"
+                  style={{
+                    background: "radial-gradient(circle at 50% 50%, rgba(0,191,255,0.2) 0%, transparent 70%)",
+                  }}
+                  animate={{
+                    opacity: [0.4, 0.7, 0.4],
+                  }}
+                  transition={{
+                    duration: 1.8,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                />
+                
+                <span className="relative z-10 flex items-center gap-2 font-black">
+                  <span className="text-xl">🏃</span>
+                  <span>Marathon Registration</span>
+                </span>
               </motion.button>
             </Link>
 
             <Link to="/women-tournament">
               <motion.button
-                className="inline-block px-8 py-3 rounded-full font-extrabold text-white no-underline transition-transform hover:scale-105"
+                className="relative inline-block px-10 py-4 rounded-2xl font-black no-underline overflow-hidden group"
                 style={{
-                  background:
-                    "linear-gradient(135deg, #6b7280, #4b5563, #374151)",
+                  background: "linear-gradient(135deg, #0d0d1a 0%, #1a1a2d 50%, #0d0d1a 100%)",
                   boxShadow:
-                    "0 12px 28px rgba(107,114,128,0.3), inset 0 -2px 6px rgba(0,0,0,0.12)",
-                  willChange: "transform",
+                    "0 0 40px rgba(138,43,226,0.4), 0 0 80px rgba(75,0,130,0.25), 0 8px 32px rgba(0,0,0,0.8), inset 0 1px 2px rgba(138,43,226,0.25)",
+                  willChange: "transform, filter, box-shadow",
                   transform: "translate3d(0,0,0)",
+                  fontSize: "1.05rem",
+                  letterSpacing: "1.3px",
+                  textTransform: "uppercase",
+                  border: "2px solid rgba(138,43,226,0.5)",
+                  color: "#9370db",
+                  textShadow: "0 0 20px rgba(138,43,226,0.8), 0 0 40px rgba(75,0,130,0.5), 0 2px 8px rgba(0,0,0,0.9)",
                 }}
-                initial={{opacity: 0, scale: 0.9}}
+                initial={{opacity: 0, scale: 0.95}}
                 animate={{opacity: 1, scale: 1}}
-                transition={{duration: 0.6, delay: 0.7, ease: "easeOut"}}
-                whileHover={{scale: 1.05}}
-                whileTap={{scale: 0.95}}
+                transition={{duration: 0.5, delay: 0.8, ease: "easeOut"}}
+                whileHover={{
+                  scale: 1.07,
+                  boxShadow: "0 0 60px rgba(138,43,226,0.6), 0 0 120px rgba(75,0,130,0.4), 0 10px 40px rgba(0,0,0,0.9), inset 0 1px 3px rgba(138,43,226,0.4)",
+                  filter: "brightness(1.25) saturate(1.3)",
+                }}
+                whileTap={{scale: 0.98}}
               >
-                ✅ Women's Tournament (Completed)
+                {/* Mystical particles - optimized */}
+                <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
+                  {[...Array(6)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute rounded-full"
+                      style={{
+                        width: "2px",
+                        height: "2px",
+                        background: i % 2 === 0 ? "#8a2be2" : "#9370db",
+                        boxShadow: `0 0 6px currentColor`,
+                        left: `${(i + 1) * 15}%`,
+                        top: `${(i + 2) * 12}%`,
+                        opacity: 0,
+                      }}
+                      animate={{
+                        opacity: [0, 0.8, 0],
+                        scale: [0.5, 1.5, 0.5],
+                      }}
+                      transition={{
+                        duration: 2.5,
+                        repeat: Infinity,
+                        delay: i * 0.4,
+                        ease: "easeInOut",
+                      }}
+                    />
+                  ))}
+                </div>
+                
+                {/* Mystical glow - simplified */}
+                <motion.div
+                  className="absolute inset-0 rounded-2xl pointer-events-none"
+                  style={{
+                    background: "radial-gradient(circle at 50% 50%, rgba(138,43,226,0.2) 0%, transparent 70%)",
+                  }}
+                  animate={{
+                    opacity: [0.3, 0.6, 0.3],
+                  }}
+                  transition={{
+                    duration: 2.2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                />
+                
+                <span className="relative z-10 flex items-center gap-2 font-black">
+                  <span className="text-xl">✅</span>
+                  <span>Women's Tournament</span>
+                </span>
               </motion.button>
             </Link>
           </div>
