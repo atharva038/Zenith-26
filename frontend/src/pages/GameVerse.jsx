@@ -8,7 +8,7 @@ import {
   Text,
 } from "@react-three/drei";
 import FloatingIsland from "../components/gameverse/FloatingIsland";
-// import SportModal from "../components/gameverse/SportModal"; // Commented out - will use when registration opens
+import SportModal from "../components/gameverse/SportModal";
 import GamerverseLoading from "../components/gameverse/GamerverseLoading";
 import { motion, AnimatePresence } from "framer-motion";
 import * as THREE from "three";
@@ -296,7 +296,7 @@ const sportsData = [
       "Knockout tournament format",
       "Yellow/Red card suspensions in effect",
     ],
-    registrationStatus: "coming soon",
+    registrationStatus: "open",
   },
   {
     id: 2,
@@ -320,7 +320,7 @@ const sportsData = [
       "Maximum 12 players per squad",
       "Substitutions allowed during stoppages",
     ],
-    registrationStatus: "coming soon",
+    registrationStatus: "open",
   },
   {
     id: 3,
@@ -344,7 +344,7 @@ const sportsData = [
       "DRS available for semi-finals onwards",
       "Maximum 16 players per squad",
     ],
-    registrationStatus: "coming soon",
+    registrationStatus: "open",
   },
   {
     id: 4,
@@ -368,7 +368,7 @@ const sportsData = [
       "Rotation rules enforced",
       "Maximum 14 players per squad",
     ],
-    registrationStatus: "coming soon",
+    registrationStatus: "open",
   },
 
   // ===== MIDDLE RING (Radius 20) - 4 Popular Sports =====
@@ -394,7 +394,7 @@ const sportsData = [
       "Singles and Doubles categories",
       "Knockout bracket format",
     ],
-    registrationStatus: "coming soon",
+    registrationStatus: "open",
   },
   {
     id: 6,
@@ -418,7 +418,7 @@ const sportsData = [
       "Goal area is restricted",
       "Maximum 14 players per squad",
     ],
-    registrationStatus: "coming soon",
+    registrationStatus: "open",
   },
   {
     id: 7,
@@ -442,7 +442,7 @@ const sportsData = [
       "Best of 3 matches",
       "Maximum 12 players per squad",
     ],
-    registrationStatus: "coming soon",
+    registrationStatus: "open",
   },
   {
     id: 8,
@@ -466,7 +466,7 @@ const sportsData = [
       "Swiss system tournament",
       "Digital boards with live streaming",
     ],
-    registrationStatus: "coming soon",
+    registrationStatus: "open",
   },
 
   // ===== OUTER RING (Radius 26) - 4 Indoor Sports =====
@@ -492,7 +492,7 @@ const sportsData = [
       "ITTF regulations apply",
       "Singles and doubles events",
     ],
-    registrationStatus: "coming soon",
+    registrationStatus: "open",
   },
   {
     id: 10,
@@ -516,7 +516,7 @@ const sportsData = [
       "Queen must be covered",
       "Singles and doubles categories",
     ],
-    registrationStatus: "coming soon",
+    registrationStatus: "open",
   },
   {
     id: 11,
@@ -540,7 +540,7 @@ const sportsData = [
       "100m, 200m, relay, long jump, javelin",
       "Qualifying rounds and finals",
     ],
-    registrationStatus: "coming soon",
+    registrationStatus: "open",
   },
   {
     id: 12,
@@ -564,7 +564,7 @@ const sportsData = [
       "Weight classes enforced",
       "Professional judging panel",
     ],
-    registrationStatus: "coming soon",
+    registrationStatus: "open",
   },
 ];
 
@@ -974,16 +974,11 @@ export default function GameVerse() {
     lockedPlanetRef.current = ref.current;
   };
 
-  // Commented out - will use when registration opens
-  // const handleRegisterClick = (sport) => {
-  //   // Navigate to universal registration page
-  //   navigate("/register");
-  //   setModalOpen(false);
-  // };
-
-  // const closeRegistration = () => {
-  //   // Not needed anymore - keeping for compatibility
-  // };
+  const handleRegisterClick = (sport) => {
+    // Navigate to universal registration page with sport pre-selected
+    navigate("/register-sports", { state: { selectedSport: sport.name } });
+    setModalOpen(false);
+  };
 
   // Split sports into left and right lists
   const leftSports = sportsData.slice(0, 6);
@@ -1335,12 +1330,12 @@ export default function GameVerse() {
           dampingFactor={0.05}
         />
       </Canvas>
-      {/* Coming Soon Overlay */}
-      <ComingSoonOverlay
+      {/* Sport Registration Modal */}
+      <SportModal
         isOpen={modalOpen}
         onClose={closeModal}
-        sportName={selectedSport?.name}
-        icon={selectedSport?.icon}
+        sport={selectedSport}
+        onRegister={handleRegisterClick}
       />
     </div>
   );

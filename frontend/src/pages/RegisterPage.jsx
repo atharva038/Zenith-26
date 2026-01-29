@@ -67,16 +67,16 @@ const RegisterPage = () => {
           transition={{duration: 0.8}}
           className="text-center max-w-4xl mx-auto"
         >
-          {/* Coming Soon Badge */}
+          {/* Registration Open Badge */}
           <motion.div
             initial={{scale: 0}}
             animate={{scale: 1}}
             transition={{delay: 0.2, type: "spring"}}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full border border-purple-500/30 mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-full border border-green-500/30 mb-8"
           >
-            <span className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></span>
-            <span className="text-purple-300 text-sm font-medium">
-              Coming Soon
+            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+            <span className="text-green-300 text-sm font-medium">
+              Registration Now Open! 🎉
             </span>
           </motion.div>
 
@@ -86,12 +86,12 @@ const RegisterPage = () => {
               ZENITH 2026
             </span>
             <br />
-            <span className="text-white/90">is Coming!</span>
+            <span className="text-white/90">Registrations Are Live!</span>
           </h1>
 
           {/* Subtitle */}
           <p className="text-gray-400 text-lg md:text-xl mb-6 max-w-2xl mx-auto leading-relaxed">
-            Get ready for the biggest sports fest of SGGSIE&T!
+            Join the biggest sports fest of SGGSIE&T! Register now for your favorite sports.
           </p>
 
           {/* Event Date Badge */}
@@ -114,19 +114,29 @@ const RegisterPage = () => {
             </span>
           </div>
 
-          {/* Registration Coming Soon Message */}
+          {/* Sports Registration CTA */}
           <motion.div
             initial={{opacity: 0, scale: 0.9}}
             animate={{opacity: 1, scale: 1}}
             transition={{delay: 0.3, duration: 0.5}}
-            className="mb-12 px-8 py-6 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl border border-purple-500/20"
+            className="mb-12 px-8 py-8 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl border border-purple-500/20"
           >
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
-              Registration Will Start Soon!
-            </h2>
-            <p className="text-gray-400">
-              Stay tuned for updates. We'll notify you when registrations open.
-            </p>
+            <div className="mb-6">
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                🏆 Sports Registration Open!
+              </h2>
+              <p className="text-gray-300 text-lg">
+                Choose from 15+ exciting sports including Cricket, Football, Basketball, and more!
+              </p>
+            </div>
+            
+            {/* Register Button */}
+            <Link
+              to="/gameverse"
+              className="inline-block px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-lg rounded-xl hover:scale-105 transition-transform shadow-lg shadow-purple-500/50"
+            >
+              Explore Sports & Register →
+            </Link>
           </motion.div>
 
           {/* Marathon Registration - NOW OPEN! */}
@@ -175,7 +185,7 @@ const RegisterPage = () => {
             </h2>
 
             <p className="text-gray-300 text-lg mb-6 max-w-xl mx-auto leading-relaxed">
-              While general ZENITH registrations are coming soon, you can register now for our exciting 5K Marathon!
+              Join our exciting 5K Marathon alongside all the sports events at ZENITH 2026!
             </p>
 
             {/* Marathon Details Grid */}

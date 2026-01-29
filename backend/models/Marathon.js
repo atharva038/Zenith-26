@@ -125,10 +125,15 @@ const marathonSchema = new mongoose.Schema(
 // Generate registration number before saving
 marathonSchema.pre("save", async function (next) {
   if (!this.registrationNumber) {
+    // Use a more robust approach with timestamp to reduce collisions
+    const timestamp = Date.now().toString().slice(-6); // Last 6 digits of timestamp
+    const random = Math.floor(Math.random() * 1000).toString().padStart(3, "0");
     const count = await mongoose.models.Marathon.countDocuments();
+    
+    // Format: MAR + Year + Count(4 digits) + Random(2 digits from timestamp)
     this.registrationNumber = `MAR${new Date().getFullYear()}${String(
       count + 1
-    ).padStart(4, "0")}`;
+    ).padStart(4, "0")}${timestamp.slice(-2)}`;
   }
   next();
 });

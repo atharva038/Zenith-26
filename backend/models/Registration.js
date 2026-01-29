@@ -42,31 +42,45 @@ const registrationSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    // Single unified status field
     status: {
       type: String,
-      enum: ["pending", "confirmed", "cancelled", "waitlist"],
-      default: "confirmed",
+      enum: ["pending", "confirmed", "cancelled"],
+      default: "pending",
     },
-    paymentStatus: {
-      type: String,
-      enum: ["pending", "completed", "failed", "refunded", "not_required"],
-      default: "not_required",
-    },
-    paymentId: String,
     amount: {
       type: Number,
       default: 0,
     },
-    // Document uploads
+    // Accommodation details
+    accommodation: {
+      needed: {
+        type: Boolean,
+        default: false,
+      },
+      numDays: {
+        type: Number,
+        default: 0,
+      },
+      numPeople: {
+        type: Number,
+        default: 0,
+      },
+      totalFee: {
+        type: Number,
+        default: 0,
+      },
+    },
+    // Document uploads (Cloudinary URLs)
     documents: {
       permissionLetter: {
-        type: String, // File path or URL
+        type: String, // Cloudinary URL
       },
       transactionReceipt: {
-        type: String,
+        type: String, // Cloudinary URL
       },
       captainIdCard: {
-        type: String,
+        type: String, // Cloudinary URL
       },
     },
     registrationNumber: {
@@ -113,12 +127,13 @@ registrationSchema.statics.getEventAnalytics = async function (eventId) {
       $facet: {
         totalRegistrations: [{$count: "count"}],
         statusBreakdown: [{$group: {_id: "$status", count: {$sum: 1}}}],
-        paymentBreakdown: [
+        accommodationBreakdown: [
           {
             $group: {
-              _id: "$paymentStatus",
+              _id: "$accommodation.needed",
               count: {$sum: 1},
-              total: {$sum: "$amount"},
+              totalPeople: {$sum: "$accommodation.numPeople"},
+              totalFee: {$sum: "$accommodation.totalFee"},
             },
           },
         ],

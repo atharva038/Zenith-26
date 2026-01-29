@@ -1,114 +1,189 @@
 import React, {useState, useEffect} from "react";
-import {useNavigate, Link} from "react-router-dom";
+import {useNavigate, Link, useLocation} from "react-router-dom";
 import {toast} from "react-toastify";
+import {motion, AnimatePresence} from "framer-motion";
 import api from "../config/api";
 
-const SPORTS_CATEGORIES = [
-  "Cricket",
-  "Football",
-  "Basketball",
-  "Volleyball",
-  "Badminton",
-  "Table Tennis",
-  "Chess",
-  "Carrom",
-  "Athletics",
-  "Swimming",
-  "Kabaddi",
-  "Kho-Kho",
-  "Hockey",
-  "Lawn Tennis",
-  "Squash",
-];
+// Predefined sports with their details - NO BACKEND DEPENDENCY
+const SPORTS_DATA = {
+  Cricket: {
+    name: "Cricket Tournament",
+    venue: "SGGSIE&T Cricket Ground",
+    rules: [
+      "Maximum 15 players per team (11 playing + 4 substitutes)",
+      "Leather ball match - 20 overs per side",
+      "All ICC rules apply",
+      "Proper cricket kit mandatory",
+    ],
+    coordinators: [
+      {name: "Rahul Sharma", phone: "9876543210", email: "rahul@zenith.com"},
+      {name: "Priya Patel", phone: "9876543211"},
+    ],
+  },
+  Football: {
+    name: "Football Championship",
+    venue: "SGGSIE&T Football Field",
+    rules: [
+      "Maximum 16 players per team (11 playing + 5 substitutes)",
+      "Two halves of 45 minutes each",
+      "FIFA rules apply",
+      "Proper football boots mandatory",
+    ],
+    coordinators: [
+      {name: "Arjun Kumar", phone: "9876543212"},
+      {name: "Sneha Desai", phone: "9876543213"},
+    ],
+  },
+  Basketball: {
+    name: "Basketball Tournament",
+    venue: "Indoor Sports Complex",
+    rules: [
+      "Maximum 12 players per team (5 playing + 7 substitutes)",
+      "Four quarters of 10 minutes each",
+      "FIBA rules apply",
+    ],
+    coordinators: [{name: "Vikram Singh", phone: "9876543214"}],
+  },
+  Volleyball: {
+    name: "Volleyball Championship",
+    venue: "Outdoor Volleyball Court",
+    rules: [
+      "Maximum 12 players per team (6 playing + 6 substitutes)",
+      "Best of 5 sets",
+      "Rally point system",
+    ],
+    coordinators: [{name: "Anjali Mehta", phone: "9876543215"}],
+  },
+  Badminton: {
+    name: "Badminton Tournament",
+    venue: "Indoor Badminton Courts",
+    rules: [
+      "Singles and Doubles events",
+      "Best of 3 games to 21 points",
+      "BWF rules apply",
+    ],
+    coordinators: [{name: "Rohan Joshi", phone: "9876543216"}],
+  },
+  "Table Tennis": {
+    name: "Table Tennis Championship",
+    venue: "Indoor TT Hall",
+    rules: [
+      "Singles and Doubles events",
+      "Best of 5 games to 11 points",
+      "ITTF rules apply",
+    ],
+    coordinators: [{name: "Pooja Reddy", phone: "9876543217"}],
+  },
+  Chess: {
+    name: "Chess Tournament",
+    venue: "Auditorium",
+    rules: [
+      "Individual event",
+      "Time control: 15 minutes + 10 seconds increment",
+      "FIDE rules apply",
+    ],
+    coordinators: [{name: "Amit Verma", phone: "9876543218"}],
+  },
+  Carrom: {
+    name: "Carrom Championship",
+    venue: "Indoor Games Room",
+    rules: [
+      "Singles and Doubles events",
+      "25 points per game",
+      "ICF rules apply",
+    ],
+    coordinators: [{name: "Neha Gupta", phone: "9876543219"}],
+  },
+  Athletics: {
+    name: "Athletics Meet",
+    venue: "SGGSIE&T Athletics Track",
+    rules: [
+      "100m, 200m, 400m, 800m, 1500m events",
+      "Long Jump, High Jump, Shot Put",
+      "Individual events",
+    ],
+    coordinators: [{name: "Karan Malhotra", phone: "9876543220"}],
+  },
+  Swimming: {
+    name: "Swimming Competition",
+    venue: "City Swimming Pool",
+    rules: [
+      "50m, 100m, 200m Freestyle",
+      "50m, 100m Backstroke, Breaststroke, Butterfly",
+      "Individual events",
+    ],
+    coordinators: [{name: "Divya Nair", phone: "9876543221"}],
+  },
+  Kabaddi: {
+    name: "Kabaddi Tournament",
+    venue: "Outdoor Sports Ground",
+    rules: [
+      "Maximum 12 players per team (7 playing + 5 substitutes)",
+      "Two halves of 20 minutes each",
+      "Pro Kabaddi League style rules",
+    ],
+    coordinators: [{name: "Suresh Patil", phone: "9876543222"}],
+  },
+  "Kho-Kho": {
+    name: "Kho-Kho Championship",
+    venue: "Outdoor Sports Ground",
+    rules: [
+      "Maximum 15 players per team (9 playing + 6 substitutes)",
+      "Two innings of 9 minutes each",
+      "Official Kho-Kho Federation rules",
+    ],
+    coordinators: [{name: "Prashant Deshmukh", phone: "9876543223"}],
+  },
+  Hockey: {
+    name: "Hockey Tournament",
+    venue: "Hockey Turf",
+    rules: [
+      "Maximum 18 players per team (11 playing + 7 substitutes)",
+      "Two halves of 35 minutes each",
+      "FIH rules apply",
+    ],
+    coordinators: [{name: "Aditya Rao", phone: "9876543224"}],
+  },
+  "Lawn Tennis": {
+    name: "Lawn Tennis Championship",
+    venue: "Tennis Courts",
+    rules: [
+      "Singles and Doubles events",
+      "Best of 3 sets",
+      "ATP/WTA rules apply",
+    ],
+    coordinators: [{name: "Riya Shah", phone: "9876543225"}],
+  },
+  Squash: {
+    name: "Squash Tournament",
+    venue: "Indoor Squash Courts",
+    rules: [
+      "Singles event",
+      "Best of 5 games to 11 points",
+      "PSA rules apply",
+    ],
+    coordinators: [{name: "Sameer Khan", phone: "9876543226"}],
+  },
+};
 
-const FIXED_ENTRY_FEE = 500; // Fixed for all sports
+const SPORTS_CATEGORIES = Object.keys(SPORTS_DATA);
+const FIXED_ENTRY_FEE = 500;
 
 // Payment QR Code - Sagar Ubale (sagarubale2004@oksbi)
 const PAYMENT_QR_URL =
   "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto:best/v1767592627/zenith-26/img/payment/payment-qr-sagar-ubale";
 
-const MARATHON_FORM_FIELDS = [
+// Backup QR Codes
+const BACKUP_QR_URLS = [
   {
-    label: "Full Name",
-    fieldName: "fullName",
-    fieldType: "text",
-    placeholder: "Enter your full name",
-    required: true,
+    name: "Balaji Anil Kalyankar (PhonePe)",
+    upiId: "balajianil.kalyankar@ybl",
+    url: "/img/balajiQR.png", // Local image from public/img folder
   },
   {
-    label: "Email",
-    fieldName: "email",
-    fieldType: "email",
-    placeholder: "your.email@example.com",
-    required: true,
-  },
-  {
-    label: "Phone Number",
-    fieldName: "phone",
-    fieldType: "tel",
-    placeholder: "10-digit mobile number",
-    required: true,
-  },
-  {
-    label: "Age",
-    fieldName: "age",
-    fieldType: "number",
-    placeholder: "Minimum age: 16",
-    required: true,
-    min: 16,
-    max: 100,
-  },
-  {
-    label: "Gender",
-    fieldName: "gender",
-    fieldType: "select",
-    placeholder: "",
-    required: true,
-    options: ["Male", "Female", "Other"],
-  },
-  {
-    label: "College/Organization",
-    fieldName: "college",
-    fieldType: "text",
-    placeholder: "Your institution name",
-    required: true,
-  },
-  {
-    label: "Marathon Category",
-    fieldName: "category",
-    fieldType: "select",
-    placeholder: "",
-    required: true,
-    options: ["5K", "10K", "Half Marathon"],
-  },
-  {
-    label: "T-Shirt Size",
-    fieldName: "tshirtSize",
-    fieldType: "select",
-    placeholder: "",
-    required: true,
-    options: ["S", "M", "L", "XL", "XXL"],
-  },
-  {
-    label: "Emergency Contact Name",
-    fieldName: "emergency_name",
-    fieldType: "text",
-    placeholder: "Emergency contact person",
-    required: true,
-  },
-  {
-    label: "Emergency Contact Phone",
-    fieldName: "emergency_phone",
-    fieldType: "tel",
-    placeholder: "10-digit mobile number",
-    required: true,
-  },
-  {
-    label: "Medical Conditions (Optional)",
-    fieldName: "medicalConditions",
-    fieldType: "textarea",
-    placeholder: "Any medical conditions, allergies, or health concerns",
-    required: false,
+    name: "Atharva Joshi (Bank of Baroda)",
+    upiId: "atharvsjoshi2005-1@okicici",
+    url: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1768722815/zenith-26/img/payment/backup-qr-atharva-bob.png",
   },
 ];
 
@@ -187,12 +262,11 @@ const DEFAULT_FORM_FIELDS = [
 
 const UniversalRegistration = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  const location = useLocation();
   const [submitting, setSubmitting] = useState(false);
-  const [events, setEvents] = useState([]);
   const [selectedSport, setSelectedSport] = useState("");
-  const [selectedEvent, setSelectedEvent] = useState(null);
   const [formData, setFormData] = useState({});
+  const [showBackupQR, setShowBackupQR] = useState(false);
   const [documents, setDocuments] = useState({
     permissionLetter: null,
     transactionReceipt: null,
@@ -201,55 +275,37 @@ const UniversalRegistration = () => {
   const [registrationComplete, setRegistrationComplete] = useState(false);
   const [registrationNumber, setRegistrationNumber] = useState("");
 
+  // Check if sport was pre-selected from GameVerse
   useEffect(() => {
-    fetchAllEvents();
-  }, []);
-
-  useEffect(() => {
-    if (selectedSport) {
-      if (selectedSport === "Marathon") {
-        // Initialize Marathon form fields
-        const initialData = {};
-        MARATHON_FORM_FIELDS.forEach((field) => {
-          initialData[field.fieldName] =
-            field.fieldType === "checkbox" ? false : "";
-        });
-        setFormData(initialData);
-        setSelectedEvent(null); // Marathon doesn't need an event
-      } else {
-        // Initialize regular sports form fields
-        const event = events.find((e) => e.category === selectedSport);
-        setSelectedEvent(event);
-        const initialData = {};
-        DEFAULT_FORM_FIELDS.forEach((field) => {
-          initialData[field.fieldName] =
-            field.fieldType === "checkbox" ? false : "";
-        });
-        setFormData(initialData);
+    if (location.state?.selectedSport) {
+      const sportName = location.state.selectedSport.toUpperCase();
+      // Map from GameVerse sport names to SPORTS_DATA keys
+      const sportMapping = {
+        "FOOTBALL": "Football",
+        "BASKETBALL": "Basketball",
+        "CRICKET": "Cricket",
+        "VOLLEYBALL": "Volleyball",
+        "BADMINTON": "Badminton",
+        "TABLE TENNIS": "Table Tennis",
+        "CHESS": "Chess",
+        "CARROM": "Carrom",
+        "ATHLETICS": "Athletics",
+        "SWIMMING": "Swimming",
+        "KABADDI": "Kabaddi",
+        "KHO-KHO": "Kho-Kho",
+        "HOCKEY": "Hockey",
+        "LAWN TENNIS": "Lawn Tennis",
+        "SQUASH": "Squash",
+      };
+      
+      const mappedSport = sportMapping[sportName];
+      if (mappedSport && SPORTS_DATA[mappedSport]) {
+        setSelectedSport(mappedSport);
       }
     }
-  }, [selectedSport, events]);
+  }, [location.state]);
 
-  const fetchAllEvents = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get("/events/public");
-      setEvents(response.data.data);
-
-      // Initialize form data
-      const initialData = {};
-      DEFAULT_FORM_FIELDS.forEach((field) => {
-        initialData[field.fieldName] =
-          field.fieldType === "checkbox" ? false : "";
-      });
-      setFormData(initialData);
-    } catch (error) {
-      toast.error("Failed to load events");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const selectedSportData = selectedSport ? SPORTS_DATA[selectedSport] : null;
 
   const handleInputChange = (e, field) => {
     const {type, value, checked} = e.target;
@@ -264,13 +320,11 @@ const UniversalRegistration = () => {
   const handleFileChange = (e, documentType) => {
     const file = e.target.files[0];
     if (file) {
-      // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         toast.error("File size must be less than 5MB");
         e.target.value = null;
         return;
       }
-      // Validate file type (images and PDFs only)
       const allowedTypes = [
         "image/jpeg",
         "image/jpg",
@@ -293,17 +347,7 @@ const UniversalRegistration = () => {
       return false;
     }
 
-    // Skip event check for Marathon
-    if (selectedSport !== "Marathon" && !selectedEvent) {
-      toast.error("Selected sport event is not available");
-      return false;
-    }
-
-    // Use appropriate form fields based on sport type
-    const fieldsToValidate =
-      selectedSport === "Marathon" ? MARATHON_FORM_FIELDS : DEFAULT_FORM_FIELDS;
-
-    for (const field of fieldsToValidate) {
+    for (const field of DEFAULT_FORM_FIELDS) {
       if (field.required) {
         const value = formData[field.fieldName];
         if (!value || (typeof value === "string" && !value.trim())) {
@@ -312,7 +356,6 @@ const UniversalRegistration = () => {
         }
       }
 
-      // Email validation
       if (field.fieldType === "email" && formData[field.fieldName]) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(formData[field.fieldName])) {
@@ -321,7 +364,6 @@ const UniversalRegistration = () => {
         }
       }
 
-      // Phone validation
       if (field.fieldType === "tel" && formData[field.fieldName]) {
         const phoneRegex = /^[0-9]{10}$/;
         const cleanPhone = formData[field.fieldName].replace(/\D/g, "");
@@ -332,20 +374,17 @@ const UniversalRegistration = () => {
       }
     }
 
-    // Document validation - Skip for Marathon
-    if (selectedSport !== "Marathon") {
-      if (!documents.permissionLetter) {
-        toast.error("Please upload College Permission Letter");
-        return false;
-      }
-      if (!documents.transactionReceipt) {
-        toast.error("Please upload Transaction Receipt");
-        return false;
-      }
-      if (!documents.captainIdCard) {
-        toast.error("Please upload Captain's ID Card");
-        return false;
-      }
+    if (!documents.permissionLetter) {
+      toast.error("Please upload College Permission Letter");
+      return false;
+    }
+    if (!documents.transactionReceipt) {
+      toast.error("Please upload Transaction Receipt");
+      return false;
+    }
+    if (!documents.captainIdCard) {
+      toast.error("Please upload Captain's ID Card");
+      return false;
     }
 
     return true;
@@ -367,7 +406,7 @@ const UniversalRegistration = () => {
     };
 
     setFormData(testData);
-    setSelectedSport(SPORTS_CATEGORIES[0]); // Select first sport
+    setSelectedSport(SPORTS_CATEGORIES[0]);
     toast.success("Test data filled successfully!");
   };
 
@@ -379,53 +418,27 @@ const UniversalRegistration = () => {
     try {
       setSubmitting(true);
 
-      // Handle Marathon registration separately
-      if (selectedSport === "Marathon") {
-        const marathonData = {
-          fullName: formData.fullName,
-          email: formData.email,
-          phone: formData.phone,
-          age: parseInt(formData.age),
-          gender: formData.gender,
-          college: formData.college,
-          category: formData.category,
-          tshirtSize: formData.tshirtSize,
-          emergencyContact: {
-            name: formData.emergency_name,
-            phone: formData.emergency_phone,
-          },
-          medicalConditions: formData.medicalConditions || "None",
-        };
+      const submitData = new FormData();
+      
+      // Add sport name and details
+      submitData.append("sportName", selectedSport);
+      submitData.append("sportDetails", JSON.stringify(selectedSportData));
+      submitData.append("formData", JSON.stringify(formData));
 
-        const response = await api.post("/marathon/register", marathonData);
+      // Append document files
+      submitData.append("permissionLetter", documents.permissionLetter);
+      submitData.append("transactionReceipt", documents.transactionReceipt);
+      submitData.append("captainIdCard", documents.captainIdCard);
 
-        if (response.data.success) {
-          setRegistrationNumber(response.data.data.registrationNumber);
-          setRegistrationComplete(true);
-          toast.success("Marathon registration successful!");
-        }
-      } else {
-        // Regular sports registration
-        // Create FormData for multipart/form-data upload
-        const submitData = new FormData();
-        submitData.append("eventId", selectedEvent._id);
-        submitData.append("formData", JSON.stringify(formData));
+      const response = await api.post("/registrations/sports", submitData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-        // Append document files
-        submitData.append("permissionLetter", documents.permissionLetter);
-        submitData.append("transactionReceipt", documents.transactionReceipt);
-        submitData.append("captainIdCard", documents.captainIdCard);
-
-        const response = await api.post("/registrations", submitData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-
-        setRegistrationNumber(response.data.data.registrationNumber);
-        setRegistrationComplete(true);
-        toast.success("Registration successful!");
-      }
+      setRegistrationNumber(response.data.data.registrationNumber);
+      setRegistrationComplete(true);
+      toast.success("Registration successful!");
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "Registration failed";
@@ -509,14 +522,6 @@ const UniversalRegistration = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 flex items-center justify-center">
-        <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-400"></div>
-      </div>
-    );
-  }
-
   if (registrationComplete) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 py-12 px-4">
@@ -541,7 +546,7 @@ const UniversalRegistration = () => {
               Registration Successful!
             </h2>
             <p className="text-purple-200 text-lg mb-6">
-              You're registered for {selectedEvent?.name}
+              You're registered for {selectedSportData?.name}
             </p>
 
             <div className="bg-white/5 rounded-lg p-6 mb-6">
@@ -557,8 +562,7 @@ const UniversalRegistration = () => {
             <div className="space-y-3 text-left bg-white/5 rounded-lg p-6 mb-6">
               <h3 className="text-white font-semibold mb-3">Event Details:</h3>
               <p className="text-purple-200">
-                <span className="font-semibold">Sport:</span>{" "}
-                {selectedEvent?.category}
+                <span className="font-semibold">Sport:</span> {selectedSport}
               </p>
               <p className="text-purple-200">
                 <span className="font-semibold">Event Dates:</span> February
@@ -566,32 +570,28 @@ const UniversalRegistration = () => {
               </p>
               <p className="text-purple-200">
                 <span className="font-semibold">Venue:</span>{" "}
-                {selectedEvent?.venue || "SGGSIE&T College"}
+                {selectedSportData?.venue}
               </p>
               <p className="text-purple-200">
                 <span className="font-semibold">Registration Fee:</span> ₹
                 {FIXED_ENTRY_FEE}
               </p>
 
-              {selectedEvent?.coordinators &&
-                selectedEvent.coordinators.length > 0 && (
-                  <div>
-                    <p className="font-semibold text-purple-200 mb-2">
-                      Coordinators:
+              {selectedSportData?.coordinators && (
+                <div>
+                  <p className="font-semibold text-purple-200 mb-2 mt-4">
+                    Coordinators:
+                  </p>
+                  {selectedSportData.coordinators.map((coordinator, idx) => (
+                    <p key={idx} className="text-purple-200 ml-4">
+                      • {coordinator.name} - {coordinator.phone}
+                      {coordinator.email && (
+                        <span className="text-sm"> ({coordinator.email})</span>
+                      )}
                     </p>
-                    {selectedEvent.coordinators.map((coordinator, idx) => (
-                      <p key={idx} className="text-purple-200 ml-4">
-                        • {coordinator.name} - {coordinator.phone}
-                        {coordinator.email && (
-                          <span className="text-sm">
-                            {" "}
-                            ({coordinator.email})
-                          </span>
-                        )}
-                      </p>
-                    ))}
-                  </div>
-                )}
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="flex gap-4 justify-center">
@@ -599,13 +599,12 @@ const UniversalRegistration = () => {
                 onClick={() => {
                   setRegistrationComplete(false);
                   setSelectedSport("");
-                  setSelectedEvent(null);
-                  const initialData = {};
-                  DEFAULT_FORM_FIELDS.forEach((field) => {
-                    initialData[field.fieldName] =
-                      field.fieldType === "checkbox" ? false : "";
+                  setFormData({});
+                  setDocuments({
+                    permissionLetter: null,
+                    transactionReceipt: null,
+                    captainIdCard: null,
                   });
-                  setFormData(initialData);
                 }}
                 className="bg-white/10 text-white px-6 py-3 rounded-lg hover:bg-white/20 transition-colors"
               >
@@ -626,7 +625,7 @@ const UniversalRegistration = () => {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Navigation Bar - Matching Homepage */}
+      {/* Navigation Bar */}
       <nav className="fixed top-0 left-0 right-0 px-9 py-5 flex justify-between items-center z-50 bg-black/10 backdrop-blur-md border-b border-[#3a2416]/30">
         <Link
           to="/"
@@ -638,7 +637,7 @@ const UniversalRegistration = () => {
 
         <div className="flex gap-6 items-center">
           <Link
-            to="/"
+            to="/home"
             className="text-[#ffb77a] font-semibold hover:text-[#ffd4a8] transition-colors text-sm"
           >
             ← Back to Home
@@ -660,7 +659,7 @@ const UniversalRegistration = () => {
             className="text-4xl md:text-5xl font-bold text-[#ffb77a] mb-3"
             style={{textShadow: "0 2px 20px rgba(255,140,40,0.3)"}}
           >
-            Event Registration
+            Sports Event Registration
           </h1>
           <p className="text-gray-400 text-lg mb-6">
             Register your team for Zenith 2026 sports events
@@ -687,7 +686,7 @@ const UniversalRegistration = () => {
 
         {/* Main Form Container */}
         <div className="bg-[#1a1410]/30 backdrop-blur-sm border border-[#3a2416] rounded-xl p-6 md:p-8">
-          {/* Form Header with Test Data Button */}
+          {/* Form Header */}
           <div className="flex justify-between items-center mb-6 pb-4 border-b border-[#3a2416]">
             <h2 className="text-xl font-semibold text-[#ffb77a]">
               Registration Form
@@ -714,41 +713,77 @@ const UniversalRegistration = () => {
                 className="w-full bg-black/50 border border-[#3a2416] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#ffb77a] focus:ring-1 focus:ring-[#ffb77a] transition-all"
               >
                 <option value="">-- Choose your sport --</option>
-                {SPORTS_CATEGORIES.map((sport) => {
-                  const event = events.find((e) => e.category === sport);
-                  const isAvailable = sport === "Marathon" || event; // Marathon is always available
-                  return (
-                    <option key={sport} value={sport} disabled={!isAvailable}>
-                      {sport} {!isAvailable && "(Not available)"}
-                    </option>
-                  );
-                })}
+                {SPORTS_CATEGORIES.map((sport) => (
+                  <option key={sport} value={sport}>
+                    {sport}
+                  </option>
+                ))}
               </select>
 
-              {selectedEvent && (
-                <div className="mt-4 p-3 bg-black/30 rounded border border-[#3a2416]/50">
-                  <p className="text-sm text-gray-300">
-                    <span className="text-[#ffb77a]">✓</span>{" "}
-                    {selectedEvent.name}
-                  </p>
+              {/* Show sport details when selected */}
+              {selectedSportData && (
+                <div className="mt-6 space-y-4">
+                  <div className="bg-black/30 rounded-lg p-4 border border-[#3a2416]/50">
+                    <h3 className="text-[#ffb77a] font-semibold mb-2">
+                      📋 Event Details
+                    </h3>
+                    <p className="text-white text-lg mb-2">
+                      {selectedSportData.name}
+                    </p>
+                    <p className="text-gray-300 text-sm">
+                      <span className="text-[#ffb77a]">📍</span> Venue:{" "}
+                      {selectedSportData.venue}
+                    </p>
+                  </div>
+
+                  {selectedSportData.rules && (
+                    <div className="bg-black/30 rounded-lg p-4 border border-[#3a2416]/50">
+                      <h3 className="text-[#ffb77a] font-semibold mb-2">
+                        📜 Rules & Regulations
+                      </h3>
+                      <ul className="space-y-2">
+                        {selectedSportData.rules.map((rule, idx) => (
+                          <li key={idx} className="text-gray-300 text-sm">
+                            • {rule}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {selectedSportData.coordinators && (
+                    <div className="bg-black/30 rounded-lg p-4 border border-[#3a2416]/50">
+                      <h3 className="text-[#ffb77a] font-semibold mb-2">
+                        👥 Event Coordinators
+                      </h3>
+                      <div className="space-y-2">
+                        {selectedSportData.coordinators.map(
+                          (coordinator, idx) => (
+                            <div key={idx} className="text-gray-300 text-sm">
+                              <p className="font-medium text-white">
+                                {coordinator.name}
+                              </p>
+                              <p>📞 {coordinator.phone}</p>
+                              {coordinator.email && <p>✉️ {coordinator.email}</p>}
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
 
-            {/* Registration Form Fields */}
+            {/* Team Details Form */}
             {selectedSport && (
               <>
                 <div className="bg-white/5 rounded-lg p-6">
                   <h3 className="text-xl font-bold text-white mb-4">
-                    {selectedSport === "Marathon"
-                      ? "Participant Details"
-                      : "Team Details"}
+                    Team Details
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {(selectedSport === "Marathon"
-                      ? MARATHON_FORM_FIELDS
-                      : DEFAULT_FORM_FIELDS
-                    ).map((field, index) => (
+                    {DEFAULT_FORM_FIELDS.map((field, index) => (
                       <div
                         key={index}
                         className={
@@ -772,157 +807,218 @@ const UniversalRegistration = () => {
                   </div>
                 </div>
 
-                {/* Event Info - Only for non-Marathon sports */}
-                {selectedSport !== "Marathon" && (
-                  <div className="bg-gradient-to-r from-purple-600/30 to-pink-600/30 rounded-lg p-6 border border-purple-400/50">
-                    <h3 className="text-white font-semibold mb-4 text-xl">
-                      💰 Payment Information
-                    </h3>
-                    <div className="space-y-4">
-                      <div className="bg-yellow-500/20 border border-yellow-400/50 rounded-lg p-4">
-                        <p className="text-2xl font-bold text-yellow-300 mb-1">
-                          Entry Fee: ₹{FIXED_ENTRY_FEE}
+                {/* Payment Information */}
+                <div className="bg-gradient-to-r from-purple-600/30 to-pink-600/30 rounded-lg p-6 border border-purple-400/50">
+                  <h3 className="text-white font-semibold mb-4 text-xl">
+                    💰 Payment Information
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="bg-yellow-500/20 border border-yellow-400/50 rounded-lg p-4">
+                      <p className="text-2xl font-bold text-yellow-300 mb-1">
+                        Entry Fee: ₹{FIXED_ENTRY_FEE}
+                      </p>
+                      <p className="text-sm text-yellow-100">
+                        Fixed for all sports at Zenith 2026
+                      </p>
+                    </div>
+
+                    <div className="bg-white/10 rounded-lg p-4 space-y-3">
+                      <p className="text-white font-semibold text-center mb-3">
+                        📱 Scan QR Code to Pay via UPI
+                      </p>
+
+                      {/* Primary QR Code */}
+                      <div className="bg-white rounded-lg p-4 mx-auto w-fit">
+                        <img
+                          src={PAYMENT_QR_URL}
+                          alt="Payment QR Code"
+                          className="w-64 h-auto object-contain"
+                        />
+                      </div>
+
+                      <div className="text-center space-y-2">
+                        <p className="text-purple-200 font-medium">
+                          UPI ID:{" "}
+                          <span className="text-white font-mono">
+                            sagarubale2004@oksbi
+                          </span>
                         </p>
-                        <p className="text-sm text-yellow-100">
-                          Fixed for all sports at Zenith 2026
+                        <p className="text-purple-300 text-sm">
+                          Or pay using any UPI app (GPay, PhonePe, Paytm, etc.)
                         </p>
                       </div>
 
-                      <div className="bg-white/10 rounded-lg p-4 space-y-3">
-                        <p className="text-white font-semibold text-center mb-3">
-                          📱 Scan QR Code to Pay via UPI
+                      {/* Backup QR Codes Dropdown */}
+                      <div className="mt-4">
+                        <button
+                          type="button"
+                          onClick={() => setShowBackupQR(!showBackupQR)}
+                          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/40 rounded-lg text-purple-300 font-medium transition-all"
+                        >
+                          <span>🔄</span>
+                          <span>
+                            {showBackupQR
+                              ? "Hide Backup Payment Options"
+                              : "Show Backup Payment Options"}
+                          </span>
+                          <svg
+                            className={`w-5 h-5 transition-transform ${
+                              showBackupQR ? "rotate-180" : ""
+                            }`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 9l-7 7-7-7"
+                            />
+                          </svg>
+                        </button>
+
+                        <AnimatePresence>
+                          {showBackupQR && (
+                            <motion.div
+                              initial={{height: 0, opacity: 0}}
+                              animate={{height: "auto", opacity: 1}}
+                              exit={{height: 0, opacity: 0}}
+                              transition={{duration: 0.3}}
+                              className="overflow-hidden"
+                            >
+                              <div className="mt-4 space-y-6 pt-4 border-t border-purple-500/20">
+                                {BACKUP_QR_URLS.map((qr, index) => (
+                                  <div
+                                    key={index}
+                                    className="bg-purple-500/5 p-6 rounded-lg border border-purple-500/20"
+                                  >
+                                    <p className="text-sm text-purple-300 mb-3 font-medium text-center">
+                                      {qr.name}
+                                    </p>
+                                    <div className="bg-white p-2 rounded-lg shadow-lg w-fit mx-auto">
+                                      <img
+                                        src={qr.url}
+                                        alt={`Backup QR ${index + 1}`}
+                                        className="w-64 h-auto"
+                                      />
+                                    </div>
+                                    <p className="text-xs text-gray-400 mt-3 text-center break-all">
+                                      UPI ID: {qr.upiId}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+
+                      <div className="bg-red-500/20 border border-red-400/50 rounded-lg p-3 mt-4">
+                        <p className="text-red-200 text-sm">
+                          ⚠️ <strong>Important:</strong> Upload your payment
+                          receipt in the "Documents" section below
                         </p>
-
-                        {/* QR Code for Payment */}
-                        <div className="bg-white rounded-lg p-4 mx-auto w-fit">
-                          <img
-                            src={PAYMENT_QR_URL}
-                            alt="Payment QR Code - Scan to pay"
-                            className="w-48 h-48 object-contain"
-                          />
-                        </div>
-
-                        <div className="text-center space-y-2">
-                          <p className="text-purple-200 font-medium">
-                            UPI ID:{" "}
-                            <span className="text-white font-mono">
-                              sagarubale2004@oksbi
-                            </span>
-                          </p>
-                          <p className="text-purple-300 text-sm">
-                            Or pay using any UPI app (GPay, PhonePe, Paytm,
-                            etc.)
-                          </p>
-                        </div>
-
-                        <div className="bg-red-500/20 border border-red-400/50 rounded-lg p-3 mt-4">
-                          <p className="text-red-200 text-sm">
-                            ⚠️ <strong>Important:</strong> Upload your payment
-                            receipt in the "Documents" section below
-                          </p>
-                        </div>
                       </div>
                     </div>
                   </div>
-                )}
+                </div>
 
-                {/* Document Upload Section - Only for non-Marathon sports */}
-                {selectedSport !== "Marathon" && (
-                  <div className="bg-white/5 rounded-lg p-6 border border-white/10">
-                    <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                      � Required Documents
-                      <span className="text-pink-400 text-lg">*</span>
-                    </h3>
-                    <p className="text-purple-200 text-sm mb-6">
-                      Please upload the following documents. All fields are
-                      mandatory. Accepted formats: JPG, PNG, PDF (Max 5MB each)
-                    </p>
+                {/* Document Upload Section */}
+                <div className="bg-white/5 rounded-lg p-6 border border-white/10">
+                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    📎 Required Documents
+                    <span className="text-pink-400 text-lg">*</span>
+                  </h3>
+                  <p className="text-purple-200 text-sm mb-6">
+                    Please upload the following documents. All fields are
+                    mandatory. Accepted formats: JPG, PNG, PDF (Max 5MB each)
+                  </p>
 
-                    <div className="space-y-4">
-                      {/* Permission Letter */}
-                      <div className="bg-white/10 rounded-lg p-4">
-                        <label className="block text-purple-200 font-medium mb-2">
-                          1. College Permission Letter
-                          <span className="text-pink-400 ml-1">*</span>
-                        </label>
-                        <p className="text-purple-300 text-xs mb-3">
-                          Official letter from Dean or Student Affairs with
-                          signatures
+                  <div className="space-y-4">
+                    {/* Permission Letter */}
+                    <div className="bg-white/10 rounded-lg p-4">
+                      <label className="block text-purple-200 font-medium mb-2">
+                        1. College Permission Letter
+                        <span className="text-pink-400 ml-1">*</span>
+                      </label>
+                      <p className="text-purple-300 text-xs mb-3">
+                        Official letter from Dean or Student Affairs with
+                        signatures
+                      </p>
+                      <input
+                        type="file"
+                        accept=".jpg,.jpeg,.png,.pdf"
+                        onChange={(e) =>
+                          handleFileChange(e, "permissionLetter")
+                        }
+                        required
+                        className="w-full text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700 file:cursor-pointer"
+                      />
+                      {documents.permissionLetter && (
+                        <p className="text-green-400 text-sm mt-2">
+                          ✅ {documents.permissionLetter.name}
                         </p>
-                        <input
-                          type="file"
-                          accept=".jpg,.jpeg,.png,.pdf"
-                          onChange={(e) =>
-                            handleFileChange(e, "permissionLetter")
-                          }
-                          required
-                          className="w-full text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700 file:cursor-pointer"
-                        />
-                        {documents.permissionLetter && (
-                          <p className="text-green-400 text-sm mt-2">
-                            ✅ {documents.permissionLetter.name}
-                          </p>
-                        )}
-                      </div>
+                      )}
+                    </div>
 
-                      {/* Transaction Receipt */}
-                      <div className="bg-white/10 rounded-lg p-4">
-                        <label className="block text-purple-200 font-medium mb-2">
-                          2. Transaction Receipt / Payment Screenshot
-                          <span className="text-pink-400 ml-1">*</span>
-                        </label>
-                        <p className="text-purple-300 text-xs mb-3">
-                          Screenshot or receipt of the ₹{FIXED_ENTRY_FEE}{" "}
-                          payment made via UPI
+                    {/* Transaction Receipt */}
+                    <div className="bg-white/10 rounded-lg p-4">
+                      <label className="block text-purple-200 font-medium mb-2">
+                        2. Transaction Receipt / Payment Screenshot
+                        <span className="text-pink-400 ml-1">*</span>
+                      </label>
+                      <p className="text-purple-300 text-xs mb-3">
+                        Screenshot or receipt of the ₹{FIXED_ENTRY_FEE} payment
+                        made via UPI
+                      </p>
+                      <input
+                        type="file"
+                        accept=".jpg,.jpeg,.png,.pdf"
+                        onChange={(e) =>
+                          handleFileChange(e, "transactionReceipt")
+                        }
+                        required
+                        className="w-full text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700 file:cursor-pointer"
+                      />
+                      {documents.transactionReceipt && (
+                        <p className="text-green-400 text-sm mt-2">
+                          ✅ {documents.transactionReceipt.name}
                         </p>
-                        <input
-                          type="file"
-                          accept=".jpg,.jpeg,.png,.pdf"
-                          onChange={(e) =>
-                            handleFileChange(e, "transactionReceipt")
-                          }
-                          required
-                          className="w-full text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700 file:cursor-pointer"
-                        />
-                        {documents.transactionReceipt && (
-                          <p className="text-green-400 text-sm mt-2">
-                            ✅ {documents.transactionReceipt.name}
-                          </p>
-                        )}
-                      </div>
+                      )}
+                    </div>
 
-                      {/* Captain ID Card */}
-                      <div className="bg-white/10 rounded-lg p-4">
-                        <label className="block text-purple-200 font-medium mb-2">
-                          3. Team Captain's College ID Card
-                          <span className="text-pink-400 ml-1">*</span>
-                        </label>
-                        <p className="text-purple-300 text-xs mb-3">
-                          Clear photo/scan of the team captain's valid college
-                          ID card
+                    {/* Captain ID Card */}
+                    <div className="bg-white/10 rounded-lg p-4">
+                      <label className="block text-purple-200 font-medium mb-2">
+                        3. Team Captain's College ID Card
+                        <span className="text-pink-400 ml-1">*</span>
+                      </label>
+                      <p className="text-purple-300 text-xs mb-3">
+                        Clear photo/scan of the team captain's valid college ID
+                        card
+                      </p>
+                      <input
+                        type="file"
+                        accept=".jpg,.jpeg,.png,.pdf"
+                        onChange={(e) => handleFileChange(e, "captainIdCard")}
+                        required
+                        className="w-full text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700 file:cursor-pointer"
+                      />
+                      {documents.captainIdCard && (
+                        <p className="text-green-400 text-sm mt-2">
+                          ✅ {documents.captainIdCard.name}
                         </p>
-                        <input
-                          type="file"
-                          accept=".jpg,.jpeg,.png,.pdf"
-                          onChange={(e) => handleFileChange(e, "captainIdCard")}
-                          required
-                          className="w-full text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700 file:cursor-pointer"
-                        />
-                        {documents.captainIdCard && (
-                          <p className="text-green-400 text-sm mt-2">
-                            ✅ {documents.captainIdCard.name}
-                          </p>
-                        )}
-                      </div>
+                      )}
                     </div>
                   </div>
-                )}
+                </div>
 
                 {/* Submit Button */}
                 <div className="flex gap-4">
                   <button
                     type="button"
-                    onClick={() => navigate("/")}
+                    onClick={() => navigate("/home")}
                     className="flex-1 bg-white/10 text-white py-4 rounded-lg hover:bg-white/20 transition-colors font-semibold"
                   >
                     Cancel
@@ -944,25 +1040,15 @@ const UniversalRegistration = () => {
         <div className="mt-8 bg-white/5 backdrop-blur-md rounded-lg p-6 border border-white/10">
           <h3 className="text-white font-semibold mb-3">🏆 Available Sports</h3>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            {SPORTS_CATEGORIES.map((sport) => {
-              const event = events.find((e) => e.category === sport);
-              const isAvailable = sport === "Marathon" || event; // Marathon is always available
-              return (
-                <div
-                  key={sport}
-                  className={`text-center p-3 rounded-lg ${
-                    isAvailable
-                      ? "bg-green-500/20 text-green-300 border border-green-400/30"
-                      : "bg-red-500/20 text-red-300 border border-red-400/30"
-                  }`}
-                >
-                  <p className="text-sm font-medium">{sport}</p>
-                  <p className="text-xs mt-1">
-                    {isAvailable ? "✅ Open" : "❌ Closed"}
-                  </p>
-                </div>
-              );
-            })}
+            {SPORTS_CATEGORIES.map((sport) => (
+              <div
+                key={sport}
+                className="text-center p-3 rounded-lg bg-green-500/20 text-green-300 border border-green-400/30"
+              >
+                <p className="text-sm font-medium">{sport}</p>
+                <p className="text-xs mt-1">✅ Open</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>

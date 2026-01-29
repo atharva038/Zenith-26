@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Registration from "../models/Registration.js";
 import Event from "../models/Event.js";
 import {Parser} from "json2csv";
@@ -118,11 +119,11 @@ export const createRegistration = async (req, res) => {
       institution,
       city,
       amount: event.registrationFee,
-      paymentStatus: event.registrationFee > 0 ? "pending" : "not_required",
+      status: "pending", // Single unified status
       documents: {
-        permissionLetter: permissionLetter[0].path,
-        transactionReceipt: transactionReceipt[0].path,
-        captainIdCard: captainIdCard[0].path,
+        permissionLetter: permissionLetter[0].path, // Cloudinary URL
+        transactionReceipt: transactionReceipt[0].path, // Cloudinary URL
+        captainIdCard: captainIdCard[0].path, // Cloudinary URL
       },
       ipAddress: req.ip,
       userAgent: req.get("user-agent"),
@@ -164,6 +165,227 @@ export const createRegistration = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Registration failed",
+      error: error.message,
+    });
+  }
+};
+
+// Create sports registration (simplified system - no Event model dependency)
+export const createSportsRegistration = async (req, res) => {
+  try {
+    let {sportName, sportDetails, formData} = req.body;
+
+    // Parse JSON strings from multipart/form-data
+    if (typeof sportDetails === "string") {
+      sportDetails = JSON.parse(sportDetails);
+    }
+    if (typeof formData === "string") {
+      formData = JSON.parse(formData);
+    }
+
+    // Validate sport selection
+    if (!sportName) {
+      return res.status(400).json({
+        success: false,
+        message: "Please select a sport",
+      });
+    }
+
+    // Validate document uploads
+    if (!req.files) {
+      return res.status(400).json({
+        success: false,
+        message: "Please upload all required documents",
+      });
+    }
+
+    const {permissionLetter, transactionReceipt, captainIdCard} = req.files;
+
+    if (!permissionLetter || !transactionReceipt || !captainIdCard) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "All three documents are required: Permission Letter, Transaction Receipt, and Captain's ID Card",
+      });
+    }
+
+    // Extract common fields
+    const email = formData.email?.toLowerCase();
+    const name = formData.captain_name || formData.team_name;
+    const phone = formData.captain_contact;
+    const institution = formData.institution;
+    const city = formData.city;
+
+    // Validate essential fields
+    if (!email || !name) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and team/captain name are required",
+      });
+    }
+
+    // Check for duplicate registration (same sport and email)
+    const existingRegistration = await Registration.findOne({
+      eventName: sportName,
+      email,
+    });
+
+    if (existingRegistration) {
+      return res.status(400).json({
+        success: false,
+        message: `You have already registered for ${sportName}`,
+        registrationNumber: existingRegistration.registrationNumber,
+      });
+    }
+
+    // Create a virtual eventId for sports (use sport name as identifier)
+    const virtualEventId = new mongoose.Types.ObjectId();
+
+    // Extract accommodation details
+    const accommodationNeeded = formData.needs_accommodation || formData.need_accommodation || false;
+    const numDays = accommodationNeeded ? (formData.num_days || 0) : 0;
+    const numPeople = accommodationNeeded ? (formData.num_people || 0) : 0;
+    const accommodationFee = accommodationNeeded ? (formData.total_accommodation_fee || numDays * 200) : 0;
+
+    // Create registration with documents
+    const registration = new Registration({
+      eventId: virtualEventId,
+      eventName: sportName,
+      formData: {
+        ...formData,
+        sportDetails, // Store sport-specific details
+      },
+      email,
+      name,
+      phone,
+      institution,
+      city,
+      amount: 500, // Fixed entry fee
+      status: "pending", // Single unified status
+      accommodation: {
+        needed: accommodationNeeded,
+        numDays: numDays,
+        numPeople: numPeople,
+        totalFee: accommodationFee,
+      },
+      documents: {
+        permissionLetter: permissionLetter[0].path, // Cloudinary URL
+        transactionReceipt: transactionReceipt[0].path, // Cloudinary URL
+        captainIdCard: captainIdCard[0].path, // Cloudinary URL
+      },
+      ipAddress: req.ip,
+      userAgent: req.get("user-agent"),
+    });
+
+    await registration.save();
+
+    // Send confirmation email (non-blocking)
+    sendPendingRegistrationEmail({
+      name: registration.name,
+      eventName: registration.eventName,
+      registrationNumber: registration.registrationNumber,
+      email: registration.email,
+      institution: registration.institution,
+    }).catch((err) => {
+      console.error("Failed to send confirmation email:", err.message);
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Sports registration successful",
+      data: {
+        registrationNumber: registration.registrationNumber,
+        email: registration.email,
+        sportName: registration.eventName,
+        status: registration.status,
+        teamName: formData.team_name,
+        captainName: formData.captain_name,
+      },
+    });
+  } catch (error) {
+    console.error("Create sports registration error:", error);
+
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already registered for this sport",
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: "Sports registration failed",
+      error: error.message,
+    });
+  }
+};
+
+// Get all registrations (with filters)
+export const getAllRegistrations = async (req, res) => {
+  try {
+    const {
+      page = 1,
+      limit = 50,
+      status,
+      search,
+      eventName,
+      paymentStatus,
+      sortBy = "createdAt",
+      sortOrder = "desc",
+    } = req.query;
+
+    const query = {};
+
+    // Filter by status
+    if (status) query.status = status;
+    
+    // Filter by event name (for sports filtering)
+    if (eventName) query.eventName = eventName;
+    
+    // Filter by payment status
+    if (paymentStatus) query.paymentStatus = paymentStatus;
+
+    // Search across multiple fields
+    if (search) {
+      query.$or = [
+        {name: {$regex: search, $options: "i"}},
+        {email: {$regex: search, $options: "i"}},
+        {phone: {$regex: search, $options: "i"}},
+        {institution: {$regex: search, $options: "i"}},
+        {registrationNumber: {$regex: search, $options: "i"}},
+        {eventName: {$regex: search, $options: "i"}},
+      ];
+    }
+
+    const sort = {};
+    sort[sortBy] = sortOrder === "asc" ? 1 : -1;
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const [registrations, total] = await Promise.all([
+      Registration.find(query)
+        .sort(sort)
+        .skip(skip)
+        .limit(parseInt(limit))
+        .lean(),
+      Registration.countDocuments(query),
+    ]);
+
+    res.json({
+      success: true,
+      data: registrations,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(total / parseInt(limit)),
+        totalItems: total,
+        itemsPerPage: parseInt(limit),
+      },
+    });
+  } catch (error) {
+    console.error("Get all registrations error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch registrations",
       error: error.message,
     });
   }

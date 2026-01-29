@@ -20,6 +20,7 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminMarathon from "./pages/admin/AdminMarathon";
 import AdminWomenTournament from "./pages/admin/AdminWomenTournament";
+import AdminSportsRegistrations from "./pages/admin/AdminSportsRegistrations";
 import AdminOnSpotRegistration from "./pages/admin/AdminOnSpotRegistration";
 import AdminAdmins from "./pages/admin/AdminAdmins";
 import AdminGallery from "./pages/admin/AdminGallery";
@@ -29,11 +30,6 @@ import AdminSettings from "./pages/admin/AdminSettings";
 import MediaTeamLogin from "./pages/media-team/MediaTeamLogin";
 import MediaTeamDashboard from "./pages/media-team/MediaTeamDashboard";
 import "lenis/dist/lenis.css";
-import EventManagement from "./pages/EventManagement";
-import SportEventForm from "./pages/SportEventForm";
-import EventAnalytics from "./pages/EventAnalytics";
-import EventsPage from "./pages/EventsPage";
-import EventRegistrationPage from "./pages/EventRegistrationPage";
 import UniversalRegistration from "./pages/UniversalRegistration";
 import RegisterPage from "./pages/RegisterPage";
 import MarathonRegistration from "./pages/MarathonRegistration";
@@ -61,16 +57,9 @@ function App() {
               <Route path="/home" element={<Homepage />} />
               <Route path="/gameverse" element={<GameVerse />} />
 
-              {/* Public Event Routes */}
-              <Route path="/events" element={<EventsPage />} />
-              <Route
-                path="/events/:eventId"
-                element={<EventRegistrationPage />}
-              />
+              {/* Universal Sports Registration */}
+              <Route path="/register-sports" element={<UniversalRegistration />} />
               <Route path="/register" element={<RegisterPage />} />
-
-              {/* Universal Registration - Hidden for now */}
-              {/* <Route path="/register-sports" element={<UniversalRegistration />} /> */}
 
               {/* Marathon Routes */}
               <Route path="/marathon-event" element={<MarathonPage />} />
@@ -116,38 +105,6 @@ function App() {
                 element={<MediaTeamDashboard />}
               />
               <Route
-                path="/admin/events"
-                element={
-                  <ProtectedRoute>
-                    <EventManagement />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/events/create"
-                element={
-                  <ProtectedRoute>
-                    <SportEventForm />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/events/:eventId/edit"
-                element={
-                  <ProtectedRoute>
-                    <SportEventForm />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/events/:eventId/analytics"
-                element={
-                  <ProtectedRoute>
-                    <EventAnalytics />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
                 path="/admin/marathon"
                 element={
                   <ProtectedRoute>
@@ -160,6 +117,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <AdminWomenTournament />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/sports-registrations"
+                element={
+                  <ProtectedRoute>
+                    <AdminSportsRegistrations />
                   </ProtectedRoute>
                 }
               />

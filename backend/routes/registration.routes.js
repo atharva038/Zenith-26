@@ -1,7 +1,7 @@
 import express from "express";
 import * as registrationController from "../controllers/registration.controller.js";
 import {verifyToken, isAdmin} from "../middleware/auth.middleware.js";
-import {uploadRegistrationDocuments} from "../middleware/upload.middleware.js";
+import {uploadRegistrationDocuments} from "../middleware/cloudinaryUpload.middleware.js";
 
 const router = express.Router();
 // Public routes
@@ -9,6 +9,12 @@ router.post(
   "/",
   uploadRegistrationDocuments,
   registrationController.createRegistration
+);
+// Sports registration (new simplified system)
+router.post(
+  "/sports",
+  uploadRegistrationDocuments,
+  registrationController.createSportsRegistration
 );
 router.get(
   "/number/:registrationNumber",
@@ -19,6 +25,7 @@ router.get(
 router.use(verifyToken);
 router.use(isAdmin);
 
+router.get("/", registrationController.getAllRegistrations);
 router.get("/stats", registrationController.getRegistrationStats);
 router.get("/event/:eventId", registrationController.getEventRegistrations);
 router.get(

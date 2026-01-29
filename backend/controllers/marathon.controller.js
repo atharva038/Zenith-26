@@ -260,23 +260,57 @@ export const registerMarathon = async (req, res) => {
     if (existingRegistration) {
       return res.status(400).json({
         success: false,
-        message: "You have already registered for the marathon",
+        message: "You have already registered for the marathon with this email address. Please use a different email or contact support if this is an error.",
       });
     }
 
-    // Create marathon registration
-    const registration = await Marathon.create({
-      fullName,
-      email,
-      phone,
-      age,
-      gender,
-      college,
-      tshirtSize,
-      emergencyContact,
-      medicalConditions,
-      paymentDetails,
-    });
+    // Check if user already registered with this phone
+    const existingPhone = await Marathon.findOne({ phone });
+    if (existingPhone) {
+      return res.status(400).json({
+        success: false,
+        message: "This phone number is already registered. Please use a different phone number or contact support if this is an error.",
+      });
+    }
+
+    // Create marathon registration with retry logic for duplicate registration numbers
+    let registration;
+    let retries = 3;
+    
+    while (retries > 0) {
+      try {
+        registration = await Marathon.create({
+          fullName,
+          email,
+          phone,
+          age,
+          gender,
+          college,
+          tshirtSize,
+          emergencyContact,
+          medicalConditions,
+          paymentDetails,
+        });
+        break; // Success, exit loop
+      } catch (error) {
+        // Check if it's a duplicate key error on registrationNumber
+        if (error.code === 11000 && error.keyPattern?.registrationNumber) {
+          retries--;
+          if (retries === 0) {
+            console.error("Failed to generate unique registration number after retries");
+            return res.status(500).json({
+              success: false,
+              message: "Registration is currently experiencing high traffic. Please try again in a moment.",
+            });
+          }
+          // Wait a bit before retrying
+          await new Promise(resolve => setTimeout(resolve, 100));
+        } else {
+          // Different error, throw it
+          throw error;
+        }
+      }
+    }
 
     res.status(201).json({
       success: true,
@@ -289,9 +323,28 @@ export const registerMarathon = async (req, res) => {
     });
   } catch (error) {
     console.error("Marathon registration error:", error);
+    
+    // Handle specific error types
+    let errorMessage = "Registration failed. Please try again.";
+    
+    if (error.code === 11000) {
+      // Duplicate key error
+      if (error.keyPattern?.email) {
+        errorMessage = "This email is already registered. Please use a different email.";
+      } else if (error.keyPattern?.phone) {
+        errorMessage = "This phone number is already registered. Please use a different phone number.";
+      } else {
+        errorMessage = "A registration with these details already exists. Please check your information and try again.";
+      }
+    } else if (error.name === 'ValidationError') {
+      // Mongoose validation error
+      const messages = Object.values(error.errors).map(err => err.message);
+      errorMessage = messages.join('. ');
+    }
+    
     res.status(400).json({
       success: false,
-      message: error.message || "Registration failed",
+      message: errorMessage,
     });
   }
 };

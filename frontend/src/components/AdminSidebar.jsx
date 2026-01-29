@@ -13,13 +13,18 @@ const AdminSidebar = ({sidebarOpen, setSidebarOpen, admin}) => {
 
   const menuItems = [
     // {id: "dashboard", label: "Dashboard", icon: "📊", path: "/admin/dashboard"},
-    {id: "events", label: "Events", icon: "🎪", path: "/admin/events"},
     {id: "marathon", label: "Marathon", icon: "🏃", path: "/admin/marathon"},
     {
       id: "women-tournament",
       label: "Women's Tournament",
       icon: "👩‍🎓",
       path: "/admin/women-tournament",
+    },
+    {
+      id: "sports-registrations",
+      label: "Sports Registrations",
+      icon: "🏆",
+      path: "/admin/sports-registrations",
     },
     {
       id: "onspot-registration",

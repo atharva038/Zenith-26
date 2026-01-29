@@ -58,6 +58,24 @@ const teamMemberPhotoStorage = new CloudinaryStorage({
   },
 });
 
+// Registration documents storage (supports images and PDFs)
+const registrationDocumentsStorage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => {
+    const isPdf = file.mimetype === "application/pdf";
+
+    return {
+      folder: "zenith26/registration-documents",
+      allowed_formats: ["jpg", "jpeg", "png", "pdf"],
+      resource_type: isPdf ? "raw" : "image",
+      access_mode: "public",
+      transformation: isPdf
+        ? undefined
+        : [{width: 1500, crop: "limit", quality: "auto"}],
+    };
+  },
+});
+
 function fileFilter(req, file, cb) {
   // Basic filter by mimetype
   if (
@@ -94,6 +112,21 @@ function paymentScreenshotFileFilter(req, file, cb) {
   }
 }
 
+function registrationDocumentsFileFilter(req, file, cb) {
+  // Allow images and PDFs for registration documents
+  const allowedTypes = [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "application/pdf",
+  ];
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only JPG, PNG images or PDF files are allowed"), false);
+  }
+}
+
 // Export two multer instances for images and videos
 export const uploadImage = multer({storage: imageStorage, fileFilter}).single(
   "file"
@@ -113,9 +146,20 @@ export const uploadTeamMemberPhoto = multer({
   limits: {fileSize: 5 * 1024 * 1024}, // 5MB limit
 }).single("photo");
 
+export const uploadRegistrationDocuments = multer({
+  storage: registrationDocumentsStorage,
+  fileFilter: registrationDocumentsFileFilter,
+  limits: {fileSize: 10 * 1024 * 1024}, // 10MB limit
+}).fields([
+  {name: "permissionLetter", maxCount: 1},
+  {name: "transactionReceipt", maxCount: 1},
+  {name: "captainIdCard", maxCount: 1},
+]);
+
 export default {
   uploadImage,
   uploadVideo,
   uploadPaymentScreenshot,
   uploadTeamMemberPhoto,
+  uploadRegistrationDocuments,
 };

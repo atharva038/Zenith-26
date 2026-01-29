@@ -32,12 +32,22 @@ const MarathonRegistration = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [registrationDetails, setRegistrationDetails] = useState(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
-  
+  const [uploadAbortController, setUploadAbortController] = useState(null);
+
   // Scroll to top on component mount
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({top: 0, behavior: "smooth"});
   }, []);
-  
+
+  // Cleanup: Cancel any ongoing uploads when component unmounts
+  useEffect(() => {
+    return () => {
+      if (uploadAbortController) {
+        uploadAbortController.abort();
+      }
+    };
+  }, [uploadAbortController]);
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -128,6 +138,10 @@ const MarathonRegistration = () => {
       setIsUploadingScreenshot(true);
       const uploadToast = toast.loading("Uploading payment screenshot...");
 
+      // Create abort controller for this upload
+      const abortController = new AbortController();
+      setUploadAbortController(abortController);
+
       const formDataToUpload = new FormData();
       formDataToUpload.append("screenshot", file);
 
@@ -138,7 +152,8 @@ const MarathonRegistration = () => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+          signal: abortController.signal,
+        },
       );
 
       toast.dismiss(uploadToast);
@@ -151,29 +166,54 @@ const MarathonRegistration = () => {
         toast.success("Payment screenshot uploaded successfully!");
       }
     } catch (error) {
+      // Don't show error if upload was cancelled
+      if (error.name === "CanceledError" || error.code === "ERR_CANCELED") {
+        console.log("Upload cancelled by user");
+        return;
+      }
+
       console.error("Screenshot upload error:", error);
       toast.error(
-        error.response?.data?.message || "Failed to upload screenshot"
+        error.response?.data?.message || "Failed to upload screenshot",
       );
+
+      // Only clear states if upload failed (not if cancelled)
       setPaymentScreenshot(null);
       setScreenshotPreview(null);
     } finally {
       setIsUploadingScreenshot(false);
+      setUploadAbortController(null);
     }
   };
 
   const handleRemoveScreenshot = () => {
+    // Cancel ongoing upload if any
+    if (uploadAbortController) {
+      uploadAbortController.abort();
+      setUploadAbortController(null);
+      toast.dismiss(); // Dismiss any upload toast
+      toast.info("Upload cancelled");
+    }
+
+    // Clear all screenshot-related states
     setPaymentScreenshot(null);
     setScreenshotPreview(null);
+    setIsUploadingScreenshot(false);
     setFormData((prev) => ({
       ...prev,
       paymentScreenshotUrl: "",
     }));
+
+    // Reset file input
+    const fileInput = document.getElementById("payment-screenshot");
+    if (fileInput) {
+      fileInput.value = "";
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validate payment screenshot is uploaded
     if (!formData.paymentScreenshotUrl) {
       toast.error("Please upload payment screenshot!");
@@ -209,7 +249,7 @@ const MarathonRegistration = () => {
           email: formData.email,
           phone: formData.phone,
         });
-        
+
         // Show confirmation screen
         setShowConfirmation(true);
 
@@ -263,11 +303,13 @@ const MarathonRegistration = () => {
                 transition={{type: "spring", damping: 25, stiffness: 300}}
                 className="w-full max-w-lg mx-auto"
                 style={{
-                  background: "linear-gradient(145deg, #1a0f08 0%, #0d0705 50%, #0a0604 100%)",
+                  background:
+                    "linear-gradient(145deg, #1a0f08 0%, #0d0705 50%, #0a0604 100%)",
                   border: "1px solid rgba(255, 139, 31, 0.3)",
                   borderRadius: "24px",
                   padding: "24px",
-                  boxShadow: "0 25px 80px rgba(255, 139, 31, 0.15), 0 0 40px rgba(0, 0, 0, 0.5)",
+                  boxShadow:
+                    "0 25px 80px rgba(255, 139, 31, 0.15), 0 0 40px rgba(0, 0, 0, 0.5)",
                 }}
               >
                 {/* Success Icon */}
@@ -277,10 +319,11 @@ const MarathonRegistration = () => {
                   transition={{delay: 0.2, type: "spring", stiffness: 200}}
                   className="flex justify-center mb-5"
                 >
-                  <div 
+                  <div
                     className="w-20 h-20 rounded-full flex items-center justify-center"
                     style={{
-                      background: "linear-gradient(135deg, #22c55e 0%, #10b981 100%)",
+                      background:
+                        "linear-gradient(135deg, #22c55e 0%, #10b981 100%)",
                       boxShadow: "0 8px 32px rgba(34, 197, 94, 0.4)",
                     }}
                   >
@@ -339,7 +382,9 @@ const MarathonRegistration = () => {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Event:</span>
-                      <span className="text-orange-400 font-semibold">5K Marathon</span>
+                      <span className="text-orange-400 font-semibold">
+                        5K Marathon
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Amount Paid:</span>
@@ -369,11 +414,18 @@ const MarathonRegistration = () => {
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-blue-400 mt-0.5">•</span>
-                      <span>Confirmation email will be sent to <strong className="text-[#ff8b1f]">{registrationDetails.email}</strong></span>
+                      <span>
+                        Confirmation email will be sent to{" "}
+                        <strong className="text-[#ff8b1f]">
+                          {registrationDetails.email}
+                        </strong>
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-blue-400 mt-0.5">•</span>
-                      <span>Save your registration number & bring valid ID.</span>
+                      <span>
+                        Save your registration number & bring valid ID.
+                      </span>
                     </li>
                   </ul>
                 </motion.div>
@@ -395,11 +447,21 @@ const MarathonRegistration = () => {
                   <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm">
                     <div className="flex items-center gap-2">
                       <span className="text-gray-300">Sagar:</span>
-                      <a href="tel:+919876543210" className="text-purple-300 hover:text-purple-200">+91 98765 43210</a>
+                      <a
+                        href="tel:+919876543210"
+                        className="text-purple-300 hover:text-purple-200"
+                      >
+                        +91 98765 43210
+                      </a>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-gray-300">Atharva:</span>
-                      <a href="tel:+919123456789" className="text-purple-300 hover:text-purple-200">+91 91234 56789</a>
+                      <a
+                        href="tel:+919123456789"
+                        className="text-purple-300 hover:text-purple-200"
+                      >
+                        +91 91234 56789
+                      </a>
                     </div>
                   </div>
                 </motion.div>
@@ -411,7 +473,8 @@ const MarathonRegistration = () => {
                   transition={{delay: 0.7}}
                   className="rounded-xl p-3 mb-4 text-center"
                   style={{
-                    background: "linear-gradient(90deg, rgba(255, 139, 31, 0.1), rgba(249, 115, 22, 0.1))",
+                    background:
+                      "linear-gradient(90deg, rgba(255, 139, 31, 0.1), rgba(249, 115, 22, 0.1))",
                     border: "1px solid rgba(255, 139, 31, 0.3)",
                   }}
                 >
@@ -463,7 +526,9 @@ const MarathonRegistration = () => {
                   transition={{delay: 0.9}}
                   className="text-center mt-4 pt-4 border-t border-white/10"
                 >
-                  <p className="text-gray-500 text-xs">Share your registration! 🎊 🏃‍♂️ 🏆</p>
+                  <p className="text-gray-500 text-xs">
+                    Share your registration! 🎊 🏃‍♂️ 🏆
+                  </p>
                 </motion.div>
               </motion.div>
             </div>
@@ -536,7 +601,8 @@ const MarathonRegistration = () => {
               🏃 Zenith Marathon 2026
             </motion.h1>
             <p className="text-[#ffdcb3] text-lg">
-              Join us for an unforgettable running experience! • February 14, 2026
+              Join us for an unforgettable running experience! • February 14,
+              2026
             </p>
             <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-orange-500/10 border border-orange-500/30 rounded-full">
               <span className="text-orange-400 font-semibold">5 KM Run</span>
@@ -552,7 +618,7 @@ const MarathonRegistration = () => {
             className="bg-gradient-to-br from-[#1a0f08] to-[#0a0604] backdrop-blur-md rounded-2xl shadow-2xl p-8 border-2 border-[#ff8b1f]/20"
           >
             {/* Test Data Button - For Development */}
-            <div className="flex justify-end mb-4">
+            {/* <div className="flex justify-end mb-4">
               <motion.button
                 type="button"
                 onClick={fillTestData}
@@ -562,7 +628,7 @@ const MarathonRegistration = () => {
               >
                 🧪 Fill Test Data
               </motion.button>
-            </div>
+            </div> */}
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Personal Information */}
@@ -958,24 +1024,51 @@ const MarathonRegistration = () => {
                               {paymentScreenshot?.name}
                             </p>
                             <p className="text-gray-400 text-sm">
-                              {(
-                                paymentScreenshot?.size /
-                                1024 /
-                                1024
-                              ).toFixed(2)}{" "}
+                              {(paymentScreenshot?.size / 1024 / 1024).toFixed(
+                                2,
+                              )}{" "}
                               MB
                             </p>
-                            {formData.paymentScreenshotUrl && (
+                            {isUploadingScreenshot ? (
+                              <p className="text-yellow-400 text-xs mt-1 flex items-center">
+                                <svg
+                                  className="animate-spin h-3 w-3 mr-1"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                  ></circle>
+                                  <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                  ></path>
+                                </svg>
+                                Uploading...
+                              </p>
+                            ) : formData.paymentScreenshotUrl ? (
                               <p className="text-green-400 text-xs mt-1">
                                 ✓ Uploaded successfully
                               </p>
-                            )}
+                            ) : null}
                           </div>
                         </div>
                         <button
                           type="button"
                           onClick={handleRemoveScreenshot}
                           className="text-red-500 hover:text-red-400 transition-colors"
+                          title={
+                            isUploadingScreenshot
+                              ? "Cancel upload"
+                              : "Remove screenshot"
+                          }
                         >
                           <svg
                             className="w-6 h-6"
@@ -999,7 +1092,8 @@ const MarathonRegistration = () => {
                 <div className="mt-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
                   <p className="text-yellow-300 text-xs">
                     ⚠️ <strong>Important:</strong> Registration will be
-                    confirmed only after payment verification. Admin will review your payment screenshot and approve your registration.
+                    confirmed only after payment verification. Admin will review
+                    your payment screenshot and approve your registration.
                   </p>
                 </div>
               </div>
@@ -1040,9 +1134,12 @@ const MarathonRegistration = () => {
                   </div>
                   <div className="flex-1">
                     <p className="text-gray-300 text-sm leading-relaxed">
-                      I hereby declare that I am physically fit to participate in the ZENITH Marathon 2026. 
-                      I understand that participation is at my own risk and I release the organizers from any liability. 
-                      I agree to follow all event rules and safety guidelines. The information provided above is accurate and complete.
+                      I hereby declare that I am physically fit to participate
+                      in the ZENITH Marathon 2026. I understand that
+                      participation is at my own risk and I release the
+                      organizers from any liability. I agree to follow all event
+                      rules and safety guidelines. The information provided
+                      above is accurate and complete.
                     </p>
                     <a
                       href="/marathon/terms-and-conditions"
@@ -1059,10 +1156,19 @@ const MarathonRegistration = () => {
               {/* Submit Button */}
               <div className="flex gap-4">
                 <motion.button
-                  whileHover={{scale: loading || isUploadingScreenshot ? 1 : 1.02}}
-                  whileTap={{scale: loading || isUploadingScreenshot ? 1 : 0.98}}
+                  whileHover={{
+                    scale: loading || isUploadingScreenshot ? 1 : 1.02,
+                  }}
+                  whileTap={{
+                    scale: loading || isUploadingScreenshot ? 1 : 0.98,
+                  }}
                   type="submit"
-                  disabled={loading || isUploadingScreenshot || !formData.paymentScreenshotUrl || !termsAccepted}
+                  disabled={
+                    loading ||
+                    isUploadingScreenshot ||
+                    !formData.paymentScreenshotUrl ||
+                    !termsAccepted
+                  }
                   className="flex-1 font-semibold py-4 px-6 rounded-lg transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-[#2c1506]"
                   style={{
                     background: "linear-gradient(90deg, #ffb36a, #ff8b1f)",
@@ -1073,16 +1179,40 @@ const MarathonRegistration = () => {
                   {isUploadingScreenshot ? (
                     <span className="flex items-center justify-center gap-2">
                       <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
                       </svg>
                       Uploading Screenshot...
                     </span>
                   ) : loading ? (
                     <span className="flex items-center justify-center gap-2">
                       <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
                       </svg>
                       Registering...
                     </span>
