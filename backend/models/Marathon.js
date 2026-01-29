@@ -125,15 +125,58 @@ const marathonSchema = new mongoose.Schema(
 // Generate registration number before saving
 marathonSchema.pre("save", async function (next) {
   if (!this.registrationNumber) {
-    // Use a more robust approach with timestamp to reduce collisions
-    const timestamp = Date.now().toString().slice(-6); // Last 6 digits of timestamp
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, "0");
-    const count = await mongoose.models.Marathon.countDocuments();
+    let attempts = 0;
+    const maxAttempts = 5;
     
-    // Format: MAR + Year + Count(4 digits) + Random(2 digits from timestamp)
-    this.registrationNumber = `MAR${new Date().getFullYear()}${String(
-      count + 1
-    ).padStart(4, "0")}${timestamp.slice(-2)}`;
+    while (attempts < maxAttempts) {
+      try {
+        // Use timestamp + random for better uniqueness
+        const timestamp = Date.now().toString().slice(-8); // Last 8 digits of timestamp
+        const random = Math.floor(Math.random() * 10000).toString().padStart(4, "0");
+        
+        // Find the highest existing registration number for this year
+        const year = new Date().getFullYear();
+        const yearPrefix = `MAR${year}`;
+        
+        const lastRegistration = await mongoose.models.Marathon
+          .findOne({ registrationNumber: { $regex: `^${yearPrefix}` } })
+          .sort({ registrationNumber: -1 })
+          .select('registrationNumber')
+          .lean();
+        
+        let sequence = 1;
+        if (lastRegistration && lastRegistration.registrationNumber) {
+          // Extract sequence number from the last registration
+          const lastSeq = parseInt(lastRegistration.registrationNumber.substring(yearPrefix.length, yearPrefix.length + 4));
+          sequence = lastSeq + 1;
+        }
+        
+        // Format: MAR + Year + Sequence(4 digits) + Random(4 digits)
+        const registrationNumber = `${yearPrefix}${String(sequence).padStart(4, "0")}${random}`;
+        
+        // Check if this number already exists
+        const exists = await mongoose.models.Marathon.findOne({ registrationNumber });
+        
+        if (!exists) {
+          this.registrationNumber = registrationNumber;
+          break;
+        }
+        
+        attempts++;
+        // Wait a bit before retrying
+        await new Promise(resolve => setTimeout(resolve, 50));
+      } catch (error) {
+        console.error('Error generating registration number:', error);
+        attempts++;
+        if (attempts >= maxAttempts) {
+          return next(new Error('Failed to generate unique registration number'));
+        }
+      }
+    }
+    
+    if (!this.registrationNumber) {
+      return next(new Error('Failed to generate unique registration number after multiple attempts'));
+    }
   }
   next();
 });
