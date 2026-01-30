@@ -13,6 +13,10 @@ import useScrollLock from "../../hooks/useScrollLock";
 
 const AdminWomenTournament = () => {
   const navigate = useNavigate();
+  
+  // 🔒 READ-ONLY MODE - Tournament is closed, only view statistics
+  const READ_ONLY_MODE = true;
+  
   const [registrations, setRegistrations] = useState([]);
   const [rejectedRegistrations, setRejectedRegistrations] = useState([]);
   const [statistics, setStatistics] = useState(null);
@@ -538,38 +542,151 @@ const AdminWomenTournament = () => {
 
   return (
     <AdminLayout title="Women's Tournament">
-      {/* Mobile Tab Navigation - Only visible on mobile */}
-      <MobileTabNavigation
-        activeTab={mobileActiveTab}
-        onTabChange={setMobileActiveTab}
-      />
+      {/* Tournament Closed Notice - Only in READ-ONLY mode */}
+      {READ_ONLY_MODE && (
+        <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-2xl p-4 md:p-6 mb-6 mx-4 md:mx-8 mt-4">
+          <div className="flex items-center gap-3 md:gap-4">
+            <div className="text-3xl md:text-4xl">🔒</div>
+            <div>
+              <h3 className="text-lg md:text-xl font-bold text-white mb-1">
+                Tournament Completed
+              </h3>
+              <p className="text-gray-300 text-xs md:text-sm">
+                Registration and management features are now closed. Viewing statistics only.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
-      {/* Mobile View - Separate pages */}
-      <div className="md:hidden">
-        {mobileActiveTab === "analytics" ? (
-          <WomenTournamentAnalytics
-            registrations={registrations}
-            statistics={statistics}
-            onFilterChange={handleFilterChange}
-          />
-        ) : (
-          <WomenTournamentRegistrations
-            registrations={registrations}
-            loading={loading}
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            categorySportsMap={categorySportsMap}
-            onViewDetails={(registration) => {
-              setSelectedRegistration(registration);
-              setShowDetailsModal(true);
-            }}
-            onUpdateStatus={handleStatusUpdate}
-            onReject={handleDelete}
-            activeRegistrations={activeRegistrations}
-            rejectedRegistrations={rejectedRegistrations}
-          />
-        )}
-      </div>
+      {/* Mobile Tab Navigation - Only visible on mobile and if NOT in READ-ONLY mode */}
+      {!READ_ONLY_MODE && (
+        <MobileTabNavigation
+          activeTab={mobileActiveTab}
+          onTabChange={setMobileActiveTab}
+        />
+      )}
+
+      {/* Conditionally render based on READ_ONLY_MODE */}
+      {READ_ONLY_MODE ? (
+        /* READ-ONLY MODE: Show statistics only (responsive for all screens) */
+        <div className="p-4 md:p-8">
+          {/* Statistics Cards - Responsive Grid */}
+          {statistics && (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
+              <motion.div
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
+                className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-xl md:rounded-2xl p-4 md:p-6"
+              >
+                <div className="text-2xl md:text-4xl mb-2">👥</div>
+                <div className="text-2xl md:text-3xl font-bold text-white mb-1">
+                  {statistics.totalRegistrations}
+                </div>
+                <div className="text-gray-400 text-xs md:text-sm">Total Registrations</div>
+              </motion.div>
+
+              <motion.div
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
+                transition={{delay: 0.1}}
+                className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-xl md:rounded-2xl p-4 md:p-6"
+              >
+                <div className="text-2xl md:text-4xl mb-2">💰</div>
+                <div className="text-2xl md:text-3xl font-bold text-white mb-1">
+                  ₹{statistics.totalRevenue.toLocaleString()}
+                </div>
+                <div className="text-gray-400 text-xs md:text-sm">Total Revenue</div>
+              </motion.div>
+
+              <motion.div
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
+                transition={{delay: 0.2}}
+                className="bg-gradient-to-br from-green-500/10 to-teal-500/10 border border-green-500/20 rounded-xl md:rounded-2xl p-4 md:p-6"
+              >
+                <div className="text-2xl md:text-4xl mb-2">✅</div>
+                <div className="text-2xl md:text-3xl font-bold text-white mb-1">
+                  {statistics.confirmedCount}
+                </div>
+                <div className="text-gray-400 text-xs md:text-sm">Confirmed</div>
+              </motion.div>
+
+              <motion.div
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
+                transition={{delay: 0.3}}
+                className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/20 rounded-xl md:rounded-2xl p-4 md:p-6"
+              >
+                <div className="text-2xl md:text-4xl mb-2">⏳</div>
+                <div className="text-2xl md:text-3xl font-bold text-white mb-1">
+                  {statistics.pendingCount}
+                </div>
+                <div className="text-gray-400 text-xs md:text-sm">Pending</div>
+              </motion.div>
+            </div>
+          )}
+
+          {/* Category Breakdown - Responsive Grid */}
+          {statistics && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
+              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg md:rounded-xl p-3 md:p-4">
+                <div className="text-yellow-400 font-semibold text-sm md:text-base mb-2">
+                  Category 1 (₹49 Unlimited)
+                </div>
+                <div className="text-xl md:text-2xl font-bold text-white">
+                  {statistics.category1Count}
+                </div>
+              </div>
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg md:rounded-xl p-3 md:p-4">
+                <div className="text-blue-400 font-semibold text-sm md:text-base mb-2">
+                  Category 2 (₹49/game)
+                </div>
+                <div className="text-xl md:text-2xl font-bold text-white">
+                  {statistics.category2Count}
+                </div>
+              </div>
+              <div className="bg-green-500/10 border border-green-500/20 rounded-lg md:rounded-xl p-3 md:p-4">
+                <div className="text-green-400 font-semibold text-sm md:text-base mb-2">
+                  Category 3 (₹199/team)
+                </div>
+                <div className="text-xl md:text-2xl font-bold text-white">
+                  {statistics.category3Count}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <>
+          {/* NORMAL MODE: Mobile and Desktop Views */}
+          
+          {/* Mobile View - Separate pages */}
+          <div className="md:hidden">
+            {mobileActiveTab === "analytics" ? (
+              <WomenTournamentAnalytics
+                registrations={registrations}
+                statistics={statistics}
+                onFilterChange={handleFilterChange}
+              />
+            ) : (
+              <WomenTournamentRegistrations
+                registrations={registrations}
+                loading={loading}
+                filters={filters}
+                onFilterChange={handleFilterChange}
+                categorySportsMap={categorySportsMap}
+                onViewDetails={(registration) => {
+                  setSelectedRegistration(registration);
+                  setShowDetailsModal(true);
+                }}
+                onUpdateStatus={handleStatusUpdate}
+                onReject={handleDelete}
+                activeRegistrations={activeRegistrations}
+                rejectedRegistrations={rejectedRegistrations}
+              />
+            )}
+          </div>
 
       {/* Desktop View - Combined page (existing layout) */}
       <div className="p-8 hidden md:block">
@@ -659,11 +776,12 @@ const AdminWomenTournament = () => {
           </div>
         )}
 
-        {/* Filters & Actions */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
-            <input
-              type="text"
+        {/* Filters & Actions - Hidden in READ-ONLY mode */}
+        {!READ_ONLY_MODE && (
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+              <input
+                type="text"
               placeholder="Search by name, reg no, mobile..."
               value={filters.search}
               onChange={(e) => handleFilterChange({search: e.target.value})}
@@ -805,9 +923,11 @@ const AdminWomenTournament = () => {
             </div>
           )}
         </div>
+        )}
 
-        {/* Registrations Table */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+        {/* Registrations Table - Hidden in READ-ONLY mode */}
+        {!READ_ONLY_MODE && (
+          <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
           {loading ? (
             <div className="flex items-center justify-center p-12">
               <div className="animate-spin w-12 h-12 border-4 border-pink-500 border-t-transparent rounded-full"></div>
@@ -992,9 +1112,10 @@ const AdminWomenTournament = () => {
             </>
           )}
         </div>
+        )}
 
-        {/* Rejected Registrations Section */}
-        {rejectedRegistrations.length > 0 && (
+        {/* Rejected Registrations Section - Hidden in READ-ONLY mode */}
+        {!READ_ONLY_MODE && rejectedRegistrations.length > 0 && (
           <div className="mt-8">
             <button
               onClick={() =>
@@ -1139,6 +1260,8 @@ const AdminWomenTournament = () => {
         )}
         {/* End Desktop View */}
       </div>
+      </>
+      )}
 
       {/* Details Modal - Fixed Scrolling Structure with Debug */}
       <AnimatePresence>
@@ -1299,8 +1422,8 @@ const AdminWomenTournament = () => {
                     </div>
                   </div>
 
-                  {/* Quick Actions */}
-                  {selectedRegistration.status === "pending" && (
+                  {/* Quick Actions - Hidden in READ-ONLY mode */}
+                  {!READ_ONLY_MODE && selectedRegistration.status === "pending" && (
                     <div className="space-y-2">
                       <button
                         onClick={() => {
@@ -1328,8 +1451,9 @@ const AdminWomenTournament = () => {
                     </div>
                   )}
 
-                  {/* Advanced Controls (Collapsed by default) */}
-                  <details className="mt-3">
+                  {/* Advanced Controls (Collapsed by default) - Hidden in READ-ONLY mode */}
+                  {!READ_ONLY_MODE && (
+                    <details className="mt-3">
                     <summary className="cursor-pointer text-gray-400 text-sm hover:text-white transition-colors">
                       Advanced Status Controls
                     </summary>
@@ -1375,6 +1499,7 @@ const AdminWomenTournament = () => {
                       </div>
                     </div>
                   </details>
+                  )}
                 </div>
 
                 {/* Payment Screenshot */}
@@ -1462,7 +1587,7 @@ const AdminWomenTournament = () => {
                   </div>
                 </div>
 
-                {/* Actions */}
+                {/* Actions - Hidden in READ-ONLY mode */}
                 <div className="flex gap-3 pt-4 pb-2">
                   <button
                     onClick={() => setShowDetailsModal(false)}
@@ -1470,20 +1595,24 @@ const AdminWomenTournament = () => {
                   >
                     Close
                   </button>
-                  {selectedRegistration?.isRejected ? (
-                    <button
-                      onClick={() => handleDelete(selectedRegistration._id)}
-                      className="flex-1 px-6 py-3 bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 rounded-lg text-green-400 font-semibold transition-all"
-                    >
-                      ✅ Restore Registration
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleDelete(selectedRegistration._id)}
-                      className="flex-1 px-6 py-3 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-red-400 font-semibold transition-all"
-                    >
-                      ❌ Reject Registration
-                    </button>
+                  {!READ_ONLY_MODE && (
+                    <>
+                      {selectedRegistration?.isRejected ? (
+                        <button
+                          onClick={() => handleDelete(selectedRegistration._id)}
+                          className="flex-1 px-6 py-3 bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 rounded-lg text-green-400 font-semibold transition-all"
+                        >
+                          ✅ Restore Registration
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleDelete(selectedRegistration._id)}
+                          className="flex-1 px-6 py-3 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-red-400 font-semibold transition-all"
+                        >
+                          ❌ Reject Registration
+                        </button>
+                      )}
+                    </>
                   )}
                 </div>
                 {/* End Content */}

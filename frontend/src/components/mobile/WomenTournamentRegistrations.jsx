@@ -15,6 +15,7 @@ const WomenTournamentRegistrations = ({
   onReject,
   activeRegistrations,
   rejectedRegistrations,
+  readOnly = false,
 }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [showRejectedRegistrations, setShowRejectedRegistrations] = useState(false);
@@ -166,8 +167,26 @@ const WomenTournamentRegistrations = ({
 
   return (
     <div className="pb-20">
-      {/* Sticky Search and Filter Bar */}
-      <div className="sticky top-36 z-30 bg-gray-900/95 backdrop-blur-lg -mx-4 px-4 py-3 border-b border-gray-800">
+      {/* Read-Only Notice */}
+      {readOnly && (
+        <div className="bg-purple-500/20 border border-purple-500/30 rounded-xl p-4 mb-4 -mx-4 mx-0">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">🔒</span>
+            <div>
+              <div className="text-white font-semibold text-sm">
+                View Only Mode
+              </div>
+              <div className="text-gray-300 text-xs">
+                Tournament has ended. Statistics only.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sticky Search and Filter Bar - Hidden in READ-ONLY mode */}
+      {!readOnly && (
+        <div className="sticky top-36 z-30 bg-gray-900/95 backdrop-blur-lg -mx-4 px-4 py-3 border-b border-gray-800">
         <div className="relative">
           <input
             type="text"
@@ -231,9 +250,11 @@ const WomenTournamentRegistrations = ({
           </div>
         </div>
       </div>
+      )}
 
-      {/* Filter Panel - Outside sticky container, below it */}
-      <AnimatePresence>
+      {/* Filter Panel - Outside sticky container, below it - Hidden in READ-ONLY mode */}
+      {!readOnly && (
+        <AnimatePresence>
         {showFilters && (
           <motion.div
             initial={{height: 0, opacity: 0}}
@@ -334,6 +355,7 @@ const WomenTournamentRegistrations = ({
           </motion.div>
         )}
       </AnimatePresence>
+      )}
 
       {/* Content Area with proper padding */}
       <div className="p-4 space-y-4">
@@ -363,14 +385,15 @@ const WomenTournamentRegistrations = ({
                 key={registration._id}
                 registration={registration}
                 onViewDetails={onViewDetails}
-                onUpdateStatus={onUpdateStatus}
-                onReject={onReject}
+                onUpdateStatus={readOnly ? undefined : onUpdateStatus}
+                onReject={readOnly ? undefined : onReject}
+                readOnly={readOnly}
               />
             ))}
           </div>
 
-          {/* Rejected Registrations Section */}
-          {rejectedRegistrations.length > 0 && (
+          {/* Rejected Registrations Section - Hidden in READ-ONLY mode */}
+          {!readOnly && rejectedRegistrations.length > 0 && (
             <div className="mt-8">
               <motion.button
                 onClick={() =>
@@ -413,8 +436,9 @@ const WomenTournamentRegistrations = ({
                           key={registration._id}
                           registration={registration}
                           onViewDetails={onViewDetails}
-                          onUpdateStatus={onUpdateStatus}
-                          onReject={onReject}
+                          onUpdateStatus={readOnly ? undefined : onUpdateStatus}
+                          onReject={readOnly ? undefined : onReject}
+                          readOnly={readOnly}
                         />
                       ))}
                     </div>

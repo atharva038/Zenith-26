@@ -589,23 +589,44 @@ const AdminMarathon = () => {
         animate={{opacity: 1, y: 0}}
         className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm border border-neon-blue/20 rounded-2xl p-6 mb-6"
       >
-        {/* Filter Header with Clear Button */}
-        <div className="flex justify-between items-center mb-4">
+        {/* Filter Header with Clear Button and Export Buttons */}
+        <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
           <h3 className="text-lg font-bold text-neon-blue font-rajdhani">
             🔍 Filters{" "}
             {hasActiveFilters() &&
               `(${Object.values(filters).filter((v) => v && v !== 1 && v !== 50).length} active)`}
           </h3>
-          {hasActiveFilters() && (
+          <div className="flex gap-2">
+            {hasActiveFilters() && (
+              <motion.button
+                whileHover={{scale: 1.05}}
+                whileTap={{scale: 0.95}}
+                onClick={handleClearAllFilters}
+                className="px-4 py-2 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300 hover:bg-red-500/30 transition-all text-sm font-semibold"
+              >
+                ✕ Clear All
+              </motion.button>
+            )}
+            {/* Export Buttons - Compact & Rounded */}
             <motion.button
               whileHover={{scale: 1.05}}
               whileTap={{scale: 0.95}}
-              onClick={handleClearAllFilters}
-              className="px-4 py-2 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300 hover:bg-red-500/30 transition-all text-sm font-semibold"
+              onClick={exportToCSV}
+              className="px-3 py-2 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-lg hover:from-green-700 hover:to-green-600 transition-all font-rajdhani font-semibold text-sm shadow-lg shadow-green-500/20"
+              title="Export to CSV"
             >
-              ✕ Clear All
+              📥 CSV
             </motion.button>
-          )}
+            <motion.button
+              whileHover={{scale: 1.05}}
+              whileTap={{scale: 0.95}}
+              onClick={exportToPDF}
+              className="px-3 py-2 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg hover:from-red-700 hover:to-red-600 transition-all font-rajdhani font-semibold text-sm shadow-lg shadow-red-500/20"
+              title="Export to PDF"
+            >
+              📄 PDF
+            </motion.button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
@@ -670,26 +691,6 @@ const AdminMarathon = () => {
             <option value="true">Distributed ✅</option>
             <option value="false">Pending 📦</option>
           </select>
-        </div>
-
-        {/* Export Buttons */}
-        <div className="flex gap-2 mt-4">
-          <motion.button
-            whileHover={{scale: 1.02}}
-            whileTap={{scale: 0.98}}
-            onClick={exportToCSV}
-            className="flex-1 bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-3 rounded-lg hover:from-green-700 hover:to-green-600 transition-all font-rajdhani font-semibold shadow-lg shadow-green-500/20"
-          >
-            📥 Export CSV
-          </motion.button>
-          <motion.button
-            whileHover={{scale: 1.02}}
-            whileTap={{scale: 0.98}}
-            onClick={exportToPDF}
-            className="flex-1 bg-gradient-to-r from-red-600 to-red-500 text-white px-4 py-3 rounded-lg hover:from-red-700 hover:to-red-600 transition-all font-rajdhani font-semibold shadow-lg shadow-red-500/20"
-          >
-            📄 Export PDF
-          </motion.button>
         </div>
       </motion.div>
 

@@ -128,14 +128,15 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route
+              {/* 🔒 HIDDEN: On-Spot Registration Route (Tournament Closed) */}
+              {/* <Route
                 path="/admin/onspot-registration"
                 element={
                   <ProtectedRoute>
                     <AdminOnSpotRegistration />
                   </ProtectedRoute>
                 }
-              />
+              /> */}
               
               {/* T-shirt Distribution - Public access for team members */}
               <Route
