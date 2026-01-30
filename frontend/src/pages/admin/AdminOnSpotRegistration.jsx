@@ -1,6 +1,6 @@
-import {useState, useEffect, useRef} from "react";
-import {motion, AnimatePresence} from "framer-motion";
-import {toast} from "react-toastify";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-toastify";
 import api from "../../config/api";
 import AdminLayout from "../../components/AdminLayout";
 import {
@@ -71,31 +71,175 @@ const AdminOnSpotRegistration = () => {
 
   const sports = [
     // Category 1: 49/- (Unlimited Pool)
-    {id: "sack-race", name: "Sack Race", icon: SackRaceIcon, category: "category1", fee: 49},
-    {id: "3-leg-race", name: "3 Leg Race", icon: ThreeLegRaceIcon, category: "category1", fee: 49},
-    {id: "balloon-bursting", name: "Balloon Bursting", icon: BalloonIcon, category: "category1", fee: 49},
-    {id: "brick-race", name: "Brick Race", icon: BrickIcon, category: "category1", fee: 49},
-    {id: "nimbu-chamach", name: "Nimbu Chamach", icon: LemonSpoonIcon, category: "category1", fee: 49},
-    {id: "powerlifting", name: "Powerlifting", icon: PowerliftingIcon, category: "category1", fee: 49},
-    {id: "weightlifting", name: "Weightlifting", icon: WeightliftingIcon, category: "category1", fee: 49},
-    {id: "skipping-rope", name: "Skipping Rope", icon: SkippingRopeIcon, category: "category1", fee: 49},
-    {id: "musical-chair", name: "Musical Chair", icon: MusicalChairIcon, category: "category1", fee: 49},
+    {
+      id: "sack-race",
+      name: "Sack Race",
+      icon: SackRaceIcon,
+      category: "category1",
+      fee: 49,
+    },
+    {
+      id: "3-leg-race",
+      name: "3 Leg Race",
+      icon: ThreeLegRaceIcon,
+      category: "category1",
+      fee: 49,
+    },
+    {
+      id: "balloon-bursting",
+      name: "Balloon Bursting",
+      icon: BalloonIcon,
+      category: "category1",
+      fee: 49,
+    },
+    {
+      id: "brick-race",
+      name: "Brick Race",
+      icon: BrickIcon,
+      category: "category1",
+      fee: 49,
+    },
+    {
+      id: "nimbu-chamach",
+      name: "Nimbu Chamach",
+      icon: LemonSpoonIcon,
+      category: "category1",
+      fee: 49,
+    },
+    {
+      id: "powerlifting",
+      name: "Powerlifting",
+      icon: PowerliftingIcon,
+      category: "category1",
+      fee: 49,
+    },
+    {
+      id: "weightlifting",
+      name: "Weightlifting",
+      icon: WeightliftingIcon,
+      category: "category1",
+      fee: 49,
+    },
+    {
+      id: "skipping-rope",
+      name: "Skipping Rope",
+      icon: SkippingRopeIcon,
+      category: "category1",
+      fee: 49,
+    },
+    {
+      id: "musical-chair",
+      name: "Musical Chair",
+      icon: MusicalChairIcon,
+      category: "category1",
+      fee: 49,
+    },
     // Category 2: 49/- Per Game
-    {id: "badminton", name: "Badminton", icon: BadmintonIcon, category: "category2", fee: 49},
-    {id: "chess", name: "Chess", icon: ChessIcon, category: "category2", fee: 49},
-    {id: "carrom", name: "Carrom", icon: CarromIcon, category: "category2", fee: 49},
-    {id: "100-meter", name: "100 Meter", icon: SprintIcon, category: "category2", fee: 49},
-    {id: "shotput", name: "Shotput", icon: ShotputIcon, category: "category2", fee: 49},
-    {id: "discus", name: "Discus", icon: DiscusIcon, category: "category2", fee: 49},
-    {id: "javelin", name: "Javelin", icon: JavelinIcon, category: "category2", fee: 49},
-    {id: "hammer", name: "Hammer Throw", icon: HammerIcon, category: "category2", fee: 49},
+    {
+      id: "badminton",
+      name: "Badminton",
+      icon: BadmintonIcon,
+      category: "category2",
+      fee: 49,
+    },
+    {
+      id: "chess",
+      name: "Chess",
+      icon: ChessIcon,
+      category: "category2",
+      fee: 49,
+    },
+    {
+      id: "carrom",
+      name: "Carrom",
+      icon: CarromIcon,
+      category: "category2",
+      fee: 49,
+    },
+    {
+      id: "100-meter",
+      name: "100 Meter",
+      icon: SprintIcon,
+      category: "category2",
+      fee: 49,
+    },
+    {
+      id: "shotput",
+      name: "Shotput",
+      icon: ShotputIcon,
+      category: "category2",
+      fee: 49,
+    },
+    {
+      id: "discus",
+      name: "Discus",
+      icon: DiscusIcon,
+      category: "category2",
+      fee: 49,
+    },
+    {
+      id: "javelin",
+      name: "Javelin",
+      icon: JavelinIcon,
+      category: "category2",
+      fee: 49,
+    },
+    {
+      id: "hammer",
+      name: "Hammer Throw",
+      icon: HammerIcon,
+      category: "category2",
+      fee: 49,
+    },
     // Category 3: 199/- Per Team
-    {id: "tug-of-war", name: "Tug of War", icon: TugOfWarIcon, teamSize: 8, category: "category3", fee: 199},
-    {id: "volleyball", name: "Volleyball", icon: VolleyballIcon, teamSize: 6, category: "category3", fee: 199},
-    {id: "cricket", name: "Cricket", icon: CricketIcon, teamSize: 11, category: "category3", fee: 199},
-    {id: "basketball-3x3", name: "Basketball 3x3", icon: BasketballIcon, teamSize: 3, category: "category3", fee: 199},
-    {id: "rink-football", name: "Rink Football", icon: FootballIcon, teamSize: 5, category: "category3", fee: 199},
-    {id: "box-cricket", name: "Box Cricket", icon: BoxCricketIcon, teamSize: 6, category: "category3", fee: 199},
+    {
+      id: "tug-of-war",
+      name: "Tug of War",
+      icon: TugOfWarIcon,
+      teamSize: 8,
+      category: "category3",
+      fee: 199,
+    },
+    {
+      id: "volleyball",
+      name: "Volleyball",
+      icon: VolleyballIcon,
+      teamSize: 6,
+      category: "category3",
+      fee: 199,
+    },
+    {
+      id: "cricket",
+      name: "Cricket",
+      icon: CricketIcon,
+      teamSize: 11,
+      category: "category3",
+      fee: 199,
+    },
+    {
+      id: "basketball-3x3",
+      name: "Basketball 3x3",
+      icon: BasketballIcon,
+      teamSize: 3,
+      category: "category3",
+      fee: 199,
+    },
+    {
+      id: "rink-football",
+      name: "Rink Football",
+      icon: FootballIcon,
+      teamSize: 5,
+      category: "category3",
+      fee: 199,
+    },
+    {
+      id: "box-cricket",
+      name: "Box Cricket",
+      icon: BoxCricketIcon,
+      teamSize: 6,
+      category: "category3",
+      fee: 199,
+    },
   ];
 
   const calculateTotalAmount = () => {
@@ -122,12 +266,13 @@ const AdminOnSpotRegistration = () => {
         video: {
           width: { ideal: 1920 },
           height: { ideal: 1080 },
-          facingMode: facingMode // Use state for dynamic camera switching
+          facingMode: facingMode, // Use state for dynamic camera switching
         },
         audio: false,
       };
 
-      const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+      const mediaStream =
+        await navigator.mediaDevices.getUserMedia(constraints);
       setStream(mediaStream);
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
@@ -135,36 +280,41 @@ const AdminOnSpotRegistration = () => {
       setShowCamera(true);
     } catch (error) {
       console.error("Camera access error:", error);
-      toast.error("Unable to access camera. Please check permissions and ensure you're on HTTPS.");
+      toast.error(
+        "Unable to access camera. Please check permissions and ensure you're on HTTPS.",
+      );
     }
   };
 
   const switchCamera = async () => {
     const newFacingMode = facingMode === "user" ? "environment" : "user";
-    
+
     // Stop current stream
     if (stream) {
       stream.getTracks().forEach((track) => track.stop());
     }
-    
+
     try {
       // Get camera with new facing mode
       const constraints = {
         video: {
           width: { ideal: 1920 },
           height: { ideal: 1080 },
-          facingMode: newFacingMode
+          facingMode: newFacingMode,
         },
         audio: false,
       };
 
-      const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+      const mediaStream =
+        await navigator.mediaDevices.getUserMedia(constraints);
       setStream(mediaStream);
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
       }
       setFacingMode(newFacingMode);
-      toast.success(`Switched to ${newFacingMode === "user" ? "front" : "back"} camera`);
+      toast.success(
+        `Switched to ${newFacingMode === "user" ? "front" : "back"} camera`,
+      );
     } catch (error) {
       console.error("Camera switch error:", error);
       toast.error("Unable to switch camera. Please try again.");
@@ -205,7 +355,7 @@ const AdminOnSpotRegistration = () => {
         await uploadScreenshot(file);
       },
       "image/jpeg",
-      0.95
+      0.95,
     );
   };
 
@@ -232,7 +382,7 @@ const AdminOnSpotRegistration = () => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       toast.dismiss(uploadToast);
@@ -247,7 +397,7 @@ const AdminOnSpotRegistration = () => {
     } catch (error) {
       console.error("Screenshot upload error:", error);
       toast.error(
-        error.response?.data?.message || "Failed to upload screenshot"
+        error.response?.data?.message || "Failed to upload screenshot",
       );
       setPaymentScreenshot(null);
       setScreenshotPreview(null);
@@ -260,7 +410,12 @@ const AdminOnSpotRegistration = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const validTypes = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
+    const validTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "application/pdf",
+    ];
     if (!validTypes.includes(file.type)) {
       toast.error("Please upload a valid image (JPG, PNG) or PDF file");
       return;
@@ -295,7 +450,10 @@ const AdminOnSpotRegistration = () => {
       return;
     }
 
-    if (formData.selectedCategory === "category3" && !formData.category3TeamName) {
+    if (
+      formData.selectedCategory === "category3" &&
+      !formData.category3TeamName
+    ) {
       toast.error("Please provide a team name for Category 3 sports");
       return;
     }
@@ -325,12 +483,16 @@ const AdminOnSpotRegistration = () => {
         selectedSports: formData.selectedSports,
         category3TeamName: formData.category3TeamName || "",
         paymentMethod: paymentMethod,
-        paymentScreenshot: paymentMethod === "online" ? formData.paymentScreenshotUrl : "",
+        paymentScreenshot:
+          paymentMethod === "online" ? formData.paymentScreenshotUrl : "",
         totalAmount: totalAmount,
         isOnSpot: true,
       };
 
-      const response = await api.post("/women-tournament/register", registrationData);
+      const response = await api.post(
+        "/women-tournament/register",
+        registrationData,
+      );
 
       toast.dismiss(loadingToast);
 
@@ -355,7 +517,9 @@ const AdminOnSpotRegistration = () => {
       console.error("Registration Error:", error);
       toast.dismiss(loadingToast);
 
-      const errorMessage = error.response?.data?.message || "Failed to submit registration. Please try again.";
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to submit registration. Please try again.";
       toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -390,7 +554,7 @@ const AdminOnSpotRegistration = () => {
   };
 
   const handleChange = (e) => {
-    const {name, value} = e.target;
+    const { name, value } = e.target;
 
     if (name === "selectedCategory") {
       setFormData((prev) => ({
@@ -411,8 +575,8 @@ const AdminOnSpotRegistration = () => {
     <AdminLayout title="On-Spot Registration">
       <div className="max-w-6xl mx-auto">
         <motion.div
-          initial={{opacity: 0, y: 20}}
-          animate={{opacity: 1, y: 0}}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-xl rounded-xl border border-neon-blue/20 overflow-hidden shadow-2xl"
         >
           {/* Header */}
@@ -527,20 +691,24 @@ const AdminOnSpotRegistration = () => {
                   Category 1 Sports (₹49 Unlimited Pool)
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {sports.filter((s) => s.category === "category1").map((sport) => (
-                    <label
-                      key={sport.id}
-                      className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-white/5 transition-colors border border-white/10"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={formData.selectedSports.includes(sport.name)}
-                        onChange={() => handleCheckboxChange(sport.name)}
-                        className="w-4 h-4 text-yellow-500 border-white/20 rounded focus:ring-yellow-500 bg-black/40 flex-shrink-0"
-                      />
-                      <span className="text-gray-300 text-sm">{sport.name}</span>
-                    </label>
-                  ))}
+                  {sports
+                    .filter((s) => s.category === "category1")
+                    .map((sport) => (
+                      <label
+                        key={sport.id}
+                        className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-white/5 transition-colors border border-white/10"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={formData.selectedSports.includes(sport.name)}
+                          onChange={() => handleCheckboxChange(sport.name)}
+                          className="w-4 h-4 text-yellow-500 border-white/20 rounded focus:ring-yellow-500 bg-black/40 flex-shrink-0"
+                        />
+                        <span className="text-gray-300 text-sm">
+                          {sport.name}
+                        </span>
+                      </label>
+                    ))}
                 </div>
               </div>
             )}
@@ -552,20 +720,24 @@ const AdminOnSpotRegistration = () => {
                   Category 2 Sports (₹49 Per Game)
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {sports.filter((s) => s.category === "category2").map((sport) => (
-                    <label
-                      key={sport.id}
-                      className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-white/5 transition-colors border border-white/10"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={formData.selectedSports.includes(sport.name)}
-                        onChange={() => handleCheckboxChange(sport.name)}
-                        className="w-4 h-4 text-blue-500 border-white/20 rounded focus:ring-blue-500 bg-black/40 flex-shrink-0"
-                      />
-                      <span className="text-gray-300 text-sm">{sport.name}</span>
-                    </label>
-                  ))}
+                  {sports
+                    .filter((s) => s.category === "category2")
+                    .map((sport) => (
+                      <label
+                        key={sport.id}
+                        className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-white/5 transition-colors border border-white/10"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={formData.selectedSports.includes(sport.name)}
+                          onChange={() => handleCheckboxChange(sport.name)}
+                          className="w-4 h-4 text-blue-500 border-white/20 rounded focus:ring-blue-500 bg-black/40 flex-shrink-0"
+                        />
+                        <span className="text-gray-300 text-sm">
+                          {sport.name}
+                        </span>
+                      </label>
+                    ))}
                 </div>
               </div>
             )}
@@ -578,22 +750,26 @@ const AdminOnSpotRegistration = () => {
                     Category 3 Sports (₹199 Per Team)
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {sports.filter((s) => s.category === "category3").map((sport) => (
-                      <label
-                        key={sport.id}
-                        className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-white/5 transition-colors border border-white/10"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={formData.selectedSports.includes(sport.name)}
-                          onChange={() => handleCheckboxChange(sport.name)}
-                          className="w-4 h-4 text-green-500 border-white/20 rounded focus:ring-green-500 bg-black/40 flex-shrink-0"
-                        />
-                        <span className="text-gray-300 text-sm">
-                          {sport.name} ({sport.teamSize})
-                        </span>
-                      </label>
-                    ))}
+                    {sports
+                      .filter((s) => s.category === "category3")
+                      .map((sport) => (
+                        <label
+                          key={sport.id}
+                          className="flex items-center space-x-2 cursor-pointer p-3 rounded-lg hover:bg-white/5 transition-colors border border-white/10"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={formData.selectedSports.includes(
+                              sport.name,
+                            )}
+                            onChange={() => handleCheckboxChange(sport.name)}
+                            className="w-4 h-4 text-green-500 border-white/20 rounded focus:ring-green-500 bg-black/40 flex-shrink-0"
+                          />
+                          <span className="text-gray-300 text-sm">
+                            {sport.name} ({sport.teamSize} players per team)
+                          </span>
+                        </label>
+                      ))}
                   </div>
                 </div>
 
@@ -679,8 +855,8 @@ const AdminOnSpotRegistration = () => {
             {/* QR Code Display for Online Payment */}
             {paymentMethod === "online" && (
               <motion.div
-                initial={{opacity: 0, height: 0}}
-                animate={{opacity: 1, height: "auto"}}
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
                 className="space-y-4"
               >
                 <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-6">
@@ -736,9 +912,9 @@ const AdminOnSpotRegistration = () => {
                     <AnimatePresence>
                       {showBackupQR && (
                         <motion.div
-                          initial={{opacity: 0, height: 0}}
-                          animate={{opacity: 1, height: "auto"}}
-                          exit={{opacity: 0, height: 0}}
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
                           className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4"
                         >
                           {BACKUP_QR_CODES.map((qr, index) => (
@@ -806,7 +982,9 @@ const AdminOnSpotRegistration = () => {
                         📷 Capture Payment Screenshot
                       </button>
 
-                      <div className="text-center text-gray-400 text-sm">OR</div>
+                      <div className="text-center text-gray-400 text-sm">
+                        OR
+                      </div>
 
                       {/* File Upload */}
                       <div className="relative">
@@ -947,15 +1125,15 @@ const AdminOnSpotRegistration = () => {
       <AnimatePresence>
         {showCamera && (
           <motion.div
-            initial={{opacity: 0}}
-            animate={{opacity: 1}}
-            exit={{opacity: 0}}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           >
             <motion.div
-              initial={{scale: 0.9}}
-              animate={{scale: 1}}
-              exit={{scale: 0.9}}
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
               className="bg-gray-900 rounded-xl p-6 max-w-2xl w-full"
             >
               <div className="flex justify-between items-center mb-4">
@@ -995,8 +1173,18 @@ const AdminOnSpotRegistration = () => {
                   onClick={switchCamera}
                   className="flex-1 py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold font-rajdhani rounded-lg transition-all flex items-center justify-center gap-2"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
                   </svg>
                   Switch Camera
                 </button>

@@ -141,10 +141,10 @@ export default function SportModal({ isOpen, onClose, sport, onRegister }) {
                         sport.registrationStatus === "coming soon"
                           ? "text-yellow-400"
                           : sport.registrationStatus === "open"
-                          ? "text-green-400"
-                          : sport.registrationStatus === "closed"
-                          ? "text-red-400"
-                          : "text-white"
+                            ? "text-green-400"
+                            : sport.registrationStatus === "closed"
+                              ? "text-red-400"
+                              : "text-white"
                       }`}
                     >
                       {sport.registrationStatus || "Coming Soon"}
@@ -156,10 +156,10 @@ export default function SportModal({ isOpen, onClose, sport, onRegister }) {
                                  border border-[#ffb36a]/20"
                   >
                     <p className="text-gray-400 text-[10px] sm:text-xs md:text-sm mb-0.5 sm:mb-1">
-                      Prize Pool
+                      Registration Fee
                     </p>
                     <p className="text-white font-semibold text-xs sm:text-sm md:text-base">
-                      {sport.prize}
+                      {sport.registrationFee}
                     </p>
                   </div>
                 </div>
@@ -200,18 +200,18 @@ export default function SportModal({ isOpen, onClose, sport, onRegister }) {
                                       sport.registrationStatus === "open"
                                         ? "bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] text-black hover:scale-105 shadow-lg shadow-[#ffb36a]/30"
                                         : sport.registrationStatus ===
-                                          "coming soon"
-                                        ? "bg-gradient-to-r from-yellow-600 to-yellow-500 text-white cursor-not-allowed opacity-80"
-                                        : "bg-gradient-to-r from-gray-600 to-gray-500 text-white cursor-not-allowed opacity-80"
+                                            "coming soon"
+                                          ? "bg-gradient-to-r from-yellow-600 to-yellow-500 text-white cursor-not-allowed opacity-80"
+                                          : "bg-gradient-to-r from-gray-600 to-gray-500 text-white cursor-not-allowed opacity-80"
                                     }`}
                   >
                     {sport.registrationStatus === "open"
                       ? "Register Now"
                       : sport.registrationStatus === "coming soon"
-                      ? "Coming Soon"
-                      : sport.registrationStatus === "closed"
-                      ? "Registration Closed"
-                      : "Coming Soon"}
+                        ? "Coming Soon"
+                        : sport.registrationStatus === "closed"
+                          ? "Registration Closed"
+                          : "Coming Soon"}
                   </button>
                   <button
                     onClick={onClose}
