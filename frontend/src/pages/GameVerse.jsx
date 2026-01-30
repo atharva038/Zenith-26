@@ -285,7 +285,7 @@ const sportsData = [
     tagline: "The Beautiful Game",
     description:
       "Experience the thrill of competitive football at ZENITH 2026. Join teams from across the nation in an epic battle for glory on the pitch.",
-    date: "March 15-17, 2026",
+    date: "February 20-22, 2026",
     venue: "Main Stadium Arena",
     teamSize: "11 vs 11",
     prize: "₹50,000",
@@ -309,7 +309,7 @@ const sportsData = [
     tagline: "Hoop Dreams",
     description:
       "Dribble, shoot, and slam your way to victory in high-energy basketball matches. Show off your court skills and teamwork.",
-    date: "March 17-18, 2026",
+    date: "February 20-22, 2026",
     venue: "Outdoor Basketball Courts",
     teamSize: "5 vs 5",
     prize: "₹35,000",
@@ -333,7 +333,7 @@ const sportsData = [
     tagline: "Gentleman's Game",
     description:
       "Step up to the crease and showcase your batting, bowling, and fielding skills in the most exciting cricket tournament of the year.",
-    date: "March 16-18, 2026",
+    date: "February 20-22, 2026",
     venue: "Cricket Ground",
     teamSize: "11 vs 11",
     prize: "₹40,000",
@@ -357,7 +357,7 @@ const sportsData = [
     tagline: "Spike It High",
     description:
       "Bump, set, spike! Join the volleyball championship and demonstrate your team coordination and athletic prowess.",
-    date: "March 15-17, 2026",
+    date: "February 20-22, 2026",
     venue: "Beach Volleyball Arena",
     teamSize: "6 vs 6",
     prize: "₹30,000",
@@ -383,7 +383,7 @@ const sportsData = [
     tagline: "Smash & Win",
     description:
       "Fast-paced rallies and powerful smashes await! Compete in singles and doubles categories to claim the championship.",
-    date: "March 15-16, 2026",
+    date: "February 20-21, 2026",
     venue: "Indoor Sports Complex",
     teamSize: "Singles/Doubles",
     prize: "₹25,000",
@@ -407,7 +407,7 @@ const sportsData = [
     tagline: "Fast & Furious",
     description:
       "High-speed action with quick passes and powerful shots! Showcase your agility and teamwork in this exciting handball tournament.",
-    date: "March 16-17, 2026",
+    date: "February 20-22, 2026",
     venue: "Indoor Sports Arena",
     teamSize: "7 vs 7",
     prize: "₹28,000",
@@ -431,7 +431,7 @@ const sportsData = [
     tagline: "Raid & Defend",
     description:
       "Traditional Indian sport combining strength, strategy, and stamina. Raid the opponent's court while holding your breath!",
-    date: "March 16-17, 2026",
+    date: "February 20-22, 2026",
     venue: "Kabaddi Arena",
     teamSize: "7 vs 7",
     prize: "₹28,000",
@@ -455,7 +455,7 @@ const sportsData = [
     tagline: "Checkmate Mastery",
     description:
       "Battle of minds! Outthink your opponents in intense chess matches. Strategic thinking and tactical brilliance will reign supreme.",
-    date: "March 16-17, 2026",
+    date: "February 20-22, 2026",
     venue: "Conference Hall A",
     teamSize: "1 vs 1",
     prize: "₹20,000",
@@ -481,7 +481,7 @@ const sportsData = [
     tagline: "Ping Pong Power",
     description:
       "Lightning-fast reflexes meet precision control. Compete in the ultimate table tennis showdown with spin, speed, and strategy.",
-    date: "March 15-16, 2026",
+    date: "February 20-21, 2026",
     venue: "Indoor Sports Hall",
     teamSize: "Singles/Doubles",
     prize: "₹18,000",
@@ -505,7 +505,7 @@ const sportsData = [
     tagline: "Strike & Pocket",
     description:
       "Traditional board game of precision and skill. Pocket the carrom men and the queen to claim victory!",
-    date: "March 15-16, 2026",
+    date: "February 20-21, 2026",
     venue: "Indoor Gaming Hall",
     teamSize: "Singles/Doubles",
     prize: "₹15,000",
@@ -529,7 +529,7 @@ const sportsData = [
     tagline: "Track & Field Glory",
     description:
       "Sprint, jump, throw! Compete in various track and field events. Show your athletic excellence across multiple disciplines.",
-    date: "March 15-18, 2026",
+    date: "February 20-22, 2026",
     venue: "Athletic Stadium",
     teamSize: "Individual",
     prize: "₹32,000",
@@ -553,7 +553,7 @@ const sportsData = [
     tagline: "Strength Supreme",
     description:
       "Lift heavy, lift strong! Compete in squat, bench press, and deadlift. Show your raw power and technique in this ultimate strength competition.",
-    date: "March 17-18, 2026",
+    date: "February 21-22, 2026",
     venue: "Fitness Arena",
     teamSize: "Individual",
     prize: "₹35,000",
