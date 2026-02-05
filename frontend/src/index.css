@@ -15,7 +15,9 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   font-family: "Rajdhani", sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
   /* Optimize rendering for media */
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
@@ -75,7 +77,9 @@ body:not(.dark) {
   }
 
   .text-shadow-glow {
-    text-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+    text-shadow:
+      0 0 20px currentColor,
+      0 0 40px currentColor;
   }
 
   .animation-delay-200 {
@@ -174,4 +178,14 @@ body:not(.dark) {
 .custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
+}
+
+/* Hide scrollbar completely */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
 }

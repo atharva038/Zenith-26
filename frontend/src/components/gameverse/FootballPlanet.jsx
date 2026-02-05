@@ -1,6 +1,6 @@
-import React, {useRef, useMemo} from "react";
-import {useFrame} from "@react-three/fiber";
-import {Text} from "@react-three/drei";
+import React, { useRef, useMemo } from "react";
+import { useFrame } from "@react-three/fiber";
+import { Text } from "@react-three/drei";
 import * as THREE from "three";
 
 /**
@@ -19,7 +19,7 @@ function useFootballTexture() {
     const canvas = document.createElement("canvas");
     const size = 2048;
     canvas.width = canvas.height = size;
-    const ctx = canvas.getContext("2d", {willReadFrequently: true});
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
 
     // Vibrant grass green base (like a football field)
     const gradient = ctx.createRadialGradient(
@@ -28,7 +28,7 @@ function useFootballTexture() {
       0,
       size / 2,
       size / 2,
-      size / 2
+      size / 2,
     );
     gradient.addColorStop(0, "#2ea043"); // Bright green
     gradient.addColorStop(0.5, "#26843d"); // Medium green
@@ -85,7 +85,7 @@ function useFootballTexture() {
 }
 
 // Classic football (soccer ball) with pentagons
-function Football({position, rotation = [0, 0, 0], scale = 1}) {
+function Football({ position, rotation = [0, 0, 0], scale = 1 }) {
   const ballRef = useRef();
 
   useFrame((state) => {
@@ -100,7 +100,7 @@ function Football({position, rotation = [0, 0, 0], scale = 1}) {
     const canvas = document.createElement("canvas");
     const size = 512;
     canvas.width = canvas.height = size;
-    const ctx = canvas.getContext("2d", {willReadFrequently: true});
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
 
     // White base
     ctx.fillStyle = "#ffffff";
@@ -148,7 +148,7 @@ function Football({position, rotation = [0, 0, 0], scale = 1}) {
   );
 }
 
-function FootballPlanet({position, onClick, hovered, setHovered}) {
+function FootballPlanet({ position, onClick, hovered, setHovered }) {
   const planetRef = useRef();
   const glowRef = useRef();
 
@@ -157,7 +157,7 @@ function FootballPlanet({position, onClick, hovered, setHovered}) {
 
   // Create orbiting footballs
   const orbitingBalls = useMemo(() => {
-    return Array.from({length: 18}, (_, i) => ({
+    return Array.from({ length: 18 }, (_, i) => ({
       id: i,
       radius: radius * (1.4 + Math.random() * 0.3),
       speed: 0.3 + Math.random() * 0.2,
@@ -167,7 +167,7 @@ function FootballPlanet({position, onClick, hovered, setHovered}) {
     }));
   }, [radius]);
 
-  useFrame(({clock}) => {
+  useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
 
     // Planet rotation
@@ -264,10 +264,10 @@ function FootballPlanet({position, onClick, hovered, setHovered}) {
 }
 
 // Component for orbiting balls
-function OrbitingBall({radius, speed, offset, y, scale}) {
+function OrbitingBall({ radius, speed, offset, y, scale }) {
   const ref = useRef();
 
-  useFrame(({clock}) => {
+  useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
     const angle = t * speed + offset;
 

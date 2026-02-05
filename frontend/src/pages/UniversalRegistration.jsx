@@ -21,6 +21,21 @@ const SPORTS_DATA = {
       { name: "Shahaji Bhosle", phone: "8308949481" },
     ],
   },
+  "Box Cricket": {
+    name: "Box Cricket Championship",
+    venue: "Box Cricket Arena",
+    fees: { amount: 3000, note: "per team" },
+    rules: [
+      "Maximum 8 players per team (6 playing + 2 substitutes)",
+      "Shortened pitch format",
+      "Tennis ball cricket",
+      "Modified cricket rules apply",
+    ],
+    coordinators: [
+      { name: "Pranav Godle", phone: "9028783635" },
+      { name: "Shahaji Bhosle", phone: "8308949481" },
+    ],
+  },
   Football: {
     name: "Football Championship",
     venue: "SGGSIE&T Football Ground",
@@ -391,6 +406,9 @@ const UniversalRegistration = () => {
         HOCKEY: "Hockey",
         "LAWN TENNIS": "Lawn Tennis",
         SQUASH: "Squash",
+        "TUG OF WAR": "Tug of War",
+        "RINK FOOTBALL": "Rink Football",
+        "BOX CRICKET": "Box Cricket",
       };
 
       const mappedSport = sportMapping[sportName];
