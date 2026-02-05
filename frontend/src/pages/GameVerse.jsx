@@ -278,7 +278,7 @@ const sportsData = [
     id: 1,
     name: "FOOTBALL",
     icon: "⚽",
-    color: "#2d5016",
+    color: "#16A34A",
     position: [0, 0, -12], // North
     orbit: 1,
     tier: 1,
@@ -302,7 +302,7 @@ const sportsData = [
     id: 2,
     name: "BASKETBALL",
     icon: "🏀",
-    color: "#5a2a0a",
+    color: "#F97316",
     position: [12, 0, 0], // East
     orbit: 1,
     tier: 1,
@@ -326,7 +326,7 @@ const sportsData = [
     id: 3,
     name: "CRICKET",
     icon: "🏏",
-    color: "#1a3a52",
+    color: "#1D4ED8",
     position: [0, 0, 12], // South
     orbit: 1,
     tier: 1,
@@ -349,8 +349,8 @@ const sportsData = [
   {
     id: 4,
     name: "VOLLEYBALL",
-    icon: "�",
-    color: "#2a2a5a",
+    icon: "🏐",
+    color: "#2563EB",
     position: [-12, 0, 0], // West
     orbit: 1,
     tier: 1,
@@ -376,7 +376,7 @@ const sportsData = [
     id: 5,
     name: "BADMINTON",
     icon: "🏸",
-    color: "#4a1a1a",
+    color: "#22C55E",
     position: [14.14, 0, -14.14], // Northeast
     orbit: 2,
     tier: 2,
@@ -400,7 +400,7 @@ const sportsData = [
     id: 6,
     name: "HANDBALL",
     icon: "🤾",
-    color: "#0b1e3a",
+    color: "#DC2626",
     position: [14.14, 0, 14.14], // Southeast
     orbit: 2,
     tier: 2,
@@ -424,7 +424,7 @@ const sportsData = [
     id: 7,
     name: "KABADDI",
     icon: "🤼",
-    color: "#8b4513",
+    color: "#92400E",
     position: [-14.14, 0, 14.14], // Southwest
     orbit: 2,
     tier: 2,
@@ -448,7 +448,7 @@ const sportsData = [
     id: 8,
     name: "CHESS",
     icon: "♟️",
-    color: "#1a1a1a",
+    color: "#1F2937",
     position: [-14.14, 0, -14.14], // Northwest
     orbit: 2,
     tier: 2,
@@ -473,8 +473,8 @@ const sportsData = [
   {
     id: 9,
     name: "TABLE TENNIS",
-    icon: "�",
-    color: "#2a4a2a",
+    icon: "🏓",
+    color: "#DC2626",
     position: [0, 0, -26], // Far North
     orbit: 3,
     tier: 3,
@@ -497,8 +497,8 @@ const sportsData = [
   {
     id: 10,
     name: "CARROM",
-    icon: "�",
-    color: "#654321",
+    icon: "🎯",
+    color: "#D6A56F",
     position: [26, 0, 0], // East (90°)
     orbit: 3,
     tier: 3,
@@ -522,7 +522,7 @@ const sportsData = [
     id: 11,
     name: "ATHLETICS",
     icon: "🏃",
-    color: "#5a1a2a",
+    color: "#B91C1C",
     position: [0, 0, 26], // South (180°)
     orbit: 3,
     tier: 3,
@@ -546,7 +546,7 @@ const sportsData = [
     id: 12,
     name: "POWERLIFTING",
     icon: "🏋️",
-    color: "#1a1a1a",
+    color: "#4B5563",
     position: [-26, 0, 0], // West (270°)
     orbit: 3,
     tier: 1,
@@ -563,6 +563,80 @@ const sportsData = [
       "Squat, Bench Press, Deadlift",
       "Weight classes enforced",
       "Professional judging panel",
+    ],
+    registrationStatus: "open",
+  },
+
+  // ===== FAR OUTER RING (Radius 32) - 4 Additional Sports =====
+  {
+    id: 13,
+    name: "TUG OF WAR",
+    icon: "🪢",
+    color: "#A16207",
+    position: [0, 0, -32], // Far North
+    orbit: 4,
+    tier: 3,
+    tagline: "Pull to Victory",
+    description:
+      "Pure strength and teamwork! Test your team's power in this classic battle of strength. Coordination and raw power determine the winners.",
+    date: "February 20-22, 2026",
+    venue: "Outdoor Arena",
+    teamSize: "8 vs 8",
+    registrationFee: "₹1500 per team",
+    rules: [
+      "Best of 3 pulls",
+      "Teams must pull rope across marked line",
+      "No gloves or grip aids allowed",
+      "Weight class categories available",
+      "Mixed gender teams allowed",
+    ],
+    registrationStatus: "open",
+  },
+  {
+    id: 14,
+    name: "RINK FOOTBALL",
+    icon: "⚽",
+    color: "#38BDF8",
+    position: [32, 0, 0], // Far East
+    orbit: 4,
+    tier: 3,
+    tagline: "Walled Football",
+    description:
+      "Football in an enclosed rink with walls! Fast-paced action where the ball is always in play. Quick thinking and non-stop action guaranteed.",
+    date: "February 20-22, 2026",
+    venue: "Rink Football Arena",
+    teamSize: "5 vs 5",
+    registrationFee: "₹2200 per team",
+    rules: [
+      "Two 15-minute halves",
+      "Ball can bounce off walls",
+      "No throw-ins or corners",
+      "Unlimited substitutions",
+      "Maximum 10 players per squad",
+    ],
+    registrationStatus: "open",
+  },
+  {
+    id: 15,
+    name: "BOX CRICKET",
+    icon: "📦",
+    color: "#7C3AED",
+    position: [0, 0, 32], // Far South
+    orbit: 4,
+    tier: 3,
+    tagline: "Boxed Action",
+    description:
+      "Cricket in a confined space! Fast-paced, high-scoring matches with modified rules. Perfect for showcasing quick reflexes and shot-making skills.",
+    date: "February 20-21, 2026",
+    venue: "Box Cricket Arena",
+    teamSize: "6 vs 6",
+    registrationFee: "₹2000 per team",
+    rules: [
+      "6 overs per innings",
+      "Enclosed playing area",
+      "Modified scoring zones",
+      "Catches off nets count",
+      "Maximum 10 players per squad",
     ],
     registrationStatus: "open",
   },
@@ -641,12 +715,18 @@ function OrbitingPlanet({
 // Camera component with planet tracking
 function CameraRig({ lockedPlanetRef }) {
   const { camera, controls } = useThree();
-  const targetPos = useRef(new THREE.Vector3(0, 8, 35));
+  const isMobile = window.innerWidth < 768;
+  const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+
+  // Responsive camera positioning
+  const defaultY = isMobile ? 12 : isTablet ? 10 : 8;
+  const defaultZ = isMobile ? 45 : isTablet ? 40 : 35;
+
+  const targetPos = useRef(new THREE.Vector3(0, defaultY, defaultZ));
   const targetLookAt = useRef(new THREE.Vector3(0, 0, 0));
 
   useFrame(() => {
     // Cinematic easing - slower and smoother for a more dramatic effect
-    const isMobile = window.innerWidth < 768;
     const lerpSpeed = isMobile ? 0.08 : 0.06;
 
     if (lockedPlanetRef?.current) {
@@ -658,12 +738,19 @@ function CameraRig({ lockedPlanetRef }) {
       const offset = new THREE.Vector3(px, py, pz);
       const direction = offset.clone().normalize();
 
-      // Position camera behind and above the planet
-      targetPos.current.set(px + direction.x * 8, py + 6, pz + direction.z * 8);
+      // Responsive camera distance when focused on planet
+      const distance = isMobile ? 12 : isTablet ? 10 : 8;
+      const heightOffset = isMobile ? 8 : isTablet ? 7 : 6;
+
+      targetPos.current.set(
+        px + direction.x * distance,
+        py + heightOffset,
+        pz + direction.z * distance,
+      );
       targetLookAt.current.set(px, py, pz);
     } else {
-      // Default overview position
-      targetPos.current.set(0, 8, 35);
+      // Default overview position - responsive
+      targetPos.current.set(0, defaultY, defaultZ);
       targetLookAt.current.set(0, 0, 0);
     }
 
@@ -675,7 +762,15 @@ function CameraRig({ lockedPlanetRef }) {
     }
   });
 
-  return <PerspectiveCamera makeDefault position={[0, 8, 35]} fov={75} />;
+  // Responsive FOV
+  const fov = isMobile ? 85 : isTablet ? 80 : 75;
+  return (
+    <PerspectiveCamera
+      makeDefault
+      position={[0, defaultY, defaultZ]}
+      fov={fov}
+    />
+  );
 }
 
 // Scene component
@@ -727,6 +822,8 @@ function Scene({ onIslandClick, lockedPlanet, onRegisterPlanetRef }) {
       {/* Middle Ring */}
       <OrbitalRing radius={26} color="#ff6b35" opacity={0.15} />{" "}
       {/* Outer Ring */}
+      <OrbitalRing radius={32} color="#00ced1" opacity={0.12} />{" "}
+      {/* Far Outer Ring */}
       {/* Central Sun/Core - Enhanced with glow */}
       <mesh>
         <sphereGeometry args={[1.5, 32, 32]} />
@@ -790,6 +887,23 @@ function Scene({ onIslandClick, lockedPlanet, onRegisterPlanetRef }) {
             sport={sport}
             orbitRadius={26}
             orbitSpeed={0.06}
+            initialAngle={(index / 4) * Math.PI * 2}
+            onIslandClick={onIslandClick}
+            isLocked={lockedPlanet?.id === sport.id}
+            onRegisterRef={
+              lockedPlanet?.id === sport.id ? onRegisterPlanetRef : null
+            }
+          />
+        ))}
+      {/* Orbiting Planets - Far Outer Ring (Orbit 4) */}
+      {sportsData
+        .filter((s) => s.orbit === 4)
+        .map((sport, index) => (
+          <OrbitingPlanet
+            key={sport.id}
+            sport={sport}
+            orbitRadius={32}
+            orbitSpeed={0.04}
             initialAngle={(index / 4) * Math.PI * 2}
             onIslandClick={onIslandClick}
             isLocked={lockedPlanet?.id === sport.id}
@@ -981,8 +1095,8 @@ export default function GameVerse() {
   };
 
   // Split sports into left and right lists
-  const leftSports = sportsData.slice(0, 6);
-  const rightSports = sportsData.slice(6, 12);
+  const leftSports = sportsData.slice(0, 8);
+  const rightSports = sportsData.slice(8, 16);
 
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden">
@@ -1078,10 +1192,12 @@ export default function GameVerse() {
       {/* Left Planet List - Vertical on both mobile and desktop, positioned on left side - GPU ACCELERATED */}
       <motion.div
         className="absolute 
-                   left-1 top-16 md:left-2 md:top-[25%] md:-translate-y-1/2
+                   left-1 top-14 bottom-14 sm:top-16 sm:bottom-16 md:left-2 md:top-[15%] md:bottom-[15%]
                    z-20 
                    flex flex-col gap-1 md:gap-2 
-                   max-w-[120px] sm:max-w-[150px] md:max-w-[180px]"
+                   max-w-[100px] sm:max-w-[130px] md:max-w-[160px]
+                   overflow-y-auto overflow-x-hidden
+                   scrollbar-hide"
         style={{
           willChange: "transform, opacity",
           transform: "translate3d(0,0,0)", // GPU layer
@@ -1112,15 +1228,15 @@ export default function GameVerse() {
             whileHover={{ scale: 1.05, x: 5 }}
             whileTap={{ scale: 0.95 }}
           >
-            <div className="flex items-center gap-1.5 md:gap-2.5 backdrop-blur-md">
-              <span className="text-lg sm:text-xl md:text-2xl">
+            <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2.5 backdrop-blur-md">
+              <span className="text-base sm:text-lg md:text-xl">
                 {sport.icon}
               </span>
               <div className="text-left flex-1">
-                <p className="text-[#ffb36a] font-bold text-[9px] sm:text-xs md:text-sm leading-tight">
+                <p className="text-[#ffb36a] font-bold text-[8px] sm:text-[9px] md:text-xs leading-tight truncate">
                   {sport.name}
                 </p>
-                <p className="text-gray-500 text-[8px] sm:text-[9px] md:text-xs">
+                <p className="text-gray-500 text-[7px] sm:text-[8px] md:text-[9px]">
                   Orbit {sport.orbit}
                 </p>
               </div>
@@ -1146,10 +1262,12 @@ export default function GameVerse() {
       {/* Right Planet List - Vertical on both mobile and desktop, positioned on right side - GPU ACCELERATED */}
       <motion.div
         className="absolute 
-                   right-1 top-16 md:right-2 md:top-[25%] md:-translate-y-1/2
+                   right-1 top-14 bottom-14 sm:top-16 sm:bottom-16 md:right-2 md:top-[15%] md:bottom-[15%]
                    z-20 
                    flex flex-col gap-1 md:gap-2 
-                   max-w-[120px] sm:max-w-[150px] md:max-w-[180px]"
+                   max-w-[100px] sm:max-w-[130px] md:max-w-[160px]
+                   overflow-y-auto overflow-x-hidden
+                   scrollbar-hide"
         style={{
           willChange: "transform, opacity",
           transform: "translate3d(0,0,0)", // GPU layer
@@ -1180,16 +1298,16 @@ export default function GameVerse() {
             whileHover={{ scale: 1.05, x: -5 }}
             whileTap={{ scale: 0.95 }}
           >
-            <div className="flex items-center gap-1.5 md:gap-2.5 backdrop-blur-md">
+            <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2.5 backdrop-blur-md">
               <div className="text-right flex-1">
-                <p className="text-[#ffb36a] font-bold text-[9px] sm:text-xs md:text-sm leading-tight">
+                <p className="text-[#ffb36a] font-bold text-[8px] sm:text-[9px] md:text-xs leading-tight truncate">
                   {sport.name}
                 </p>
-                <p className="text-gray-500 text-[8px] sm:text-[9px] md:text-xs">
+                <p className="text-gray-500 text-[7px] sm:text-[8px] md:text-[9px]">
                   Orbit {sport.orbit}
                 </p>
               </div>
-              <span className="text-lg sm:text-xl md:text-2xl">
+              <span className="text-base sm:text-lg md:text-xl">
                 {sport.icon}
               </span>
             </div>
@@ -1217,7 +1335,7 @@ export default function GameVerse() {
       <div className="absolute top-0 left-0 w-full z-10 pointer-events-none">
         <motion.div
           className="flex flex-col items-center justify-center 
-                     pt-3 sm:pt-6 md:pt-8 px-4"
+                     pt-2 sm:pt-4 md:pt-6 px-4"
           style={{
             willChange: "transform, opacity",
             transform: "translate3d(0,0,0)", // GPU layer
@@ -1227,8 +1345,8 @@ export default function GameVerse() {
           transition={{ duration: 1, delay: 0.5, type: "spring" }}
         >
           <motion.h1
-            className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl 
-                       font-black mb-1 md:mb-2 relative text-center"
+            className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl 
+                       font-black mb-0.5 sm:mb-1 md:mb-2 relative text-center"
             style={{
               background:
                 "linear-gradient(135deg, #ffb36a 0%, #ff8b1f 50%, #ffb36a 100%)",
@@ -1268,16 +1386,16 @@ export default function GameVerse() {
             }}
           >
             <span className="hidden sm:inline">
-              EXPLORE 12 SPORTS IN A SOLAR SYSTEM
+              EXPLORE 15 SPORTS IN A SOLAR SYSTEM
             </span>
-            <span className="sm:hidden">12 SPORTS SOLAR SYSTEM</span>
+            <span className="sm:hidden">15 SPORTS SOLAR SYSTEM</span>
           </motion.p>
         </motion.div>
       </div>
       {/* Instructions - Responsive - GPU ACCELERATED */}
       <motion.div
-        className="absolute bottom-4 sm:bottom-6 md:bottom-8 
-                   left-1/2 -translate-x-1/2 z-10 text-center px-4 max-w-full"
+        className="absolute bottom-2 sm:bottom-4 md:bottom-6 
+                   left-1/2 -translate-x-1/2 z-10 text-center px-2 max-w-full"
         style={{
           willChange: "opacity",
           transform: "translate3d(0,0,0)", // GPU layer
@@ -1286,17 +1404,17 @@ export default function GameVerse() {
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 1 }}
       >
-        <p className="text-gray-500 text-[8px] sm:text-[10px] md:text-xs tracking-wider hidden md:block">
+        <p className="text-gray-500 text-[7px] sm:text-[9px] md:text-xs tracking-wide hidden md:block">
           DRAG TO ROTATE • SCROLL TO ZOOM • RIGHT-CLICK & DRAG TO PAN
         </p>
-        <p className="text-gray-500 text-[8px] sm:text-[10px] tracking-wider md:hidden">
-          DRAG TO ROTATE • SCROLL TO ZOOM
+        <p className="text-gray-500 text-[7px] sm:text-[9px] tracking-wide md:hidden">
+          DRAG • ZOOM • TAP PLANETS
         </p>
-        <p className="text-gray-400 text-[8px] sm:text-[10px] md:text-xs tracking-wider mt-0.5 md:mt-1">
-          <span className="hidden sm:inline">
+        <p className="text-gray-400 text-[7px] sm:text-[9px] md:text-xs tracking-wide mt-0.5 hidden sm:block">
+          <span className="hidden md:inline">
             Click any planet to view details • Use arrows to navigate planets
           </span>
-          <span className="sm:hidden">Tap planets for details</span>
+          <span className="md:hidden">Tap planets for details</span>
         </p>
       </motion.div>
       {/* 3D Canvas */}
@@ -1318,16 +1436,30 @@ export default function GameVerse() {
           enablePan={true}
           enableRotate={true}
           enableZoom={true}
-          minDistance={window.innerWidth < 768 ? 8 : 6}
-          maxDistance={window.innerWidth < 768 ? 60 : 50}
+          minDistance={
+            window.innerWidth < 768 ? 10 : window.innerWidth < 1024 ? 8 : 6
+          }
+          maxDistance={
+            window.innerWidth < 768 ? 70 : window.innerWidth < 1024 ? 60 : 50
+          }
           maxPolarAngle={Math.PI / 1.5}
           minPolarAngle={Math.PI / 6}
           autoRotate={false}
-          rotateSpeed={window.innerWidth < 768 ? 0.8 : 1.2}
-          zoomSpeed={window.innerWidth < 768 ? 0.8 : 1.0}
-          panSpeed={window.innerWidth < 768 ? 0.5 : 0.8}
+          rotateSpeed={
+            window.innerWidth < 768 ? 0.6 : window.innerWidth < 1024 ? 0.9 : 1.2
+          }
+          zoomSpeed={
+            window.innerWidth < 768 ? 0.6 : window.innerWidth < 1024 ? 0.8 : 1.0
+          }
+          panSpeed={
+            window.innerWidth < 768 ? 0.4 : window.innerWidth < 1024 ? 0.6 : 0.8
+          }
           enableDamping={true}
           dampingFactor={0.05}
+          touches={{
+            ONE: THREE.TOUCH.ROTATE,
+            TWO: THREE.TOUCH.DOLLY_PAN,
+          }}
         />
       </Canvas>
       {/* Sport Registration Modal */}
