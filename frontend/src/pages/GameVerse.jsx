@@ -288,7 +288,7 @@ const sportsData = [
     date: "February 20-22, 2026",
     venue: "Main Stadium Arena",
     teamSize: "11 vs 11",
-    prize: "₹50,000",
+    registrationFee: "₹3000 per team",
     rules: [
       "Standard FIFA rules apply",
       "Each match is 20 minutes (10 min per half)",
@@ -312,7 +312,7 @@ const sportsData = [
     date: "February 20-22, 2026",
     venue: "Outdoor Basketball Courts",
     teamSize: "5 vs 5",
-    prize: "₹35,000",
+    registrationFee: "Men: ₹2500 | Women: ₹1500 per team",
     rules: [
       "4 quarters of 10 minutes each",
       "Shot clock: 24 seconds",
@@ -336,7 +336,7 @@ const sportsData = [
     date: "February 20-22, 2026",
     venue: "Cricket Ground",
     teamSize: "11 vs 11",
-    prize: "₹40,000",
+    registrationFee: "₹6500 per team",
     rules: [
       "T20 format matches",
       "Each team gets 20 overs",
@@ -360,7 +360,7 @@ const sportsData = [
     date: "February 20-22, 2026",
     venue: "Beach Volleyball Arena",
     teamSize: "6 vs 6",
-    prize: "₹30,000",
+    registrationFee: "Men: ₹2200 | Women: ₹1500 per team",
     rules: [
       "Best of 5 sets (25 points each)",
       "Rally point scoring",
@@ -386,7 +386,7 @@ const sportsData = [
     date: "February 20-21, 2026",
     venue: "Indoor Sports Complex",
     teamSize: "Singles/Doubles",
-    prize: "₹25,000",
+    registrationFee: "Men: ₹500 | Women: ₹400 per player",
     rules: [
       "Best of 3 games (21 points each)",
       "Rally scoring system",
@@ -410,7 +410,7 @@ const sportsData = [
     date: "February 20-22, 2026",
     venue: "Indoor Sports Arena",
     teamSize: "7 vs 7",
-    prize: "₹28,000",
+    registrationFee: "₹1500 per team",
     rules: [
       "IHF rules apply",
       "Two 30-minute halves",
@@ -434,7 +434,7 @@ const sportsData = [
     date: "February 20-22, 2026",
     venue: "Kabaddi Arena",
     teamSize: "7 vs 7",
-    prize: "₹28,000",
+    registrationFee: "Men: ₹2200 | Women: ₹1500 per team",
     rules: [
       "Pro Kabaddi League format",
       "Each raid: 30 seconds max",
@@ -458,7 +458,7 @@ const sportsData = [
     date: "February 20-22, 2026",
     venue: "Conference Hall A",
     teamSize: "1 vs 1",
-    prize: "₹20,000",
+    registrationFee: "₹200 per player (Open to all age groups)",
     rules: [
       "Standard FIDE rules",
       "Time control: 15 min + 10 sec increment",
@@ -484,7 +484,7 @@ const sportsData = [
     date: "February 20-21, 2026",
     venue: "Indoor Sports Hall",
     teamSize: "Singles/Doubles",
-    prize: "₹18,000",
+    registrationFee: "₹400 per player",
     rules: [
       "Best of 5 games (11 points each)",
       "Two-point lead required to win",
@@ -508,7 +508,7 @@ const sportsData = [
     date: "February 20-21, 2026",
     venue: "Indoor Gaming Hall",
     teamSize: "Singles/Doubles",
-    prize: "₹15,000",
+    registrationFee: "₹300 per player",
     rules: [
       "International Carrom Federation rules",
       "Best of 3 boards",
@@ -532,7 +532,7 @@ const sportsData = [
     date: "February 20-22, 2026",
     venue: "Athletic Stadium",
     teamSize: "Individual",
-    prize: "₹32,000",
+    registrationFee: "Individual: ₹200 | Team: ₹700",
     rules: [
       "Multiple event categories",
       "World Athletics rules",
@@ -556,7 +556,7 @@ const sportsData = [
     date: "February 21-22, 2026",
     venue: "Fitness Arena",
     teamSize: "Individual",
-    prize: "₹35,000",
+    registrationFee: "₹300 per player",
     rules: [
       "IPF (International Powerlifting Federation) rules",
       "Three attempts per lift",

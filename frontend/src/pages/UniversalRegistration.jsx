@@ -1,7 +1,7 @@
-import React, {useState, useEffect} from "react";
-import {useNavigate, Link, useLocation} from "react-router-dom";
-import {toast} from "react-toastify";
-import {motion, AnimatePresence} from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
+import { motion, AnimatePresence } from "framer-motion";
 import api from "../config/api";
 
 // Predefined sports with their details - NO BACKEND DEPENDENCY
@@ -9,6 +9,7 @@ const SPORTS_DATA = {
   Cricket: {
     name: "Cricket Tournament",
     venue: "SGGSIE&T Cricket Ground",
+    fees: { amount: 6500, note: "per team" },
     rules: [
       "Maximum 15 players per team (11 playing + 4 substitutes)",
       "Leather ball match - 20 overs per side",
@@ -16,13 +17,14 @@ const SPORTS_DATA = {
       "Proper cricket kit mandatory",
     ],
     coordinators: [
-      {name: "Rahul Sharma", phone: "9876543210", email: "rahul@zenith.com"},
-      {name: "Priya Patel", phone: "9876543211"},
+      { name: "Pranav Godle", phone: "9028783635" },
+      { name: "Shahaji Bhosle", phone: "8308949481" },
     ],
   },
   Football: {
     name: "Football Championship",
-    venue: "SGGSIE&T Football Field",
+    venue: "SGGSIE&T Football Ground",
+    fees: { amount: 3000, note: "per team" },
     rules: [
       "Maximum 16 players per team (11 playing + 5 substitutes)",
       "Two halves of 45 minutes each",
@@ -30,51 +32,65 @@ const SPORTS_DATA = {
       "Proper football boots mandatory",
     ],
     coordinators: [
-      {name: "Arjun Kumar", phone: "9876543212"},
-      {name: "Sneha Desai", phone: "9876543213"},
+      { name: "Rohan Pundkare", phone: "7249886133" },
+      { name: "Srujan Pal", phone: "8788766970" },
     ],
   },
   Basketball: {
     name: "Basketball Tournament",
-    venue: "Indoor Sports Complex",
+    venue: "Basketball Court",
+    fees: { men: 2500, women: 1500, note: "per team" },
     rules: [
       "Maximum 12 players per team (5 playing + 7 substitutes)",
       "Four quarters of 10 minutes each",
       "FIBA rules apply",
     ],
-    coordinators: [{name: "Vikram Singh", phone: "9876543214"}],
+    coordinators: [
+      { name: "Uday Naukarkar", phone: "9322684201" },
+      { name: "Krushna Jadhav", phone: "8208422959" },
+    ],
   },
   Volleyball: {
     name: "Volleyball Championship",
+    fees: { men: 2200, women: 1500, note: "per team" },
     venue: "Outdoor Volleyball Court",
     rules: [
       "Maximum 12 players per team (6 playing + 6 substitutes)",
       "Best of 5 sets",
       "Rally point system",
     ],
-    coordinators: [{name: "Anjali Mehta", phone: "9876543215"}],
+    coordinators: [
+      { name: "Maitreyi Bhumbar", phone: "8788183714" },
+      { name: "Harsh Marodkar", phone: "8208016898" },
+    ],
   },
   Badminton: {
     name: "Badminton Tournament",
+    fees: { men: 500, women: 400, note: "per player" },
     venue: "Indoor Badminton Courts",
     rules: [
       "Singles and Doubles events",
       "Best of 3 games to 21 points",
       "BWF rules apply",
     ],
-    coordinators: [{name: "Rohan Joshi", phone: "9876543216"}],
+    coordinators: [
+      { name: "Harsh Keshkar", phone: "8010529661" },
+      { name: "Aditi Phulare", phone: "8669995909" },
+    ],
   },
   "Table Tennis": {
     name: "Table Tennis Championship",
+    fees: { amount: 400, note: "per player" },
     venue: "Indoor TT Hall",
     rules: [
       "Singles and Doubles events",
       "Best of 5 games to 11 points",
       "ITTF rules apply",
     ],
-    coordinators: [{name: "Pooja Reddy", phone: "9876543217"}],
+    coordinators: [{ name: "Pooja Reddy", phone: "9876543217" }],
   },
   Chess: {
+    fees: { amount: 200, note: "per player (Open to all age groups)" },
     name: "Chess Tournament",
     venue: "Auditorium",
     rules: [
@@ -82,9 +98,13 @@ const SPORTS_DATA = {
       "Time control: 15 minutes + 10 seconds increment",
       "FIDE rules apply",
     ],
-    coordinators: [{name: "Amit Verma", phone: "9876543218"}],
+    coordinators: [
+      { name: "Sarthak Rahut", phone: "8788380729" },
+      { name: "Akshit Tupkar", phone: "7028455126" },
+    ],
   },
   Carrom: {
+    fees: { amount: 300, note: "per player" },
     name: "Carrom Championship",
     venue: "Indoor Games Room",
     rules: [
@@ -92,9 +112,14 @@ const SPORTS_DATA = {
       "25 points per game",
       "ICF rules apply",
     ],
-    coordinators: [{name: "Neha Gupta", phone: "9876543219"}],
+    coordinators: [{ name: "Neha Gupta", phone: "9876543219" }],
   },
   Athletics: {
+    fees: {
+      individual: 200,
+      team: 700,
+      note: "Individual: ₹200 per athlete | Team Events: ₹700 per team",
+    },
     name: "Athletics Meet",
     venue: "SGGSIE&T Athletics Track",
     rules: [
@@ -102,9 +127,13 @@ const SPORTS_DATA = {
       "Long Jump, High Jump, Shot Put",
       "Individual events",
     ],
-    coordinators: [{name: "Karan Malhotra", phone: "9876543220"}],
+    coordinators: [
+      { name: "Dipanshu Sahatpute", phone: "7620666188" },
+      { name: "Shrujan Pal", phone: "8788766970" },
+    ],
   },
-  Swimming: {
+  Swfees: { amount: 300, note: "per athlete" },
+  imming: {
     name: "Swimming Competition",
     venue: "City Swimming Pool",
     rules: [
@@ -112,62 +141,128 @@ const SPORTS_DATA = {
       "50m, 100m Backstroke, Breaststroke, Butterfly",
       "Individual events",
     ],
-    coordinators: [{name: "Divya Nair", phone: "9876543221"}],
+    coordinators: [{ name: "Divya Nair", phone: "9876543221" }],
   },
   Kabaddi: {
     name: "Kabaddi Tournament",
     venue: "Outdoor Sports Ground",
+    fees: { men: 2200, women: 1500, note: "per team" },
     rules: [
       "Maximum 12 players per team (7 playing + 5 substitutes)",
       "Two halves of 20 minutes each",
       "Pro Kabaddi League style rules",
     ],
-    coordinators: [{name: "Suresh Patil", phone: "9876543222"}],
+    coordinators: [
+      { name: "Shubham Kale", phone: "7378409793" },
+      { name: "Sonam Chandel", phone: "8329513257" },
+      { name: "Chetan Bante", phone: "8263945881" },
+    ],
   },
   "Kho-Kho": {
     name: "Kho-Kho Championship",
     venue: "Outdoor Sports Ground",
+    fees: { amount: 1500, note: "per team" },
     rules: [
       "Maximum 15 players per team (9 playing + 6 substitutes)",
       "Two innings of 9 minutes each",
       "Official Kho-Kho Federation rules",
     ],
-    coordinators: [{name: "Prashant Deshmukh", phone: "9876543223"}],
+    coordinators: [
+      { name: "Sairaj Shinde", phone: "8767179744" },
+      { name: "Prem Dhande", phone: "8421230555" },
+    ],
   },
   Hockey: {
     name: "Hockey Tournament",
     venue: "Hockey Turf",
+    fees: { amount: 2500, note: "per team" },
     rules: [
       "Maximum 18 players per team (11 playing + 7 substitutes)",
       "Two halves of 35 minutes each",
       "FIH rules apply",
     ],
-    coordinators: [{name: "Aditya Rao", phone: "9876543224"}],
+    coordinators: [{ name: "Aditya Rao", phone: "9876543224" }],
   },
   "Lawn Tennis": {
     name: "Lawn Tennis Championship",
     venue: "Tennis Courts",
+    fees: { amount: 500, note: "per player" },
     rules: [
       "Singles and Doubles events",
       "Best of 3 sets",
       "ATP/WTA rules apply",
     ],
-    coordinators: [{name: "Riya Shah", phone: "9876543225"}],
+    coordinators: [{ name: "Riya Shah", phone: "9876543225" }],
   },
   Squash: {
     name: "Squash Tournament",
     venue: "Indoor Squash Courts",
+    fees: { amount: 400, note: "per player" },
+    rules: ["Singles event", "Best of 5 games to 11 points", "PSA rules apply"],
+    coordinators: [{ name: "Sameer Khan", phone: "9876543226" }],
+  },
+  Handball: {
+    name: "Handball Championship",
+    venue: "Outdoor Sports Ground",
+    fees: { amount: 1500, note: "per team" },
     rules: [
-      "Singles event",
-      "Best of 5 games to 11 points",
-      "PSA rules apply",
+      "Maximum 14 players per team (7 playing + 7 substitutes)",
+      "Two halves of 30 minutes each",
+      "IHF rules apply",
     ],
-    coordinators: [{name: "Sameer Khan", phone: "9876543226"}],
+    coordinators: [
+      { name: "Aditya Joshi", phone: "7820939780" },
+      { name: "Amarja Dhepe", phone: "9552110021" },
+    ],
+  },
+  "Rink Football": {
+    name: "Rink Football Tournament",
+    venue: "Outdoor Sports Hall",
+    fees: { men: 2200, women: 1500, note: "per team" },
+    rules: ["5-a-side football", "Smaller playing area", "Modified FIFA rules"],
+    coordinators: [
+      { name: "Onkar Sahane", phone: "8767192671" },
+      { name: "Vipakshi Mate", phone: "7972776597" },
+    ],
+  },
+  "Tug of War": {
+    name: "Tug of War Championship",
+    venue: "Outdoor Sports Ground",
+    fees: { amount: 1000, note: "per team" },
+    rules: ["8 players per team", "Best of 3 pulls", "TWIF rules apply"],
+    coordinators: [{ name: "Swayam Baheti", phone: "7276218795" }],
+  },
+  "Power Lifting": {
+    name: "Power Lifting Competition",
+    venue: "Gymnasium",
+    fees: { amount: 300, note: "per player" },
+    rules: [
+      "Individual event",
+      "Squat, Bench Press, Deadlift",
+      "IPF rules apply",
+    ],
+    coordinators: [
+      { name: "Tejas Borole", phone: "8767386695" },
+      { name: "Sakshi Done", phone: "9028684180" },
+    ],
+  },
+  "Basketball (3x3)": {
+    name: "Basketball 3x3 Tournament",
+    venue: "Outdoor Basketball Court",
+    fees: { amount: 500, note: "per team" },
+    rules: [
+      "4 players per team (3 playing + 1 substitute)",
+      "10 minutes or first to 21 points",
+      "FIBA 3x3 rules apply",
+    ],
+    coordinators: [
+      { name: "Uday Naukarkar", phone: "9322684201" },
+      { name: "Krushna Jadhav", phone: "8208422959" },
+    ],
   },
 };
 
 const SPORTS_CATEGORIES = Object.keys(SPORTS_DATA);
-const FIXED_ENTRY_FEE = 500;
 
 // Payment QR Code - Sagar Ubale (sagarubale2004@oksbi)
 const PAYMENT_QR_URL =
@@ -281,23 +376,23 @@ const UniversalRegistration = () => {
       const sportName = location.state.selectedSport.toUpperCase();
       // Map from GameVerse sport names to SPORTS_DATA keys
       const sportMapping = {
-        "FOOTBALL": "Football",
-        "BASKETBALL": "Basketball",
-        "CRICKET": "Cricket",
-        "VOLLEYBALL": "Volleyball",
-        "BADMINTON": "Badminton",
+        FOOTBALL: "Football",
+        BASKETBALL: "Basketball",
+        CRICKET: "Cricket",
+        VOLLEYBALL: "Volleyball",
+        BADMINTON: "Badminton",
         "TABLE TENNIS": "Table Tennis",
-        "CHESS": "Chess",
-        "CARROM": "Carrom",
-        "ATHLETICS": "Athletics",
-        "SWIMMING": "Swimming",
-        "KABADDI": "Kabaddi",
+        CHESS: "Chess",
+        CARROM: "Carrom",
+        ATHLETICS: "Athletics",
+        SWIMMING: "Swimming",
+        KABADDI: "Kabaddi",
         "KHO-KHO": "Kho-Kho",
-        "HOCKEY": "Hockey",
+        HOCKEY: "Hockey",
         "LAWN TENNIS": "Lawn Tennis",
-        "SQUASH": "Squash",
+        SQUASH: "Squash",
       };
-      
+
       const mappedSport = sportMapping[sportName];
       if (mappedSport && SPORTS_DATA[mappedSport]) {
         setSelectedSport(mappedSport);
@@ -308,12 +403,12 @@ const UniversalRegistration = () => {
   const selectedSportData = selectedSport ? SPORTS_DATA[selectedSport] : null;
 
   const handleInputChange = (e, field) => {
-    const {type, value, checked} = e.target;
+    const { type, value, checked } = e.target;
 
     if (type === "checkbox") {
-      setFormData({...formData, [field.fieldName]: checked});
+      setFormData({ ...formData, [field.fieldName]: checked });
     } else {
-      setFormData({...formData, [field.fieldName]: value});
+      setFormData({ ...formData, [field.fieldName]: value });
     }
   };
 
@@ -336,7 +431,7 @@ const UniversalRegistration = () => {
         e.target.value = null;
         return;
       }
-      setDocuments({...documents, [documentType]: file});
+      setDocuments({ ...documents, [documentType]: file });
       toast.success(`${documentType} uploaded successfully!`);
     }
   };
@@ -419,7 +514,7 @@ const UniversalRegistration = () => {
       setSubmitting(true);
 
       const submitData = new FormData();
-      
+
       // Add sport name and details
       submitData.append("sportName", selectedSport);
       submitData.append("sportDetails", JSON.stringify(selectedSportData));
@@ -573,8 +668,13 @@ const UniversalRegistration = () => {
                 {selectedSportData?.venue}
               </p>
               <p className="text-purple-200">
-                <span className="font-semibold">Registration Fee:</span> ₹
-                {FIXED_ENTRY_FEE}
+                <span className="font-semibold">Registration Fee:</span>{" "}
+                {selectedSportData?.fees?.men && selectedSportData?.fees?.women
+                  ? `Men: ₹${selectedSportData.fees.men} | Women: ₹${selectedSportData.fees.women}`
+                  : selectedSportData?.fees?.individual &&
+                      selectedSportData?.fees?.team
+                    ? `Individual: ₹${selectedSportData.fees.individual} | Team: ₹${selectedSportData.fees.team}`
+                    : `₹${selectedSportData?.fees?.amount || 500}`}
               </p>
 
               {selectedSportData?.coordinators && (
@@ -630,7 +730,7 @@ const UniversalRegistration = () => {
         <Link
           to="/"
           className="text-[#ffb77a] font-bold text-xl tracking-wide hover:text-[#ffd4a8] transition-colors"
-          style={{textShadow: "0 2px 12px rgba(255,140,40,0.18)"}}
+          style={{ textShadow: "0 2px 12px rgba(255,140,40,0.18)" }}
         >
           Zenith 2026
         </Link>
@@ -657,7 +757,7 @@ const UniversalRegistration = () => {
         <div className="text-center mb-12">
           <h1
             className="text-4xl md:text-5xl font-bold text-[#ffb77a] mb-3"
-            style={{textShadow: "0 2px 20px rgba(255,140,40,0.3)"}}
+            style={{ textShadow: "0 2px 20px rgba(255,140,40,0.3)" }}
           >
             Sports Event Registration
           </h1>
@@ -677,9 +777,7 @@ const UniversalRegistration = () => {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[#ffb77a]">💰</span>
-              <span className="text-gray-300">
-                Entry Fee: ₹{FIXED_ENTRY_FEE}
-              </span>
+              <span className="text-gray-300">Sport-specific entry fees</span>
             </div>
           </div>
         </div>
@@ -764,9 +862,11 @@ const UniversalRegistration = () => {
                                 {coordinator.name}
                               </p>
                               <p>📞 {coordinator.phone}</p>
-                              {coordinator.email && <p>✉️ {coordinator.email}</p>}
+                              {coordinator.email && (
+                                <p>✉️ {coordinator.email}</p>
+                              )}
                             </div>
-                          )
+                          ),
                         )}
                       </div>
                     </div>
@@ -814,12 +914,44 @@ const UniversalRegistration = () => {
                   </h3>
                   <div className="space-y-4">
                     <div className="bg-yellow-500/20 border border-yellow-400/50 rounded-lg p-4">
-                      <p className="text-2xl font-bold text-yellow-300 mb-1">
-                        Entry Fee: ₹{FIXED_ENTRY_FEE}
-                      </p>
-                      <p className="text-sm text-yellow-100">
-                        Fixed for all sports at Zenith 2026
-                      </p>
+                      {selectedSportData?.fees?.men &&
+                      selectedSportData?.fees?.women ? (
+                        <>
+                          <p className="text-xl font-bold text-yellow-300 mb-1">
+                            Entry Fee:
+                          </p>
+                          <p className="text-lg text-yellow-200">
+                            Men: ₹{selectedSportData.fees.men} | Women: ₹
+                            {selectedSportData.fees.women}
+                          </p>
+                          <p className="text-sm text-yellow-100 mt-1">
+                            {selectedSportData.fees.note}
+                          </p>
+                        </>
+                      ) : selectedSportData?.fees?.individual &&
+                        selectedSportData?.fees?.team ? (
+                        <>
+                          <p className="text-xl font-bold text-yellow-300 mb-1">
+                            Entry Fee:
+                          </p>
+                          <p className="text-lg text-yellow-200">
+                            Individual: ₹{selectedSportData.fees.individual} |
+                            Team: ₹{selectedSportData.fees.team}
+                          </p>
+                          <p className="text-sm text-yellow-100 mt-1">
+                            {selectedSportData.fees.note}
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-2xl font-bold text-yellow-300 mb-1">
+                            Entry Fee: ₹{selectedSportData?.fees?.amount || 500}
+                          </p>
+                          <p className="text-sm text-yellow-100">
+                            {selectedSportData?.fees?.note || "per team"}
+                          </p>
+                        </>
+                      )}
                     </div>
 
                     <div className="bg-white/10 rounded-lg p-4 space-y-3">
@@ -881,10 +1013,10 @@ const UniversalRegistration = () => {
                         <AnimatePresence>
                           {showBackupQR && (
                             <motion.div
-                              initial={{height: 0, opacity: 0}}
-                              animate={{height: "auto", opacity: 1}}
-                              exit={{height: 0, opacity: 0}}
-                              transition={{duration: 0.3}}
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.3 }}
                               className="overflow-hidden"
                             >
                               <div className="mt-4 space-y-6 pt-4 border-t border-purple-500/20">
@@ -969,8 +1101,8 @@ const UniversalRegistration = () => {
                         <span className="text-pink-400 ml-1">*</span>
                       </label>
                       <p className="text-purple-300 text-xs mb-3">
-                        Screenshot or receipt of the ₹{FIXED_ENTRY_FEE} payment
-                        made via UPI
+                        Screenshot or receipt of the payment made via UPI (see
+                        entry fee above)
                       </p>
                       <input
                         type="file"
