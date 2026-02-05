@@ -1217,7 +1217,7 @@ const MarathonRegistration = () => {
                       Registering...
                     </span>
                   ) : (
-                    "🏃 Register for Marathon"
+                    "Submit🏃"
                   )}
                 </motion.button>
 
