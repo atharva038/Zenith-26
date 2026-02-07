@@ -4,6 +4,8 @@ import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../config/api";
 import Navbar from "../components/Navbar";
+import { useRegistrationStatus } from "../hooks/useRegistrationStatus";
+import RegistrationClosed from "../components/RegistrationClosed";
 
 // Import all sports data from UniversalRegistration
 const SPORTS_DATA = {
@@ -358,7 +360,10 @@ const UniversalRegistration = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Multi-step state
+  // Check registration status (MUST be before any conditional returns)
+  const { isOpen, loading: statusLoading, message, startDate, endDate } = useRegistrationStatus();
+  
+  // Multi-step state (ALL useState hooks MUST be declared before any conditional returns)
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedSport, setSelectedSport] = useState("");
   const [sportPreselected, setSportPreselected] = useState(false); // Track if sport was already preselected
@@ -412,6 +417,7 @@ const UniversalRegistration = () => {
     return hasSportSelected || hasFormData || hasTeamMembers || hasDocuments || currentStep > 1;
   };
 
+  // ALL useEffect HOOKS MUST BE BEFORE CONDITIONAL RETURNS
   // Warn user before leaving/refreshing page
   useEffect(() => {
     const handleBeforeUnload = (e) => {
@@ -748,6 +754,24 @@ const UniversalRegistration = () => {
       });
     };
   }, []);
+
+  // CONDITIONAL RETURNS MUST BE AFTER ALL HOOKS
+  // Show loading state
+  if (statusLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
+          <p className="text-gray-400">Checking registration status...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show registration closed page if not open
+  if (!isOpen) {
+    return <RegistrationClosed message={message} startDate={startDate} endDate={endDate} />;
+  }
 
   const handleSubmit = async () => {
     // Final validation

@@ -15,7 +15,7 @@ import { uploadPaymentScreenshot } from "../middleware/cloudinaryUpload.middlewa
 
 const router = express.Router();
 
-// Public route - Marathon registration
+// Public route - Marathon registration (no global registration check)
 router.post("/register", registerMarathon);
 
 // Public route - Upload payment screenshot to Cloudinary

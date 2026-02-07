@@ -1,10 +1,10 @@
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function SportModal({ isOpen, onClose, sport, onRegister }) {
+export default function SportModal({ isOpen, onClose, sport, onRegister, isRegistrationOpen = true, registrationMessage = "Coming Soon" }) {
   if (!sport) return null;
 
   const handleRegisterClick = () => {
-    if (onRegister) {
+    if (onRegister && isRegistrationOpen) {
       onRegister(sport);
     }
   };
@@ -186,32 +186,25 @@ export default function SportModal({ isOpen, onClose, sport, onRegister }) {
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 pt-2 sm:pt-4">
                   <button
                     onClick={
-                      sport.registrationStatus === "open"
+                      isRegistrationOpen && sport.registrationStatus === "open"
                         ? handleRegisterClick
                         : undefined
                     }
-                    disabled={sport.registrationStatus !== "open"}
+                    disabled={!isRegistrationOpen || sport.registrationStatus !== "open"}
                     className={`flex-1 font-bold 
                                     py-2.5 sm:py-3 px-4 sm:px-6 
                                     text-sm sm:text-base
                                     rounded-md sm:rounded-lg 
                                     transition-all duration-300 
                                     ${
-                                      sport.registrationStatus === "open"
+                                      isRegistrationOpen && sport.registrationStatus === "open"
                                         ? "bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] text-black hover:scale-105 shadow-lg shadow-[#ffb36a]/30"
-                                        : sport.registrationStatus ===
-                                            "coming soon"
-                                          ? "bg-gradient-to-r from-yellow-600 to-yellow-500 text-white cursor-not-allowed opacity-80"
-                                          : "bg-gradient-to-r from-gray-600 to-gray-500 text-white cursor-not-allowed opacity-80"
+                                        : "bg-gradient-to-r from-yellow-600 to-yellow-500 text-white cursor-not-allowed opacity-80"
                                     }`}
                   >
-                    {sport.registrationStatus === "open"
+                    {isRegistrationOpen && sport.registrationStatus === "open"
                       ? "Register Now"
-                      : sport.registrationStatus === "coming soon"
-                        ? "Coming Soon"
-                        : sport.registrationStatus === "closed"
-                          ? "Registration Closed"
-                          : "Coming Soon"}
+                      : registrationMessage || "Coming Soon"}
                   </button>
                   <button
                     onClick={onClose}

@@ -13,6 +13,12 @@ const AdminSidebar = ({sidebarOpen, setSidebarOpen, admin}) => {
 
   const menuItems = [
     // {id: "dashboard", label: "Dashboard", icon: "📊", path: "/admin/dashboard"},
+    {
+      id: "dev-portal",
+      label: "Developer Portal",
+      icon: "💻",
+      path: "/dev",
+    },
     {id: "marathon", label: "Marathon", icon: "🏃", path: "/admin/marathon"},
     {
       id: "women-tournament",
@@ -21,8 +27,8 @@ const AdminSidebar = ({sidebarOpen, setSidebarOpen, admin}) => {
       path: "/admin/women-tournament",
     },
     {
-      id: "sports-registrations",
-      label: "Sports Registrations",
+      id: "Main-Zenith-Registrations",
+      label: "Main Zenith",
       icon: "🏆",
       path: "/admin/sports-registrations",
     },

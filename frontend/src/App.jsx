@@ -27,6 +27,10 @@ import AdminAdmins from "./pages/admin/AdminAdmins";
 import AdminGallery from "./pages/admin/AdminGallery";
 import AdminSettings from "./pages/admin/AdminSettings";
 
+// Dev Portal
+import DevPortal from "./pages/dev/DevPortal";
+import DevRegistrationControl from "./pages/dev/DevRegistrationControl";
+
 // Media Team
 import MediaTeamLogin from "./pages/media-team/MediaTeamLogin";
 import MediaTeamDashboard from "./pages/media-team/MediaTeamDashboard";
@@ -98,6 +102,24 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Developer Portal Routes */}
+              <Route
+                path="/dev"
+                element={
+                  <ProtectedRoute>
+                    <DevPortal />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dev/registration-control"
+                element={
+                  <ProtectedRoute>
+                    <DevRegistrationControl />
                   </ProtectedRoute>
                 }
               />

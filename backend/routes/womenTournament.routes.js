@@ -9,7 +9,7 @@ import {
 
 const router = express.Router();
 
-// Public route - Submit registration
+// Public route - Submit registration (no global registration check)
 router.post("/register", async (req, res) => {
   try {
     const {

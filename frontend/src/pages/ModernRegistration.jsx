@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../config/api";
+import { useRegistrationStatus } from "../hooks/useRegistrationStatus";
+import RegistrationClosed from "../components/RegistrationClosed";
 
 // Import all sports data from UniversalRegistration
 const SPORTS_DATA = {
@@ -339,6 +341,11 @@ const ModernRegistration = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
+  // Check registration status
+  const { isOpen, loading: statusLoading, message, startDate, endDate } = useRegistrationStatus();
+  
+  console.log("🎛️ ModernRegistration - Status:", { isOpen, loading: statusLoading });
+  
   // Multi-step state
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedSport, setSelectedSport] = useState("");
@@ -356,6 +363,26 @@ const ModernRegistration = () => {
     accommodation_days: "",
     accommodation_people: "",
   });
+
+  // Show registration closed page if not open
+  if (statusLoading) {
+    console.log("⏳ Showing loading state...");
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
+          <p className="text-gray-400">Checking registration status...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isOpen) {
+    console.log("🔒 Registration is CLOSED - Showing RegistrationClosed component");
+    return <RegistrationClosed message={message} startDate={startDate} endDate={endDate} />;
+  }
+  
+  console.log("✅ Registration is OPEN - Showing registration form");
   const [teamMembers, setTeamMembers] = useState([]);
   const [selectedCaptain, setSelectedCaptain] = useState(0);
   const [documents, setDocuments] = useState({

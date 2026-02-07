@@ -2,17 +2,20 @@ import express from "express";
 import * as registrationController from "../controllers/registration.controller.js";
 import {verifyToken, isAdmin} from "../middleware/auth.middleware.js";
 import {uploadRegistrationDocuments} from "../middleware/cloudinaryUpload.middleware.js";
+import {checkRegistrationEnabled} from "../middleware/registrationCheck.js";
 
 const router = express.Router();
-// Public routes
+// Public routes (with registration check)
 router.post(
   "/",
+  checkRegistrationEnabled,
   uploadRegistrationDocuments,
   registrationController.createRegistration
 );
 // Sports registration (new simplified system)
 router.post(
   "/sports",
+  checkRegistrationEnabled,
   uploadRegistrationDocuments,
   registrationController.createSportsRegistration
 );

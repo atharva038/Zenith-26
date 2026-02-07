@@ -11,6 +11,7 @@ import FloatingIsland from "../components/gameverse/FloatingIsland";
 import SportModal from "../components/gameverse/SportModal";
 import GamerverseLoading from "../components/gameverse/GamerverseLoading";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRegistrationStatus } from "../hooks/useRegistrationStatus";
 import * as THREE from "three";
 
 // Cinematic Nebula + Galaxy Background
@@ -1055,6 +1056,9 @@ export default function GameVerse() {
   const [isLoading, setIsLoading] = useState(true);
   const lockedPlanetRef = useRef(null);
 
+  // Check registration status
+  const { isOpen: isRegistrationOpen, loading: statusLoading, message: registrationMessage } = useRegistrationStatus();
+
   // Simulate loading time for scene initialization
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -1089,6 +1093,12 @@ export default function GameVerse() {
   };
 
   const handleRegisterClick = (sport) => {
+    // Check if registration is open
+    if (!isRegistrationOpen) {
+      // Don't navigate, registration is closed
+      return;
+    }
+    
     // Navigate to universal registration page with sport pre-selected
     navigate("/register-sports", { state: { selectedSport: sport.name } });
     setModalOpen(false);
@@ -1468,6 +1478,8 @@ export default function GameVerse() {
         onClose={closeModal}
         sport={selectedSport}
         onRegister={handleRegisterClick}
+        isRegistrationOpen={isRegistrationOpen}
+        registrationMessage={registrationMessage}
       />
     </div>
   );
