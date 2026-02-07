@@ -385,10 +385,43 @@ const UniversalRegistration = () => {
   const [registrationComplete, setRegistrationComplete] = useState(false);
   const [registrationNumber, setRegistrationNumber] = useState("");
 
-  // Check if sport was pre-selected from GameVerse
+  // Check if sport was pre-selected from GameVerse or SportsGrid
   useEffect(() => {
-    if (location.state?.selectedSport) {
+    // Handle preselection from SportsGrid (new format with preselectedSport)
+    if (location.state?.fromSportsGrid && location.state?.preselectedSport) {
+      const sportName = location.state.preselectedSport.toUpperCase();
+      console.log('✅ Sport preselected from SportsGrid:', sportName);
+      
+      // Map from SportsGrid sport names to SPORTS_DATA keys
+      const sportMapping = {
+        FOOTBALL: "Football",
+        BASKETBALL: "Basketball",
+        CRICKET: "Cricket",
+        VOLLEYBALL: "Volleyball",
+        BADMINTON: "Badminton",
+        "TABLE TENNIS": "Table Tennis",
+        CHESS: "Chess",
+        CARROM: "Carrom",
+        ATHLETICS: "Athletics",
+        POWERLIFTING: "Power Lifting",
+        KABADDI: "Kabaddi",
+        HANDBALL: "Handball",
+      };
+
+      const mappedSport = sportMapping[sportName];
+      if (mappedSport && SPORTS_DATA[mappedSport]) {
+        setSelectedSport(mappedSport);
+        toast.success(`${mappedSport} preselected! 🎯`, {
+          position: "top-center",
+          autoClose: 2000,
+        });
+      }
+    }
+    // Handle preselection from GameVerse (old format with selectedSport)
+    else if (location.state?.selectedSport) {
       const sportName = location.state.selectedSport.toUpperCase();
+      console.log('✅ Sport preselected from GameVerse:', sportName);
+      
       // Map from GameVerse sport names to SPORTS_DATA keys
       const sportMapping = {
         FOOTBALL: "Football",
@@ -807,13 +840,13 @@ const UniversalRegistration = () => {
             <h2 className="text-xl font-semibold text-[#ffb77a]">
               Registration Form
             </h2>
-            <button
+            {/* <button
               type="button"
               onClick={fillTestData}
               className="text-xs px-3 py-1.5 bg-[#2a2010] hover:bg-[#3a2816] text-[#ffb77a] border border-[#3a2416] rounded transition-colors"
             >
               Fill Test Data
-            </button>
+            </button> */}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
@@ -822,6 +855,33 @@ const UniversalRegistration = () => {
               <label className="block text-[#ffb77a] font-semibold mb-3">
                 Select Sport <span className="text-red-400">*</span>
               </label>
+
+              {/* Preselection Indicator */}
+              {location.state?.fromSportsGrid && selectedSport && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-4 px-4 py-3 bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-lg flex items-center gap-3"
+                >
+                  <span className="text-2xl">🎯</span>
+                  <div className="flex-1">
+                    <p className="text-green-300 font-semibold text-sm">
+                      Sport Preselected!
+                    </p>
+                    <p className="text-green-400/80 text-xs">
+                      You clicked "Register for {selectedSport}" from Sports Grid
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedSport("")}
+                    className="text-green-300 hover:text-green-200 text-xs underline"
+                  >
+                    Change
+                  </button>
+                </motion.div>
+              )}
+
               <select
                 value={selectedSport}
                 onChange={(e) => setSelectedSport(e.target.value)}
@@ -1187,7 +1247,7 @@ const UniversalRegistration = () => {
         </div>
 
         {/* Available Sports Info */}
-        <div className="mt-8 bg-white/5 backdrop-blur-md rounded-lg p-6 border border-white/10">
+        {/* <div className="mt-8 bg-white/5 backdrop-blur-md rounded-lg p-6 border border-white/10">
           <h3 className="text-white font-semibold mb-3">🏆 Available Sports</h3>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {SPORTS_CATEGORIES.map((sport) => (
@@ -1200,7 +1260,7 @@ const UniversalRegistration = () => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

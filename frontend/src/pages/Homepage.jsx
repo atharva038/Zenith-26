@@ -255,6 +255,26 @@ export default function Homepage() {
 
           {/* Registration Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mt-6 justify-center items-center">
+            <Link to="/sports">
+              <motion.button
+                className="inline-block px-8 py-3 rounded-full font-extrabold text-white no-underline transition-transform hover:scale-105"
+                style={{
+                  background: "linear-gradient(90deg, #f97316, #dc2626)",
+                  boxShadow:
+                    "0 12px 28px rgba(249,115,22,0.3), inset 0 -2px 6px rgba(0,0,0,0.12)",
+                  willChange: "transform",
+                  transform: "translate3d(0,0,0)",
+                }}
+                initial={{opacity: 0, scale: 0.9}}
+                animate={{opacity: 1, scale: 1}}
+                transition={{duration: 0.6, delay: 0.5, ease: "easeOut"}}
+                whileHover={{scale: 1.05}}
+                whileTap={{scale: 0.95}}
+              >
+                ⚽ Browse All Sports
+              </motion.button>
+            </Link>
+
             <Link to="/register">
               <motion.button
                 className="inline-block px-8 py-3 rounded-full font-extrabold text-[#2c1506] no-underline transition-transform hover:scale-105"

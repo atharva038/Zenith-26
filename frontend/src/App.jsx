@@ -13,6 +13,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import CinematicIntro from "./components/CinematicIntro";
 import Homepage from "./pages/Homepage";
 import GameVerse from "./pages/GameVerse";
+import SportsGrid from "./pages/SportsGrid";
 import MarathonPage from "./pages/MarathonPage";
 
 // Admin Pages
@@ -56,6 +57,7 @@ function App() {
               <Route path="/" element={<CinematicIntro />} />
               <Route path="/home" element={<Homepage />} />
               <Route path="/gameverse" element={<GameVerse />} />
+              <Route path="/sports" element={<SportsGrid />} />
 
               {/* Universal Sports Registration */}
               <Route path="/register-sports" element={<UniversalRegistration />} />
