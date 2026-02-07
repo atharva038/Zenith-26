@@ -18,11 +18,11 @@ const AdminMarathon = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showScreenshotModal, setShowScreenshotModal] = useState(false);
   const [selectedScreenshot, setSelectedScreenshot] = useState(null);
-  
+
   // Centralized scroll locking for modals
-  useScrollLock(showDetailsModal, 'marathon-details-modal');
-  useScrollLock(showScreenshotModal, 'marathon-screenshot-modal');
-  
+  useScrollLock(showDetailsModal, "marathon-details-modal");
+  useScrollLock(showScreenshotModal, "marathon-screenshot-modal");
+
   const [filters, setFilters] = useState({
     status: "",
     search: "",
@@ -467,7 +467,7 @@ const AdminMarathon = () => {
     <AdminLayout title="Marathon">
       {/* Statistics Cards */}
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
           <motion.div
             initial={{opacity: 0, y: 20}}
             animate={{opacity: 1, y: 0}}
@@ -552,7 +552,7 @@ const AdminMarathon = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-400 text-xs mb-1 font-rajdhani">
-                  Revenue (Confirmed)
+                  Revenue 
                 </p>
                 <p className="text-2xl font-bold font-orbitron text-emerald-400">
                   ₹{((stats.confirmed || 0) * 99).toLocaleString()}
@@ -562,7 +562,7 @@ const AdminMarathon = () => {
             </div>
           </motion.div>
 
-          <motion.div
+          {/* <motion.div
             initial={{opacity: 0, y: 20}}
             animate={{opacity: 1, y: 0}}
             transition={{delay: 0.5}}
@@ -579,7 +579,7 @@ const AdminMarathon = () => {
               </div>
               <div className="text-3xl opacity-50">💵</div>
             </div>
-          </motion.div>
+          </motion.div> */}
         </div>
       )}
 
