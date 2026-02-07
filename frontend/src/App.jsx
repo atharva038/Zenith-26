@@ -30,6 +30,7 @@ import AdminSettings from "./pages/admin/AdminSettings";
 // Dev Portal
 import DevPortal from "./pages/dev/DevPortal";
 import DevRegistrationControl from "./pages/dev/DevRegistrationControl";
+import DevApiMonitor from "./pages/dev/DevApiMonitor";
 
 // Media Team
 import MediaTeamLogin from "./pages/media-team/MediaTeamLogin";
@@ -120,6 +121,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <DevRegistrationControl />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dev/api-monitor"
+                element={
+                  <ProtectedRoute>
+                    <DevApiMonitor />
                   </ProtectedRoute>
                 }
               />

@@ -35,8 +35,7 @@ const DevPortal = () => {
       description: "Monitor API calls and performance",
       icon: FiActivity,
       path: "/dev/api-monitor",
-      color: "from-green-500 to-emerald-500",
-      comingSoon: true
+      color: "from-green-500 to-emerald-500"
     },
     {
       title: "Database Tools",
