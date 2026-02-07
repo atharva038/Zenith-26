@@ -361,6 +361,7 @@ const UniversalRegistration = () => {
   // Multi-step state
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedSport, setSelectedSport] = useState("");
+  const [sportPreselected, setSportPreselected] = useState(false); // Track if sport was already preselected
   const [formData, setFormData] = useState({
     captain_name: "",
     institution: "",
@@ -482,8 +483,8 @@ const UniversalRegistration = () => {
       return; // Exit early if URL param found
     }
 
-    // Fallback to state-based preselection from SportsGrid/GameVerse
-    if (location.state?.fromSportsGrid && location.state?.preselectedSport) {
+    // Fallback to state-based preselection from SportsGrid/GameVerse (only on first load)
+    if (!sportPreselected && location.state?.fromSportsGrid && location.state?.preselectedSport) {
       const sportName = location.state.preselectedSport.toUpperCase();
       const sportMapping = {
         FOOTBALL: "Football",
@@ -503,10 +504,14 @@ const UniversalRegistration = () => {
       if (mappedSport && SPORTS_DATA[mappedSport]) {
         setSelectedSport(mappedSport);
         setCurrentStep(2); // Skip sport selection
+        setSportPreselected(true); // Mark as preselected
         toast.success(`${mappedSport} preselected! 🎯`);
+        
+        // Clear the navigation state to prevent re-selection on reload
+        window.history.replaceState({}, document.title);
       }
     }
-  }, [location.search, location.state]);
+  }, [location.search, sportPreselected]);
 
   const selectedSportData = selectedSport ? SPORTS_DATA[selectedSport] : null;
   const isTeamSport = TEAM_SPORTS.includes(selectedSport);
@@ -631,6 +636,35 @@ const UniversalRegistration = () => {
   };
 
   const handleSportSelect = (sport) => {
+    // If changing sport after already selecting one, reset form data
+    if (selectedSport && selectedSport !== sport) {
+      setFormData({
+        captain_name: "",
+        institution: "",
+        captain_contact: "",
+        email: "",
+        team_name: "",
+        num_players: "",
+        city: "",
+        college_address: "",
+        alternate_contact: "",
+        need_accommodation: false,
+        accommodation_days: "",
+        accommodation_people: "",
+      });
+      setTeamMembers([]);
+      setSelectedCaptain(0);
+      setDocuments({
+        permissionLetter: null,
+        transactionReceipt: null,
+        captainIdCard: null,
+      });
+      setDocumentPreviews({
+        permissionLetter: null,
+        transactionReceipt: null,
+        captainIdCard: null,
+      });
+    }
     setSelectedSport(sport);
     toast.success(`${sport} selected!`, { autoClose: 1500 });
   };
@@ -806,7 +840,7 @@ const UniversalRegistration = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0604] via-[#1a0e08] to-[#0a0604] text-white">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0604] via-[#1a0e08] to-[#0a0604] text-white pt-20">
       {/* Navbar */}
       <Navbar />
 
@@ -1021,11 +1055,44 @@ const UniversalRegistration = () => {
               transition={{ duration: 0.3 }}
               className="space-y-6"
             >
-              <div className="text-center mb-8">
-                <div className="text-4xl mb-3">{SPORT_ICONS[selectedSport] || "🏆"}</div>
-                <h2 className="text-2xl md:text-3xl font-bold text-[#ffb77a] mb-2">
-                  Your Details
+              {/* Selected Sport Header - Large and Prominent */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="relative text-center mb-10 bg-gradient-to-br from-[#1a1410]/50 to-[#2a1810]/50 backdrop-blur-sm border border-[#ff6b35]/30 rounded-3xl p-8 shadow-2xl"
+              >
+                {/* Change Sport Button */}
+                <button
+                  onClick={() => {
+                    setCurrentStep(1);
+                    toast.info("Select a different sport");
+                  }}
+                  className="absolute top-4 right-4 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-sm font-medium transition-all duration-300 flex items-center gap-2 group"
+                >
+                  <span className="group-hover:rotate-180 transition-transform duration-300">🔄</span>
+                  Change Sport
+                </button>
+
+                <motion.div
+                  animate={{ rotate: [0, 5, -5, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                  className="text-8xl md:text-9xl mb-4"
+                >
+                  {SPORT_ICONS[selectedSport] || "🏆"}
+                </motion.div>
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-[#ff6b35] via-[#ff8c42] to-[#ffa600] bg-clip-text text-transparent mb-3">
+                  {selectedSport}
                 </h2>
+                <div className="flex items-center justify-center gap-2 text-gray-400">
+                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                  <p className="text-sm md:text-base">Registration Form</p>
+                </div>
+              </motion.div>
+
+              <div className="text-center mb-8">
+                <h3 className="text-2xl md:text-3xl font-bold text-[#ffb77a] mb-2">
+                  Your Details
+                </h3>
                 <p className="text-gray-400">Tell us about yourself</p>
               </div>
 
@@ -1259,11 +1326,45 @@ const UniversalRegistration = () => {
               transition={{ duration: 0.3 }}
               className="space-y-6"
             >
+              {/* Selected Sport Header - Large and Prominent */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="relative text-center mb-10 bg-gradient-to-br from-[#1a1410]/50 to-[#2a1810]/50 backdrop-blur-sm border border-[#ff6b35]/30 rounded-3xl p-8 shadow-2xl"
+              >
+                {/* Change Sport Button */}
+                <button
+                  onClick={() => {
+                    setCurrentStep(1);
+                    toast.info("Select a different sport");
+                  }}
+                  className="absolute top-4 right-4 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-sm font-medium transition-all duration-300 flex items-center gap-2 group"
+                >
+                  <span className="group-hover:rotate-180 transition-transform duration-300">🔄</span>
+                  Change Sport
+                </button>
+
+                <motion.div
+                  animate={{ rotate: [0, 5, -5, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                  className="text-8xl md:text-9xl mb-4"
+                >
+                  {SPORT_ICONS[selectedSport] || "🏆"}
+                </motion.div>
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-[#ff6b35] via-[#ff8c42] to-[#ffa600] bg-clip-text text-transparent mb-3">
+                  {selectedSport}
+                </h2>
+                <div className="flex items-center justify-center gap-2 text-gray-400">
+                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                  <p className="text-sm md:text-base">Team Setup</p>
+                </div>
+              </motion.div>
+
               <div className="text-center mb-8">
                 <div className="text-4xl mb-3">👥</div>
-                <h2 className="text-2xl md:text-3xl font-bold text-[#ffb77a] mb-2">
+                <h3 className="text-2xl md:text-3xl font-bold text-[#ffb77a] mb-2">
                   Build Your Team
-                </h2>
+                </h3>
                 <p className="text-gray-400">Add your team members</p>
               </div>
 
@@ -1409,11 +1510,45 @@ const UniversalRegistration = () => {
               transition={{ duration: 0.3 }}
               className="space-y-6"
             >
+              {/* Selected Sport Header - Large and Prominent */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="relative text-center mb-10 bg-gradient-to-br from-[#1a1410]/50 to-[#2a1810]/50 backdrop-blur-sm border border-[#ff6b35]/30 rounded-3xl p-8 shadow-2xl"
+              >
+                {/* Change Sport Button */}
+                <button
+                  onClick={() => {
+                    setCurrentStep(1);
+                    toast.info("Select a different sport");
+                  }}
+                  className="absolute top-4 right-4 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-sm font-medium transition-all duration-300 flex items-center gap-2 group"
+                >
+                  <span className="group-hover:rotate-180 transition-transform duration-300">🔄</span>
+                  Change Sport
+                </button>
+
+                <motion.div
+                  animate={{ rotate: [0, 5, -5, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                  className="text-8xl md:text-9xl mb-4"
+                >
+                  {SPORT_ICONS[selectedSport] || "🏆"}
+                </motion.div>
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-[#ff6b35] via-[#ff8c42] to-[#ffa600] bg-clip-text text-transparent mb-3">
+                  {selectedSport}
+                </h2>
+                <div className="flex items-center justify-center gap-2 text-gray-400">
+                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                  <p className="text-sm md:text-base">Captain Selection</p>
+                </div>
+              </motion.div>
+
               <div className="text-center mb-8">
                 <div className="text-4xl mb-3">👑</div>
-                <h2 className="text-2xl md:text-3xl font-bold text-[#ffb77a] mb-2">
+                <h3 className="text-2xl md:text-3xl font-bold text-[#ffb77a] mb-2">
                   Select Team Captain
-                </h2>
+                </h3>
                 <p className="text-gray-400">Choose your team representative</p>
               </div>
 
@@ -1488,11 +1623,45 @@ const UniversalRegistration = () => {
               transition={{ duration: 0.3 }}
               className="space-y-6"
             >
+              {/* Selected Sport Header - Large and Prominent */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="relative text-center mb-10 bg-gradient-to-br from-[#1a1410]/50 to-[#2a1810]/50 backdrop-blur-sm border border-[#ff6b35]/30 rounded-3xl p-8 shadow-2xl"
+              >
+                {/* Change Sport Button */}
+                <button
+                  onClick={() => {
+                    setCurrentStep(1);
+                    toast.info("Select a different sport");
+                  }}
+                  className="absolute top-4 right-4 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-sm font-medium transition-all duration-300 flex items-center gap-2 group"
+                >
+                  <span className="group-hover:rotate-180 transition-transform duration-300">🔄</span>
+                  Change Sport
+                </button>
+
+                <motion.div
+                  animate={{ rotate: [0, 5, -5, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                  className="text-8xl md:text-9xl mb-4"
+                >
+                  {SPORT_ICONS[selectedSport] || "🏆"}
+                </motion.div>
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-[#ff6b35] via-[#ff8c42] to-[#ffa600] bg-clip-text text-transparent mb-3">
+                  {selectedSport}
+                </h2>
+                <div className="flex items-center justify-center gap-2 text-gray-400">
+                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                  <p className="text-sm md:text-base">Payment & Documents</p>
+                </div>
+              </motion.div>
+
               <div className="text-center mb-8">
                 <div className="text-4xl mb-3">💳</div>
-                <h2 className="text-2xl md:text-3xl font-bold text-[#ffb77a] mb-2">
+                <h3 className="text-2xl md:text-3xl font-bold text-[#ffb77a] mb-2">
                   Payment & Documents
-                </h2>
+                </h3>
                 <p className="text-gray-400">Complete your registration</p>
               </div>
 
