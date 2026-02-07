@@ -536,26 +536,6 @@ const UniversalRegistration = () => {
     return true;
   };
 
-  const fillTestData = () => {
-    const testData = {
-      team_name: "Phoenix Warriors",
-      captain_name: "Rahul Sharma",
-      captain_contact: "9876543210",
-      email: "rahul.sharma@college.edu",
-      institution: "St. Xavier's College",
-      college_address:
-        "5 Mahapalika Marg, Dhobi Talao, Mumbai, Maharashtra 400001",
-      city: "Mumbai",
-      alternate_contact: "9123456789",
-      num_players: "11",
-      need_accommodation: true,
-    };
-
-    setFormData(testData);
-    setSelectedSport(SPORTS_CATEGORIES[0]);
-    toast.success("Test data filled successfully!");
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -836,17 +816,10 @@ const UniversalRegistration = () => {
         {/* Main Form Container */}
         <div className="bg-[#1a1410]/30 backdrop-blur-sm border border-[#3a2416] rounded-xl p-6 md:p-8">
           {/* Form Header */}
-          <div className="flex justify-between items-center mb-6 pb-4 border-b border-[#3a2416]">
+          <div className="mb-6 pb-4 border-b border-[#3a2416]">
             <h2 className="text-xl font-semibold text-[#ffb77a]">
               Registration Form
             </h2>
-            {/* <button
-              type="button"
-              onClick={fillTestData}
-              className="text-xs px-3 py-1.5 bg-[#2a2010] hover:bg-[#3a2816] text-[#ffb77a] border border-[#3a2416] rounded transition-colors"
-            >
-              Fill Test Data
-            </button> */}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
