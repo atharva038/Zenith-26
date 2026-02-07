@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../config/api";
-import Navbar from "../components/Navbar";
 
 // Import all sports data from UniversalRegistration
 const SPORTS_DATA = {
@@ -336,25 +335,7 @@ const TEAM_SPORTS = [
   "Handball",
 ];
 
-// **STRICT TEAM SIZE VALIDATION CONFIG**
-// exactPlayers: MUST have exactly this many players (MANDATORY)
-// minPlayers/maxPlayers: Range allowed if exactPlayers is null
-const TEAM_SPORTS_CONFIG = {
-  "Cricket": { minPlayers: 11, maxPlayers: 15, exactPlayers: null },
-  "Box Cricket": { minPlayers: 6, maxPlayers: 8, exactPlayers: null },
-  "Football": { minPlayers: 11, maxPlayers: 16, exactPlayers: null },
-  "Basketball": { minPlayers: 5, maxPlayers: 12, exactPlayers: null },
-  "Basketball (3x3)": { minPlayers: 3, maxPlayers: 4, exactPlayers: 4 }, // ⚠️ EXACTLY 4 REQUIRED
-  "Volleyball": { minPlayers: 6, maxPlayers: 12, exactPlayers: null },
-  "Kabaddi": { minPlayers: 7, maxPlayers: 12, exactPlayers: null },
-  "Kho-Kho": { minPlayers: 9, maxPlayers: 15, exactPlayers: null },
-  "Hockey": { minPlayers: 11, maxPlayers: 18, exactPlayers: null },
-  "Rink Football": { minPlayers: 5, maxPlayers: 10, exactPlayers: null },
-  "Tug of War": { minPlayers: 8, maxPlayers: 8, exactPlayers: 8 }, // ⚠️ EXACTLY 8 REQUIRED
-  "Handball": { minPlayers: 7, maxPlayers: 14, exactPlayers: null },
-};
-
-const UniversalRegistration = () => {
+const ModernRegistration = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -382,107 +363,13 @@ const UniversalRegistration = () => {
     transactionReceipt: null,
     captainIdCard: null,
   });
-  const [documentPreviews, setDocumentPreviews] = useState({
-    permissionLetter: null,
-    transactionReceipt: null,
-    captainIdCard: null,
-  });
   const [submitting, setSubmitting] = useState(false);
   const [registrationComplete, setRegistrationComplete] = useState(false);
   const [registrationNumber, setRegistrationNumber] = useState("");
   const [showBackupQR, setShowBackupQR] = useState(false);
-  const [showNavigationWarning, setShowNavigationWarning] = useState(false);
 
-  // Check if form has been started (user has entered any data)
-  const isFormStarted = () => {
-    if (registrationComplete) return false; // Don't block after successful registration
-    if (currentStep === 1 && !selectedSport) return false; // On first step with no sport selected
-    
-    // Check if any form data has been filled
-    const hasFormData = Object.values(formData).some(value => {
-      if (typeof value === 'boolean') return false; // Ignore boolean fields
-      return value && value.toString().trim() !== '';
-    });
-    
-    const hasTeamMembers = teamMembers.length > 0;
-    const hasDocuments = Object.values(documents).some(doc => doc !== null);
-    const hasSportSelected = selectedSport !== "";
-    
-    return hasSportSelected || hasFormData || hasTeamMembers || hasDocuments || currentStep > 1;
-  };
-
-  // Warn user before leaving/refreshing page
+  // Handle preselection from SportsGrid or GameVerse
   useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      if (isFormStarted()) {
-        e.preventDefault();
-        e.returnValue = ''; // Chrome requires returnValue to be set
-      }
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [currentStep, selectedSport, formData, teamMembers, documents, registrationComplete]);
-
-  // Intercept navbar link clicks to show warning
-  useEffect(() => {
-    const handleClick = (e) => {
-      // Check if click is on a navigation link
-      const target = e.target.closest('a');
-      if (!target) return;
-      
-      const href = target.getAttribute('href');
-      
-      // Only intercept if form is started and link is navigating away from current page
-      if (href && href !== location.pathname && isFormStarted()) {
-        e.preventDefault();
-        e.stopPropagation();
-        setShowNavigationWarning(true);
-        
-        // Store the intended destination
-        window.pendingNavigationPath = href;
-      }
-    };
-
-    // Add listener to navbar
-    const navbar = document.querySelector('nav');
-    if (navbar) {
-      navbar.addEventListener('click', handleClick, true);
-      return () => navbar.removeEventListener('click', handleClick, true);
-    }
-  }, [location.pathname, currentStep, selectedSport, formData, teamMembers, documents, registrationComplete]);
-
-  // Handle confirmed navigation
-  const handleConfirmNavigation = () => {
-    setShowNavigationWarning(false);
-    if (window.pendingNavigationPath) {
-      navigate(window.pendingNavigationPath);
-      window.pendingNavigationPath = null;
-    }
-  };
-
-  const handleCancelNavigation = () => {
-    setShowNavigationWarning(false);
-    window.pendingNavigationPath = null;
-  };
-
-  // Handle preselection from SportsGrid, GameVerse, or URL parameter
-  useEffect(() => {
-    // Check URL search params first (e.g., ?sport=Cricket)
-    const searchParams = new URLSearchParams(location.search);
-    const sportParam = searchParams.get('sport');
-    
-    if (sportParam && SPORTS_DATA[sportParam]) {
-      setSelectedSport(sportParam);
-      setCurrentStep(2); // Skip sport selection
-      toast.success(`🏏 ${sportParam} Registration - Let's get started! 🎯`, {
-        autoClose: 3000,
-        style: { fontSize: '16px', fontWeight: 'bold' }
-      });
-      return; // Exit early if URL param found
-    }
-
-    // Fallback to state-based preselection from SportsGrid/GameVerse
     if (location.state?.fromSportsGrid && location.state?.preselectedSport) {
       const sportName = location.state.preselectedSport.toUpperCase();
       const sportMapping = {
@@ -506,72 +393,16 @@ const UniversalRegistration = () => {
         toast.success(`${mappedSport} preselected! 🎯`);
       }
     }
-  }, [location.search, location.state]);
+  }, [location.state]);
 
   const selectedSportData = selectedSport ? SPORTS_DATA[selectedSport] : null;
   const isTeamSport = TEAM_SPORTS.includes(selectedSport);
-  const teamConfig = isTeamSport ? TEAM_SPORTS_CONFIG[selectedSport] : null;
 
   // Calculate total steps dynamically
   const totalSteps = isTeamSport ? 6 : 5; // Sport, Details, Team (optional), Captain (optional), Payment, Review
 
   // Progress calculation
   const progress = (currentStep / totalSteps) * 100;
-
-  // **STRICT TEAM SIZE VALIDATION FUNCTION**
-  const validateTeamSize = () => {
-    if (!isTeamSport) return true;
-    
-    const numPlayers = parseInt(formData.num_players);
-    const memberCount = teamMembers.length;
-
-    // Check if exact number required (CRITICAL for Basketball 3x3 and Tug of War)
-    if (teamConfig.exactPlayers) {
-      if (numPlayers !== teamConfig.exactPlayers) {
-        toast.error(`${selectedSport} requires EXACTLY ${teamConfig.exactPlayers} players`, {
-          autoClose: 5000,
-          style: { fontSize: '14px', fontWeight: 'bold' }
-        });
-        return false;
-      }
-      if (memberCount !== teamConfig.exactPlayers) {
-        toast.error(`You MUST add exactly ${teamConfig.exactPlayers} team members. Currently: ${memberCount}`, {
-          autoClose: 5000,
-          style: { fontSize: '14px', fontWeight: 'bold' }
-        });
-        return false;
-      }
-    } else {
-      // Check min/max range
-      if (numPlayers < teamConfig.minPlayers || numPlayers > teamConfig.maxPlayers) {
-        toast.error(`${selectedSport} requires ${teamConfig.minPlayers}-${teamConfig.maxPlayers} players`, {
-          autoClose: 4000
-        });
-        return false;
-      }
-      if (memberCount !== numPlayers) {
-        toast.error(`Number of team members (${memberCount}) MUST match number of players (${numPlayers})`, {
-          autoClose: 4000
-        });
-        return false;
-      }
-    }
-
-    // Validate each team member has name and contact
-    for (let i = 0; i < teamMembers.length; i++) {
-      const member = teamMembers[i];
-      if (!member.name || member.name.trim() === "") {
-        toast.error(`Player ${i + 1}: Name is required`, { autoClose: 3000 });
-        return false;
-      }
-      if (!member.contact || !/^\d{10}$/.test(member.contact)) {
-        toast.error(`Player ${i + 1}: Valid 10-digit contact number is required`, { autoClose: 3000 });
-        return false;
-      }
-    }
-
-    return true;
-  };
 
   const nextStep = () => {
     // Validation for each step
@@ -600,9 +431,9 @@ const UniversalRegistration = () => {
         toast.error("Please enter team name and number of players");
         return;
       }
-      // **STRICT VALIDATION: Team size must match requirements**
-      if (!validateTeamSize()) {
-        return; // Validation failed, don't proceed
+      if (teamMembers.length < 1) {
+        toast.error("Please add at least one team member");
+        return;
       }
     }
     if (currentStep === 4 && isTeamSport && selectedCaptain === null) {
@@ -640,27 +471,12 @@ const UniversalRegistration = () => {
   };
 
   const addTeamMember = () => {
-    // **STRICT VALIDATION: Check if max limit reached**
-    if (teamConfig && teamConfig.exactPlayers && teamMembers.length >= teamConfig.exactPlayers) {
-      toast.error(`${selectedSport} allows EXACTLY ${teamConfig.exactPlayers} players. Cannot add more.`, {
-        autoClose: 4000
-      });
-      return;
-    }
-    if (teamConfig && !teamConfig.exactPlayers && teamMembers.length >= teamConfig.maxPlayers) {
-      toast.error(`${selectedSport} allows maximum ${teamConfig.maxPlayers} players. Cannot add more.`, {
-        autoClose: 4000
-      });
-      return;
-    }
-
     const newMember = {
       id: Date.now(),
       name: "",
       contact: "",
     };
     setTeamMembers([...teamMembers, newMember]);
-    toast.success("Player slot added! Fill in the details.", { autoClose: 2000 });
   };
 
   const updateTeamMember = (id, field, value) => {
@@ -694,26 +510,10 @@ const UniversalRegistration = () => {
         e.target.value = null;
         return;
       }
-      
-      // Save the file
       setDocuments({ ...documents, [documentType]: file });
-      
-      // Create and save preview URL
-      const previewUrl = URL.createObjectURL(file);
-      setDocumentPreviews({ ...documentPreviews, [documentType]: previewUrl });
-      
       toast.success(`${documentType} uploaded!`, { autoClose: 1500 });
     }
   };
-
-  // Cleanup preview URLs on unmount
-  useEffect(() => {
-    return () => {
-      Object.values(documentPreviews).forEach(url => {
-        if (url) URL.revokeObjectURL(url);
-      });
-    };
-  }, []);
 
   const handleSubmit = async () => {
     // Final validation
@@ -722,46 +522,25 @@ const UniversalRegistration = () => {
       return;
     }
 
-    // **STRICT VALIDATION: Final team size check before submission**
-    if (isTeamSport && !validateTeamSize()) {
-      toast.error("Please fix team size validation errors before submitting", {
-        autoClose: 5000
-      });
-      return;
-    }
-
     setSubmitting(true);
 
     try {
       const submissionData = new FormData();
       
-      // Add sport selection (backend expects sportName)
-      submissionData.append("sportName", selectedSport);
+      // Add sport selection
+      submissionData.append("eventId", "sports-registration");
+      submissionData.append("eventName", selectedSportData.name);
       
-      // Add sport details (backend expects sportDetails as JSON)
-      submissionData.append("sportDetails", JSON.stringify({
-        name: selectedSportData.name,
-        venue: selectedSportData.venue,
-        fees: selectedSportData.fees,
-        coordinators: selectedSportData.coordinators,
-      }));
-      
-      // Prepare form data object
-      const formDataObj = {
-        ...formData,
-        sport: selectedSport,
-        sport_name: selectedSportData.name,
-      };
+      // Add all form fields
+      Object.keys(formData).forEach((key) => {
+        submissionData.append(key, formData[key]);
+      });
 
       // Add team members if team sport
       if (isTeamSport) {
-        formDataObj.team_members = teamMembers;
-        formDataObj.captain_index = selectedCaptain;
-        formDataObj.is_team_sport = true;
+        submissionData.append("team_members", JSON.stringify(teamMembers));
+        submissionData.append("captain_index", selectedCaptain);
       }
-      
-      // Add form data as JSON string (backend expects formData as JSON)
-      submissionData.append("formData", JSON.stringify(formDataObj));
 
       // Add documents
       Object.keys(documents).forEach((key) => {
@@ -770,7 +549,7 @@ const UniversalRegistration = () => {
         }
       });
 
-      const response = await api.post("/registrations/sports", submissionData, {
+      const response = await api.post("/api/registration/register", submissionData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -807,84 +586,6 @@ const UniversalRegistration = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0604] via-[#1a0e08] to-[#0a0604] text-white">
-      {/* Navbar */}
-      <Navbar />
-
-      {/* Navigation Warning Modal */}
-      <AnimatePresence>
-        {showNavigationWarning && (
-          <motion.div
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={handleCancelNavigation}
-          >
-            <motion.div
-              className="relative max-w-md mx-4 p-8 bg-gradient-to-br from-orange-900/90 to-red-900/90 rounded-2xl border-2 border-orange-500/50 shadow-2xl"
-              initial={{ scale: 0.8, y: 50 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.8, y: 50 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Warning Icon */}
-              <div className="flex justify-center mb-4">
-                <div className="w-16 h-16 bg-orange-500/20 rounded-full flex items-center justify-center">
-                  <svg
-                    className="w-10 h-10 text-orange-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                    />
-                  </svg>
-                </div>
-              </div>
-
-              <h3 className="text-2xl font-black text-center mb-3 text-orange-300">
-                ⚠️ Unsaved Changes
-              </h3>
-              <p className="text-center text-orange-100 mb-6 leading-relaxed">
-                You have unsaved registration data. Are you sure you want to leave? 
-                <br />
-                <span className="text-orange-300 font-bold">All your progress will be lost!</span>
-              </p>
-
-              {/* Action Buttons */}
-              <div className="flex gap-3">
-                <button
-                  onClick={handleCancelNavigation}
-                  className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg"
-                >
-                  Stay & Continue
-                </button>
-                <button
-                  onClick={handleConfirmNavigation}
-                  className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg"
-                >
-                  Leave Anyway
-                </button>
-              </div>
-
-              {/* Close button */}
-              <button
-                onClick={handleCancelNavigation}
-                className="absolute top-4 right-4 text-orange-300 hover:text-white transition-colors"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Progress Bar */}
       {!registrationComplete && (
         <motion.div
@@ -954,23 +655,10 @@ const UniversalRegistration = () => {
                       ${
                         selectedSport === sport
                           ? "bg-gradient-to-br from-[#ff6b35] to-[#ff8c42] shadow-xl shadow-[#ff6b35]/20"
-                          : sport === "Cricket"
-                          ? "bg-gradient-to-br from-[#10b981]/20 to-[#059669]/20 border-2 border-[#10b981] hover:border-[#10b981] hover:shadow-lg hover:shadow-[#10b981]/30"
                           : "bg-[#1a1410]/50 backdrop-blur-sm border border-[#3a2416] hover:border-[#ff6b35]/50"
                       }
                     `}
                   >
-                    {/* Cricket Featured Badge */}
-                    {sport === "Cricket" && selectedSport !== sport && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="absolute -top-2 -right-2 bg-gradient-to-r from-[#10b981] to-[#059669] text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg"
-                      >
-                        OPEN NOW! 🔥
-                      </motion.div>
-                    )}
-                    
                     <div className="text-4xl mb-2">{SPORT_ICONS[sport] || "🏆"}</div>
                     <div className="text-sm font-medium">{sport}</div>
                     {selectedSport === sport && (
@@ -1295,8 +983,6 @@ const UniversalRegistration = () => {
                     className="w-full bg-[#0a0604] border border-[#3a2416] rounded-xl px-4 py-4 text-white placeholder-transparent peer focus:outline-none focus:border-[#ff6b35] transition-colors"
                     placeholder="Number of Players"
                     id="num_players"
-                    min={teamConfig?.minPlayers}
-                    max={teamConfig?.maxPlayers || teamConfig?.exactPlayers}
                   />
                   <label
                     htmlFor="num_players"
@@ -1304,31 +990,12 @@ const UniversalRegistration = () => {
                   >
                     Number of Players *
                   </label>
-                  {/* **REQUIREMENT BADGE** */}
-                  {teamConfig && (
-                    <div className="mt-2 text-xs">
-                      {teamConfig.exactPlayers ? (
-                        <span className="px-3 py-1 bg-red-500/20 border border-red-500 text-red-400 rounded-full font-semibold">
-                          ⚠️ EXACTLY {teamConfig.exactPlayers} players required
-                        </span>
-                      ) : (
-                        <span className="px-3 py-1 bg-blue-500/20 border border-blue-500 text-blue-400 rounded-full">
-                          {teamConfig.minPlayers}-{teamConfig.maxPlayers} players allowed
-                        </span>
-                      )}
-                    </div>
-                  )}
                 </div>
 
                 {/* Team Members */}
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="text-lg font-semibold text-[#ffb77a]">Team Members</h3>
-                      <p className="text-xs text-gray-400 mt-1">
-                        Added: {teamMembers.length} / Required: {teamConfig?.exactPlayers || formData.num_players || "?"}
-                      </p>
-                    </div>
+                    <h3 className="text-lg font-semibold text-[#ffb77a]">Team Members</h3>
                     <button
                       onClick={addTeamMember}
                       className="px-4 py-2 rounded-lg bg-[#ff6b35]/20 border border-[#ff6b35] text-[#ff6b35] hover:bg-[#ff6b35] hover:text-white transition-all duration-300 flex items-center gap-2"
@@ -1567,16 +1234,7 @@ const UniversalRegistration = () => {
                       className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#ff6b35] file:text-white hover:file:bg-[#ff8c42] cursor-pointer"
                     />
                     {documents.transactionReceipt && (
-                      <div className="mt-3 space-y-2">
-                        <p className="text-xs text-green-500 font-semibold">✓ File uploaded: {documents.transactionReceipt.name}</p>
-                        {documentPreviews.transactionReceipt && documents.transactionReceipt.type.startsWith('image/') && (
-                          <img 
-                            src={documentPreviews.transactionReceipt} 
-                            alt="Transaction Receipt Preview" 
-                            className="max-w-xs h-32 object-cover rounded-lg border border-green-500/30"
-                          />
-                        )}
-                      </div>
+                      <p className="text-xs text-green-500 mt-2">✓ Uploaded successfully</p>
                     )}
                   </div>
 
@@ -1592,16 +1250,7 @@ const UniversalRegistration = () => {
                       className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#3a2416] file:text-gray-300 hover:file:bg-[#4a3426] cursor-pointer"
                     />
                     {documents.permissionLetter && (
-                      <div className="mt-3 space-y-2">
-                        <p className="text-xs text-green-500 font-semibold">✓ File uploaded: {documents.permissionLetter.name}</p>
-                        {documentPreviews.permissionLetter && documents.permissionLetter.type.startsWith('image/') && (
-                          <img 
-                            src={documentPreviews.permissionLetter} 
-                            alt="Permission Letter Preview" 
-                            className="max-w-xs h-32 object-cover rounded-lg border border-green-500/30"
-                          />
-                        )}
-                      </div>
+                      <p className="text-xs text-green-500 mt-2">✓ Uploaded successfully</p>
                     )}
                   </div>
 
@@ -1617,16 +1266,7 @@ const UniversalRegistration = () => {
                       className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-[#3a2416] file:text-gray-300 hover:file:bg-[#4a3426] cursor-pointer"
                     />
                     {documents.captainIdCard && (
-                      <div className="mt-3 space-y-2">
-                        <p className="text-xs text-green-500 font-semibold">✓ File uploaded: {documents.captainIdCard.name}</p>
-                        {documentPreviews.captainIdCard && documents.captainIdCard.type.startsWith('image/') && (
-                          <img 
-                            src={documentPreviews.captainIdCard} 
-                            alt="ID Card Preview" 
-                            className="max-w-xs h-32 object-cover rounded-lg border border-green-500/30"
-                          />
-                        )}
-                      </div>
+                      <p className="text-xs text-green-500 mt-2">✓ Uploaded successfully</p>
                     )}
                   </div>
                 </div>
@@ -1938,4 +1578,4 @@ const UniversalRegistration = () => {
   );
 };
 
-export default UniversalRegistration;
+export default ModernRegistration;

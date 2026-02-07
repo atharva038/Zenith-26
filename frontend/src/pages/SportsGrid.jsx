@@ -3,6 +3,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
+// Inline style for shine animation
+const shineKeyframes = `
+@keyframes shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+`;
+
 // All sports data from GameVerse
 const sportsData = [
   {
@@ -330,6 +338,9 @@ const SportsGrid = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white overflow-hidden">
+      {/* Inject shine animation */}
+      <style>{shineKeyframes}</style>
+      
       <Navbar />
 
       {/* Animated background elements - pure CSS, no canvas */}
@@ -380,6 +391,33 @@ const SportsGrid = () => {
             <span>February 20-22, 2026</span>
             <span className="text-gray-600">|</span>
             <span>SGGSIE&T, Nanded</span>
+          </motion.div>
+
+          {/* 🏏 Cricket Featured Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            className="mt-8"
+          >
+            <Link to="/register-sports?sport=Cricket">
+              <button className="relative px-8 py-4 rounded-full font-bold text-lg text-white bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 shadow-lg shadow-green-500/30 hover:shadow-green-500/50 transition-all duration-300 transform hover:scale-105 active:scale-95 overflow-hidden group">
+                {/* Animated shine effect */}
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-[shine_1.5s_ease-in-out_infinite]" />
+                <span className="relative flex items-center gap-2">
+                  🏏 Cricket Registration - OPEN NOW!
+                  <motion.span
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    →
+                  </motion.span>
+                </span>
+              </button>
+            </Link>
+            <p className="text-sm text-gray-400 mt-2 text-center">
+              Main Sport • Early Registration • Matches Start First
+            </p>
           </motion.div>
         </motion.div>
       </section>

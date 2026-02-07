@@ -32,6 +32,7 @@ import MediaTeamLogin from "./pages/media-team/MediaTeamLogin";
 import MediaTeamDashboard from "./pages/media-team/MediaTeamDashboard";
 import "lenis/dist/lenis.css";
 import UniversalRegistration from "./pages/UniversalRegistration";
+import ModernRegistration from "./pages/ModernRegistration";
 import RegisterPage from "./pages/RegisterPage";
 import MarathonRegistration from "./pages/MarathonRegistration";
 import MarathonTermsAndConditions from "./pages/MarathonTermsAndConditions";
@@ -61,6 +62,7 @@ function App() {
 
               {/* Universal Sports Registration */}
               <Route path="/register-sports" element={<UniversalRegistration />} />
+              <Route path="/register-sports-modern" element={<ModernRegistration />} />
               <Route path="/register" element={<RegisterPage />} />
 
               {/* Marathon Routes */}

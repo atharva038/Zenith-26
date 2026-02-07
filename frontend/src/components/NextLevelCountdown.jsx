@@ -64,7 +64,7 @@ const NextLevelCountdown = ({targetDate, eventName = "ZENITH 2026"}) => {
   ];
 
   return (
-    <div className="relative w-full py-8 overflow-hidden">
+    <div className="relative w-full py-4 sm:py-8 overflow-hidden">
       {/* Background glow effect */}
       <div
         className="absolute inset-0 opacity-30"
@@ -154,7 +154,7 @@ const NextLevelCountdown = ({targetDate, eventName = "ZENITH 2026"}) => {
 
       {/* Event date display */}
       <motion.p
-        className="text-center mt-6 text-orange-200/70 text-sm tracking-wider"
+        className="text-center mt-4 sm:mt-6 text-orange-200 text-xs sm:text-sm font-bold tracking-wider drop-shadow-[0_2px_8px_rgba(255,140,50,0.6)]"
         initial={{opacity: 0}}
         animate={{opacity: 1}}
         transition={{delay: 0.8}}

@@ -11,8 +11,10 @@ import useScrollLock from "../../hooks/useScrollLock";
 const SPORTS_LIST = [
   "All Sports",
   "Cricket",
+  "Box Cricket",
   "Football",
   "Basketball",
+  "Basketball (3x3)",
   "Volleyball",
   "Badminton",
   "Table Tennis",
@@ -25,6 +27,10 @@ const SPORTS_LIST = [
   "Hockey",
   "Lawn Tennis",
   "Squash",
+  "Handball",
+  "Rink Football",
+  "Tug of War",
+  "Power Lifting",
 ];
 
 const AdminSportsRegistrations = () => {

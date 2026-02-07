@@ -209,7 +209,7 @@ export default function Homepage() {
         />
         <div
           ref={textRef}
-          className="absolute top-[20%] left-0 right-0 z-[200] text-center px-5 will-change-transform"
+          className="absolute top-[15%] left-0 right-0 z-[200] text-center px-5 will-change-transform pb-8"
           style={{
             transform: "translate3d(0,0,0)", // GPU layer for GSAP parallax
             willChange: "transform", // Performance hint
@@ -253,70 +253,167 @@ export default function Homepage() {
             SGGSIE&T Annual Sports Festival • Where Champions Rise
           </motion.p>
 
-          {/* Registration Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 mt-6 justify-center items-center">
+          {/* Registration Buttons - Compact Skewed Cards */}
+          <div className="mt-6 sm:mt-8 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 w-full max-w-5xl mx-auto px-3 sm:px-4">
+            {/* Cricket - Featured with Badge */}
+            <Link to="/register-sports?sport=Cricket">
+              <motion.div
+                className="relative group h-full"
+                initial={{opacity: 0, x: -20}}
+                animate={{opacity: 1, x: 0}}
+                transition={{duration: 0.5, delay: 0.4}}
+              >
+                <motion.button
+                  className="w-full h-full px-3 py-3 sm:px-4 sm:py-4 rounded-lg sm:rounded-xl font-bold text-white backdrop-blur-md transition-all duration-300 text-left relative overflow-hidden"
+                  style={{
+                    background: "linear-gradient(155deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.15))",
+                    border: "1px solid rgba(16, 185, 129, 0.3)",
+                    transform: "perspective(1000px) rotateY(-2deg)",
+                  }}
+                  whileHover={{
+                    scale: 1.05,
+                    rotateY: 0,
+                    background: "linear-gradient(155deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.25))",
+                    border: "1px solid rgba(16, 185, 129, 0.5)",
+                  }}
+                  whileTap={{scale: 0.95}}
+                >
+                  {/* Corner accent */}
+                  <div className="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-green-500/20 to-transparent rounded-bl-full" />
+                  
+                  {/* Badge */}
+                  <motion.div
+                    className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-black"
+                    style={{
+                      background: "rgba(16, 185, 129, 0.3)",
+                      border: "1px solid rgba(16, 185, 129, 0.5)",
+                    }}
+                    animate={{
+                      scale: [1, 1.05, 1],
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                    }}
+                  >
+                    OPEN 🔥
+                  </motion.div>
+                  
+                  <div className="relative z-10">
+                    <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">🏏</div>
+                    <div className="font-black text-base sm:text-lg leading-tight">Cricket</div>
+                    <div className="text-xs sm:text-sm font-medium text-green-200 mt-0.5">Main Sport</div>
+                  </div>
+                </motion.button>
+              </motion.div>
+            </Link>
+
+            {/* Browse All Sports */}
             <Link to="/sports">
-              <motion.button
-                className="inline-block px-8 py-3 rounded-full font-extrabold text-white no-underline transition-transform hover:scale-105"
-                style={{
-                  background: "linear-gradient(90deg, #f97316, #dc2626)",
-                  boxShadow:
-                    "0 12px 28px rgba(249,115,22,0.3), inset 0 -2px 6px rgba(0,0,0,0.12)",
-                  willChange: "transform",
-                  transform: "translate3d(0,0,0)",
-                }}
-                initial={{opacity: 0, scale: 0.9}}
-                animate={{opacity: 1, scale: 1}}
-                transition={{duration: 0.6, delay: 0.5, ease: "easeOut"}}
-                whileHover={{scale: 1.05}}
-                whileTap={{scale: 0.95}}
+              <motion.div
+                className="relative group h-full"
+                initial={{opacity: 0, x: -20}}
+                animate={{opacity: 1, x: 0}}
+                transition={{duration: 0.5, delay: 0.5}}
               >
-                ⚽ Browse All Sports
-              </motion.button>
+                <motion.button
+                  className="w-full h-full px-3 py-3 sm:px-4 sm:py-4 rounded-lg sm:rounded-xl font-bold text-white backdrop-blur-md transition-all duration-300 text-left relative overflow-hidden"
+                  style={{
+                    background: "linear-gradient(155deg, rgba(249, 115, 22, 0.15), rgba(220, 38, 38, 0.15))",
+                    border: "1px solid rgba(249, 115, 22, 0.3)",
+                    transform: "perspective(1000px) rotateY(-2deg)",
+                  }}
+                  whileHover={{
+                    scale: 1.05,
+                    rotateY: 0,
+                    background: "linear-gradient(155deg, rgba(249, 115, 22, 0.25), rgba(220, 38, 38, 0.25))",
+                    border: "1px solid rgba(249, 115, 22, 0.5)",
+                  }}
+                  whileTap={{scale: 0.95}}
+                >
+                  {/* Corner accent */}
+                  <div className="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-orange-500/20 to-transparent rounded-bl-full" />
+                  
+                  <div className="relative z-10">
+                    <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">⚽</div>
+                    <div className="font-black text-base sm:text-lg leading-tight">Browse</div>
+                    <div className="text-xs sm:text-sm font-medium text-orange-200 mt-0.5">All Sports</div>
+                  </div>
+                </motion.button>
+              </motion.div>
             </Link>
 
+            {/* Register for Sports */}
             <Link to="/register">
-              <motion.button
-                className="inline-block px-8 py-3 rounded-full font-extrabold text-[#2c1506] no-underline transition-transform hover:scale-105"
-                style={{
-                  background: "linear-gradient(90deg, #ffb36a, #ff8b1f)",
-                  boxShadow:
-                    "0 12px 28px rgba(255,140,40,0.18), inset 0 -2px 6px rgba(0,0,0,0.12)",
-                  willChange: "transform",
-                  transform: "translate3d(0,0,0)",
-                }}
-                initial={{opacity: 0, scale: 0.9}}
-                animate={{opacity: 1, scale: 1}}
-                transition={{duration: 0.6, delay: 0.6, ease: "easeOut"}}
-                whileHover={{scale: 1.05}}
-                whileTap={{scale: 0.95}}
+              <motion.div
+                className="relative group h-full"
+                initial={{opacity: 0, x: -20}}
+                animate={{opacity: 1, x: 0}}
+                transition={{duration: 0.5, delay: 0.6}}
               >
-                🏆 Register for Sports
-              </motion.button>
+                <motion.button
+                  className="w-full h-full px-3 py-3 sm:px-4 sm:py-4 rounded-lg sm:rounded-xl font-bold text-white backdrop-blur-md transition-all duration-300 text-left relative overflow-hidden"
+                  style={{
+                    background: "linear-gradient(155deg, rgba(255, 179, 106, 0.15), rgba(255, 139, 31, 0.15))",
+                    border: "1px solid rgba(255, 179, 106, 0.3)",
+                    transform: "perspective(1000px) rotateY(-2deg)",
+                  }}
+                  whileHover={{
+                    scale: 1.05,
+                    rotateY: 0,
+                    background: "linear-gradient(155deg, rgba(255, 179, 106, 0.25), rgba(255, 139, 31, 0.25))",
+                    border: "1px solid rgba(255, 179, 106, 0.5)",
+                  }}
+                  whileTap={{scale: 0.95}}
+                >
+                  {/* Corner accent */}
+                  <div className="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-amber-500/20 to-transparent rounded-bl-full" />
+                  
+                  <div className="relative z-10">
+                    <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">🏆</div>
+                    <div className="font-black text-base sm:text-lg leading-tight">Register</div>
+                    <div className="text-xs sm:text-sm font-medium text-amber-200 mt-0.5">Quick Entry</div>
+                  </div>
+                </motion.button>
+              </motion.div>
             </Link>
 
-            {/* MARATHON BUTTON */}
+            {/* Marathon */}
             <Link to="/marathon">
-              <motion.button
-                className="inline-block px-8 py-3 rounded-full font-extrabold text-[#2c1506] no-underline transition-transform hover:scale-105"
-                style={{
-                  background: "linear-gradient(90deg, #ffd700, #ffa500)",
-                  boxShadow:
-                    "0 12px 28px rgba(255,165,0,0.25), inset 0 -2px 6px rgba(0,0,0,0.12)",
-                  willChange: "transform",
-                  transform: "translate3d(0,0,0)",
-                }}
-                initial={{opacity: 0, scale: 0.9}}
-                animate={{opacity: 1, scale: 1}}
-                transition={{duration: 0.6, delay: 0.7, ease: "easeOut"}}
-                whileHover={{scale: 1.05}}
-                whileTap={{scale: 0.95}}
+              <motion.div
+                className="relative group h-full"
+                initial={{opacity: 0, x: -20}}
+                animate={{opacity: 1, x: 0}}
+                transition={{duration: 0.5, delay: 0.7}}
               >
-                🏃 Marathon Registration
-              </motion.button>
+                <motion.button
+                  className="w-full h-full px-3 py-3 sm:px-4 sm:py-4 rounded-lg sm:rounded-xl font-bold text-white backdrop-blur-md transition-all duration-300 text-left relative overflow-hidden"
+                  style={{
+                    background: "linear-gradient(155deg, rgba(255, 215, 0, 0.15), rgba(255, 165, 0, 0.15))",
+                    border: "1px solid rgba(255, 215, 0, 0.3)",
+                    transform: "perspective(1000px) rotateY(-2deg)",
+                  }}
+                  whileHover={{
+                    scale: 1.05,
+                    rotateY: 0,
+                    background: "linear-gradient(155deg, rgba(255, 215, 0, 0.25), rgba(255, 165, 0, 0.25))",
+                    border: "1px solid rgba(255, 215, 0, 0.5)",
+                  }}
+                  whileTap={{scale: 0.95}}
+                >
+                  {/* Corner accent */}
+                  <div className="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-yellow-500/20 to-transparent rounded-bl-full" />
+                  
+                  <div className="relative z-10">
+                    <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">🏃</div>
+                    <div className="font-black text-base sm:text-lg leading-tight">Marathon</div>
+                    <div className="text-xs sm:text-sm font-medium text-yellow-200 mt-0.5">Run Wild</div>
+                  </div>
+                </motion.button>
+              </motion.div>
             </Link>
 
-            <Link to="/women-tournament">
+            {/* <Link to="/women-tournament">
               <motion.button
                 className="inline-block px-8 py-3 rounded-full font-extrabold text-white no-underline transition-transform hover:scale-105"
                 style={{
@@ -335,11 +432,11 @@ export default function Homepage() {
               >
                 ✅ Women's Tournament (Completed)
               </motion.button>
-            </Link>
+            </Link> */}
           </div>
 
           {/* Next Level Countdown Timer */}
-          <div className="mt-10">
+          <div className="mt-6 sm:mt-8">
             <NextLevelCountdown
               targetDate="2026-02-20T09:00:00"
               eventName="ZENITH 2026"

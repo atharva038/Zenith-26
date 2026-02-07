@@ -191,23 +191,15 @@ export const createSportsRegistration = async (req, res) => {
       });
     }
 
-    // Validate document uploads
-    if (!req.files) {
+    // Validate document uploads (only transactionReceipt is required)
+    if (!req.files || !req.files.transactionReceipt) {
       return res.status(400).json({
         success: false,
-        message: "Please upload all required documents",
+        message: "Transaction receipt (payment screenshot) is required",
       });
     }
 
     const {permissionLetter, transactionReceipt, captainIdCard} = req.files;
-
-    if (!permissionLetter || !transactionReceipt || !captainIdCard) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "All three documents are required: Permission Letter, Transaction Receipt, and Captain's ID Card",
-      });
-    }
 
     // Extract common fields
     const email = formData.email?.toLowerCase();
@@ -269,9 +261,9 @@ export const createSportsRegistration = async (req, res) => {
         totalFee: accommodationFee,
       },
       documents: {
-        permissionLetter: permissionLetter[0].path, // Cloudinary URL
-        transactionReceipt: transactionReceipt[0].path, // Cloudinary URL
-        captainIdCard: captainIdCard[0].path, // Cloudinary URL
+        permissionLetter: permissionLetter?.[0]?.path || null, // Optional
+        transactionReceipt: transactionReceipt[0].path, // Required - Cloudinary URL
+        captainIdCard: captainIdCard?.[0]?.path || null, // Optional
       },
       ipAddress: req.ip,
       userAgent: req.get("user-agent"),
