@@ -707,15 +707,23 @@ const AdminSportsRegistrations = () => {
               exit={{opacity: 0}}
               className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4"
               onClick={() => setShowDetailsModal(false)}
+              onWheel={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              style={{overflow: "hidden", touchAction: "none"}}
             >
               <motion.div
                 initial={{scale: 0.95, opacity: 0}}
                 animate={{scale: 1, opacity: 1}}
                 exit={{scale: 0.95, opacity: 0}}
                 onClick={(e) => e.stopPropagation()}
-                className="bg-gradient-to-br from-[#0a0a0a] to-[#1a1a1a] rounded-3xl p-8 max-w-5xl w-full max-h-[90vh] overflow-y-auto border border-gray-800 shadow-2xl"
+                onWheel={(e) => e.stopPropagation()}
+                className="bg-gradient-to-br from-[#0a0a0a] to-[#1a1a1a] rounded-3xl max-w-5xl w-full max-h-[90vh] border border-gray-800 shadow-2xl flex flex-col"
+                style={{overflow: "hidden"}}
               >
-                <div className="flex justify-between items-start mb-8">
+                {/* Header - Fixed at Top */}
+                <div className="flex justify-between items-start p-8 pb-6 flex-shrink-0 border-b border-gray-800">
                   <div>
                     <h2 className="text-3xl font-bold text-white mb-2">
                       Registration Details
@@ -733,7 +741,16 @@ const AdminSportsRegistrations = () => {
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Scrollable Content */}
+                <div
+                  className="flex-1 p-8 pt-6 custom-scrollbar"
+                  style={{
+                    overflowY: "auto",
+                    overflowX: "hidden",
+                    maxHeight: "calc(90vh - 120px)",
+                  }}
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Sport Information */}
                   <div className="bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-5 border border-gray-800">
                     <h3 className="text-lg font-semibold text-purple-400 mb-4 flex items-center gap-2">
@@ -958,8 +975,9 @@ const AdminSportsRegistrations = () => {
                     </button>
                   )}
                 </div>
-              </motion.div>
+              </div>
             </motion.div>
+          </motion.div>
           )}
         </AnimatePresence>
 
