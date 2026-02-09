@@ -775,7 +775,7 @@ function CameraRig({ lockedPlanetRef }) {
 }
 
 // Scene component
-function Scene({ onIslandClick, lockedPlanet, onRegisterPlanetRef }) {
+function Scene({ onIslandClick, lockedPlanet, onRegisterPlanetRef, availableSports = sportsData }) {
   return (
     <>
       <CinematicSpaceBackground />
@@ -846,7 +846,7 @@ function Scene({ onIslandClick, lockedPlanet, onRegisterPlanetRef }) {
         />
       </mesh>
       {/* Orbiting Planets - Inner Ring (Orbit 1) */}
-      {sportsData
+      {availableSports
         .filter((s) => s.orbit === 1)
         .map((sport, index) => (
           <OrbitingPlanet
@@ -863,7 +863,7 @@ function Scene({ onIslandClick, lockedPlanet, onRegisterPlanetRef }) {
           />
         ))}
       {/* Orbiting Planets - Middle Ring (Orbit 2) */}
-      {sportsData
+      {availableSports
         .filter((s) => s.orbit === 2)
         .map((sport, index) => (
           <OrbitingPlanet
@@ -880,7 +880,7 @@ function Scene({ onIslandClick, lockedPlanet, onRegisterPlanetRef }) {
           />
         ))}
       {/* Orbiting Planets - Outer Ring (Orbit 3) */}
-      {sportsData
+      {availableSports
         .filter((s) => s.orbit === 3)
         .map((sport, index) => (
           <OrbitingPlanet
@@ -897,7 +897,7 @@ function Scene({ onIslandClick, lockedPlanet, onRegisterPlanetRef }) {
           />
         ))}
       {/* Orbiting Planets - Far Outer Ring (Orbit 4) */}
-      {sportsData
+      {availableSports
         .filter((s) => s.orbit === 4)
         .map((sport, index) => (
           <OrbitingPlanet
@@ -1056,8 +1056,37 @@ export default function GameVerse() {
   const [isLoading, setIsLoading] = useState(true);
   const lockedPlanetRef = useRef(null);
 
-  // Check registration status
-  const { isOpen: isRegistrationOpen, loading: statusLoading, message: registrationMessage } = useRegistrationStatus();
+  // Check registration status - now with separate toggles
+  const { 
+    isCricketOpen, 
+    isOtherSportsOpen, 
+    loading: statusLoading, 
+    message: registrationMessage 
+  } = useRegistrationStatus();
+
+  // Determine which sports to show based on toggles
+  const availableSports = useMemo(() => {
+    const cricket = sportsData.find(s => s.name === "CRICKET");
+    const otherSports = sportsData.filter(s => s.name !== "CRICKET");
+    
+    // If both are closed, show nothing (coming soon will display)
+    if (!isCricketOpen && !isOtherSportsOpen) {
+      return [];
+    }
+    
+    // If only cricket is open, show only cricket
+    if (isCricketOpen && !isOtherSportsOpen) {
+      return cricket ? [cricket] : [];
+    }
+    
+    // If only other sports are open, show other sports
+    if (!isCricketOpen && isOtherSportsOpen) {
+      return otherSports;
+    }
+    
+    // If both are open, show all sports
+    return sportsData;
+  }, [isCricketOpen, isOtherSportsOpen]);
 
   // Simulate loading time for scene initialization
   useEffect(() => {
@@ -1093,9 +1122,12 @@ export default function GameVerse() {
   };
 
   const handleRegisterClick = (sport) => {
-    // Check if registration is open
+    // Check if registration is open for this specific sport
+    const isCricket = sport.name === "CRICKET";
+    const isRegistrationOpen = isCricket ? isCricketOpen : isOtherSportsOpen;
+    
     if (!isRegistrationOpen) {
-      // Don't navigate, registration is closed
+      // Don't navigate, registration is closed for this sport
       return;
     }
     
@@ -1104,9 +1136,12 @@ export default function GameVerse() {
     setModalOpen(false);
   };
 
-  // Split sports into left and right lists
-  const leftSports = sportsData.slice(0, 8);
-  const rightSports = sportsData.slice(8, 16);
+  // Split sports into left and right lists - use availableSports instead of all sports
+  const leftSports = availableSports.slice(0, 8);
+  const rightSports = availableSports.slice(8, 16);
+
+  // Check if both toggles are off (show coming soon)
+  const showComingSoon = !isCricketOpen && !isOtherSportsOpen;
 
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden">
@@ -1124,6 +1159,76 @@ export default function GameVerse() {
             transition={{ duration: 0.8 }}
           >
             <GamerverseLoading />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Global Coming Soon Overlay - When both toggles are OFF */}
+      <AnimatePresence>
+        {showComingSoon && !isLoading && (
+          <motion.div
+            className="absolute inset-0 z-40 flex items-center justify-center bg-black/90 backdrop-blur-md"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div className="text-center max-w-2xl mx-auto px-4">
+              <motion.div
+                className="text-9xl mb-8"
+                animate={{
+                  scale: [1, 1.1, 1],
+                  rotate: [0, 5, -5, 0],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                🏆
+              </motion.div>
+              <motion.h1
+                className="text-6xl font-black mb-6"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #ffb36a 0%, #ff8b1f 50%, #ffb36a 100%)",
+                  backgroundSize: "200% 200%",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  filter: "drop-shadow(0 0 40px rgba(255,179,106,0.6))",
+                }}
+                animate={{
+                  backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+              >
+                ZENITH 2026
+              </motion.h1>
+              <motion.p
+                className="text-4xl font-bold text-yellow-400 mb-4"
+                animate={{
+                  opacity: [0.5, 1, 0.5],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                COMING SOON
+              </motion.p>
+              <p className="text-xl text-gray-300 mb-3">
+                {registrationMessage || "Sports registrations will open soon!"}
+              </p>
+              <p className="text-lg text-gray-400">
+                Stay tuned for updates
+              </p>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -1441,6 +1546,7 @@ export default function GameVerse() {
           onIslandClick={handleIslandClick}
           lockedPlanet={lockedPlanet}
           onRegisterPlanetRef={handleRegisterPlanetRef}
+          availableSports={availableSports}
         />
         <OrbitControls
           enablePan={true}
@@ -1478,8 +1584,8 @@ export default function GameVerse() {
         onClose={closeModal}
         sport={selectedSport}
         onRegister={handleRegisterClick}
-        isRegistrationOpen={isRegistrationOpen}
-        registrationMessage={registrationMessage}
+        isRegistrationOpen={selectedSport && (selectedSport.name === "CRICKET" ? isCricketOpen : isOtherSportsOpen)}
+        registrationMessage={showComingSoon ? registrationMessage : `${selectedSport?.name} registration is ${selectedSport && (selectedSport.name === "CRICKET" ? isCricketOpen : isOtherSportsOpen) ? "open" : "closed"}`}
       />
     </div>
   );

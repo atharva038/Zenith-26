@@ -2,11 +2,32 @@ import mongoose from "mongoose";
 
 const settingsSchema = new mongoose.Schema(
   {
-    // Global Registration Toggle
+    // Cricket Registration Toggle
+    isCricketRegistrationOpen: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
+    
+    // Other Sports Registration Toggle (Football, Basketball, etc.)
+    isOtherSportsRegistrationOpen: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
+    
+    // Legacy field - kept for backward compatibility
+    // Will be removed in future versions
     isRegistrationOpen: {
       type: Boolean,
       default: false,
       required: true,
+    },
+    
+    // Payment QR Code URL (from Cloudinary)
+    paymentQrUrl: {
+      type: String,
+      default: "",
     },
     
     // Last modified tracking
@@ -41,8 +62,11 @@ settingsSchema.statics.getSettings = async function () {
   if (!settings) {
     // Create default settings if none exist
     settings = await this.create({
-      isRegistrationOpen: false,
+      isCricketRegistrationOpen: false,
+      isOtherSportsRegistrationOpen: false,
+      isRegistrationOpen: false, // Legacy field
       registrationMessage: "Registrations will open soon. Stay tuned!",
+      paymentQrUrl: process.env.MAIN_ZENITH_QR_URL || "",
     });
   }
   

@@ -47,6 +47,7 @@ import Gallery from "./pages/Gallery";
 import MeetOurTeam from "./pages/MeetOurTeam";
 import TeamPage from "./pages/TeamPage";
 import NotFound from "./pages/NotFound";
+import CursorClickEffect from "./components/CursorClickEffect";
 import { useSmoothScroll } from "./hooks/useSmoothScroll";
 import "./App.css";
 
@@ -58,6 +59,9 @@ function App() {
     <ThemeProvider>
       <AuthProvider>
         <Router>
+          {/* Global Cursor Click Effect */}
+          <CursorClickEffect />
+          
           <AnimatePresence mode="wait">
             <Routes>
               <Route path="/" element={<CinematicIntro />} />

@@ -23,14 +23,21 @@ const DevRegistrationControl = () => {
   const fetchSettings = async () => {
     try {
       setLoading(true);
+      console.log("📥 Fetching settings...");
+      
       const response = await api.get("/settings", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
       });
 
+      console.log("✅ Settings response:", response.data);
+
       if (response.data.success) {
         setSettings(response.data.data);
+        console.log("🏏 Cricket Registration:", response.data.data.isCricketRegistrationOpen);
+        console.log("⚽ Other Sports Registration:", response.data.data.isOtherSportsRegistrationOpen);
+        
         setFormData({
           registrationMessage: response.data.data.registrationMessage || "",
           registrationStartDate: response.data.data.registrationStartDate
@@ -46,18 +53,21 @@ const DevRegistrationControl = () => {
         });
       }
     } catch (error) {
-      console.error("Error fetching settings:", error);
+      console.error("❌ Error fetching settings:", error);
+      console.error("Error details:", error.response?.data);
       toast.error("Failed to load settings");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleToggle = async () => {
+  const handleToggleCricket = async () => {
     try {
       setUpdating(true);
+      console.log("🏏 Toggling Cricket registration...");
+      
       const response = await api.post(
-        "/settings/toggle",
+        "/settings/toggle-cricket",
         {},
         {
           headers: {
@@ -66,14 +76,51 @@ const DevRegistrationControl = () => {
         }
       );
 
+      console.log("✅ Cricket toggle response:", response.data);
+
       if (response.data.success) {
         setSettings(response.data.data);
         toast.success(response.data.message);
+        console.log("🏏 New Cricket state:", response.data.data.isCricketRegistrationOpen);
       }
     } catch (error) {
-      console.error("Error toggling registration:", error);
+      console.error("❌ Error toggling cricket registration:", error);
+      console.error("Error details:", error.response?.data);
       toast.error(
-        error.response?.data?.message || "Failed to toggle registration"
+        error.response?.data?.message || "Failed to toggle cricket registration"
+      );
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleToggleOtherSports = async () => {
+    try {
+      setUpdating(true);
+      console.log("⚽ Toggling Other Sports registration...");
+      
+      const response = await api.post(
+        "/settings/toggle-other-sports",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
+        }
+      );
+
+      console.log("✅ Other Sports toggle response:", response.data);
+
+      if (response.data.success) {
+        setSettings(response.data.data);
+        toast.success(response.data.message);
+        console.log("⚽ New Other Sports state:", response.data.data.isOtherSportsRegistrationOpen);
+      }
+    } catch (error) {
+      console.error("❌ Error toggling other sports registration:", error);
+      console.error("Error details:", error.response?.data);
+      toast.error(
+        error.response?.data?.message || "Failed to toggle other sports registration"
       );
     } finally {
       setUpdating(false);
@@ -136,11 +183,11 @@ const DevRegistrationControl = () => {
             </span>
           </h1>
           <p className="text-gray-400">
-            Control global registration availability for all sports and events
+            Control registration availability separately for Cricket and Other Sports
           </p>
         </div>
 
-        {/* Main Toggle Card */}
+        {/* Cricket Toggle Card */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -149,27 +196,27 @@ const DevRegistrationControl = () => {
         >
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-2xl font-bold mb-2">
-                Registration Status
+              <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
+                🏏 Cricket Registration
               </h2>
               <p className="text-gray-400 text-sm">
-                Toggle to open or close all registrations globally
+                Toggle to open or close Cricket-only registrations
               </p>
             </div>
 
             {/* Toggle Switch */}
             <button
-              onClick={handleToggle}
+              onClick={handleToggleCricket}
               disabled={updating}
               className={`relative inline-flex h-16 w-32 items-center rounded-full transition-all duration-300 ${
-                settings?.isRegistrationOpen
+                settings?.isCricketRegistrationOpen
                   ? "bg-gradient-to-r from-green-500 to-emerald-500"
                   : "bg-gradient-to-r from-red-500 to-pink-500"
               } ${updating ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
             >
               <span
                 className={`inline-block h-12 w-12 transform rounded-full bg-white shadow-lg transition-transform duration-300 ${
-                  settings?.isRegistrationOpen
+                  settings?.isCricketRegistrationOpen
                     ? "translate-x-16"
                     : "translate-x-2"
                 }`}
@@ -180,28 +227,94 @@ const DevRegistrationControl = () => {
           {/* Status Display */}
           <div
             className={`flex items-center gap-3 p-4 rounded-xl ${
-              settings?.isRegistrationOpen
+              settings?.isCricketRegistrationOpen
                 ? "bg-green-500/10 border border-green-500/30"
                 : "bg-red-500/10 border border-red-500/30"
             }`}
           >
             <div
               className={`w-4 h-4 rounded-full ${
-                settings?.isRegistrationOpen
+                settings?.isCricketRegistrationOpen
                   ? "bg-green-400 animate-pulse"
                   : "bg-red-400"
               }`}
             />
             <span
               className={`text-sm font-medium ${
-                settings?.isRegistrationOpen
+                settings?.isCricketRegistrationOpen
                   ? "text-green-300"
                   : "text-red-300"
               }`}
             >
-              {settings?.isRegistrationOpen
-                ? "🎉 Registrations are OPEN - Users can register for all sports"
-                : "🔒 Registrations are CLOSED - Coming Soon will be displayed"}
+              {settings?.isCricketRegistrationOpen
+                ? "🎉 Cricket Registration is OPEN"
+                : "🔒 Cricket Registration is CLOSED"}
+            </span>
+          </div>
+        </motion.div>
+
+        {/* Other Sports Toggle Card */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2 }}
+          className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-xl rounded-2xl border border-gray-700/50 p-8 mb-6"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
+                ⚽ Other Sports Registration
+              </h2>
+              <p className="text-gray-400 text-sm">
+                Toggle to open or close Football, Basketball, and other sports registrations
+              </p>
+            </div>
+
+            {/* Toggle Switch */}
+            <button
+              onClick={handleToggleOtherSports}
+              disabled={updating}
+              className={`relative inline-flex h-16 w-32 items-center rounded-full transition-all duration-300 ${
+                settings?.isOtherSportsRegistrationOpen
+                  ? "bg-gradient-to-r from-green-500 to-emerald-500"
+                  : "bg-gradient-to-r from-red-500 to-pink-500"
+              } ${updating ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+            >
+              <span
+                className={`inline-block h-12 w-12 transform rounded-full bg-white shadow-lg transition-transform duration-300 ${
+                  settings?.isOtherSportsRegistrationOpen
+                    ? "translate-x-16"
+                    : "translate-x-2"
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* Status Display */}
+          <div
+            className={`flex items-center gap-3 p-4 rounded-xl ${
+              settings?.isOtherSportsRegistrationOpen
+                ? "bg-green-500/10 border border-green-500/30"
+                : "bg-red-500/10 border border-red-500/30"
+            }`}
+          >
+            <div
+              className={`w-4 h-4 rounded-full ${
+                settings?.isOtherSportsRegistrationOpen
+                  ? "bg-green-400 animate-pulse"
+                  : "bg-red-400"
+              }`}
+            />
+            <span
+              className={`text-sm font-medium ${
+                settings?.isOtherSportsRegistrationOpen
+                  ? "text-green-300"
+                  : "text-red-300"
+              }`}
+            >
+              {settings?.isOtherSportsRegistrationOpen
+                ? "🎉 Other Sports Registration is OPEN"
+                : "🔒 Other Sports Registration is CLOSED"}
             </span>
           </div>
         </motion.div>

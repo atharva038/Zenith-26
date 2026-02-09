@@ -360,8 +360,40 @@ const UniversalRegistration = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Check registration status (MUST be before any conditional returns)
-  const { isOpen, loading: statusLoading, message, startDate, endDate } = useRegistrationStatus();
+  // Check registration status with separate toggles (MUST be before any conditional returns)
+  const { 
+    isCricketOpen, 
+    isOtherSportsOpen, 
+    isOpen, 
+    loading: statusLoading, 
+    message, 
+    startDate, 
+    endDate,
+    paymentQrUrl 
+  } = useRegistrationStatus();
+  
+  // Filter available sports based on toggle states
+  const availableSports = React.useMemo(() => {
+    const allSports = Object.keys(SPORTS_DATA);
+    
+    // If both are closed, show nothing
+    if (!isCricketOpen && !isOtherSportsOpen) {
+      return [];
+    }
+    
+    // If only cricket is open, show only cricket (NOT Box Cricket)
+    if (isCricketOpen && !isOtherSportsOpen) {
+      return allSports.filter(sport => sport === "Cricket");
+    }
+    
+    // If only other sports are open, show other sports (excluding cricket, but including Box Cricket)
+    if (!isCricketOpen && isOtherSportsOpen) {
+      return allSports.filter(sport => sport !== "Cricket");
+    }
+    
+    // If both are open, show all sports
+    return allSports;
+  }, [isCricketOpen, isOtherSportsOpen]);
   
   // Multi-step state (ALL useState hooks MUST be declared before any conditional returns)
   const [currentStep, setCurrentStep] = useState(1);
@@ -768,8 +800,8 @@ const UniversalRegistration = () => {
     );
   }
 
-  // Show registration closed page if not open
-  if (!isOpen) {
+  // Show registration closed page if BOTH toggles are off
+  if (!isCricketOpen && !isOtherSportsOpen) {
     return <RegistrationClosed message={message} startDate={startDate} endDate={endDate} />;
   }
 
@@ -998,7 +1030,7 @@ const UniversalRegistration = () => {
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {Object.keys(SPORTS_DATA).map((sport, index) => (
+                {availableSports.map((sport, index) => (
                   <motion.div
                     key={sport}
                     initial={{ opacity: 0, scale: 0.9 }}

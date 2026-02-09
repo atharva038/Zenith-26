@@ -27,10 +27,13 @@ export const updateSettings = async (req, res) => {
     
     // Validate updates
     const allowedFields = [
-      "isRegistrationOpen",
+      "isCricketRegistrationOpen",
+      "isOtherSportsRegistrationOpen",
+      "isRegistrationOpen", // Legacy field
       "registrationMessage",
       "registrationStartDate",
       "registrationEndDate",
+      "paymentQrUrl",
     ];
     
     const filteredUpdates = {};
@@ -58,12 +61,13 @@ export const updateSettings = async (req, res) => {
 };
 
 // Toggle registration status (Quick action)
+// Legacy endpoint - kept for backward compatibility
 export const toggleRegistration = async (req, res) => {
   try {
     const adminId = req.admin?._id; // Auth middleware sets req.admin
     const settings = await Settings.getSettings();
     
-    // Toggle the value
+    // Toggle the value (legacy field)
     const newStatus = !settings.isRegistrationOpen;
     
     const updatedSettings = await Settings.updateSettings(
@@ -86,22 +90,83 @@ export const toggleRegistration = async (req, res) => {
   }
 };
 
+// Toggle Cricket Registration
+export const toggleCricketRegistration = async (req, res) => {
+  try {
+    const adminId = req.admin?._id;
+    const settings = await Settings.getSettings();
+    
+    const newStatus = !settings.isCricketRegistrationOpen;
+    
+    const updatedSettings = await Settings.updateSettings(
+      { isCricketRegistrationOpen: newStatus },
+      adminId
+    );
+    
+    res.status(200).json({
+      success: true,
+      message: `Cricket registration ${newStatus ? "opened" : "closed"} successfully`,
+      data: updatedSettings,
+    });
+  } catch (error) {
+    console.error("Error toggling cricket registration:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to toggle cricket registration",
+      error: error.message,
+    });
+  }
+};
+
+// Toggle Other Sports Registration
+export const toggleOtherSportsRegistration = async (req, res) => {
+  try {
+    const adminId = req.admin?._id;
+    const settings = await Settings.getSettings();
+    
+    const newStatus = !settings.isOtherSportsRegistrationOpen;
+    
+    const updatedSettings = await Settings.updateSettings(
+      { isOtherSportsRegistrationOpen: newStatus },
+      adminId
+    );
+    
+    res.status(200).json({
+      success: true,
+      message: `Other sports registration ${newStatus ? "opened" : "closed"} successfully`,
+      data: updatedSettings,
+    });
+  } catch (error) {
+    console.error("Error toggling other sports registration:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to toggle other sports registration",
+      error: error.message,
+    });
+  }
+};
+
 // Public endpoint to check if registration is open (No auth required)
 export const checkRegistrationStatus = async (req, res) => {
   try {
     const settings = await Settings.getSettings();
     
     console.log("📋 Registration Status Check:", {
-      isOpen: settings.isRegistrationOpen,
+      cricket: settings.isCricketRegistrationOpen,
+      otherSports: settings.isOtherSportsRegistrationOpen,
+      legacy: settings.isRegistrationOpen,
       message: settings.registrationMessage,
     });
     
     res.status(200).json({
       success: true,
-      isOpen: settings.isRegistrationOpen,
+      isCricketOpen: settings.isCricketRegistrationOpen,
+      isOtherSportsOpen: settings.isOtherSportsRegistrationOpen,
+      isOpen: settings.isRegistrationOpen, // Legacy field
       message: settings.registrationMessage,
       startDate: settings.registrationStartDate,
       endDate: settings.registrationEndDate,
+      paymentQrUrl: settings.paymentQrUrl,
     });
   } catch (error) {
     console.error("Error checking registration status:", error);

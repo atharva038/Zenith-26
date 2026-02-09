@@ -3,15 +3,27 @@ import api from "../config/api";
 
 /**
  * Hook to check if registration is globally enabled
- * Returns: { isOpen, loading, message, error, refetch }
+ * Returns: { 
+ *   isCricketOpen, 
+ *   isOtherSportsOpen, 
+ *   isOpen (legacy),
+ *   loading, 
+ *   message, 
+ *   paymentQrUrl,
+ *   error, 
+ *   refetch 
+ * }
  */
 export const useRegistrationStatus = () => {
   const [status, setStatus] = useState({
-    isOpen: false,
+    isCricketOpen: false,
+    isOtherSportsOpen: false,
+    isOpen: false, // Legacy field
     loading: true,
     message: "",
     startDate: null,
     endDate: null,
+    paymentQrUrl: "",
     error: null,
   });
 
@@ -25,27 +37,35 @@ export const useRegistrationStatus = () => {
       
       if (response.data.success) {
         setStatus({
-          isOpen: response.data.isOpen,
+          isCricketOpen: response.data.isCricketOpen,
+          isOtherSportsOpen: response.data.isOtherSportsOpen,
+          isOpen: response.data.isOpen, // Legacy field
           loading: false,
           message: response.data.message,
           startDate: response.data.startDate,
           endDate: response.data.endDate,
+          paymentQrUrl: response.data.paymentQrUrl,
           error: null,
         });
         
         console.log("✅ Registration Status Set:", {
-          isOpen: response.data.isOpen,
+          cricket: response.data.isCricketOpen,
+          otherSports: response.data.isOtherSportsOpen,
+          legacy: response.data.isOpen,
           message: response.data.message,
         });
       }
     } catch (error) {
       console.error("❌ Error fetching registration status:", error);
       setStatus({
+        isCricketOpen: false,
+        isOtherSportsOpen: false,
         isOpen: false,
         loading: false,
         message: "Unable to check registration status",
         startDate: null,
         endDate: null,
+        paymentQrUrl: "",
         error: error.message,
       });
     }
