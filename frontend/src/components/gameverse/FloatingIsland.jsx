@@ -845,6 +845,104 @@ function useHandballTexture({ size = 2048 }) {
   }, [size]);
 }
 
+/* -------------------------------------------------------
+    🤼 Kabaddi Court Texture (Red Mat with Lines)
+--------------------------------------------------------*/
+function useKabaddiTexture({ size = 2048 }) {
+  return useMemo(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = size;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+
+    // Base red kabaddi mat color
+    const grd = ctx.createLinearGradient(0, 0, size, size);
+    grd.addColorStop(0, "#DC2626");
+    grd.addColorStop(0.5, "#B91C1C");
+    grd.addColorStop(1, "#991B1B");
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, size, size);
+
+    // Add mat texture grain
+    const img = ctx.getImageData(0, 0, size, size);
+    for (let i = 0; i < img.data.length; i += 4) {
+      const grain = Math.random() * 18 - 9;
+      img.data[i] += grain;
+      img.data[i + 1] += grain * 0.5;
+      img.data[i + 2] += grain * 0.5;
+    }
+    ctx.putImageData(img, 0, 0);
+
+    // Kabaddi court lines - white boundary lines
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 12;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+
+    // Outer boundary rectangle
+    ctx.strokeRect(size * 0.1, size * 0.1, size * 0.8, size * 0.8);
+
+    // Mid-line (dividing the court)
+    ctx.beginPath();
+    ctx.moveTo(size * 0.1, size * 0.5);
+    ctx.lineTo(size * 0.9, size * 0.5);
+    ctx.stroke();
+
+    // Baulk lines (parallel to mid-line)
+    ctx.strokeStyle = "#ffeb3b";
+    ctx.lineWidth = 8;
+    
+    // Top baulk line
+    ctx.beginPath();
+    ctx.moveTo(size * 0.1, size * 0.3);
+    ctx.lineTo(size * 0.9, size * 0.3);
+    ctx.stroke();
+
+    // Bottom baulk line
+    ctx.beginPath();
+    ctx.moveTo(size * 0.1, size * 0.7);
+    ctx.lineTo(size * 0.9, size * 0.7);
+    ctx.stroke();
+
+    // Bonus lines (dashed lines)
+    ctx.strokeStyle = "#fbbf24";
+    ctx.lineWidth = 6;
+    ctx.setLineDash([20, 15]);
+
+    ctx.beginPath();
+    ctx.moveTo(size * 0.1, size * 0.4);
+    ctx.lineTo(size * 0.9, size * 0.4);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(size * 0.1, size * 0.6);
+    ctx.lineTo(size * 0.9, size * 0.6);
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+
+    // Lobby lines (vertical sides)
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 10;
+
+    ctx.beginPath();
+    ctx.moveTo(size * 0.25, size * 0.1);
+    ctx.lineTo(size * 0.25, size * 0.9);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(size * 0.75, size * 0.1);
+    ctx.lineTo(size * 0.75, size * 0.9);
+    ctx.stroke();
+
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.anisotropy = 16;
+    tex.needsUpdate = true;
+
+    return tex;
+  }, [size]);
+}
+
 /**
  * Generates a procedural volleyball equirectangular texture + bump map.
  * The pattern approximates classic curved-panel volleyballs:
@@ -1943,6 +2041,157 @@ function HandballPlanet({ position, onClick, hovered, setHovered }) {
 }
 
 /* -----------------------------------------------------------
+    🤼 Premium Kabaddi Planet (Spherical Design)
+-------------------------------------------------------------*/
+function KabaddiPlanet({ position, onClick, hovered, setHovered }) {
+  const groupRef = useRef();
+  const planetRef = useRef();
+  const glowRef = useRef();
+  const sparkRef = useRef();
+  const textRef = useRef();
+
+  const radius = 2.2;
+  const theme = { base: "#DC2626", glow: "#FCA5A5", tint: "#7F1D1D" };
+
+  // Sparkle orbit data - red sparkles for kabaddi theme
+  const sparkData = useMemo(() => {
+    return [...Array(16)].map(() => ({
+      angle: Math.random() * Math.PI * 2,
+      radius: radius * (1.4 + Math.random() * 0.4),
+      speed: 0.15 + Math.random() * 0.3,
+      y: -0.3 + Math.random() * 1.2,
+      size: 0.06 + Math.random() * 0.04,
+    }));
+  }, []);
+
+  useFrame(({ clock, camera }, delta) => {
+    const t = clock.getElapsedTime();
+
+    // NO floating motion - keep fixed on orbit
+    // Planets stay at their orbital position
+
+    // Rotation
+    if (planetRef.current) {
+      planetRef.current.rotation.y = t * 0.14;
+      planetRef.current.rotation.x = Math.sin(t * 0.3) * 0.03;
+    }
+
+    // Atmosphere pulse
+    if (glowRef.current) {
+      glowRef.current.material.opacity =
+        0.2 + Math.sin(t * 1.2) * 0.08 + (hovered ? 0.15 : 0);
+      glowRef.current.scale.setScalar(1.07 + Math.sin(t * 0.5) * 0.02);
+    }
+
+    // Orbit sparkles
+    if (sparkRef.current) {
+      sparkRef.current.children.forEach((mesh, i) => {
+        const s = sparkData[i];
+        s.angle += delta * s.speed;
+        mesh.position.set(
+          Math.cos(s.angle) * s.radius,
+          s.y + Math.sin(t * 1.9 + i) * 0.05,
+          Math.sin(s.angle) * s.radius,
+        );
+      });
+    }
+
+    // Billboard text
+    if (textRef.current) {
+      textRef.current.quaternion.copy(camera.quaternion);
+      textRef.current.position.y = radius * 1.4 + Math.sin(t * 1.1) * 0.04;
+    }
+  });
+
+  const kabaddiTex = useKabaddiTexture({ size: 2048 });
+
+  return (
+    <group ref={groupRef} position={position}>
+      {/* 🤼 Main Sphere Planet with Kabaddi Court Texture */}
+      <mesh
+        ref={planetRef}
+        onClick={onClick}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          setHovered(true);
+          document.body.style.cursor = "pointer";
+        }}
+        onPointerOut={(e) => {
+          e.stopPropagation();
+          setHovered(false);
+          document.body.style.cursor = "auto";
+        }}
+      >
+        <sphereGeometry args={[radius, 128, 128]} />
+        <meshStandardMaterial
+          map={kabaddiTex}
+          roughness={0.45}
+          metalness={0.1}
+          emissive={hovered ? theme.tint : "#000000"}
+          emissiveIntensity={hovered ? 0.6 : 0.15}
+        />
+      </mesh>
+
+      {/* 🌌 Atmosphere Glow (Red Theme) */}
+      <mesh ref={glowRef}>
+        <sphereGeometry args={[radius * 1.07, 128, 128]} />
+        <meshBasicMaterial
+          color={theme.glow}
+          transparent
+          opacity={0.22}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+        />
+      </mesh>
+
+      {/* ✨ Sparkle Orbiters */}
+      <group ref={sparkRef}>
+        {sparkData.map((s, i) => (
+          <mesh key={i}>
+            <sphereGeometry args={[s.size, 12, 12]} />
+            <meshBasicMaterial
+              color={i % 3 === 0 ? "#ffffff" : "#ff8a8a"}
+              transparent
+              opacity={0.85}
+            />
+          </mesh>
+        ))}
+      </group>
+
+      {/* 🏷 Billboard Text */}
+      <Text
+        ref={textRef}
+        fontSize={0.7}
+        color="#FCA5A5"
+        outlineWidth={0.12}
+        outlineColor={theme.tint}
+        anchorX="center"
+        anchorY="middle"
+        maxWidth={6}
+        renderOrder={999}
+      >
+        KABADDI
+      </Text>
+
+      {/* 💡 Lights */}
+      <pointLight
+        position={[4, 5, 4]}
+        intensity={hovered ? 3 : 2.4}
+        distance={22}
+        color="#ff9999"
+      />
+      <pointLight
+        position={[-3.5, 4.2, -3]}
+        intensity={1.5}
+        color={theme.glow}
+        distance={20}
+      />
+      <ambientLight intensity={0.22} />
+    </group>
+  );
+}
+
+/* -----------------------------------------------------------
     🏐 Premium Volleyball Planet (Spherical Design)
 -------------------------------------------------------------*/
 function VolleyballPlanet({ position, onClick, hovered, setHovered }) {
@@ -2804,6 +3053,18 @@ export default function FloatingIsland({
     );
   }
 
+  // Special rendering for KABADDI - Premium Spherical Planet with Court
+  if (sportName === "KABADDI") {
+    return (
+      <KabaddiPlanet
+        position={position}
+        onClick={onClick}
+        hovered={hovered}
+        setHovered={setHovered}
+      />
+    );
+  }
+
   // Special rendering for FOOTBALL - Premium Spherical Planet
   if (sportName === "FOOTBALL") {
     return (
@@ -2866,8 +3127,8 @@ export default function FloatingIsland({
     return <CarromPlanet position={position} onClick={onClick} radius={2.5} />;
   }
 
-  // Special rendering for KABADDI - Premium Kho-Kho Planet
-  if (sportName === "KABADDI") {
+  // Special rendering for KHO-KHO - Premium Kho-Kho Planet
+  if (sportName === "KHO-KHO") {
     return <KhoKhoPlanet position={position} onClick={onClick} radius={2.5} />;
   }
 

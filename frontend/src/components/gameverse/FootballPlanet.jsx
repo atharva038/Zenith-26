@@ -151,6 +151,7 @@ function Football({ position, rotation = [0, 0, 0], scale = 1 }) {
 function FootballPlanet({ position, onClick, hovered, setHovered }) {
   const planetRef = useRef();
   const glowRef = useRef();
+  const textRef = useRef();
 
   const radius = 2.2;
   const texture = useFootballTexture();
@@ -167,7 +168,7 @@ function FootballPlanet({ position, onClick, hovered, setHovered }) {
     }));
   }, [radius]);
 
-  useFrame(({ clock }) => {
+  useFrame(({ clock, camera }) => {
     const t = clock.getElapsedTime();
 
     // Planet rotation
@@ -180,6 +181,11 @@ function FootballPlanet({ position, onClick, hovered, setHovered }) {
       const pulse = 0.25 + Math.sin(t * 1.5) * 0.08;
       glowRef.current.material.opacity = pulse + (hovered ? 0.12 : 0);
       glowRef.current.scale.setScalar(1.08 + Math.sin(t * 0.8) * 0.02);
+    }
+
+    // Billboard text - always face camera
+    if (textRef.current) {
+      textRef.current.quaternion.copy(camera.quaternion);
     }
   });
 
@@ -233,8 +239,9 @@ function FootballPlanet({ position, onClick, hovered, setHovered }) {
       {/* Large football on top */}
       <Football position={[0, radius * 1.3, 0]} scale={2.5} />
 
-      {/* Label */}
+      {/* Label - Billboard text that always faces camera */}
       <Text
+        ref={textRef}
         position={[0, radius * 1.7, 0]}
         fontSize={0.7}
         color="#ffffff"

@@ -425,22 +425,22 @@ const sportsData = [
     id: 7,
     name: "KABADDI",
     icon: "🤼",
-    color: "#92400E",
+    color: "#DC2626",
     position: [-14.14, 0, 14.14], // Southwest
     orbit: 2,
     tier: 2,
     tagline: "Raid & Defend",
     description:
-      "Traditional Indian sport combining strength, strategy, and stamina. Raid the opponent's court while holding your breath!",
+      "Ancient Indian combat sport! Raid enemy territory, touch opponents, and return safely while holding your breath. Strength, strategy, and stamina combined!",
     date: "February 20-22, 2026",
     venue: "Kabaddi Arena",
     teamSize: "7 vs 7",
     registrationFee: "Men: ₹2200 | Women: ₹1500 per team",
     rules: [
       "Pro Kabaddi League format",
-      "Each raid: 30 seconds max",
+      "Each raid: 30 seconds maximum",
       "Super tackles and super raids",
-      "Best of 3 matches",
+      "Bonus points for all-outs",
       "Maximum 12 players per squad",
     ],
     registrationStatus: "open",
@@ -470,61 +470,13 @@ const sportsData = [
     registrationStatus: "open",
   },
 
-  // ===== OUTER RING (Radius 26) - 4 Indoor Sports =====
-  {
-    id: 9,
-    name: "TABLE TENNIS",
-    icon: "🏓",
-    color: "#DC2626",
-    position: [0, 0, -26], // Far North
-    orbit: 3,
-    tier: 3,
-    tagline: "Ping Pong Power",
-    description:
-      "Lightning-fast reflexes meet precision control. Compete in the ultimate table tennis showdown with spin, speed, and strategy.",
-    date: "February 20-21, 2026",
-    venue: "Indoor Sports Hall",
-    teamSize: "Singles/Doubles",
-    registrationFee: "₹400 per player",
-    rules: [
-      "Best of 5 games (11 points each)",
-      "Two-point lead required to win",
-      "Service alternates every 2 points",
-      "ITTF regulations apply",
-      "Singles and doubles events",
-    ],
-    registrationStatus: "open",
-  },
-  {
-    id: 10,
-    name: "CARROM",
-    icon: "🎯",
-    color: "#D6A56F",
-    position: [26, 0, 0], // East (90°)
-    orbit: 3,
-    tier: 3,
-    tagline: "Strike & Pocket",
-    description:
-      "Traditional board game of precision and skill. Pocket the carrom men and the queen to claim victory!",
-    date: "February 20-21, 2026",
-    venue: "Indoor Gaming Hall",
-    teamSize: "Singles/Doubles",
-    registrationFee: "₹300 per player",
-    rules: [
-      "International Carrom Federation rules",
-      "Best of 3 boards",
-      "25 points to win each board",
-      "Queen must be covered",
-      "Singles and doubles categories",
-    ],
-    registrationStatus: "open",
-  },
+  // ===== OUTER RING (Radius 26) - 4 Sports =====
   {
     id: 11,
     name: "ATHLETICS",
     icon: "🏃",
     color: "#B91C1C",
-    position: [0, 0, 26], // South (180°)
+    position: [0, 0, -26], // North
     orbit: 3,
     tier: 3,
     tagline: "Track & Field Glory",
@@ -548,9 +500,9 @@ const sportsData = [
     name: "POWERLIFTING",
     icon: "🏋️",
     color: "#4B5563",
-    position: [-26, 0, 0], // West (270°)
+    position: [26, 0, 0], // East
     orbit: 3,
-    tier: 1,
+    tier: 3,
     tagline: "Strength Supreme",
     description:
       "Lift heavy, lift strong! Compete in squat, bench press, and deadlift. Show your raw power and technique in this ultimate strength competition.",
@@ -567,39 +519,13 @@ const sportsData = [
     ],
     registrationStatus: "open",
   },
-
-  // ===== FAR OUTER RING (Radius 32) - 4 Additional Sports =====
-  {
-    id: 13,
-    name: "TUG OF WAR",
-    icon: "🪢",
-    color: "#A16207",
-    position: [0, 0, -32], // Far North
-    orbit: 4,
-    tier: 3,
-    tagline: "Pull to Victory",
-    description:
-      "Pure strength and teamwork! Test your team's power in this classic battle of strength. Coordination and raw power determine the winners.",
-    date: "February 20-22, 2026",
-    venue: "Outdoor Arena",
-    teamSize: "8 vs 8",
-    registrationFee: "₹1500 per team",
-    rules: [
-      "Best of 3 pulls",
-      "Teams must pull rope across marked line",
-      "No gloves or grip aids allowed",
-      "Weight class categories available",
-      "Mixed gender teams allowed",
-    ],
-    registrationStatus: "open",
-  },
   {
     id: 14,
     name: "RINK FOOTBALL",
     icon: "⚽",
     color: "#38BDF8",
-    position: [32, 0, 0], // Far East
-    orbit: 4,
+    position: [0, 0, 26], // South
+    orbit: 3,
     tier: 3,
     tagline: "Walled Football",
     description:
@@ -619,28 +545,52 @@ const sportsData = [
   },
   {
     id: 15,
-    name: "BOX CRICKET",
-    icon: "📦",
-    color: "#7C3AED",
-    position: [0, 0, 32], // Far South
-    orbit: 4,
+    name: "KHO-KHO",
+    icon: "🏃",
+    color: "#F59E0B",
+    position: [-26, 0, 0], // West
+    orbit: 3,
     tier: 3,
-    tagline: "Boxed Action",
+    tagline: "Chase & Tag Master",
     description:
-      "Cricket in a confined space! Fast-paced, high-scoring matches with modified rules. Perfect for showcasing quick reflexes and shot-making skills.",
-    date: "February 20-21, 2026",
-    venue: "Box Cricket Arena",
-    teamSize: "6 vs 6",
-    registrationFee: "₹2000 per team",
+      "Lightning-fast Indian tag sport! Chase, dive, and tag opponents with explosive speed. Test your reflexes and agility in this thrilling pursuit game!",
+    date: "February 20-22, 2026",
+    venue: "Outdoor Kho-Kho Court",
+    teamSize: "9 vs 9",
+    registrationFee: "₹1500 per team",
     rules: [
-      "6 overs per innings",
-      "Enclosed playing area",
-      "Modified scoring zones",
-      "Catches off nets count",
-      "Maximum 10 players per squad",
+      "Kho-Kho Federation of India rules",
+      "Two innings of 9 minutes each",
+      "Sitting and chasing alternates",
+      "Quick 'Kho' calls for tags",
+      "Maximum 12 players per squad",
     ],
     registrationStatus: "open",
   },
+  // {
+  //   id: 16,
+  //   name: "BOX CRICKET",
+  //   icon: "📦",
+  //   color: "#7C3AED",
+  //   position: [0, 0, 32], // Far South
+  //   orbit: 4,
+  //   tier: 3,
+  //   tagline: "Boxed Action",
+  //   description:
+  //     "Cricket in a confined space! Fast-paced, high-scoring matches with modified rules. Perfect for showcasing quick reflexes and shot-making skills.",
+  //   date: "February 20-21, 2026",
+  //   venue: "Box Cricket Arena",
+  //   teamSize: "6 vs 6",
+  //   registrationFee: "₹2000 per team",
+  //   rules: [
+  //     "6 overs per innings",
+  //     "Enclosed playing area",
+  //     "Modified scoring zones",
+  //     "Catches off nets count",
+  //     "Maximum 10 players per squad",
+  //   ],
+  //   registrationStatus: "open",
+  // },
 ];
 
 // Orbital Ring Component
@@ -823,8 +773,6 @@ function Scene({ onIslandClick, lockedPlanet, onRegisterPlanetRef, availableSpor
       {/* Middle Ring */}
       <OrbitalRing radius={26} color="#ff6b35" opacity={0.15} />{" "}
       {/* Outer Ring */}
-      <OrbitalRing radius={32} color="#00ced1" opacity={0.12} />{" "}
-      {/* Far Outer Ring */}
       {/* Central Sun/Core - Enhanced with glow */}
       <mesh>
         <sphereGeometry args={[1.5, 32, 32]} />
@@ -888,23 +836,6 @@ function Scene({ onIslandClick, lockedPlanet, onRegisterPlanetRef, availableSpor
             sport={sport}
             orbitRadius={26}
             orbitSpeed={0.06}
-            initialAngle={(index / 4) * Math.PI * 2}
-            onIslandClick={onIslandClick}
-            isLocked={lockedPlanet?.id === sport.id}
-            onRegisterRef={
-              lockedPlanet?.id === sport.id ? onRegisterPlanetRef : null
-            }
-          />
-        ))}
-      {/* Orbiting Planets - Far Outer Ring (Orbit 4) */}
-      {availableSports
-        .filter((s) => s.orbit === 4)
-        .map((sport, index) => (
-          <OrbitingPlanet
-            key={sport.id}
-            sport={sport}
-            orbitRadius={32}
-            orbitSpeed={0.04}
             initialAngle={(index / 4) * Math.PI * 2}
             onIslandClick={onIslandClick}
             isLocked={lockedPlanet?.id === sport.id}
@@ -1137,8 +1068,8 @@ export default function GameVerse() {
   };
 
   // Split sports into left and right lists - use availableSports instead of all sports
-  const leftSports = availableSports.slice(0, 8);
-  const rightSports = availableSports.slice(8, 16);
+  const leftSports = availableSports.slice(0, 6);
+  const rightSports = availableSports.slice(6, 12);
 
   // Check if both toggles are off (show coming soon)
   const showComingSoon = !isCricketOpen && !isOtherSportsOpen;
@@ -1249,8 +1180,26 @@ export default function GameVerse() {
         <span className="sm:hidden">← Home</span>
       </Link>
 
+      {/* Sports Grid Button - Responsive */}
+      <Link
+        to="/sports"
+        className="absolute 
+                   top-2 left-24 sm:top-4 sm:left-40 md:top-8 md:left-52 
+                   z-10 
+                   px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 
+                   text-xs sm:text-sm md:text-base
+                   bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f]
+                   backdrop-blur-md border border-[#ff8b1f]/50 
+                   rounded-md md:rounded-lg text-black font-bold
+                   hover:scale-105 hover:shadow-lg hover:shadow-[#ffb36a]/50
+                   transition-all duration-300"
+      >
+        <span className="hidden sm:inline">⚡ Experiencing Lag? Try Simple View</span>
+        <span className="sm:hidden">⚡ List View</span>
+      </Link>
+
       {/* Unlock/Reset View Button and Locked Planet Indicator (stacked) - GPU ACCELERATED */}
-      <div className="absolute top-2 right-2 sm:top-4 sm:right-4 md:top-8 md:right-8 z-20 flex flex-col items-end space-y-2">
+      <div className="absolute top-2 right-2 sm:top-4 sm:right-4 md:top-8 md:right-8 z-30 flex flex-col items-end space-y-2">
         <motion.button
           onClick={handleResetView}
           className="px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 text-xs sm:text-sm md:text-base bg-black/50 backdrop-blur-md border border-[#ffb36a]/30 rounded-md md:rounded-lg text-[#ffb36a] hover:bg-[#ffb36a]/10 transition-all duration-300 font-semibold"
@@ -1269,39 +1218,6 @@ export default function GameVerse() {
           </span>
           <span className="sm:hidden">{lockedPlanet ? "🔓" : "🌌"}</span>
         </motion.button>
-        {/* Locked Planet Indicator - below the button - GPU ACCELERATED */}
-        <AnimatePresence mode="wait">
-          {lockedPlanet && (
-            <motion.div
-              key={lockedPlanet.id}
-              className="w-full max-w-xs text-center pointer-events-none"
-              style={{
-                willChange: "transform, opacity",
-                transform: "translate3d(0,0,0)", // GPU layer
-              }}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="bg-black/80 backdrop-blur-md border-2 border-[#ffb36a] rounded-md md:rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2.5 shadow-lg shadow-[#ffb36a]/20 mx-auto">
-                <div className="flex items-center gap-1 sm:gap-2 justify-center">
-                  <span className="text-lg sm:text-xl md:text-2xl">
-                    {lockedPlanet.icon}
-                  </span>
-                  <div className="text-left">
-                    <p className="text-[#ffb36a] text-[10px] sm:text-xs md:text-sm font-bold leading-tight">
-                      🔒 {lockedPlanet.name}
-                    </p>
-                    <p className="text-gray-400 text-[8px] sm:text-[9px] md:text-[10px]">
-                      Following
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
       {/* Left Planet List - Vertical on both mobile and desktop, positioned on left side - GPU ACCELERATED */}
@@ -1501,14 +1417,14 @@ export default function GameVerse() {
             }}
           >
             <span className="hidden sm:inline">
-              EXPLORE 15 SPORTS IN A SOLAR SYSTEM
+              EXPLORE 12 SPORTS IN 3 ORBITS
             </span>
-            <span className="sm:hidden">15 SPORTS SOLAR SYSTEM</span>
+            <span className="sm:hidden">12 SPORTS • 3 ORBITS</span>
           </motion.p>
         </motion.div>
       </div>
       {/* Instructions - Responsive - GPU ACCELERATED */}
-      <motion.div
+      {/* <motion.div
         className="absolute bottom-2 sm:bottom-4 md:bottom-6 
                    left-1/2 -translate-x-1/2 z-10 text-center px-2 max-w-full"
         style={{
@@ -1531,7 +1447,7 @@ export default function GameVerse() {
           </span>
           <span className="md:hidden">Tap planets for details</span>
         </p>
-      </motion.div>
+      </motion.div> */}
       {/* 3D Canvas */}
       <Canvas
         shadows
