@@ -46,6 +46,7 @@ import TshirtDistribution from "./pages/TshirtDistribution";
 import Gallery from "./pages/Gallery";
 import MeetOurTeam from "./pages/MeetOurTeam";
 import TeamPage from "./pages/TeamPage";
+import Schedule from "./pages/Schedule";
 import NotFound from "./pages/NotFound";
 import CursorClickEffect from "./components/CursorClickEffect";
 import { useSmoothScroll } from "./hooks/useSmoothScroll";
@@ -90,6 +91,9 @@ function App() {
 
               {/* Gallery Route */}
               <Route path="/gallery" element={<Gallery />} />
+
+              {/* Schedule Route */}
+              <Route path="/schedule" element={<Schedule />} />
 
               {/* Team Page - Public */}
               <Route path="/team" element={<TeamPage />} />

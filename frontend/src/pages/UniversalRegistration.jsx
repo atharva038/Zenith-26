@@ -280,9 +280,9 @@ const SPORTS_DATA = {
   },
 };
 
-// Payment QR Code
+// Payment QR Code - Main Zenith QR (Pramila Patil)
 const PAYMENT_QR_URL =
-  "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto:best/v1767592627/zenith-26/img/payment/payment-qr-sagar-ubale";
+  "https://res.cloudinary.com/dvmsho3pj/image/upload/v1770705868/zenith-2026/payment-qr/main-payment-qr.png";
 
 const BACKUP_QR_URLS = [
   {
@@ -711,6 +711,52 @@ const UniversalRegistration = () => {
     setFormData({ ...formData, [field]: value });
   };
 
+  // Fill Test Data Function for Development
+  const fillTestData = () => {
+    if (!selectedSport) {
+      toast.error("Please select a sport first!");
+      return;
+    }
+
+    // Fill basic form data
+    setFormData({
+      captain_name: "Atharva Sharma",
+      institution: "MIT College of Engineering",
+      captain_contact: "9876543210",
+      email: "atharva.test@example.com",
+      team_name: selectedSport === "Cricket" ? "Thunder Strikers" : `${selectedSport} Warriors`,
+      num_players: teamConfig ? String(teamConfig.minPlayers || teamConfig.exactPlayers || 5) : "1",
+      city: "Pune",
+      college_address: "MIT Campus, Paud Road, Kothrud, Pune - 411038",
+      alternate_contact: "9123456789",
+      need_accommodation: true,
+      accommodation_days: "3",
+      accommodation_people: "5",
+    });
+
+    // Fill team members if it's a team sport
+    if (isTeamSport && teamConfig) {
+      const numPlayers = teamConfig.minPlayers || teamConfig.exactPlayers || 5;
+      const testMembers = [];
+      
+      for (let i = 1; i <= numPlayers; i++) {
+        testMembers.push({
+          id: Date.now() + i,
+          name: `Player ${i}`,
+          contact: `98765432${String(i).padStart(2, '0')}`,
+        });
+      }
+      
+      setTeamMembers(testMembers);
+      setSelectedCaptain(0);
+    }
+
+    toast.success("Test data filled successfully! 🎉", {
+      autoClose: 2000,
+      style: { background: "#10b981", color: "white" }
+    });
+  };
+
   const addTeamMember = () => {
     // **STRICT VALIDATION: Check if max limit reached**
     if (teamConfig && teamConfig.exactPlayers && teamMembers.length >= teamConfig.exactPlayers) {
@@ -1077,11 +1123,27 @@ const UniversalRegistration = () => {
               </div>
 
               <motion.div
-                className="mt-8 flex justify-end"
+                className="mt-8 flex justify-between items-center gap-4"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
               >
+                {/* Fill Test Data Button (Development Tool) */}
+                {selectedSport && (
+                  <button
+                    onClick={fillTestData}
+                    className="px-6 py-3 rounded-xl font-semibold text-sm
+                             bg-gradient-to-r from-blue-600 to-blue-500
+                             hover:from-blue-500 hover:to-blue-400
+                             hover:shadow-lg hover:shadow-blue-500/30 hover:scale-105
+                             transition-all duration-300
+                             flex items-center gap-2"
+                  >
+                    <span>🧪</span>
+                    <span>Fill Test Data</span>
+                  </button>
+                )}
+                
                 <button
                   onClick={nextStep}
                   disabled={!selectedSport}
@@ -1139,9 +1201,20 @@ const UniversalRegistration = () => {
                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-[#ff6b35] via-[#ff8c42] to-[#ffa600] bg-clip-text text-transparent mb-3">
                   {selectedSport}
                 </h2>
-                <div className="flex items-center justify-center gap-2 text-gray-400">
-                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                  <p className="text-sm md:text-base">Registration Form</p>
+                <div className="flex flex-col items-center justify-center gap-2">
+                  <div className="flex items-center gap-2 text-gray-400">
+                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    <p className="text-sm md:text-base">Registration Form</p>
+                  </div>
+                  {/* Registration Fee Display */}
+                  <div className="mt-2 px-4 py-2 bg-[#ff6b35]/20 border border-[#ff6b35] rounded-full">
+                    <p className="text-sm md:text-base font-bold text-[#ffb77a]">
+                      Fee: ₹{selectedSportData?.fees?.amount ||
+                        selectedSportData?.fees?.men ||
+                        selectedSportData?.fees?.individual ||
+                        "N/A"}
+                    </p>
+                  </div>
                 </div>
               </motion.div>
 
@@ -1410,9 +1483,20 @@ const UniversalRegistration = () => {
                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-[#ff6b35] via-[#ff8c42] to-[#ffa600] bg-clip-text text-transparent mb-3">
                   {selectedSport}
                 </h2>
-                <div className="flex items-center justify-center gap-2 text-gray-400">
-                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                  <p className="text-sm md:text-base">Team Setup</p>
+                <div className="flex flex-col items-center justify-center gap-2">
+                  <div className="flex items-center gap-2 text-gray-400">
+                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    <p className="text-sm md:text-base">Team Setup</p>
+                  </div>
+                  {/* Registration Fee Display */}
+                  <div className="mt-2 px-4 py-2 bg-[#ff6b35]/20 border border-[#ff6b35] rounded-full">
+                    <p className="text-sm md:text-base font-bold text-[#ffb77a]">
+                      Fee: ₹{selectedSportData?.fees?.amount ||
+                        selectedSportData?.fees?.men ||
+                        selectedSportData?.fees?.individual ||
+                        "N/A"}
+                    </p>
+                  </div>
                 </div>
               </motion.div>
 
@@ -1486,12 +1570,6 @@ const UniversalRegistration = () => {
                         Added: {teamMembers.length} / Required: {teamConfig?.exactPlayers || formData.num_players || "?"}
                       </p>
                     </div>
-                    <button
-                      onClick={addTeamMember}
-                      className="px-4 py-2 rounded-lg bg-[#ff6b35]/20 border border-[#ff6b35] text-[#ff6b35] hover:bg-[#ff6b35] hover:text-white transition-all duration-300 flex items-center gap-2"
-                    >
-                      <span>+</span> Add Player
-                    </button>
                   </div>
 
                   {teamMembers.map((member, index) => (
@@ -1534,6 +1612,14 @@ const UniversalRegistration = () => {
                       No team members added yet. Click "+ Add Player" to start.
                     </div>
                   )}
+
+                  {/* Add Player Button - Moved to Bottom */}
+                  <button
+                    onClick={addTeamMember}
+                    className="w-full px-4 py-3 rounded-lg bg-[#ff6b35]/20 border border-[#ff6b35] text-[#ff6b35] hover:bg-[#ff6b35] hover:text-white transition-all duration-300 flex items-center justify-center gap-2 font-semibold"
+                  >
+                    <span>+</span> Add Player
+                  </button>
                 </div>
               </div>
 
@@ -1594,9 +1680,20 @@ const UniversalRegistration = () => {
                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-[#ff6b35] via-[#ff8c42] to-[#ffa600] bg-clip-text text-transparent mb-3">
                   {selectedSport}
                 </h2>
-                <div className="flex items-center justify-center gap-2 text-gray-400">
-                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                  <p className="text-sm md:text-base">Captain Selection</p>
+                <div className="flex flex-col items-center justify-center gap-2">
+                  <div className="flex items-center gap-2 text-gray-400">
+                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    <p className="text-sm md:text-base">Captain Selection</p>
+                  </div>
+                  {/* Registration Fee Display */}
+                  <div className="mt-2 px-4 py-2 bg-[#ff6b35]/20 border border-[#ff6b35] rounded-full">
+                    <p className="text-sm md:text-base font-bold text-[#ffb77a]">
+                      Fee: ₹{selectedSportData?.fees?.amount ||
+                        selectedSportData?.fees?.men ||
+                        selectedSportData?.fees?.individual ||
+                        "N/A"}
+                    </p>
+                  </div>
                 </div>
               </motion.div>
 
@@ -1707,9 +1804,20 @@ const UniversalRegistration = () => {
                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-[#ff6b35] via-[#ff8c42] to-[#ffa600] bg-clip-text text-transparent mb-3">
                   {selectedSport}
                 </h2>
-                <div className="flex items-center justify-center gap-2 text-gray-400">
-                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                  <p className="text-sm md:text-base">Payment & Documents</p>
+                <div className="flex flex-col items-center justify-center gap-2">
+                  <div className="flex items-center gap-2 text-gray-400">
+                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    <p className="text-sm md:text-base">Payment & Documents</p>
+                  </div>
+                  {/* Registration Fee Display */}
+                  <div className="mt-2 px-4 py-2 bg-[#ff6b35]/20 border border-[#ff6b35] rounded-full">
+                    <p className="text-sm md:text-base font-bold text-[#ffb77a]">
+                      Fee: ₹{selectedSportData?.fees?.amount ||
+                        selectedSportData?.fees?.men ||
+                        selectedSportData?.fees?.individual ||
+                        "N/A"}
+                    </p>
+                  </div>
                 </div>
               </motion.div>
 
@@ -1750,9 +1858,13 @@ const UniversalRegistration = () => {
                       className="w-64 h-64 object-contain"
                     />
                   </div>
-                  <p className="text-sm text-gray-400">UPI ID: sagarubale2004@oksbi</p>
+                  <div className="space-y-1">
+                    <p className="text-sm font-semibold text-[#ffb77a]">Pramila Patil</p>
+                    <p className="text-sm text-gray-400">UPI ID: pra.pra.patil1@oksbi</p>
+                  </div>
                   
-                  <button
+                  {/* Alternative Payment Methods - Hidden for now */}
+                  {/* <button
                     onClick={() => setShowBackupQR(!showBackupQR)}
                     className="text-sm text-[#ff6b35] hover:underline"
                   >
@@ -1773,7 +1885,7 @@ const UniversalRegistration = () => {
                         </div>
                       ))}
                     </motion.div>
-                  )}
+                  )} */}
                 </div>
 
                 {/* Document Uploads */}
