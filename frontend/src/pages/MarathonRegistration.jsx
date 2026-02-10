@@ -34,6 +34,29 @@ const MarathonRegistration = () => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [uploadAbortController, setUploadAbortController] = useState(null);
 
+  // Add custom scrollbar styles
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .confirmation-modal-scroll::-webkit-scrollbar {
+        width: 8px;
+      }
+      .confirmation-modal-scroll::-webkit-scrollbar-track {
+        background: rgba(255, 139, 31, 0.1);
+        border-radius: 10px;
+      }
+      .confirmation-modal-scroll::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #ff8b1f, #ea580c);
+        border-radius: 10px;
+      }
+      .confirmation-modal-scroll::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, #ea580c, #ff8b1f);
+      }
+    `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
+
   // Scroll to top on component mount
   useEffect(() => {
     window.scrollTo({top: 0, behavior: "smooth"});
@@ -288,30 +311,33 @@ const MarathonRegistration = () => {
             initial={{opacity: 0}}
             animate={{opacity: 1}}
             exit={{opacity: 0}}
-            className="fixed inset-0 z-[100] overflow-y-auto"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-hidden"
             style={{
               backgroundColor: "rgba(0, 0, 0, 0.75)",
               backdropFilter: "blur(12px)",
               WebkitBackdropFilter: "blur(12px)",
             }}
+            onClick={() => setShowConfirmation(false)}
+            onWheel={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
           >
-            <div className="min-h-screen flex items-center justify-center p-4 py-8">
-              <motion.div
-                initial={{scale: 0.9, opacity: 0, y: 30}}
-                animate={{scale: 1, opacity: 1, y: 0}}
-                exit={{scale: 0.9, opacity: 0, y: 30}}
-                transition={{type: "spring", damping: 25, stiffness: 300}}
-                className="w-full max-w-lg mx-auto"
-                style={{
-                  background:
-                    "linear-gradient(145deg, #1a0f08 0%, #0d0705 50%, #0a0604 100%)",
-                  border: "1px solid rgba(255, 139, 31, 0.3)",
-                  borderRadius: "24px",
-                  padding: "24px",
-                  boxShadow:
-                    "0 25px 80px rgba(255, 139, 31, 0.15), 0 0 40px rgba(0, 0, 0, 0.5)",
-                }}
-              >
+            <motion.div
+              initial={{scale: 0.9, opacity: 0, y: 30}}
+              animate={{scale: 1, opacity: 1, y: 0}}
+              exit={{scale: 0.9, opacity: 0, y: 30}}
+              transition={{type: "spring", damping: 25, stiffness: 300}}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-lg mx-auto max-h-[90vh] overflow-y-auto confirmation-modal-scroll"
+              style={{
+                background:
+                  "linear-gradient(145deg, #1a0f08 0%, #0d0705 50%, #0a0604 100%)",
+                border: "1px solid rgba(255, 139, 31, 0.3)",
+                borderRadius: "24px",
+                padding: "24px",
+                boxShadow:
+                  "0 25px 80px rgba(255, 139, 31, 0.15), 0 0 40px rgba(0, 0, 0, 0.5)",
+              }}
+            >
                 {/* Success Icon */}
                 <motion.div
                   initial={{scale: 0}}
@@ -448,10 +474,10 @@ const MarathonRegistration = () => {
                     <div className="flex items-center gap-2">
                       <span className="text-gray-300">Sagar:</span>
                       <a
-                        href="tel:+919876543210"
+                        href="tel:+919545956689"
                         className="text-purple-300 hover:text-purple-200"
                       >
-                        +91 98765 43210
+                        +91 9545956689
                       </a>
                     </div>
                     <div className="flex items-center gap-2">
@@ -460,10 +486,44 @@ const MarathonRegistration = () => {
                         href="tel:+919123456789"
                         className="text-purple-300 hover:text-purple-200"
                       >
-                        +91 91234 56789
+                        +91 9156906881
                       </a>
                     </div>
                   </div>
+                </motion.div>
+
+                {/* WhatsApp Group Section */}
+                <motion.div
+                  initial={{opacity: 0, y: 20}}
+                  animate={{opacity: 1, y: 0}}
+                  transition={{delay: 0.65}}
+                  className="rounded-xl p-4 mb-4"
+                  style={{
+                    background: "linear-gradient(135deg, #25D366 0%, #128C7E 100%)",
+                    boxShadow: "0 8px 24px rgba(37, 211, 102, 0.3)",
+                  }}
+                >
+                  <h3 className="text-white font-semibold mb-2 flex items-center gap-2 text-base">
+                    <span>💬</span> Join Our WhatsApp Group!
+                  </h3>
+                  <p className="text-white/90 text-sm mb-3 leading-relaxed">
+                    Stay connected with fellow runners! Get important updates, event details, and last-minute information.
+                  </p>
+                  <motion.a
+                    whileHover={{scale: 1.02}}
+                    whileTap={{scale: 0.98}}
+                    href="https://chat.whatsapp.com/GE7U4KE8M6o8yAfRaw7L8F"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full py-3 text-center font-semibold rounded-lg transition-all text-sm"
+                    style={{
+                      backgroundColor: "#ffffff",
+                      color: "#128C7E",
+                      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
+                    }}
+                  >
+                    📱 Join WhatsApp Group
+                  </motion.a>
                 </motion.div>
 
                 {/* Team Page Link */}
@@ -531,7 +591,6 @@ const MarathonRegistration = () => {
                   </p>
                 </motion.div>
               </motion.div>
-            </div>
           </motion.div>
         )}
       </AnimatePresence>

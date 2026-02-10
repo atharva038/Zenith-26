@@ -184,28 +184,33 @@ const AdminSportsRegistrations = () => {
     let cancelled = 0;
 
     data.forEach((reg) => {
-      // Sport counts
+      // Count status for all registrations
+      if (reg.status === "pending") pendingStatus++;
+      if (reg.status === "confirmed") confirmed++;
+      if (reg.status === "cancelled") {
+        cancelled++;
+        return; // Skip cancelled registrations from other counts
+      }
+
+      // Only count active registrations (confirmed/pending) for the following:
+      
+      // Sport counts (exclude cancelled)
       const sport = reg.eventName;
       sportCounts[sport] = (sportCounts[sport] || 0) + 1;
       
-      // Total teams
+      // Total teams (exclude cancelled)
       totalTeams++;
       
-      // Total players
+      // Total players (exclude cancelled)
       const numPlayers = parseInt(reg.formData?.num_players || reg.formData?.get?.('num_players') || 0);
       totalPlayers += numPlayers;
       
-      // Accommodation (using new accommodation field)
+      // Accommodation (exclude cancelled)
       const needAccom = reg.accommodation?.needed || 
                        reg.formData?.needs_accommodation || 
                        reg.formData?.need_accommodation ||
                        reg.formData?.get?.('need_accommodation');
       if (needAccom) needAccommodation++;
-      
-      // Single unified status
-      if (reg.status === "pending") pendingStatus++;
-      if (reg.status === "confirmed") confirmed++;
-      if (reg.status === "cancelled") cancelled++;
     });
 
     setStats({
@@ -262,8 +267,10 @@ const AdminSportsRegistrations = () => {
     doc.setFontSize(10);
     doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
 
-    // Prepare table data
-    const tableData = registrations.map((reg, index) => {
+    // Prepare table data (exclude cancelled registrations)
+    const tableData = registrations
+      .filter((reg) => reg.status !== "cancelled")
+      .map((reg, index) => {
       const formData = reg.formData || {};
       return [
         index + 1,
@@ -310,7 +317,10 @@ const AdminSportsRegistrations = () => {
   const exportToCSV = () => {
     const sportFilter = filters.sport && filters.sport !== "All Sports" ? filters.sport : "All Sports";
     
-    const csvData = registrations.map((reg, index) => {
+    // Exclude cancelled registrations from export
+    const csvData = registrations
+      .filter((reg) => reg.status !== "cancelled")
+      .map((reg, index) => {
       const formData = reg.formData || {};
       return {
         "#": index + 1,
@@ -603,7 +613,9 @@ const AdminSportsRegistrations = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-800">
-                      {registrations.map((reg, index) => {
+                      {registrations
+                        .filter((reg) => reg.status !== "cancelled")
+                        .map((reg, index) => {
                         const formData = reg.formData || {};
                         return (
                           <motion.tr
@@ -696,6 +708,98 @@ const AdminSportsRegistrations = () => {
               </div>
             )}
           </>
+        )}
+
+        {/* Cancelled/Rejected Registrations Section */}
+        {registrations.filter((reg) => reg.status === "cancelled").length > 0 && (
+          <motion.div
+            initial={{opacity: 0, y: 20}}
+            animate={{opacity: 1, y: 0}}
+            className="mt-8 bg-gradient-to-br from-red-900/20 to-red-800/10 backdrop-blur-sm border border-red-500/20 rounded-2xl overflow-hidden shadow-lg"
+          >
+            <div className="px-6 py-4 border-b border-red-500/20">
+              <h3 className="text-xl font-bold text-red-400 flex items-center gap-2">
+                <span className="text-2xl">❌</span>
+                Cancelled Registrations ({registrations.filter((reg) => reg.status === "cancelled").length})
+              </h3>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead className="bg-red-500/10">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-red-400 uppercase tracking-wider">
+                      Reg No.
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-red-400 uppercase tracking-wider">
+                      Sport
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-red-400 uppercase tracking-wider">
+                      Team Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-red-400 uppercase tracking-wider">
+                      Captain
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-red-400 uppercase tracking-wider">
+                      Contact
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-red-400 uppercase tracking-wider">
+                      Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-bold text-red-400 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-red-500/10">
+                  {registrations
+                    .filter((reg) => reg.status === "cancelled")
+                    .map((reg) => {
+                      const formData = reg.formData || {};
+                      return (
+                        <tr key={reg._id} className="hover:bg-red-500/5 transition-colors">
+                          <td className="px-6 py-3 text-sm font-mono text-red-300">
+                            {reg.registrationNumber || "N/A"}
+                          </td>
+                          <td className="px-6 py-3 text-sm">
+                            <span className="px-2 py-1 bg-red-500/10 text-red-400 rounded-lg text-xs">
+                              {reg.eventName}
+                            </span>
+                          </td>
+                          <td className="px-6 py-3 text-sm text-gray-300">
+                            {formData.team_name || formData.get?.('team_name') || "N/A"}
+                          </td>
+                          <td className="px-6 py-3 text-sm text-gray-400">
+                            {formData.captain_name || formData.get?.('captain_name') || "N/A"}
+                          </td>
+                          <td className="px-6 py-3 text-sm text-gray-400">
+                            {formData.captain_contact || formData.get?.('captain_contact') || "N/A"}
+                          </td>
+                          <td className="px-6 py-3 text-sm text-gray-400">
+                            {new Date(reg.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="px-6 py-3">
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleViewDetails(reg)}
+                                className="px-3 py-1 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-300 text-xs font-semibold hover:bg-blue-500/30 transition-colors"
+                              >
+                                View Details
+                              </button>
+                              <button
+                                onClick={() => handleUpdateStatus(reg._id, "pending")}
+                                className="px-3 py-1 bg-yellow-500/20 border border-yellow-500/30 rounded-lg text-yellow-300 text-xs font-semibold hover:bg-yellow-500/30 transition-colors"
+                              >
+                                Restore
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+            </div>
+          </motion.div>
         )}
 
         {/* Details Modal */}
@@ -907,13 +1011,22 @@ const AdminSportsRegistrations = () => {
                               "Permission Letter"
                             )
                           }
-                          className="bg-[#0a0a0a] border border-gray-800 hover:border-purple-500/50 rounded-xl p-5 transition-all text-left group"
+                          className="bg-[#0a0a0a] border border-gray-800 hover:border-purple-500/50 rounded-xl p-4 transition-all text-left group overflow-hidden"
                         >
-                          <div className="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center mb-3 group-hover:bg-purple-500/20 transition-colors">
-                            <span className="text-2xl">📄</span>
+                          <div className="w-full h-32 bg-purple-500/10 rounded-lg flex items-center justify-center mb-3 group-hover:bg-purple-500/20 transition-colors overflow-hidden">
+                            <img 
+                              src={selectedRegistration.documents.permissionLetter} 
+                              alt="Permission Letter Preview"
+                              className="w-full h-full object-cover rounded-lg"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextElementSibling.style.display = 'flex';
+                              }}
+                            />
+                            <span className="text-4xl hidden">📄</span>
                           </div>
                           <p className="text-white font-semibold mb-1">Permission Letter</p>
-                          <p className="text-purple-400 text-sm group-hover:text-purple-300">Click to view</p>
+                          <p className="text-purple-400 text-sm group-hover:text-purple-300">Click to view full size</p>
                         </button>
                       )}
                       {selectedRegistration.documents.transactionReceipt && (
@@ -924,13 +1037,22 @@ const AdminSportsRegistrations = () => {
                               "Transaction Receipt"
                             )
                           }
-                          className="bg-[#0a0a0a] border border-gray-800 hover:border-blue-500/50 rounded-xl p-5 transition-all text-left group"
+                          className="bg-[#0a0a0a] border border-gray-800 hover:border-blue-500/50 rounded-xl p-4 transition-all text-left group overflow-hidden"
                         >
-                          <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center mb-3 group-hover:bg-blue-500/20 transition-colors">
-                            <span className="text-2xl">🧾</span>
+                          <div className="w-full h-32 bg-blue-500/10 rounded-lg flex items-center justify-center mb-3 group-hover:bg-blue-500/20 transition-colors overflow-hidden">
+                            <img 
+                              src={selectedRegistration.documents.transactionReceipt} 
+                              alt="Transaction Receipt Preview"
+                              className="w-full h-full object-cover rounded-lg"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextElementSibling.style.display = 'flex';
+                              }}
+                            />
+                            <span className="text-4xl hidden">🧾</span>
                           </div>
                           <p className="text-white font-semibold mb-1">Transaction Receipt</p>
-                          <p className="text-blue-400 text-sm group-hover:text-blue-300">Click to view</p>
+                          <p className="text-blue-400 text-sm group-hover:text-blue-300">Click to view full size</p>
                         </button>
                       )}
                       {selectedRegistration.documents.captainIdCard && (
@@ -941,13 +1063,22 @@ const AdminSportsRegistrations = () => {
                               "Captain ID Card"
                             )
                           }
-                          className="bg-[#0a0a0a] border border-gray-800 hover:border-green-500/50 rounded-xl p-5 transition-all text-left group"
+                          className="bg-[#0a0a0a] border border-gray-800 hover:border-green-500/50 rounded-xl p-4 transition-all text-left group overflow-hidden"
                         >
-                          <div className="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center mb-3 group-hover:bg-green-500/20 transition-colors">
-                            <span className="text-2xl">🪪</span>
+                          <div className="w-full h-32 bg-green-500/10 rounded-lg flex items-center justify-center mb-3 group-hover:bg-green-500/20 transition-colors overflow-hidden">
+                            <img 
+                              src={selectedRegistration.documents.captainIdCard} 
+                              alt="Captain ID Card Preview"
+                              className="w-full h-full object-cover rounded-lg"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextElementSibling.style.display = 'flex';
+                              }}
+                            />
+                            <span className="text-4xl hidden">🪪</span>
                           </div>
                           <p className="text-white font-semibold mb-1">Captain ID Card</p>
-                          <p className="text-green-400 text-sm group-hover:text-green-300">Click to view</p>
+                          <p className="text-green-400 text-sm group-hover:text-green-300">Click to view full size</p>
                         </button>
                       )}
                     </div>
