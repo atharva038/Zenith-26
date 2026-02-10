@@ -77,6 +77,26 @@ const getMarathonConfirmationEmail = (registration) => {
             </td>
           </tr>
           
+          <!-- WhatsApp Group CTA -->
+          <tr>
+            <td style="padding: 0 30px 30px;">
+              <table role="presentation" style="width: 100%; background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); border-radius: 12px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);">
+                <tr>
+                  <td style="padding: 25px; text-align: center;">
+                    <h3 style="margin: 0 0 15px; color: #ffffff; font-size: 18px; font-weight: 600;">💬 Join Our WhatsApp Group!</h3>
+                    <p style="margin: 0 0 20px; color: #f0f9ff; font-size: 14px; line-height: 1.6;">
+                      Stay connected with fellow runners! Get important updates, event details, and last-minute information.
+                    </p>
+                    <a href="https://chat.whatsapp.com/GE7U4KE8M6o8yAfRaw7L8F" 
+                       style="display: inline-block; background-color: #ffffff; color: #128C7E; padding: 14px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+                      📱 Join WhatsApp Group
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
           <!-- Important Info -->
           <tr>
             <td style="padding: 0 30px 30px;">
