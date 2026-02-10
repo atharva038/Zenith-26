@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { useRegistrationStatus } from "../hooks/useRegistrationStatus";
+import RegistrationClosed from "../components/RegistrationClosed";
 
 // Inline style for shine animation
 const shineKeyframes = `
@@ -34,6 +36,10 @@ const sportsData = [
       "Knockout tournament format",
       "Yellow/Red card suspensions in effect",
     ],
+    coordinators: [
+      { name: "Rohan Pundkare", phone: "7249886133" },
+      { name: "Srujan Pal", phone: "8788766970" },
+    ],
     registrationStatus: "open",
   },
   {
@@ -56,6 +62,10 @@ const sportsData = [
       "FIBA rules apply",
       "Maximum 12 players per squad",
       "Substitutions allowed during stoppages",
+    ],
+    coordinators: [
+      { name: "Uday Naukarkar", phone: "9322684201" },
+      { name: "Krushna Jadhav", phone: "8208422959" },
     ],
     registrationStatus: "open",
   },
@@ -80,6 +90,10 @@ const sportsData = [
       "DRS available for semi-finals onwards",
       "Maximum 16 players per squad",
     ],
+    coordinators: [
+      { name: "Pranav Godle", phone: "9028783635" },
+      { name: "Shahaji Bhosle", phone: "8308949481" },
+    ],
     registrationStatus: "open",
   },
   {
@@ -102,6 +116,10 @@ const sportsData = [
       "Maximum 3 touches per side",
       "Rotation rules enforced",
       "Maximum 14 players per squad",
+    ],
+    coordinators: [
+      { name: "Maitreyi Bhumbar", phone: "8788183714" },
+      { name: "Harsh Marodkar", phone: "8208016898" },
     ],
     registrationStatus: "open",
   },
@@ -126,6 +144,10 @@ const sportsData = [
       "Singles and Doubles categories",
       "Knockout bracket format",
     ],
+    coordinators: [
+      { name: "Harsh Keshkar", phone: "8010529661" },
+      { name: "Aditi Phulare", phone: "8669995909" },
+    ],
     registrationStatus: "open",
   },
   {
@@ -148,6 +170,10 @@ const sportsData = [
       "No more than 3 steps with ball",
       "Goal area is restricted",
       "Maximum 14 players per squad",
+    ],
+    coordinators: [
+      { name: "Aditya Joshi", phone: "7820939780" },
+      { name: "Amarja Dhepe", phone: "9552110021" },
     ],
     registrationStatus: "open",
   },
@@ -172,6 +198,11 @@ const sportsData = [
       "Best of 3 matches",
       "Maximum 12 players per squad",
     ],
+    coordinators: [
+      { name: "Shubham Kale", phone: "7378409793" },
+      { name: "Sonam Chandel", phone: "8329513257" },
+      { name: "Chetan Bante", phone: "8263945881" },
+    ],
     registrationStatus: "open",
   },
   {
@@ -194,6 +225,10 @@ const sportsData = [
       "Touch-move rule enforced",
       "Swiss system tournament",
       "Digital boards with live streaming",
+    ],
+    coordinators: [
+      { name: "Sarthak Rahut", phone: "8788380729" },
+      { name: "Akshit Tupkar", phone: "7028455126" },
     ],
     registrationStatus: "open",
   },
@@ -296,6 +331,16 @@ const SportsGrid = () => {
   const [filterTier, setFilterTier] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Check registration status for cricket and other sports
+  const { 
+    isCricketOpen, 
+    isOtherSportsOpen, 
+    loading: statusLoading, 
+    message, 
+    startDate, 
+    endDate 
+  } = useRegistrationStatus();
+
   // Lock body scroll when modal is open
   useEffect(() => {
     if (selectedSport) {
@@ -313,13 +358,22 @@ const SportsGrid = () => {
   // Memoized filtered sports - only recalculates when dependencies change
   const filteredSports = useMemo(() => {
     return sportsData.filter((sport) => {
+      // Check if sport registration is open based on type
+      const isCricket = sport.name.toLowerCase().includes('cricket');
+      const isRegistrationOpen = isCricket ? isCricketOpen : isOtherSportsOpen;
+      
+      // Only show sports with open registration
+      if (!isRegistrationOpen) {
+        return false;
+      }
+      
       const matchesTier = filterTier === "all" || sport.tier === filterTier;
       const matchesSearch = sport.name
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
       return matchesTier && matchesSearch;
     });
-  }, [filterTier, searchQuery]);
+  }, [filterTier, searchQuery, isCricketOpen, isOtherSportsOpen]);
 
   // Memoized tiers array - calculated once
   const tiers = useMemo(() => {
@@ -335,6 +389,24 @@ const SportsGrid = () => {
   const handleSportClick = useCallback((sport) => {
     setSelectedSport(sport);
   }, []);
+
+  // Show loading state while checking registration status
+  if (statusLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show registration closed page if BOTH cricket and other sports are closed
+  const allRegistrationsClosed = !isCricketOpen && !isOtherSportsOpen;
+  if (allRegistrationsClosed) {
+    return <RegistrationClosed message={message} startDate={startDate} endDate={endDate} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white overflow-hidden">
@@ -675,22 +747,61 @@ const SportsGrid = () => {
                       ))}
                     </ul>
                   </div>
+
+                  {/* Game Coordinators */}
+                  {selectedSport.coordinators && selectedSport.coordinators.length > 0 && (
+                    <div>
+                      <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
+                        <span className="text-orange-500">📞</span> Game Coordinators
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {selectedSport.coordinators.map((coord, index) => (
+                          <div
+                            key={index}
+                            className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10"
+                          >
+                            <p className="text-sm text-white font-semibold mb-1.5">
+                              {coord.name}
+                            </p>
+                            <a
+                              href={`tel:${coord.phone}`}
+                              className="text-sm text-orange-500 hover:text-orange-400 transition-colors font-mono"
+                            >
+                              📱 {coord.phone}
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
               {/* Fixed Footer with CTA */}
               <div className="border-t border-white/10 bg-gradient-to-t from-black/80 to-transparent p-5 md:p-6">
-                <Link
-                  to="/register-sports"
-                  state={{ 
-                    preselectedSport: selectedSport.name,
-                    sportId: selectedSport.id,
-                    fromSportsGrid: true 
-                  }}
-                  className="block w-full py-4 px-6 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 rounded-xl text-white font-bold text-center text-base shadow-lg shadow-orange-500/30 transition-all transform hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  Register for {selectedSport.name} →
-                </Link>
+                {(() => {
+                  // Check if this specific sport's registration is open
+                  const isCricket = selectedSport.name.toLowerCase().includes('cricket');
+                  const isSportRegistrationOpen = isCricket ? isCricketOpen : isOtherSportsOpen;
+                  
+                  return isSportRegistrationOpen ? (
+                    <Link
+                      to="/register-sports"
+                      state={{ 
+                        preselectedSport: selectedSport.name,
+                        sportId: selectedSport.id,
+                        fromSportsGrid: true 
+                      }}
+                      className="block w-full py-4 px-6 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 rounded-xl text-white font-bold text-center text-base shadow-lg shadow-orange-500/30 transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                      Register for {selectedSport.name} →
+                    </Link>
+                  ) : (
+                    <div className="block w-full py-4 px-6 bg-gradient-to-r from-gray-600 to-gray-700 rounded-xl text-white font-bold text-center text-base cursor-not-allowed opacity-75">
+                      Registration Closed
+                    </div>
+                  );
+                })()}
               </div>
             </motion.div>
           </motion.div>

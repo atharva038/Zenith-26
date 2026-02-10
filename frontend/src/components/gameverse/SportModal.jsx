@@ -182,6 +182,33 @@ export default function SportModal({ isOpen, onClose, sport, onRegister, isRegis
                   </ul>
                 </div>
 
+                {/* Game Coordinators - Responsive */}
+                {sport.coordinators && sport.coordinators.length > 0 && (
+                  <div>
+                    <h3 className="text-lg sm:text-xl font-bold text-[#ffb36a] mb-2 sm:mb-3 flex items-center gap-2">
+                      <span>📞</span> Game Coordinators
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                      {sport.coordinators.map((coord, index) => (
+                        <div
+                          key={index}
+                          className="bg-black/50 rounded-md sm:rounded-lg p-2 sm:p-3 border border-[#ffb36a]/20"
+                        >
+                          <p className="text-white font-semibold text-xs sm:text-sm mb-1">
+                            {coord.name}
+                          </p>
+                          <a
+                            href={`tel:${coord.phone}`}
+                            className="text-[#ffb36a] hover:text-[#ff8b1f] transition-colors text-xs sm:text-sm font-mono"
+                          >
+                            📱 {coord.phone}
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* CTA Buttons - Responsive */}
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 pt-2 sm:pt-4">
                   <button

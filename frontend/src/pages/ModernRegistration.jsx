@@ -1207,6 +1207,28 @@ const ModernRegistration = () => {
                   {selectedSportData?.fees?.note && (
                     <p className="text-sm text-gray-400 mt-2">{selectedSportData.fees.note}</p>
                   )}
+                  
+                  {/* Game Coordinators */}
+                  {selectedSportData?.coordinators && selectedSportData.coordinators.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-[#3a2416]">
+                      <h4 className="text-sm font-semibold text-[#ffb77a] mb-2 flex items-center gap-2">
+                        <span>📞</span> Game Coordinators
+                      </h4>
+                      <div className="space-y-2">
+                        {selectedSportData.coordinators.map((coord, index) => (
+                          <div key={index} className="flex items-center justify-between text-sm">
+                            <span className="text-gray-300">{coord.name}</span>
+                            <a 
+                              href={`tel:${coord.phone}`}
+                              className="text-[#ff6b35] hover:text-[#ff8b55] transition-colors font-mono"
+                            >
+                              {coord.phone}
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Payment QR */}

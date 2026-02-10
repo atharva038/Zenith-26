@@ -297,6 +297,10 @@ const sportsData = [
       "Knockout tournament format",
       "Yellow/Red card suspensions in effect",
     ],
+    coordinators: [
+      { name: "Rohan Pundkare", phone: "7249886133" },
+      { name: "Srujan Pal", phone: "8788766970" },
+    ],
     registrationStatus: "open",
   },
   {
@@ -320,6 +324,10 @@ const sportsData = [
       "FIBA rules apply",
       "Maximum 12 players per squad",
       "Substitutions allowed during stoppages",
+    ],
+    coordinators: [
+      { name: "Uday Naukarkar", phone: "9322684201" },
+      { name: "Krushna Jadhav", phone: "8208422959" },
     ],
     registrationStatus: "open",
   },
@@ -345,6 +353,10 @@ const sportsData = [
       "DRS available for semi-finals onwards",
       "Maximum 16 players per squad",
     ],
+    coordinators: [
+      { name: "Pranav Godle", phone: "9028783635" },
+      { name: "Shahaji Bhosle", phone: "8308949481" },
+    ],
     registrationStatus: "open",
   },
   {
@@ -368,6 +380,10 @@ const sportsData = [
       "Maximum 3 touches per side",
       "Rotation rules enforced",
       "Maximum 14 players per squad",
+    ],
+    coordinators: [
+      { name: "Maitreyi Bhumbar", phone: "8788183714" },
+      { name: "Harsh Marodkar", phone: "8208016898" },
     ],
     registrationStatus: "open",
   },
@@ -395,6 +411,10 @@ const sportsData = [
       "Singles and Doubles categories",
       "Knockout bracket format",
     ],
+    coordinators: [
+      { name: "Harsh Keshkar", phone: "8010529661" },
+      { name: "Aditi Phulare", phone: "8669995909" },
+    ],
     registrationStatus: "open",
   },
   {
@@ -418,6 +438,10 @@ const sportsData = [
       "No more than 3 steps with ball",
       "Goal area is restricted",
       "Maximum 14 players per squad",
+    ],
+    coordinators: [
+      { name: "Aditya Joshi", phone: "7820939780" },
+      { name: "Amarja Dhepe", phone: "9552110021" },
     ],
     registrationStatus: "open",
   },
@@ -443,6 +467,11 @@ const sportsData = [
       "Bonus points for all-outs",
       "Maximum 12 players per squad",
     ],
+    coordinators: [
+      { name: "Shubham Kale", phone: "7378409793" },
+      { name: "Sonam Chandel", phone: "8329513257" },
+      { name: "Chetan Bante", phone: "8263945881" },
+    ],
     registrationStatus: "open",
   },
   {
@@ -466,6 +495,10 @@ const sportsData = [
       "Touch-move rule enforced",
       "Swiss system tournament",
       "Digital boards with live streaming",
+    ],
+    coordinators: [
+      { name: "Sarthak Rahut", phone: "8788380729" },
+      { name: "Akshit Tupkar", phone: "7028455126" },
     ],
     registrationStatus: "open",
   },
