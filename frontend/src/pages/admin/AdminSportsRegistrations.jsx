@@ -184,28 +184,33 @@ const AdminSportsRegistrations = () => {
     let cancelled = 0;
 
     data.forEach((reg) => {
-      // Sport counts
+      // Count status for all registrations
+      if (reg.status === "pending") pendingStatus++;
+      if (reg.status === "confirmed") confirmed++;
+      if (reg.status === "cancelled") {
+        cancelled++;
+        return; // Skip cancelled registrations from other counts
+      }
+
+      // Only count active registrations (confirmed/pending) for the following:
+      
+      // Sport counts (exclude cancelled)
       const sport = reg.eventName;
       sportCounts[sport] = (sportCounts[sport] || 0) + 1;
       
-      // Total teams
+      // Total teams (exclude cancelled)
       totalTeams++;
       
-      // Total players
+      // Total players (exclude cancelled)
       const numPlayers = parseInt(reg.formData?.num_players || reg.formData?.get?.('num_players') || 0);
       totalPlayers += numPlayers;
       
-      // Accommodation (using new accommodation field)
+      // Accommodation (exclude cancelled)
       const needAccom = reg.accommodation?.needed || 
                        reg.formData?.needs_accommodation || 
                        reg.formData?.need_accommodation ||
                        reg.formData?.get?.('need_accommodation');
       if (needAccom) needAccommodation++;
-      
-      // Single unified status
-      if (reg.status === "pending") pendingStatus++;
-      if (reg.status === "confirmed") confirmed++;
-      if (reg.status === "cancelled") cancelled++;
     });
 
     setStats({
