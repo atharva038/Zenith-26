@@ -60,27 +60,31 @@ const sportsData = [
     glowColor: "rgba(34, 197, 94, 0.4)",
     statusBadge: "OPEN",
     statusIcon: "🔥",
-    ballImage: "https://images.unsplash.com/photo-1614632537197-38a17061c2bd?w=400&q=80",
+    ballImage: "/img/sports/football.png",
     tier: "Premium",
     tagline: "The Beautiful Game",
     description:
       "Experience the thrill of competitive football at ZENITH 2026. Join teams from across the nation in an epic battle for glory on the pitch.",
     date: "February 20-22, 2026",
     venue: "Main Stadium Arena",
-    teamSize: "11 vs 11",
+    teamSize: "Boys only - Maximum 16 players",
     registrationFee: "₹3000 per team",
     rules: [
-      "Standard FIFA rules apply",
-      "Each match is 20 minutes (10 min per half)",
-      "Maximum 15 players per squad",
-      "Knockout tournament format",
-      "Yellow/Red card suspensions in effect",
+      "FIFA rules applicable",
+      "Standard kit required",
+      "20 minutes early reporting",
+      "Disqualification if absent",
+      "Age limit: 25 years",
+    ],
+    coordinators: [
+      { name: "Rohan Pundkare", contact: "7249886133" },
+      { name: "Srujan Pal", contact: "8788766970" },
     ],
     registrationStatus: "open",
   },
   {
     id: 2,
-    name: "BASKETBALL",
+    name: "BASKETBALL (5X5)",
     icon: "🏀",
     color: "#F97316",
     gradient: "from-orange-600 to-amber-500",
@@ -88,21 +92,26 @@ const sportsData = [
     glowColor: "rgba(249, 115, 22, 0.4)",
     statusBadge: "OPEN",
     statusIcon: "🔥",
-    ballImage: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&q=80",
+    ballImage: "/img/sports/basketball.png",
     tier: "Premium",
     tagline: "Hoop Dreams",
     description:
       "Dribble, shoot, and slam your way to victory in high-energy basketball matches. Show off your court skills and teamwork.",
     date: "February 20-22, 2026",
     venue: "Outdoor Basketball Courts",
-    teamSize: "5 vs 5",
+    teamSize: "Both (Men & Women) - 5 vs 5, Maximum 12 players per team",
     registrationFee: "Men: ₹2500 | Women: ₹1500 per team",
     rules: [
-      "4 quarters of 10 minutes each",
-      "Shot clock: 24 seconds",
-      "FIBA rules apply",
-      "Maximum 12 players per squad",
-      "Substitutions allowed during stoppages",
+      "SPPU rules applicable",
+      "20 minutes early reporting compulsory",
+      "Disqualification if absent",
+      "Player ID verification decision final",
+      "Age limit: 25 years",
+      "Maximum 12 players per team",
+    ],
+    coordinators: [
+      { name: "Uday Naukarkar", contact: "9322684201" },
+      { name: "Krushna Jadhav", contact: "8208422959" },
     ],
     registrationStatus: "open",
   },
@@ -116,21 +125,29 @@ const sportsData = [
     glowColor: "rgba(37, 99, 235, 0.4)",
     statusBadge: "POPULAR",
     statusIcon: "⭐",
-    ballImage: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=400&q=80",
+    ballImage: "/img/sports/cricket.png",
     tier: "Premium",
     tagline: "Gentleman's Game",
     description:
       "Step up to the crease and showcase your batting, bowling, and fielding skills in the most exciting cricket tournament of the year.",
     date: "February 20-22, 2026",
     venue: "Cricket Ground",
-    teamSize: "11 vs 11",
-    registrationFee: "₹6500 per team",
+    teamSize: "Boys only - 11 playing players",
+    registrationFee: "₹6500 per team (Men)",
     rules: [
-      "T20 format matches",
-      "Each team gets 20 overs",
-      "Powerplay rules in effect",
-      "DRS available for semi-finals onwards",
-      "Maximum 16 players per squad",
+      "15 or 20 overs innings",
+      "Free hit on no-ball",
+      "Super over if tie",
+      "Bowl out in rain",
+      "Max 3-4 overs per bowler",
+      "Turf wickets",
+      "Impact player rule allowed",
+      "Umpire decision final",
+      "Age limit: 25 years",
+    ],
+    coordinators: [
+      { name: "Pranav Godle", contact: "9028783635" },
+      { name: "Shahaji Bhosle", contact: "8308949481" },
     ],
     registrationStatus: "open",
   },
@@ -144,21 +161,25 @@ const sportsData = [
     glowColor: "rgba(6, 182, 212, 0.4)",
     statusBadge: "OPEN",
     statusIcon: "🔥",
-    ballImage: "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=400&q=80",
+    ballImage: "/img/sports/volleyball.png",
     tier: "Premium",
     tagline: "Spike It High",
     description:
       "Bump, set, spike! Join the volleyball championship and demonstrate your team coordination and athletic prowess.",
     date: "February 20-22, 2026",
     venue: "Beach Volleyball Arena",
-    teamSize: "6 vs 6",
+    teamSize: "Both (Men & Women) - 6 playing players, Maximum 12 per team",
     registrationFee: "Men: ₹2200 | Women: ₹1500 per team",
     rules: [
-      "Best of 5 sets (25 points each)",
-      "Rally point scoring",
-      "Maximum 3 touches per side",
-      "Rotation rules enforced",
-      "Maximum 14 players per squad",
+      "Best of 3 sets (25, 25, 15 points)",
+      "FIVB rules applicable",
+      "20 minutes early reporting",
+      "Age limit: 25 years",
+      "Maximum 12 players per team",
+    ],
+    coordinators: [
+      { name: "Maitreyi Bhumbar", contact: "8788183714" },
+      { name: "Harsh Marodkar", contact: "8208016898" },
     ],
     registrationStatus: "open",
   },
@@ -172,21 +193,25 @@ const sportsData = [
     glowColor: "rgba(132, 204, 22, 0.4)",
     statusBadge: "OPEN",
     statusIcon: "⚡",
-    ballImage: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&q=80",
+    ballImage: "/img/sports/badminton.jpeg",
     tier: "Popular",
     tagline: "Smash & Win",
     description:
       "Fast-paced rallies and powerful smashes await! Compete in singles and doubles categories to claim the championship.",
     date: "February 20-21, 2026",
     venue: "Indoor Sports Complex",
-    teamSize: "Singles/Doubles",
-    registrationFee: "Men: ₹500 | Women: ₹400 per player",
+    teamSize: "Boys only - Maximum 5 players per team",
+    registrationFee: "₹1000 per team",
     rules: [
-      "Best of 3 games (21 points each)",
-      "Rally scoring system",
-      "Service rules as per BWF",
-      "Singles and Doubles categories",
-      "Knockout bracket format",
+      "Best of 3 games (15 points each)",
+      "Bring own kit",
+      "SPPU rules applicable",
+      "20 minutes early reporting",
+      "Age limit: 25 years",
+    ],
+    coordinators: [
+      { name: "Harsh Keshkar", contact: "8010529661" },
+      { name: "Aditi Phulare", contact: "8669995909" },
     ],
     registrationStatus: "open",
   },
@@ -200,21 +225,25 @@ const sportsData = [
     glowColor: "rgba(244, 63, 94, 0.4)",
     statusBadge: "OPEN",
     statusIcon: "🔥",
-    ballImage: "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=400&q=80",
+    ballImage: "/img/sports/handball.jpeg",
     tier: "Popular",
     tagline: "Fast & Furious",
     description:
       "High-speed action with quick passes and powerful shots! Showcase your agility and teamwork in this exciting handball tournament.",
     date: "February 20-22, 2026",
     venue: "Indoor Sports Arena",
-    teamSize: "7 vs 7",
+    teamSize: "Boys only - Minimum 9, Maximum 16 players",
     registrationFee: "₹1500 per team",
     rules: [
-      "IHF rules apply",
-      "Two 30-minute halves",
-      "No more than 3 steps with ball",
-      "Goal area is restricted",
-      "Maximum 14 players per squad",
+      "25-minute match (10+10 minutes halves, 5-minute break)",
+      "Rolling substitutions allowed",
+      "20 minutes early reporting",
+      "Disqualification if absent",
+      "Age limit: 25 years",
+    ],
+    coordinators: [
+      { name: "Aditya Joshi", contact: "7820939780" },
+      { name: "Amarja Dhepe", contact: "9552110021" },
     ],
     registrationStatus: "open",
   },
@@ -228,21 +257,27 @@ const sportsData = [
     glowColor: "rgba(202, 138, 4, 0.4)",
     statusBadge: "POPULAR",
     statusIcon: "⭐",
-    ballImage: "https://images.unsplash.com/photo-1589487391730-58f20eb2c308?w=400&q=80",
+    ballImage: "/img/sports/kabaddi.jpeg",
     tier: "Popular",
     tagline: "Raid & Defend",
     description:
       "Traditional Indian sport combining strength, strategy, and stamina. Raid the opponent's court while holding your breath!",
     date: "February 20-22, 2026",
     venue: "Kabaddi Arena",
-    teamSize: "7 vs 7",
+    teamSize: "Both (Men & Women) - Maximum 12 players per team",
     registrationFee: "Men: ₹2200 | Women: ₹1500 per team",
     rules: [
-      "Pro Kabaddi League format",
-      "Each raid: 30 seconds max",
-      "Super tackles and super raids",
-      "Best of 3 matches",
-      "Maximum 12 players per squad",
+      "Two halves of 15 minutes",
+      "Weight limit: Up to 80 kg",
+      "Played on mat",
+      "Kabaddi Federation rules applicable",
+      "20 minutes early reporting",
+      "Age limit: 25 years",
+    ],
+    coordinators: [
+      { name: "Shubham Kale", contact: "7378409793" },
+      { name: "Sonam Chandel", contact: "8329513257" },
+      { name: "Chetan Bante", contact: "8263945881" },
     ],
     registrationStatus: "open",
   },
@@ -256,21 +291,24 @@ const sportsData = [
     glowColor: "rgba(148, 163, 184, 0.4)",
     statusBadge: "OPEN",
     statusIcon: "🧠",
-    ballImage: "https://images.unsplash.com/photo-1586165368502-1bad197a6461?w=400&q=80",
+    ballImage: "/img/sports/chess.jpeg",
     tier: "Popular",
     tagline: "Checkmate Mastery",
     description:
       "Battle of minds! Outthink your opponents in intense chess matches. Strategic thinking and tactical brilliance will reign supreme.",
     date: "February 20-22, 2026",
     venue: "Conference Hall A",
-    teamSize: "1 vs 1",
-    registrationFee: "₹200 per player (Open to all age groups)",
+    teamSize: "Both (Men & Women) - Team & Individual",
+    registrationFee: "Men: ₹500 | Women: ₹400 per team",
     rules: [
-      "Standard FIDE rules",
-      "Time control: 15 min + 10 sec increment",
-      "Touch-move rule enforced",
-      "Swiss system tournament",
-      "Digital boards with live streaming",
+      "FIDE & Swiss system rules",
+      "No electronic devices",
+      "Bring own chess clock",
+      "20 minutes early reporting",
+    ],
+    coordinators: [
+      { name: "Sarthak Rahut", contact: "8788380729" },
+      { name: "Akshit Tupkar", contact: "7028455126" },
     ],
     registrationStatus: "open",
   },
@@ -284,21 +322,26 @@ const sportsData = [
     glowColor: "rgba(16, 185, 129, 0.4)",
     statusBadge: "OPEN",
     statusIcon: "🔥",
-    ballImage: "https://images.unsplash.com/photo-1553778263-73a83bab9b0c?w=400&q=80",
+    ballImage: "/img/sports/rinkFootball.jpeg",
     tier: "Indoor",
     tagline: "Fast-Paced Football",
     description:
       "Experience football in an enclosed arena! Fast-paced, high-intensity matches with quick turnarounds and non-stop action.",
     date: "February 20-21, 2026",
     venue: "Indoor Sports Arena",
-    teamSize: "5 vs 5",
-    registrationFee: "₹2000 per team",
+    teamSize: "Both (Men & Women) - Boys: 6 playing | Girls: 7 playing, Max 10",
+    registrationFee: "Men: ₹2200 | Women: ₹1500 per team",
     rules: [
-      "5 players per team on court",
-      "15 minutes per half",
-      "Rolling substitutions allowed",
       "No offside rule",
-      "Ball remains in play off walls",
+      "Rolling substitutions",
+      "Yellow card = 2-minute suspension",
+      "20 minutes early reporting",
+      "Age limit: 25 years",
+      "Maximum squad: 10 players",
+    ],
+    coordinators: [
+      { name: "Onkar Sahane", contact: "8767192671" },
+      { name: "Vipakshi Mate", contact: "7972776597" },
     ],
     registrationStatus: "open",
   },
@@ -312,21 +355,24 @@ const sportsData = [
     glowColor: "rgba(249, 115, 22, 0.4)",
     statusBadge: "OPEN",
     statusIcon: "⚡",
-    ballImage: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400&q=80",
+    ballImage: "/img/sports/khokho.jpeg",
     tier: "Indoor",
     tagline: "Chase & Tag",
     description:
       "Traditional Indian sport of speed and agility. Chase your opponents, tag them out, and showcase lightning-fast reflexes!",
     date: "February 20-21, 2026",
     venue: "Outdoor Kho-Kho Court",
-    teamSize: "9 vs 9",
-    registrationFee: "₹1500 per team",
+    teamSize: "Both (Men & Women) - Minimum 9, Maximum 12 players",
+    registrationFee: "Men: ₹1500 | Women: ₹1200 per team",
     rules: [
-      "Standard Kho-Kho Federation rules",
-      "Two innings of 9 minutes each",
-      "Maximum 12 players per squad",
-      "Knockout tournament format",
-      "Quick turns and strategic chasing",
+      "20-minute match (7+7 minutes halves, 6-minute break)",
+      "Federation rules applicable",
+      "20 minutes early reporting",
+      "Age limit: 25 years",
+    ],
+    coordinators: [
+      { name: "Sairaj Shinde", contact: "8767179744" },
+      { name: "Prem Dhande", contact: "8421230555" },
     ],
     registrationStatus: "open",
   },
@@ -340,21 +386,25 @@ const sportsData = [
     glowColor: "rgba(234, 88, 12, 0.4)",
     statusBadge: "OPEN",
     statusIcon: "🏆",
-    ballImage: "https://images.unsplash.com/photo-1587384474964-3a06ce1ce699?w=400&q=80",
+    ballImage: "/img/sports/athletics.jpeg",
     tier: "Indoor",
     tagline: "Track & Field Glory",
     description:
       "Sprint, jump, throw! Compete in various track and field events. Show your athletic excellence across multiple disciplines.",
     date: "February 20-22, 2026",
     venue: "Athletic Stadium",
-    teamSize: "Individual",
+    teamSize: "Boys only - Team & Individual Events",
     registrationFee: "Individual: ₹200 | Team: ₹700",
     rules: [
-      "Multiple event categories",
-      "World Athletics rules",
-      "Electronic timing and measurement",
-      "100m, 200m, relay, long jump, javelin",
-      "Qualifying rounds and finals",
+      "Individual Events: 100m, 400m, Shot Put, Discus, Long Jump",
+      "Team Events: 4x100m Relay, Mixed Relay (2 Boys + 2 Girls)",
+      "20 minutes early reporting",
+      "Player identification verification final",
+      "Age limit: 25 years",
+    ],
+    coordinators: [
+      { name: "Dipanshu Sahatpute", contact: "7620666188" },
+      { name: "Shrujan Pal", contact: "8788766970" },
     ],
     registrationStatus: "open",
   },
@@ -368,21 +418,25 @@ const sportsData = [
     glowColor: "rgba(100, 116, 139, 0.4)",
     statusBadge: "OPEN",
     statusIcon: "💪",
-    ballImage: "https://images.unsplash.com/photo-1517963879433-6ad2b056d712?w=400&q=80",
+    ballImage: "/img/sports/powerlifting.jpeg",
     tier: "Strength",
     tagline: "Strength Supreme",
     description:
       "Lift heavy, lift strong! Compete in squat, bench press, and deadlift. Show your raw power and technique in this ultimate strength competition.",
     date: "February 21-22, 2026",
     venue: "Fitness Arena",
-    teamSize: "Individual",
+    teamSize: "Boys only - Individual",
     registrationFee: "₹300 per player",
     rules: [
-      "IPF (International Powerlifting Federation) rules",
-      "Three attempts per lift",
-      "Squat, Bench Press, Deadlift",
-      "Weight classes enforced",
-      "Professional judging panel",
+      "3 attempts each: Squat, Bench Press, Deadlift",
+      "Bring own accessories",
+      "International weight categories",
+      "20 minutes early reporting",
+      "Age limit: 25 years",
+    ],
+    coordinators: [
+      { name: "Tejas Borole", contact: "8767386695" },
+      { name: "Sakshi Done", contact: "9028684180" },
     ],
     registrationStatus: "open",
   },
@@ -390,7 +444,6 @@ const sportsData = [
 
 const SportsGrid = () => {
   const [selectedSport, setSelectedSport] = useState(null);
-  const [filterTier, setFilterTier] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
   // Lock body scroll when modal is open
@@ -410,18 +463,12 @@ const SportsGrid = () => {
   // Memoized filtered sports - only recalculates when dependencies change
   const filteredSports = useMemo(() => {
     return sportsData.filter((sport) => {
-      const matchesTier = filterTier === "all" || sport.tier === filterTier;
       const matchesSearch = sport.name
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
-      return matchesTier && matchesSearch;
+      return matchesSearch;
     });
-  }, [filterTier, searchQuery]);
-
-  // Memoized tiers array - calculated once
-  const tiers = useMemo(() => {
-    return ["all", ...new Set(sportsData.map((s) => s.tier))];
-  }, []);
+  }, [searchQuery]);
 
   // Optimized modal close handler
   const handleCloseModal = useCallback(() => {
@@ -507,12 +554,12 @@ const SportsGrid = () => {
             <span>SGGSIE&T, Nanded</span>
           </motion.div>
 
-          {/* 🏏 Cricket Featured Button */}
+          {/* Action Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
-            className="mt-8"
+            className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
             <Link to="/register-sports?sport=Cricket">
               <button className="relative px-8 py-4 rounded-full font-bold text-lg text-white bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg shadow-orange-500/40 hover:shadow-orange-500/60 transition-all duration-300 transform hover:scale-105 active:scale-95 overflow-hidden group">
@@ -529,23 +576,49 @@ const SportsGrid = () => {
                 </span>
               </button>
             </Link>
-            <p className="text-sm text-gray-400 mt-2 text-center">
-              Main Sport • Early Registration • Matches Start First
-            </p>
+            
+            {/* GameVerse Button */}
+            <Link to="/gameverse">
+              <button className="relative px-8 py-4 rounded-full font-bold text-lg text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg shadow-purple-500/40 hover:shadow-purple-500/60 transition-all duration-300 transform hover:scale-105 active:scale-95 overflow-hidden group">
+                {/* Animated shine effect */}
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-[shine_1.5s_ease-in-out_infinite]" />
+                <span className="relative flex items-center gap-2">
+                  🌌 Explore GameVerse
+                  <motion.span
+                    animate={{ rotateY: [0, 360] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    🎮
+                  </motion.span>
+                </span>
+              </button>
+            </Link>
+          </motion.div>
+          
+          {/* Button Descriptions */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1 }}
+            className="flex flex-col sm:flex-row justify-center gap-8 mt-4 text-sm text-gray-400 text-center"
+          >
+            <p>Main Sport • Early Registration • Matches Start First</p>
+            <span className="hidden sm:inline text-gray-600">|</span>
+            <p>3D Sports Explorer • Interactive Planets</p>
           </motion.div>
         </motion.div>
       </section>
 
-      {/* Search & Filter Bar */}
+      {/* Search Bar */}
       <section className="relative z-10 px-6 pb-12">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+          <div className="flex justify-center">
             {/* Search */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
-              className="w-full md:w-96"
+              className="w-full max-w-xl"
             >
               <input
                 type="text"
@@ -554,28 +627,6 @@ const SportsGrid = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full px-6 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all"
               />
-            </motion.div>
-
-            {/* Tier Filters */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.8 }}
-              className="flex gap-2 flex-wrap justify-center"
-            >
-              {tiers.map((tier) => (
-                <button
-                  key={tier}
-                  onClick={() => setFilterTier(tier)}
-                  className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
-                    filterTier === tier
-                      ? "bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/50"
-                      : "bg-white/5 text-gray-400 hover:bg-white/10 border border-white/10"
-                  }`}
-                >
-                  {tier.charAt(0).toUpperCase() + tier.slice(1)}
-                </button>
-              ))}
             </motion.div>
           </div>
         </div>
@@ -586,7 +637,7 @@ const SportsGrid = () => {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <AnimatePresence>
-              {filteredSports.map((sport, index) => (
+              {filteredSports.map((sport) => (
                 <motion.div
                   key={sport.id}
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -601,30 +652,8 @@ const SportsGrid = () => {
                   <div 
                     className="relative h-full backdrop-blur-md border rounded-xl overflow-hidden transition-all duration-100 group active:scale-[0.98] hover:scale-[1.02]"
                     style={{
-                      background: sport.name === "FOOTBALL" 
-                        ? `linear-gradient(135deg, rgba(0,0,0,0.45) 0%, rgba(26,26,26,0.55) 100%), url('/img/sports/football.png')`
-                        : sport.name === "CRICKET"
-                        ? `linear-gradient(135deg, rgba(0,0,0,0.45) 0%, rgba(26,26,26,0.55) 100%), url('/img/sports/cricket.png')`
-                        : sport.name === "BASKETBALL"
-                        ? `linear-gradient(135deg, rgba(0,0,0,0.45) 0%, rgba(26,26,26,0.55) 100%), url('/img/sports/basketball.png')`
-                        : sport.name === "VOLLEYBALL"
-                        ? `linear-gradient(135deg, rgba(0,0,0,0.45) 0%, rgba(26,26,26,0.55) 100%), url('/img/sports/volleyball.png')`
-                        : sport.name === "BADMINTON"
-                        ? `linear-gradient(135deg, rgba(0,0,0,0.45) 0%, rgba(26,26,26,0.55) 100%), url('/img/sports/badminton.jpeg')`
-                        : sport.name === "HANDBALL"
-                        ? `linear-gradient(135deg, rgba(0,0,0,0.45) 0%, rgba(26,26,26,0.55) 100%), url('/img/sports/handball.jpeg')`
-                        : sport.name === "KABADDI"
-                        ? `linear-gradient(135deg, rgba(0,0,0,0.45) 0%, rgba(26,26,26,0.55) 100%), url('/img/sports/kabaddi.jpeg')`
-                        : sport.name === "CHESS"
-                        ? `linear-gradient(135deg, rgba(0,0,0,0.45) 0%, rgba(26,26,26,0.55) 100%), url('/img/sports/chess.jpeg')`
-                        : sport.name === "RINK FOOTBALL"
-                        ? `linear-gradient(135deg, rgba(0,0,0,0.45) 0%, rgba(26,26,26,0.55) 100%), url('/img/sports/rinkFootball.jpeg')`
-                        : sport.name === "KHO-KHO"
-                        ? `linear-gradient(135deg, rgba(0,0,0,0.45) 0%, rgba(26,26,26,0.55) 100%), url('/img/sports/khokho.jpeg')`
-                        : sport.name === "ATHLETICS"
-                        ? `linear-gradient(135deg, rgba(0,0,0,0.45) 0%, rgba(26,26,26,0.55) 100%), url('/img/sports/athletics.jpeg')`
-                        : sport.name === "POWERLIFTING"
-                        ? `linear-gradient(135deg, rgba(0,0,0,0.45) 0%, rgba(26,26,26,0.55) 100%), url('/img/sports/powerlifting.jpeg')`
+                      background: sport.ballImage 
+                        ? `linear-gradient(135deg, rgba(0,0,0,0.45) 0%, rgba(26,26,26,0.55) 100%), url('${sport.ballImage}')`
                         : `linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(26,26,26,0.8) 100%)`,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
@@ -737,12 +766,11 @@ const SportsGrid = () => {
               </p>
               <button
                 onClick={() => {
-                  setFilterTier("all");
                   setSearchQuery("");
                 }}
                 className="mt-6 px-6 py-3 bg-orange-500 hover:bg-orange-600 rounded-full text-white font-medium transition-colors"
               >
-                Clear Filters
+                Clear Search
               </button>
             </motion.div>
           )}
@@ -758,8 +786,7 @@ const SportsGrid = () => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
             onClick={handleCloseModal}
-            className="fixed inset-0 bg-black/95 backdrop-blur-lg z-[1000] flex items-center justify-center p-6 md:p-8"
-            style={{ overflow: 'hidden', touchAction: 'none' }}
+            className="fixed inset-0 bg-black/95 backdrop-blur-lg z-[1000] flex items-center justify-center p-6 md:p-8 overflow-y-auto"
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
@@ -767,7 +794,7 @@ const SportsGrid = () => {
               exit={{ scale: 0.95, opacity: 0 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
               onClick={(e) => e.stopPropagation()}
-              className="relative bg-gradient-to-br from-[#1a0f08]/98 via-black/98 to-[#1a0f08]/98 backdrop-blur-xl border border-orange-500/20 rounded-2xl w-full max-w-2xl max-h-[85vh] shadow-2xl shadow-orange-500/20 overflow-hidden flex flex-col"
+              className="relative bg-gradient-to-br from-[#1a0f08]/98 via-black/98 to-[#1a0f08]/98 backdrop-blur-xl border border-orange-500/20 rounded-2xl w-full max-w-2xl max-h-[90vh] shadow-2xl shadow-orange-500/20 flex flex-col my-auto"
             >
               {/* Compact Header with Sport Icon & Name */}
               <div
@@ -795,10 +822,6 @@ const SportsGrid = () => {
                       {selectedSport.tagline}
                     </p>
                   </div>
-                  {/* Tier Badge */}
-                  <span className="px-3 py-1.5 text-xs font-semibold bg-white/25 backdrop-blur-sm rounded-full text-white border border-white/40 flex-shrink-0 shadow-md">
-                    {selectedSport.tier}
-                  </span>
                 </div>
               </div>
 
@@ -816,17 +839,11 @@ const SportsGrid = () => {
                   </div>
 
                   {/* Quick Info Grid - Compact */}
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-3 gap-3">
                     <div className="bg-orange-500/5 backdrop-blur-sm rounded-lg p-4 border border-orange-500/20">
                       <p className="text-xs text-orange-400/80 mb-1.5">📅 Date</p>
                       <p className="text-sm text-white font-semibold">
                         {selectedSport.date}
-                      </p>
-                    </div>
-                    <div className="bg-orange-500/5 backdrop-blur-sm rounded-lg p-4 border border-orange-500/20">
-                      <p className="text-xs text-orange-400/80 mb-1.5">📍 Venue</p>
-                      <p className="text-sm text-white font-semibold truncate">
-                        {selectedSport.venue}
                       </p>
                     </div>
                     <div className="bg-orange-500/5 backdrop-blur-sm rounded-lg p-4 border border-orange-500/20">
@@ -860,6 +877,44 @@ const SportsGrid = () => {
                       ))}
                     </ul>
                   </div>
+
+                  {/* Coordinators Section */}
+                  {selectedSport.coordinators && selectedSport.coordinators.length > 0 && (
+                    <div>
+                      <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
+                        <span className="text-orange-400">📞</span> Event Coordinators
+                      </h3>
+                      <div className="grid grid-cols-1 gap-3">
+                        {selectedSport.coordinators.map((coordinator, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between bg-orange-500/5 backdrop-blur-sm rounded-lg p-4 border border-orange-500/20 hover:border-orange-500/40 transition-colors"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                                {coordinator.name.charAt(0)}
+                              </div>
+                              <div>
+                                <p className="text-sm font-semibold text-white">{coordinator.name}</p>
+                                <a 
+                                  href={`tel:+91${coordinator.contact}`}
+                                  className="text-xs text-orange-400 hover:text-orange-300 transition-colors flex items-center gap-1"
+                                >
+                                  <span>📱</span> +91 {coordinator.contact}
+                                </a>
+                              </div>
+                            </div>
+                            <a
+                              href={`tel:+91${coordinator.contact}`}
+                              className="px-4 py-2 bg-gradient-to-r from-orange-500/20 to-red-500/20 hover:from-orange-500/30 hover:to-red-500/30 border border-orange-500/30 rounded-lg text-orange-400 text-xs font-semibold transition-all flex-shrink-0"
+                            >
+                              Call Now
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

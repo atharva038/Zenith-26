@@ -110,18 +110,6 @@ export default function SportModal({ isOpen, onClose, sport, onRegister, isRegis
                                  border border-[#ffb36a]/20"
                   >
                     <p className="text-gray-400 text-[10px] sm:text-xs md:text-sm mb-0.5 sm:mb-1">
-                      Venue
-                    </p>
-                    <p className="text-white font-semibold text-xs sm:text-sm md:text-base">
-                      {sport.venue}
-                    </p>
-                  </div>
-                  <div
-                    className="bg-black/50 rounded-md sm:rounded-lg 
-                                 p-2 sm:p-3 md:p-4 
-                                 border border-[#ffb36a]/20"
-                  >
-                    <p className="text-gray-400 text-[10px] sm:text-xs md:text-sm mb-0.5 sm:mb-1">
                       Team Size
                     </p>
                     <p className="text-white font-semibold text-xs sm:text-sm md:text-base">
@@ -181,6 +169,65 @@ export default function SportModal({ isOpen, onClose, sport, onRegister, isRegis
                     ))}
                   </ul>
                 </div>
+
+                {/* Coordinators Section - Responsive */}
+                {sport.coordinators && sport.coordinators.length > 0 && (
+                  <div>
+                    <h3 className="text-lg sm:text-xl font-bold text-[#ffb36a] mb-2 sm:mb-3">
+                      Event Coordinators
+                    </h3>
+                    <div className="space-y-2 sm:space-y-3">
+                      {sport.coordinators.map((coordinator, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between 
+                                     bg-black/50 rounded-md sm:rounded-lg 
+                                     p-2.5 sm:p-3 md:p-4 
+                                     border border-[#ffb36a]/20 
+                                     hover:border-[#ffb36a]/40 transition-colors"
+                        >
+                          <div className="flex items-center gap-2 sm:gap-3">
+                            <div
+                              className="w-8 h-8 sm:w-10 sm:h-10 
+                                         bg-gradient-to-br from-[#ffb36a] to-[#ff8b1f] 
+                                         rounded-full flex items-center justify-center 
+                                         text-black font-bold text-xs sm:text-sm 
+                                         flex-shrink-0"
+                            >
+                              {coordinator.name.charAt(0)}
+                            </div>
+                            <div>
+                              <p className="text-xs sm:text-sm font-semibold text-white">
+                                {coordinator.name}
+                              </p>
+                              <a
+                                href={`tel:+91${coordinator.contact}`}
+                                className="text-[10px] sm:text-xs text-[#ffb36a] hover:text-[#ff8b1f] 
+                                         transition-colors flex items-center gap-1"
+                              >
+                                <span>📱</span> +91 {coordinator.contact}
+                              </a>
+                            </div>
+                          </div>
+                          <a
+                            href={`tel:+91${coordinator.contact}`}
+                            className="px-2.5 sm:px-3 md:px-4 
+                                       py-1.5 sm:py-2 
+                                       bg-[#ffb36a]/10 hover:bg-[#ffb36a]/20 
+                                       border border-[#ffb36a]/30 
+                                       rounded-md sm:rounded-lg 
+                                       text-[#ffb36a] 
+                                       text-[10px] sm:text-xs 
+                                       font-semibold transition-all 
+                                       flex-shrink-0"
+                          >
+                            Call
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* CTA Buttons - Responsive */}
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 pt-2 sm:pt-4">

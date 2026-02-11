@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import api from "../config/api";
 import Navbar from "../components/Navbar";
 import { useRegistrationStatus } from "../hooks/useRegistrationStatus";
@@ -12,12 +12,18 @@ const SPORTS_DATA = {
   Cricket: {
     name: "Cricket Tournament",
     venue: "SGGSIE&T Cricket Ground",
-    fees: { amount: 6500, note: "per team" },
+    fees: { amount: 6500, note: "per team (Men)" },
     rules: [
-      "Maximum 15 players per team (11 playing + 4 substitutes)",
-      "Leather ball match - 20 overs per side",
-      "All ICC rules apply",
-      "Proper cricket kit mandatory",
+      "11 playing players (standard cricket team)",
+      "15 or 20 overs innings",
+      "Free hit on no-ball",
+      "Super over if tie",
+      "Bowl out in rain",
+      "Max 3-4 overs per bowler",
+      "Turf wickets",
+      "Impact player rule allowed",
+      "Umpire decision final",
+      "Age limit: 25 years",
     ],
     coordinators: [
       { name: "Pranav Godle", phone: "9028783635" },
@@ -44,10 +50,12 @@ const SPORTS_DATA = {
     venue: "SGGSIE&T Football Ground",
     fees: { amount: 3000, note: "per team" },
     rules: [
-      "Maximum 16 players per team (11 playing + 5 substitutes)",
-      "Two halves of 45 minutes each",
-      "FIFA rules apply",
-      "Proper football boots mandatory",
+      "Maximum 16 players",
+      "FIFA rules applicable",
+      "Standard kit required",
+      "20 minutes early reporting",
+      "Disqualification if absent",
+      "Age limit: 25 years",
     ],
     coordinators: [
       { name: "Rohan Pundkare", phone: "7249886133" },
@@ -55,13 +63,16 @@ const SPORTS_DATA = {
     ],
   },
   Basketball: {
-    name: "Basketball Tournament",
+    name: "Basketball (5x5) Tournament",
     venue: "Basketball Court",
     fees: { men: 2500, women: 1500, note: "per team" },
     rules: [
-      "Maximum 12 players per team (5 playing + 7 substitutes)",
-      "Four quarters of 10 minutes each",
-      "FIBA rules apply",
+      "Maximum 12 players per team",
+      "SPPU rules applicable",
+      "20 minutes early reporting compulsory",
+      "Disqualification if absent",
+      "Player ID verification decision final",
+      "Age limit: 25 years",
     ],
     coordinators: [
       { name: "Uday Naukarkar", phone: "9322684201" },
@@ -73,9 +84,12 @@ const SPORTS_DATA = {
     fees: { men: 2200, women: 1500, note: "per team" },
     venue: "Outdoor Volleyball Court",
     rules: [
-      "Maximum 12 players per team (6 playing + 6 substitutes)",
-      "Best of 5 sets",
-      "Rally point system",
+      "6 playing players",
+      "Maximum 12 players per team",
+      "Best of 3 sets (25, 25, 15 points)",
+      "FIVB rules applicable",
+      "20 minutes early reporting",
+      "Age limit: 25 years",
     ],
     coordinators: [
       { name: "Maitreyi Bhumbar", phone: "8788183714" },
@@ -84,12 +98,15 @@ const SPORTS_DATA = {
   },
   Badminton: {
     name: "Badminton Tournament",
-    fees: { men: 500, women: 400, note: "per player" },
+    fees: { men: 1000, women: 800, note: "per team" },
     venue: "Indoor Badminton Courts",
     rules: [
-      "Singles and Doubles events",
-      "Best of 3 games to 21 points",
-      "BWF rules apply",
+      "Maximum 5 players per team",
+      "Best of 3 games (15 points each)",
+      "Bring own kit",
+      "SPPU rules applicable",
+      "20 minutes early reporting",
+      "Age limit: 25 years",
     ],
     coordinators: [
       { name: "Harsh Keshkar", phone: "8010529661" },
@@ -108,13 +125,15 @@ const SPORTS_DATA = {
     coordinators: [{ name: "Pooja Reddy", phone: "9876543217" }],
   },
   Chess: {
-    fees: { amount: 200, note: "per player (Open to all age groups)" },
+    fees: { men: 500, women: 400, note: "per team" },
     name: "Chess Tournament",
     venue: "Auditorium",
     rules: [
-      "Individual event",
-      "Time control: 15 minutes + 10 seconds increment",
-      "FIDE rules apply",
+      "Team & Individual events",
+      "FIDE & Swiss system rules", 
+      "No electronic devices",
+      "Bring own chess clock",
+      "20 minutes early reporting",
     ],
     coordinators: [
       { name: "Sarthak Rahut", phone: "8788380729" },
@@ -136,14 +155,16 @@ const SPORTS_DATA = {
     fees: {
       individual: 200,
       team: 700,
-      note: "Individual: ₹200 per athlete | Team Events: ₹700 per team",
+      note: "Individual: ₹200 | Team: ₹700",
     },
     name: "Athletics Meet",
     venue: "SGGSIE&T Athletics Track",
     rules: [
-      "100m, 200m, 400m, 800m, 1500m events",
-      "Long Jump, High Jump, Shot Put",
-      "Individual events",
+      "Individual Events: 100m, 400m, Shot Put, Discus, Long Jump",
+      "Team Events: 4x100m Relay, Mixed Relay (2 Boys + 2 Girls)",
+      "20 minutes early reporting",
+      "Player identification verification final",
+      "Age limit: 25 years",
     ],
     coordinators: [
       { name: "Dipanshu Sahatpute", phone: "7620666188" },
@@ -166,9 +187,13 @@ const SPORTS_DATA = {
     venue: "Outdoor Sports Ground",
     fees: { men: 2200, women: 1500, note: "per team" },
     rules: [
-      "Maximum 12 players per team (7 playing + 5 substitutes)",
-      "Two halves of 20 minutes each",
-      "Pro Kabaddi League style rules",
+      "Maximum 12 players per team",
+      "Two halves of 15 minutes",
+      "Weight limit: Up to 80 kg",
+      "Played on mat",
+      "Kabaddi Federation rules applicable",
+      "20 minutes early reporting",
+      "Age limit: 25 years",
     ],
     coordinators: [
       { name: "Shubham Kale", phone: "7378409793" },
@@ -179,11 +204,13 @@ const SPORTS_DATA = {
   "Kho-Kho": {
     name: "Kho-Kho Championship",
     venue: "Outdoor Sports Ground",
-    fees: { amount: 1500, note: "per team" },
+    fees: { men: 1500, women: 1200, note: "per team" },
     rules: [
-      "Maximum 15 players per team (9 playing + 6 substitutes)",
-      "Two innings of 9 minutes each",
-      "Official Kho-Kho Federation rules",
+      "Minimum 9, Maximum 12 players",
+      "20-minute match (7+7 minutes halves, 6-minute break)",
+      "Federation rules applicable",
+      "20 minutes early reporting",
+      "Age limit: 25 years",
     ],
     coordinators: [
       { name: "Sairaj Shinde", phone: "8767179744" },
@@ -224,9 +251,12 @@ const SPORTS_DATA = {
     venue: "Outdoor Sports Ground",
     fees: { amount: 1500, note: "per team" },
     rules: [
-      "Maximum 14 players per team (7 playing + 7 substitutes)",
-      "Two halves of 30 minutes each",
-      "IHF rules apply",
+      "Minimum 9, Maximum 16 players",
+      "25-minute match (10+10 minutes halves, 5-minute break)",
+      "Rolling substitutions allowed",
+      "20 minutes early reporting",
+      "Disqualification if absent",
+      "Age limit: 25 years",
     ],
     coordinators: [
       { name: "Aditya Joshi", phone: "7820939780" },
@@ -237,18 +267,19 @@ const SPORTS_DATA = {
     name: "Rink Football Tournament",
     venue: "Outdoor Sports Hall",
     fees: { men: 2200, women: 1500, note: "per team" },
-    rules: ["5-a-side football", "Smaller playing area", "Modified FIFA rules"],
+    rules: [
+      "Boys: 6 playing | Girls: 7 playing",
+      "Maximum squad: 10 players",
+      "No offside rule",
+      "Rolling substitutions",
+      "Yellow card = 2-minute suspension",
+      "20 minutes early reporting",
+      "Age limit: 25 years",
+    ],
     coordinators: [
       { name: "Onkar Sahane", phone: "8767192671" },
       { name: "Vipakshi Mate", phone: "7972776597" },
     ],
-  },
-  "Tug of War": {
-    name: "Tug of War Championship",
-    venue: "Outdoor Sports Ground",
-    fees: { amount: 1000, note: "per team" },
-    rules: ["8 players per team", "Best of 3 pulls", "TWIF rules apply"],
-    coordinators: [{ name: "Swayam Baheti", phone: "7276218795" }],
   },
   "Power Lifting": {
     name: "Power Lifting Competition",
@@ -256,26 +287,15 @@ const SPORTS_DATA = {
     fees: { amount: 300, note: "per player" },
     rules: [
       "Individual event",
-      "Squat, Bench Press, Deadlift",
-      "IPF rules apply",
+      "3 attempts each: Squat, Bench Press, Deadlift",
+      "Bring own accessories",
+      "International weight categories",
+      "20 minutes early reporting",
+      "Age limit: 25 years",
     ],
     coordinators: [
       { name: "Tejas Borole", phone: "8767386695" },
       { name: "Sakshi Done", phone: "9028684180" },
-    ],
-  },
-  "Basketball (3x3)": {
-    name: "Basketball 3x3 Tournament",
-    venue: "Outdoor Basketball Court",
-    fees: { amount: 500, note: "per team" },
-    rules: [
-      "4 players per team (3 playing + 1 substitute)",
-      "10 minutes or first to 21 points",
-      "FIBA 3x3 rules apply",
-    ],
-    coordinators: [
-      { name: "Uday Naukarkar", phone: "9322684201" },
-      { name: "Krushna Jadhav", phone: "8208422959" },
     ],
   },
 };
@@ -318,7 +338,6 @@ const SPORT_ICONS = {
   Squash: "🎾",
   Handball: "🤾",
   "Rink Football": "⚽",
-  "Tug of War": "💪",
   "Power Lifting": "🏋️",
 };
 
@@ -328,13 +347,11 @@ const TEAM_SPORTS = [
   "Box Cricket",
   "Football",
   "Basketball",
-  "Basketball (3x3)",
   "Volleyball",
   "Kabaddi",
   "Kho-Kho",
   "Hockey",
   "Rink Football",
-  "Tug of War",
   "Handball",
 ];
 
@@ -346,13 +363,11 @@ const TEAM_SPORTS_CONFIG = {
   "Box Cricket": { minPlayers: 6, maxPlayers: 8, exactPlayers: null },
   "Football": { minPlayers: 11, maxPlayers: 16, exactPlayers: null },
   "Basketball": { minPlayers: 5, maxPlayers: 12, exactPlayers: null },
-  "Basketball (3x3)": { minPlayers: 3, maxPlayers: 4, exactPlayers: 4 }, // ⚠️ EXACTLY 4 REQUIRED
   "Volleyball": { minPlayers: 6, maxPlayers: 12, exactPlayers: null },
   "Kabaddi": { minPlayers: 7, maxPlayers: 12, exactPlayers: null },
   "Kho-Kho": { minPlayers: 9, maxPlayers: 15, exactPlayers: null },
   "Hockey": { minPlayers: 11, maxPlayers: 18, exactPlayers: null },
   "Rink Football": { minPlayers: 5, maxPlayers: 10, exactPlayers: null },
-  "Tug of War": { minPlayers: 8, maxPlayers: 8, exactPlayers: 8 }, // ⚠️ EXACTLY 8 REQUIRED
   "Handball": { minPlayers: 7, maxPlayers: 14, exactPlayers: null },
 };
 
@@ -369,7 +384,8 @@ const UniversalRegistration = () => {
     message, 
     startDate, 
     endDate,
-    paymentQrUrl 
+    paymentQrUrl,
+    error: statusError
   } = useRegistrationStatus();
   
   // Filter available sports based on toggle states
@@ -398,6 +414,7 @@ const UniversalRegistration = () => {
   // Multi-step state (ALL useState hooks MUST be declared before any conditional returns)
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedSport, setSelectedSport] = useState("");
+  const [selectedGender, setSelectedGender] = useState("");
   const [sportPreselected, setSportPreselected] = useState(false); // Track if sport was already preselected
   const [formData, setFormData] = useState({
     captain_name: "",
@@ -428,7 +445,7 @@ const UniversalRegistration = () => {
   const [submitting, setSubmitting] = useState(false);
   const [registrationComplete, setRegistrationComplete] = useState(false);
   const [registrationNumber, setRegistrationNumber] = useState("");
-  const [showBackupQR, setShowBackupQR] = useState(false);
+  // const [showBackupQR, setShowBackupQR] = useState(false); // Unused
   const [showNavigationWarning, setShowNavigationWarning] = useState(false);
 
   // Check if form has been started (user has entered any data)
@@ -461,7 +478,7 @@ const UniversalRegistration = () => {
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [currentStep, selectedSport, formData, teamMembers, documents, registrationComplete]);
+  }, [currentStep, selectedSport, formData, teamMembers, documents, registrationComplete, isFormStarted]);
 
   // Intercept navbar link clicks to show warning
   useEffect(() => {
@@ -489,7 +506,7 @@ const UniversalRegistration = () => {
       navbar.addEventListener('click', handleClick, true);
       return () => navbar.removeEventListener('click', handleClick, true);
     }
-  }, [location.pathname, currentStep, selectedSport, formData, teamMembers, documents, registrationComplete]);
+  }, [location.pathname, currentStep, selectedSport, formData, teamMembers, documents, registrationComplete, isFormStarted]);
 
   // Handle confirmed navigation
   const handleConfirmNavigation = () => {
@@ -522,10 +539,12 @@ const UniversalRegistration = () => {
     }
 
     // Fallback to state-based preselection from SportsGrid/GameVerse (only on first load)
-    if (!sportPreselected && location.state?.fromSportsGrid && location.state?.preselectedSport) {
+    if (!sportPreselected && (location.state?.fromSportsGrid || location.state?.fromGameVerse) && location.state?.preselectedSport) {
       const sportName = location.state.preselectedSport.toUpperCase();
+      
       const sportMapping = {
         FOOTBALL: "Football",
+        "BASKETBALL (5X5)": "Basketball",
         BASKETBALL: "Basketball",
         CRICKET: "Cricket",
         VOLLEYBALL: "Volleyball",
@@ -537,6 +556,8 @@ const UniversalRegistration = () => {
         POWERLIFTING: "Power Lifting",
         KABADDI: "Kabaddi",
         HANDBALL: "Handball",
+        "RINK FOOTBALL": "Rink Football",
+        "KHO-KHO": "Kho-Kho",
       };
       const mappedSport = sportMapping[sportName];
       if (mappedSport && SPORTS_DATA[mappedSport]) {
@@ -549,11 +570,43 @@ const UniversalRegistration = () => {
         window.history.replaceState({}, document.title);
       }
     }
-  }, [location.search, sportPreselected]);
+  }, [location.search, sportPreselected, location.state]);
 
   const selectedSportData = selectedSport ? SPORTS_DATA[selectedSport] : null;
   const isTeamSport = TEAM_SPORTS.includes(selectedSport);
   const teamConfig = isTeamSport ? TEAM_SPORTS_CONFIG[selectedSport] : null;
+  const hasGenderOptions = selectedSportData?.fees && (selectedSportData.fees.men || selectedSportData.fees.women);
+  
+  // Gender selection handler
+  const handleGenderSelect = (gender) => {
+    setSelectedGender(gender);
+    toast.success(`${gender === 'men' ? 'Men\'s' : 'Women\'s'} category selected! 👥`);
+  };
+  
+  // Get appropriate fee display
+  const getDisplayFee = () => {
+    if (!selectedSportData?.fees) return "N/A";
+    
+    if (typeof selectedSportData.fees === 'object' && selectedSportData.fees.amount) {
+      // Single fee structure
+      return `₹${selectedSportData.fees.amount} ${selectedSportData.fees.note || ""}`;
+    } else if (typeof selectedSportData.fees === 'object' && (selectedSportData.fees.men || selectedSportData.fees.women)) {
+      // Gender-based fees
+      if (selectedGender === 'men' && selectedSportData.fees.men) {
+        return `₹${selectedSportData.fees.men} ${selectedSportData.fees.note || ""}`;
+      } else if (selectedGender === 'women' && selectedSportData.fees.women) {
+        return `₹${selectedSportData.fees.women} ${selectedSportData.fees.note || ""}`;
+      } else if (!selectedGender) {
+        // Show both options if no gender selected
+        const menFee = selectedSportData.fees.men ? `Men: ₹${selectedSportData.fees.men}` : "";
+        const womenFee = selectedSportData.fees.women ? `Women: ₹${selectedSportData.fees.women}` : "";
+        const note = selectedSportData.fees.note ? ` ${selectedSportData.fees.note}` : "";
+        return [menFee, womenFee].filter(Boolean).join(" | ") + note;
+      }
+    }
+    
+    return "N/A";
+  };
 
   // Calculate total steps dynamically
   const totalSteps = isTeamSport ? 6 : 5; // Sport, Details, Team (optional), Captain (optional), Payment, Review
@@ -568,7 +621,7 @@ const UniversalRegistration = () => {
     const numPlayers = parseInt(formData.num_players);
     const memberCount = teamMembers.length;
 
-    // Check if exact number required (CRITICAL for Basketball 3x3 and Tug of War)
+    // Check if exact number required (CRITICAL for Basketball 3x3)
     if (teamConfig.exactPlayers) {
       if (numPlayers !== teamConfig.exactPlayers) {
         toast.error(`${selectedSport} requires EXACTLY ${teamConfig.exactPlayers} players`, {
@@ -622,6 +675,13 @@ const UniversalRegistration = () => {
       toast.error("Please select a sport");
       return;
     }
+    
+    // Validate gender selection for sports with gender options
+    if (currentStep === 1 && hasGenderOptions && !selectedGender) {
+      toast.error("Please select Men's or Women's category");
+      return;
+    }
+    
     if (currentStep === 2) {
       if (!formData.captain_name || !formData.captain_contact || !formData.email || !formData.institution) {
         toast.error("Please fill all required fields");
@@ -703,7 +763,11 @@ const UniversalRegistration = () => {
         captainIdCard: null,
       });
     }
+    
+    // Reset gender selection when changing sports
+    setSelectedGender("");
     setSelectedSport(sport);
+    
     toast.success(`${sport} selected!`, { autoClose: 1500 });
   };
 
@@ -845,7 +909,7 @@ const UniversalRegistration = () => {
       </div>
     );
   }
-
+  
   // Show registration closed page if BOTH toggles are off
   if (!isCricketOpen && !isOtherSportsOpen) {
     return <RegistrationClosed message={message} startDate={startDate} endDate={endDate} />;
@@ -879,6 +943,8 @@ const UniversalRegistration = () => {
         name: selectedSportData.name,
         venue: selectedSportData.venue,
         fees: selectedSportData.fees,
+        selectedGender: null,
+        actualFee: selectedSportData.fees.amount || selectedSportData.fees.individual || selectedSportData.fees.team,
         coordinators: selectedSportData.coordinators,
       }));
       
@@ -887,6 +953,7 @@ const UniversalRegistration = () => {
         ...formData,
         sport: selectedSport,
         sport_name: selectedSportData.name,
+        gender_category: null,
       };
 
       // Add team members if team sport
@@ -1122,6 +1189,79 @@ const UniversalRegistration = () => {
                 ))}
               </div>
 
+              {/* Gender Selection (only for sports with different fees) */}
+              {selectedSport && hasGenderOptions && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="mt-8 p-6 bg-[#1a1410]/30 backdrop-blur-sm border border-[#3a2416] rounded-xl"
+                >
+                  <h3 className="text-lg font-semibold text-[#ffb77a] mb-4 text-center">
+                    Select Category
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {selectedSportData.fees.men && (
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handleGenderSelect('men')}
+                        className={`
+                          p-4 rounded-xl transition-all duration-300 text-center
+                          ${
+                            selectedGender === 'men'
+                              ? "bg-gradient-to-br from-blue-600 to-blue-700 shadow-lg shadow-blue-600/20"
+                              : "bg-[#1a1410]/50 border border-[#3a2416] hover:border-blue-500/50"
+                          }
+                        `}
+                      >
+                        <div className="text-2xl mb-2">👨</div>
+                        <div className="font-semibold">Men's Team</div>
+                        <div className="text-sm text-gray-400">₹{selectedSportData.fees.men}</div>
+                        {selectedGender === 'men' && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
+                          >
+                            <span className="text-blue-600 text-xs">✓</span>
+                          </motion.div>
+                        )}
+                      </motion.button>
+                    )}
+                    
+                    {selectedSportData.fees.women && (
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handleGenderSelect('women')}
+                        className={`
+                          relative p-4 rounded-xl transition-all duration-300 text-center
+                          ${
+                            selectedGender === 'women'
+                              ? "bg-gradient-to-br from-pink-600 to-pink-700 shadow-lg shadow-pink-600/20"
+                              : "bg-[#1a1410]/50 border border-[#3a2416] hover:border-pink-500/50"
+                          }
+                        `}
+                      >
+                        <div className="text-2xl mb-2">👩</div>
+                        <div className="font-semibold">Women's Team</div>
+                        <div className="text-sm text-gray-400">₹{selectedSportData.fees.women}</div>
+                        {selectedGender === 'women' && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
+                          >
+                            <span className="text-pink-600 text-xs">✓</span>
+                          </motion.div>
+                        )}
+                      </motion.button>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+
               <motion.div
                 className="mt-8 flex justify-between items-center gap-4"
                 initial={{ opacity: 0 }}
@@ -1146,11 +1286,11 @@ const UniversalRegistration = () => {
                 
                 <button
                   onClick={nextStep}
-                  disabled={!selectedSport}
+                  disabled={!selectedSport || (hasGenderOptions && !selectedGender)}
                   className={`
                     px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300
                     ${
-                      selectedSport
+                      selectedSport && (!hasGenderOptions || selectedGender)
                         ? "bg-gradient-to-r from-[#ff6b35] to-[#ff8c42] hover:shadow-xl hover:shadow-[#ff6b35]/20 hover:scale-105"
                         : "bg-gray-700 cursor-not-allowed opacity-50"
                     }
@@ -1201,6 +1341,14 @@ const UniversalRegistration = () => {
                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-[#ff6b35] via-[#ff8c42] to-[#ffa600] bg-clip-text text-transparent mb-3">
                   {selectedSport}
                 </h2>
+                {/* Gender Category Badge */}
+                {hasGenderOptions && selectedGender && (
+                  <div className="inline-block px-4 py-1.5 bg-gradient-to-r from-[#ff6b35]/20 to-[#ff8c42]/20 border border-[#ff6b35]/50 rounded-full mb-2">
+                    <span className="text-sm font-semibold text-[#ffb77a]">
+                      {selectedGender === "men" ? "👨 Men's Category" : "👩 Women's Category"}
+                    </span>
+                  </div>
+                )}
                 <div className="flex flex-col items-center justify-center gap-2">
                   <div className="flex items-center gap-2 text-gray-400">
                     <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
@@ -1209,10 +1357,12 @@ const UniversalRegistration = () => {
                   {/* Registration Fee Display */}
                   <div className="mt-2 px-4 py-2 bg-[#ff6b35]/20 border border-[#ff6b35] rounded-full">
                     <p className="text-sm md:text-base font-bold text-[#ffb77a]">
-                      Fee: ₹{selectedSportData?.fees?.amount ||
-                        selectedSportData?.fees?.men ||
-                        selectedSportData?.fees?.individual ||
-                        "N/A"}
+                      {hasGenderOptions && selectedGender ? 
+                        `Fee: ₹${getDisplayFee()}` : 
+                        hasGenderOptions ? 
+                        `Fee: ${getDisplayFee()}` :
+                        `Fee: ₹${getDisplayFee()}`
+                      }
                     </p>
                   </div>
                 </div>
@@ -1483,6 +1633,14 @@ const UniversalRegistration = () => {
                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-[#ff6b35] via-[#ff8c42] to-[#ffa600] bg-clip-text text-transparent mb-3">
                   {selectedSport}
                 </h2>
+                {/* Gender Category Badge */}
+                {hasGenderOptions && selectedGender && (
+                  <div className="inline-block px-4 py-1.5 bg-gradient-to-r from-[#ff6b35]/20 to-[#ff8c42]/20 border border-[#ff6b35]/50 rounded-full mb-2">
+                    <span className="text-sm font-semibold text-[#ffb77a]">
+                      {selectedGender === "men" ? "👨 Men's Category" : "👩 Women's Category"}
+                    </span>
+                  </div>
+                )}
                 <div className="flex flex-col items-center justify-center gap-2">
                   <div className="flex items-center gap-2 text-gray-400">
                     <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
@@ -1491,10 +1649,12 @@ const UniversalRegistration = () => {
                   {/* Registration Fee Display */}
                   <div className="mt-2 px-4 py-2 bg-[#ff6b35]/20 border border-[#ff6b35] rounded-full">
                     <p className="text-sm md:text-base font-bold text-[#ffb77a]">
-                      Fee: ₹{selectedSportData?.fees?.amount ||
-                        selectedSportData?.fees?.men ||
-                        selectedSportData?.fees?.individual ||
-                        "N/A"}
+                      {hasGenderOptions && selectedGender ? 
+                        `Fee: ₹${getDisplayFee()}` : 
+                        hasGenderOptions ? 
+                        `Fee: ${getDisplayFee()}` :
+                        `Fee: ₹${getDisplayFee()}`
+                      }
                     </p>
                   </div>
                 </div>
@@ -1680,6 +1840,14 @@ const UniversalRegistration = () => {
                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-[#ff6b35] via-[#ff8c42] to-[#ffa600] bg-clip-text text-transparent mb-3">
                   {selectedSport}
                 </h2>
+                {/* Gender Category Badge */}
+                {hasGenderOptions && selectedGender && (
+                  <div className="inline-block px-4 py-1.5 bg-gradient-to-r from-[#ff6b35]/20 to-[#ff8c42]/20 border border-[#ff6b35]/50 rounded-full mb-2">
+                    <span className="text-sm font-semibold text-[#ffb77a]">
+                      {selectedGender === "men" ? "👨 Men's Category" : "👩 Women's Category"}
+                    </span>
+                  </div>
+                )}
                 <div className="flex flex-col items-center justify-center gap-2">
                   <div className="flex items-center gap-2 text-gray-400">
                     <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
@@ -1688,10 +1856,12 @@ const UniversalRegistration = () => {
                   {/* Registration Fee Display */}
                   <div className="mt-2 px-4 py-2 bg-[#ff6b35]/20 border border-[#ff6b35] rounded-full">
                     <p className="text-sm md:text-base font-bold text-[#ffb77a]">
-                      Fee: ₹{selectedSportData?.fees?.amount ||
-                        selectedSportData?.fees?.men ||
-                        selectedSportData?.fees?.individual ||
-                        "N/A"}
+                      {hasGenderOptions && selectedGender ? 
+                        `Fee: ₹${getDisplayFee()}` : 
+                        hasGenderOptions ? 
+                        `Fee: ${getDisplayFee()}` :
+                        `Fee: ₹${getDisplayFee()}`
+                      }
                     </p>
                   </div>
                 </div>
@@ -1804,6 +1974,14 @@ const UniversalRegistration = () => {
                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-[#ff6b35] via-[#ff8c42] to-[#ffa600] bg-clip-text text-transparent mb-3">
                   {selectedSport}
                 </h2>
+                {/* Gender Category Badge */}
+                {hasGenderOptions && selectedGender && (
+                  <div className="inline-block px-4 py-1.5 bg-gradient-to-r from-[#ff6b35]/20 to-[#ff8c42]/20 border border-[#ff6b35]/50 rounded-full mb-2">
+                    <span className="text-sm font-semibold text-[#ffb77a]">
+                      {selectedGender === "men" ? "👨 Men's Category" : "👩 Women's Category"}
+                    </span>
+                  </div>
+                )}
                 <div className="flex flex-col items-center justify-center gap-2">
                   <div className="flex items-center gap-2 text-gray-400">
                     <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
@@ -1812,10 +1990,12 @@ const UniversalRegistration = () => {
                   {/* Registration Fee Display */}
                   <div className="mt-2 px-4 py-2 bg-[#ff6b35]/20 border border-[#ff6b35] rounded-full">
                     <p className="text-sm md:text-base font-bold text-[#ffb77a]">
-                      Fee: ₹{selectedSportData?.fees?.amount ||
-                        selectedSportData?.fees?.men ||
-                        selectedSportData?.fees?.individual ||
-                        "N/A"}
+                      {hasGenderOptions && selectedGender ? 
+                        `Fee: ₹${getDisplayFee()}` : 
+                        hasGenderOptions ? 
+                        `Fee: ${getDisplayFee()}` :
+                        `Fee: ₹${getDisplayFee()}`
+                      }
                     </p>
                   </div>
                 </div>
@@ -1836,11 +2016,12 @@ const UniversalRegistration = () => {
                   <div className="flex justify-between items-center text-2xl font-bold">
                     <span>Total Amount:</span>
                     <span className="text-[#ff6b35]">
-                      ₹
-                      {selectedSportData?.fees?.amount ||
-                        selectedSportData?.fees?.men ||
-                        selectedSportData?.fees?.individual ||
-                        "N/A"}
+                      {hasGenderOptions && selectedGender ? 
+                        `₹${getDisplayFee()}` : 
+                        hasGenderOptions ? 
+                        getDisplayFee() :
+                        `₹${getDisplayFee()}`
+                      }
                     </span>
                   </div>
                   {selectedSportData?.fees?.note && (
