@@ -77,6 +77,7 @@ const MarathonRegistration = () => {
     phone: "",
     age: "",
     gender: "",
+    tshirtSize: "",
     college: "",
     emergencyContact: {
       name: "",
@@ -94,6 +95,7 @@ const MarathonRegistration = () => {
       phone: "9876543210",
       age: "22",
       gender: "Male",
+      tshirtSize: "L",
       college: "Test Engineering College",
       emergencyContact: {
         name: "Test Emergency Contact",
@@ -283,6 +285,7 @@ const MarathonRegistration = () => {
           phone: "",
           age: "",
           gender: "",
+          tshirtSize: "",
           college: "",
           emergencyContact: {
             name: "",
@@ -782,6 +785,44 @@ const MarathonRegistration = () => {
                       </option>
                       <option value="Other" className="bg-[#1a0f08]">
                         Other
+                      </option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#ffdcb3] mb-2">
+                      T-Shirt Size *
+                    </label>
+                    <select
+                      name="tshirtSize"
+                      value={formData.tshirtSize}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
+                    >
+                      <option value="" className="bg-[#1a0f08]">
+                        Select T-Shirt Size
+                      </option>
+                      <option value="XS" className="bg-[#1a0f08]">
+                        XS (Extra Small)
+                      </option>
+                      <option value="S" className="bg-[#1a0f08]">
+                        S (Small)
+                      </option>
+                      <option value="M" className="bg-[#1a0f08]">
+                        M (Medium)
+                      </option>
+                      <option value="L" className="bg-[#1a0f08]">
+                        L (Large)
+                      </option>
+                      <option value="XL" className="bg-[#1a0f08]">
+                        XL (Extra Large)
+                      </option>
+                      <option value="XXL" className="bg-[#1a0f08]">
+                        XXL (2XL)
+                      </option>
+                      <option value="XXXL" className="bg-[#1a0f08]">
+                        XXXL (3XL)
                       </option>
                     </select>
                   </div>

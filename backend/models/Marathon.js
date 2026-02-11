@@ -42,7 +42,7 @@ const marathonSchema = new mongoose.Schema(
     // T-Shirt Size (optional for backward compatibility)
     tshirtSize: {
       type: String,
-      enum: ["S", "M", "L", "XL", "XXL"],
+      enum: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
     },
     
     // Emergency Contact
