@@ -13,12 +13,12 @@ const AdminSidebar = ({sidebarOpen, setSidebarOpen, admin}) => {
 
   const menuItems = [
     // {id: "dashboard", label: "Dashboard", icon: "📊", path: "/admin/dashboard"},
-    {
-      id: "dev-portal",
-      label: "Developer Portal",
-      icon: "💻",
-      path: "/dev",
-    },
+    // {
+    //   id: "dev-portal",
+    //   label: "Developer Portal",
+    //   icon: "💻",
+    //   path: "/dev",
+    // },
     {id: "marathon", label: "Marathon", icon: "🏃", path: "/admin/marathon"},
     {
       id: "women-tournament",
