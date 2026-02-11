@@ -1228,6 +1228,14 @@ const AdminMarathon = () => {
                     </div>
                     <div>
                       <p className="text-gray-400 text-xs uppercase tracking-wider">
+                        T-Shirt Size
+                      </p>
+                      <span className="px-3 py-1 inline-flex text-sm font-semibold rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                        {selectedRegistration.tshirtSize || "Not specified"}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-gray-400 text-xs uppercase tracking-wider">
                         College/Organization
                       </p>
                       <p className="text-white">

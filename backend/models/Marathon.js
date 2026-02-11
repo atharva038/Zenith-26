@@ -23,7 +23,7 @@ const marathonSchema = new mongoose.Schema(
     age: {
       type: Number,
       required: [true, "Age is required"],
-      min: [16, "Minimum age is 16"],
+      min: [1, "Age must be at least 1"],
       max: [100, "Maximum age is 100"],
     },
     gender: {

@@ -756,10 +756,10 @@ const MarathonRegistration = () => {
                       value={formData.age}
                       onChange={handleChange}
                       required
-                      min="16"
+                      min="1"
                       max="100"
                       className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
-                      placeholder="Minimum age: 16"
+                      placeholder="Enter your age"
                     />
                   </div>
 
