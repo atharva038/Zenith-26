@@ -33,6 +33,45 @@ const SPORTS_LIST = [
   "Power Lifting",
 ];
 
+// Sport fees data - matches registration form
+const SPORTS_FEES = {
+  "Cricket": { amount: 6500, note: "per team" },
+  "Box Cricket": { amount: 3000, note: "per team" },
+  "Football": { amount: 3000, note: "per team" },
+  "Basketball": { men: 2500, women: 1500, note: "per team" },
+  "Volleyball": { men: 2200, women: 1500, note: "per team" },
+  "Badminton": { men: 500, women: 400, note: "per player" },
+  "Table Tennis": { amount: 400, note: "per player" },
+  "Chess": { amount: 200, note: "per player (Open to all age groups)" },
+  "Carrom": { amount: 300, note: "per player" },
+  "Athletics": { individual: 200, team: 700, note: "Individual: ₹200 per athlete | Team: ₹700 per team" },
+  "Swimming": { amount: 300, note: "per athlete" },
+  "Kabaddi": { men: 2200, women: 1500, note: "per team" },
+  "Kho-Kho": { amount: 1500, note: "per team" },
+  "Hockey": { amount: 2500, note: "per team" },
+  "Lawn Tennis": { amount: 500, note: "per player" },
+  "Squash": { amount: 400, note: "per player" },
+  "Handball": { amount: 1500, note: "per team" },
+  "Rink Football": { men: 2200, women: 1500, note: "per team" },
+  "Tug of War": { amount: 1000, note: "per team" },
+  "Power Lifting": { amount: 300, note: "per player" },
+};
+
+// Helper function to get expected fee for a sport
+const getExpectedFee = (sportName) => {
+  const feeInfo = SPORTS_FEES[sportName];
+  if (!feeInfo) return "N/A";
+  
+  if (feeInfo.amount) {
+    return `₹${feeInfo.amount} (${feeInfo.note})`;
+  } else if (feeInfo.men && feeInfo.women) {
+    return `Men: ₹${feeInfo.men} | Women: ₹${feeInfo.women} (${feeInfo.note})`;
+  } else if (feeInfo.individual && feeInfo.team) {
+    return `${feeInfo.note}`;
+  }
+  return "N/A";
+};
+
 const AdminSportsRegistrations = () => {
   const navigate = useNavigate();
   const [registrations, setRegistrations] = useState([]);
@@ -337,7 +376,6 @@ const AdminSportsRegistrations = () => {
         "Alternate Contact": formData.alternate_contact || formData.get?.('alternate_contact') || "N/A",
         "Need Accommodation": (formData.need_accommodation || formData.get?.('need_accommodation')) ? "Yes" : "No",
         "Status": reg.status || "N/A",
-        "Payment Status": reg.paymentStatus || "N/A",
         "Amount": reg.amount || "N/A",
         "Registered On": new Date(reg.createdAt).toLocaleDateString(),
       };
@@ -972,25 +1010,19 @@ const AdminSportsRegistrations = () => {
                     </h3>
                     <div className="space-y-3">
                       <p className="text-gray-300">
-                        <span className="text-white font-semibold">Amount:</span>{" "}
+                        <span className="text-white font-semibold">Expected Registration Fee:</span>{" "}
                         <span className="px-3 py-1 bg-yellow-500/10 text-yellow-400 rounded-lg ml-2 font-bold">
-                          ₹{selectedRegistration.amount || 500}
+                          {getExpectedFee(selectedRegistration.eventName)}
                         </span>
                       </p>
-                      <p className="text-gray-300">
-                        <span className="text-white font-semibold">Status:</span>{" "}
-                        <span
-                          className={`px-3 py-1 rounded-xl text-xs font-semibold ml-2 ${
-                            selectedRegistration.paymentStatus === "completed"
-                              ? "bg-green-500/10 text-green-400 border border-green-500/20"
-                              : selectedRegistration.paymentStatus === "pending"
-                              ? "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20"
-                              : "bg-red-500/10 text-red-400 border border-red-500/20"
-                          }`}
-                        >
-                          {selectedRegistration.paymentStatus || "Pending"}
-                        </span>
-                      </p>
+                      <div className="pt-3 mt-3 border-t border-gray-700">
+                        <p className="text-sm text-orange-400 flex items-start gap-2">
+                          <span className="text-lg">⚠️</span>
+                          <span className="flex-1">
+                            <strong>Important:</strong> Please verify the payment screenshot in the documents section below to confirm the actual amount received matches the registration fee.
+                          </span>
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1084,6 +1116,69 @@ const AdminSportsRegistrations = () => {
                     </div>
                   </div>
                 )}
+
+                {/* Team Members List - MOVED BELOW DOCUMENTS */}
+                {(() => {
+                  // Try multiple possible keys for team members
+                  let teamMembers = selectedRegistration.formData?.teamMembers || 
+                                   selectedRegistration.formData?.team_members ||
+                                   selectedRegistration.formData?.get?.('teamMembers') || 
+                                   selectedRegistration.formData?.get?.('team_members');
+                  
+                  // If it's a string (JSON), parse it
+                  if (typeof teamMembers === 'string') {
+                    try {
+                      teamMembers = JSON.parse(teamMembers);
+                    } catch (e) {
+                      console.error('Failed to parse team members:', e);
+                      teamMembers = [];
+                    }
+                  }
+                  
+                  // Ensure it's an array
+                  if (!Array.isArray(teamMembers)) {
+                    teamMembers = [];
+                  }
+                  
+                  if (teamMembers.length > 0) {
+                    return (
+                      <div className="mt-6 bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-6 border border-gray-800">
+                        <h3 className="text-lg font-semibold text-blue-400 mb-5 flex items-center gap-2">
+                          <span className="w-1 h-5 bg-blue-500 rounded-full"></span>
+                          All Team Members ({teamMembers.length})
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {teamMembers.map((member, index) => (
+                            <div 
+                              key={index}
+                              className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-4"
+                            >
+                              <div className="flex items-start gap-3">
+                                <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                  <span className="text-blue-400 font-bold text-sm">{index + 1}</span>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-white font-semibold mb-1 truncate">
+                                    {member.name || "N/A"}
+                                  </p>
+                                  <p className="text-gray-400 text-sm">
+                                    📱 {member.contact || member.phone || "N/A"}
+                                  </p>
+                                  {member.email && (
+                                    <p className="text-gray-400 text-sm truncate">
+                                      ✉️ {member.email}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
 
                 {/* Status Update Actions */}
                 <div className="mt-8 flex gap-4">
