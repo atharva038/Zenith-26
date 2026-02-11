@@ -16,7 +16,7 @@ const Schedule = () => {
           className="text-center max-w-4xl mx-auto"
         >
           {/* Animated Calendar Icon */}
-          <motion.div
+          {/* <motion.div
             className="text-9xl mb-8"
             animate={{
               scale: [1, 1.1, 1],
@@ -28,8 +28,8 @@ const Schedule = () => {
               ease: "easeInOut",
             }}
           >
-            📅
-          </motion.div>
+            
+          </motion.div> */}
 
           {/* Title */}
           <motion.h1

@@ -301,6 +301,10 @@ const sportsData = [
       { name: "Rohan Pundkare", contact: "7249886133" },
       { name: "Srujan Pal", contact: "8788766970" },
     ],
+    coordinators: [
+      { name: "Rohan Pundkare", phone: "7249886133" },
+      { name: "Srujan Pal", phone: "8788766970" },
+    ],
     registrationStatus: "open",
   },
   {
@@ -330,6 +334,10 @@ const sportsData = [
       { name: "Uday Naukarkar", contact: "9322684201" },
       { name: "Krushna Jadhav", contact: "8208422959" },
     ],
+    coordinators: [
+      { name: "Uday Naukarkar", phone: "9322684201" },
+      { name: "Krushna Jadhav", phone: "8208422959" },
+    ],
     registrationStatus: "open",
   },
   {
@@ -343,11 +351,12 @@ const sportsData = [
     tagline: "Gentleman's Game",
     description:
       "Step up to the crease and showcase your batting, bowling, and fielding skills in the most exciting cricket tournament of the year.",
-    date: "February 20-22, 2026",
+    date: "February 16-19, 2026",
     venue: "Cricket Ground",
     teamSize: "Boys only - 11 playing players",
     registrationFee: "₹6500 per team (Men)",
     rules: [
+<<<<<<< HEAD
       "15 or 20 overs innings",
       "Free hit on no-ball",
       "Super over if tie",
@@ -361,6 +370,16 @@ const sportsData = [
     coordinators: [
       { name: "Pranav Godle", contact: "9028783635" },
       { name: "Shahaji Bhosle", contact: "8308949481" },
+=======
+      "T20 format matches",
+      "Each team gets 20 overs",
+      "Powerplay rules in effect",
+      "Maximum 16 players per squad",
+>>>>>>> df735b6b997e5e52faef01e61cdcf87f9a0442ee
+    ],
+    coordinators: [
+      { name: "Pranav Godle", phone: "9028783635" },
+      { name: "Shahaji Bhosle", phone: "8308949481" },
     ],
     registrationStatus: "open",
   },
@@ -389,6 +408,10 @@ const sportsData = [
     coordinators: [
       { name: "Maitreyi Bhumbar", contact: "8788183714" },
       { name: "Harsh Marodkar", contact: "8208016898" },
+    ],
+    coordinators: [
+      { name: "Maitreyi Bhumbar", phone: "8788183714" },
+      { name: "Harsh Marodkar", phone: "8208016898" },
     ],
     registrationStatus: "open",
   },
@@ -420,6 +443,10 @@ const sportsData = [
       { name: "Harsh Keshkar", contact: "8010529661" },
       { name: "Aditi Phulare", contact: "8669995909" },
     ],
+    coordinators: [
+      { name: "Harsh Keshkar", phone: "8010529661" },
+      { name: "Aditi Phulare", phone: "8669995909" },
+    ],
     registrationStatus: "open",
   },
   {
@@ -447,6 +474,10 @@ const sportsData = [
     coordinators: [
       { name: "Aditya Joshi", contact: "7820939780" },
       { name: "Amarja Dhepe", contact: "9552110021" },
+    ],
+    coordinators: [
+      { name: "Aditya Joshi", phone: "7820939780" },
+      { name: "Amarja Dhepe", phone: "9552110021" },
     ],
     registrationStatus: "open",
   },
@@ -478,6 +509,11 @@ const sportsData = [
       { name: "Sonam Chandel", contact: "8329513257" },
       { name: "Chetan Bante", contact: "8263945881" },
     ],
+    coordinators: [
+      { name: "Shubham Kale", phone: "7378409793" },
+      { name: "Sonam Chandel", phone: "8329513257" },
+      { name: "Chetan Bante", phone: "8263945881" },
+    ],
     registrationStatus: "open",
   },
   {
@@ -504,6 +540,10 @@ const sportsData = [
     coordinators: [
       { name: "Sarthak Rahut", contact: "8788380729" },
       { name: "Akshit Tupkar", contact: "7028455126" },
+    ],
+    coordinators: [
+      { name: "Sarthak Rahut", phone: "8788380729" },
+      { name: "Akshit Tupkar", phone: "7028455126" },
     ],
     registrationStatus: "open",
   },

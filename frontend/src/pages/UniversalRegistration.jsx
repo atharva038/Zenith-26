@@ -1268,7 +1268,7 @@ const UniversalRegistration = () => {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
               >
-                {/* Fill Test Data Button (Development Tool) */}
+                {/* Fill Test Data Button (Development Tool)
                 {selectedSport && (
                   <button
                     onClick={fillTestData}
@@ -1283,7 +1283,7 @@ const UniversalRegistration = () => {
                     <span>Fill Test Data</span>
                   </button>
                 )}
-                
+                 */}
                 <button
                   onClick={nextStep}
                   disabled={!selectedSport || (hasGenderOptions && !selectedGender)}
