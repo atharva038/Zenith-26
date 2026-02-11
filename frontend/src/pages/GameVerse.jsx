@@ -342,7 +342,7 @@ const sportsData = [
     tagline: "Gentleman's Game",
     description:
       "Step up to the crease and showcase your batting, bowling, and fielding skills in the most exciting cricket tournament of the year.",
-    date: "February 20-22, 2026",
+    date: "February 16-19, 2026",
     venue: "Cricket Ground",
     teamSize: "11 vs 11",
     registrationFee: "₹6500 per team",
@@ -350,7 +350,6 @@ const sportsData = [
       "T20 format matches",
       "Each team gets 20 overs",
       "Powerplay rules in effect",
-      "DRS available for semi-finals onwards",
       "Maximum 16 players per squad",
     ],
     coordinators: [
