@@ -5,6 +5,7 @@ import {toast} from "react-toastify";
 import api from "../config/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import PageLikePoll from "../components/PageLikePoll";
 
 /**
  * Natural Easing Curves for smooth, organic motion
@@ -436,6 +437,9 @@ const MarathonPage = () => {
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
       {/* Navigation */}
       <Navbar />
+
+      {/* Page Like Poll */}
+      <PageLikePoll pageName="marathon" />
 
       {/* ═══════════════════════════════════════════════════════════════════
           LANGUAGE TOGGLE - Floating Premium Button

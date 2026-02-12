@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useRegistrationStatus } from "../hooks/useRegistrationStatus";
 import RegistrationClosed from "../components/RegistrationClosed";
+import PageLikePoll from "../components/PageLikePoll";
 
 // Enhanced keyframes for premium animations
 const premiumKeyframes = `
@@ -570,6 +571,9 @@ const SportsGrid = () => {
       <style>{premiumKeyframes}</style>
       
       <Navbar />
+
+      {/* Page Like Poll */}
+      <PageLikePoll pageName="sports" />
 
       {/* Animated background elements - pure CSS, no canvas */}
       <div className="fixed inset-0 pointer-events-none z-0">

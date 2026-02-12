@@ -3,6 +3,7 @@ import {motion, AnimatePresence, useMotionValue, useSpring} from "framer-motion"
 import api from "../config/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import PageLikePoll from "../components/PageLikePoll";
 
 const TeamPage = () => {
   const [activeCommittee, setActiveCommittee] = useState("ALL");
@@ -544,6 +545,9 @@ const TeamPage = () => {
       </div>
       
       <Navbar />
+
+      {/* Page Like Poll */}
+      <PageLikePoll pageName="team" />
 
       {/* ============ REVEAL CIRCLE HERO ============ */}
       <section 

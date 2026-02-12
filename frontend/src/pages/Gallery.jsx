@@ -3,6 +3,7 @@ import {getAllMedia} from "../services/mediaService";
 import {motion, AnimatePresence} from "framer-motion";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import PageLikePoll from "../components/PageLikePoll";
 
 const Gallery = () => {
   const [media, setMedia] = useState([]);
@@ -90,6 +91,9 @@ const Gallery = () => {
     <div className="relative min-h-screen bg-gradient-to-br from-black via-[#0a0604] to-black text-white">
       {/* Navigation */}
       <Navbar />
+
+      {/* Page Like Poll */}
+      <PageLikePoll pageName="gallery" />
 
       <div className="container mx-auto px-4 pt-32 pb-20">
         {/* Header */}

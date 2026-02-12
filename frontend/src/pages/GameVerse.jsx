@@ -12,6 +12,7 @@ import SportModal from "../components/gameverse/SportModal";
 import GamerverseLoading from "../components/gameverse/GamerverseLoading";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRegistrationStatus } from "../hooks/useRegistrationStatus";
+import PageLikePoll from "../components/PageLikePoll";
 import * as THREE from "three";
 
 // Cinematic Nebula + Galaxy Background
@@ -1153,6 +1154,9 @@ export default function GameVerse() {
 
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden">
+      {/* Page Like Poll */}
+      <PageLikePoll pageName="gameverse" />
+
       {/* 3D Canvas Loading Animation - GPU ACCELERATED */}
       <AnimatePresence>
         {isLoading && (

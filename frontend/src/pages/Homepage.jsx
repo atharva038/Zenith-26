@@ -24,6 +24,7 @@ import WomenTournamentPreview from "../components/WomenTournamentPreview";
 import MentorsSection from "../components/MentorsSection";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import PageLikePoll from "../components/PageLikePoll";
 import logo from "../assets/logo.png";
 
 // Register GSAP ScrollTrigger
@@ -165,6 +166,9 @@ export default function Homepage() {
 
   return (
     <div className="relative min-h-screen bg-black text-white overflow-hidden">
+      {/* Page Like Poll */}
+      <PageLikePoll pageName="home" />
+
       {/* Navigation */}
       <Navbar />
 
