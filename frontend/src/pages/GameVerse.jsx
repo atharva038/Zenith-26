@@ -513,17 +513,16 @@ const sportsData = [
       "Battle of minds! Outthink your opponents in intense chess matches. Strategic thinking and tactical brilliance will reign supreme.",
     date: "February 20-22, 2026",
     venue: "Conference Hall A",
-    teamSize: "Both (Men & Women) - Team & Individual",
-    registrationFee: "Men: ₹500 | Women: ₹400 per team",
+    teamSize: "Mixed - Team (4 players) & Solo",
+    registrationFee: "Team: ₹500 | Solo: ₹200",
     rules: [
+      "Team & Individual events (mixed)",
+      "Team: 4 players per team",
+      "Solo: Individual competition",
       "FIDE & Swiss system rules",
       "No electronic devices",
       "Bring own chess clock",
       "20 minutes early reporting",
-    ],
-    coordinators: [
-      { name: "Sarthak Rahut", contact: "8788380729" },
-      { name: "Akshit Tupkar", contact: "7028455126" },
     ],
     coordinators: [
       { name: "Sarthak Rahut", phone: "8788380729" },

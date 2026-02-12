@@ -98,10 +98,11 @@ const SPORTS_DATA = {
   },
   Badminton: {
     name: "Badminton Tournament",
-    fees: { men: 1000, women: 800, note: "per team" },
+    fees: { team: 1000, note: "per team (mixed)" },
     venue: "Indoor Badminton Courts",
     rules: [
       "Maximum 5 players per team",
+      "Mixed team (Men & Women)",
       "Best of 3 games (15 points each)",
       "Bring own kit",
       "SPPU rules applicable",
@@ -125,11 +126,13 @@ const SPORTS_DATA = {
     coordinators: [{ name: "Pooja Reddy", phone: "9876543217" }],
   },
   Chess: {
-    fees: { men: 500, women: 400, note: "per team" },
+    fees: { team: 500, individual: 200, note: "team ₹500 | solo ₹200 (mixed)" },
     name: "Chess Tournament",
     venue: "Auditorium",
     rules: [
-      "Team & Individual events",
+      "Team & Individual events (mixed)",
+      "Team: 4 players per team",
+      "Solo: Individual competition",
       "FIDE & Swiss system rules", 
       "No electronic devices",
       "Bring own chess clock",
@@ -369,6 +372,7 @@ const TEAM_SPORTS_CONFIG = {
   "Hockey": { minPlayers: 11, maxPlayers: 18, exactPlayers: null },
   "Rink Football": { minPlayers: 5, maxPlayers: 10, exactPlayers: null },
   "Handball": { minPlayers: 7, maxPlayers: 14, exactPlayers: null },
+  "Chess": { minPlayers: 4, maxPlayers: 4, exactPlayers: 4 }, // Team Chess: exactly 4 players
 };
 
 const UniversalRegistration = () => {
@@ -618,14 +622,39 @@ const UniversalRegistration = () => {
   }, [registrationComplete]);
 
   const selectedSportData = selectedSport ? SPORTS_DATA[selectedSport] : null;
-  const isTeamSport = TEAM_SPORTS.includes(selectedSport);
-  const teamConfig = isTeamSport ? TEAM_SPORTS_CONFIG[selectedSport] : null;
+  // Check if sport is a team sport
+  // For sports with team/individual options (Chess), consider it a team sport ONLY if "team" is selected
+  const isTeamSport = TEAM_SPORTS.includes(selectedSport) || 
+                      (selectedSport === "Chess" && selectedGender === "team");
+  const teamConfig = (isTeamSport || selectedSport === "Chess") ? TEAM_SPORTS_CONFIG[selectedSport] : null;
   const hasGenderOptions = selectedSportData?.fees && (selectedSportData.fees.men || selectedSportData.fees.women);
+  const hasTeamIndividualOptions = selectedSportData?.fees && (selectedSportData.fees.team && selectedSportData.fees.individual);
   
-  // Gender selection handler
+  // Gender/Team-Individual selection handler
   const handleGenderSelect = (gender) => {
     setSelectedGender(gender);
-    toast.success(`${gender === 'men' ? 'Men\'s' : 'Women\'s'} category selected! 👥`);
+    
+    // Auto-set num_players for Chess registration
+    if (selectedSport === "Chess") {
+      if (gender === "team") {
+        setFormData(prev => ({ ...prev, num_players: "4" }));
+      } else if (gender === "individual") {
+        // Clear num_players for solo registration
+        setFormData(prev => ({ ...prev, num_players: "1" }));
+      }
+    }
+    
+    if (hasTeamIndividualOptions) {
+      // For Chess: team or individual
+      toast.success(`${gender === 'team' ? 'Team' : 'Solo'} registration selected! ${gender === 'team' ? '👥' : '🎯'}`, {
+        autoClose: 2000
+      });
+    } else {
+      // For gender-based sports
+      toast.success(`${gender === 'men' ? 'Men\'s' : 'Women\'s'} category selected! 👥`, {
+        autoClose: 2000
+      });
+    }
   };
   
   // Get appropriate fee display
@@ -635,6 +664,19 @@ const UniversalRegistration = () => {
     if (typeof selectedSportData.fees === 'object' && selectedSportData.fees.amount) {
       // Single fee structure
       return `₹${selectedSportData.fees.amount} ${selectedSportData.fees.note || ""}`;
+    } else if (typeof selectedSportData.fees === 'object' && (selectedSportData.fees.team && selectedSportData.fees.individual)) {
+      // Team/Individual fees (Chess, Athletics)
+      if (selectedGender === 'team' && selectedSportData.fees.team) {
+        return `₹${selectedSportData.fees.team} ${selectedSportData.fees.note || ""}`;
+      } else if (selectedGender === 'individual' && selectedSportData.fees.individual) {
+        return `₹${selectedSportData.fees.individual} ${selectedSportData.fees.note || ""}`;
+      } else if (!selectedGender) {
+        // Show both options if no selection
+        const teamFee = selectedSportData.fees.team ? `Team: ₹${selectedSportData.fees.team}` : "";
+        const individualFee = selectedSportData.fees.individual ? `Solo: ₹${selectedSportData.fees.individual}` : "";
+        const note = selectedSportData.fees.note ? ` ${selectedSportData.fees.note}` : "";
+        return [teamFee, individualFee].filter(Boolean).join(" | ") + note;
+      }
     } else if (typeof selectedSportData.fees === 'object' && (selectedSportData.fees.men || selectedSportData.fees.women)) {
       // Gender-based fees
       if (selectedGender === 'men' && selectedSportData.fees.men) {
@@ -732,9 +774,13 @@ const UniversalRegistration = () => {
         toast.error("Please enter a valid email address");
         return;
       }
-      // Validate gender selection for sports with gender options
+      // Validate category selection for sports with options
       if (hasGenderOptions && !selectedGender) {
         toast.error("Please select Men's or Women's category");
+        return;
+      }
+      if (hasTeamIndividualOptions && !selectedGender) {
+        toast.error("Please select Team or Solo registration type");
         return;
       }
     }
@@ -1016,6 +1062,8 @@ const UniversalRegistration = () => {
         sport: selectedSport,
         sport_name: selectedSportData.name,
         gender_category: selectedGender || null,
+        // For solo sports, set accommodation_people to 1 if accommodation is needed
+        accommodation_people: !isTeamSport && formData.need_accommodation ? "1" : formData.accommodation_people,
       };
 
       // Add team members if team sport
@@ -1283,6 +1331,72 @@ const UniversalRegistration = () => {
                   </div>
                 )}
                 
+                {/* Team/Individual Selection for Chess and similar sports */}
+                {hasTeamIndividualOptions && (
+                  <div className="mt-6">
+                    <h3 className="text-lg font-semibold text-[#ffb77a] mb-4">
+                      Select Registration Type *
+                    </h3>
+                    <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handleGenderSelect('team')}
+                        className={`
+                          relative p-4 rounded-xl transition-all duration-300 text-center
+                          ${
+                            selectedGender === 'team'
+                              ? "bg-gradient-to-br from-purple-600 to-purple-700 shadow-lg shadow-purple-600/20"
+                              : "bg-[#1a1410]/50 border border-[#3a2416] hover:border-purple-500/50"
+                          }
+                        `}
+                      >
+                        <div className="text-2xl mb-2">👥</div>
+                        <div className="font-semibold">Team Registration</div>
+                        <div className="text-sm text-gray-400">₹{selectedSportData.fees.team}</div>
+                        <div className="text-xs text-gray-500 mt-1">4 players per team</div>
+                        {selectedGender === 'team' && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
+                          >
+                            <span className="text-purple-600 text-xs">✓</span>
+                          </motion.div>
+                        )}
+                      </motion.button>
+                      
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handleGenderSelect('individual')}
+                        className={`
+                          relative p-4 rounded-xl transition-all duration-300 text-center
+                          ${
+                            selectedGender === 'individual'
+                              ? "bg-gradient-to-br from-green-600 to-green-700 shadow-lg shadow-green-600/20"
+                              : "bg-[#1a1410]/50 border border-[#3a2416] hover:border-green-500/50"
+                          }
+                        `}
+                      >
+                        <div className="text-2xl mb-2">🎯</div>
+                        <div className="font-semibold">Solo Registration</div>
+                        <div className="text-sm text-gray-400">₹{selectedSportData.fees.individual}</div>
+                        <div className="text-xs text-gray-500 mt-1">Individual player</div>
+                        {selectedGender === 'individual' && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
+                          >
+                            <span className="text-green-600 text-xs">✓</span>
+                          </motion.div>
+                        )}
+                      </motion.button>
+                    </div>
+                  </div>
+                )}
+                
                 <div className="flex flex-col items-center justify-center gap-2 mt-6">
                   <div className="flex items-center gap-2 text-gray-400">
                     <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
@@ -1294,7 +1408,7 @@ const UniversalRegistration = () => {
                     {/* Fee Display */}
                     <div className="px-4 py-2 bg-[#ff6b35]/20 border border-[#ff6b35] rounded-full">
                       <p className="text-sm md:text-base font-bold text-[#ffb77a]">
-                        Fee: ₹{getDisplayFee()}
+                        Fee: {getDisplayFee()}
                       </p>
                     </div>
                     
@@ -1488,7 +1602,7 @@ const UniversalRegistration = () => {
                     animate={{ opacity: 1, height: "auto" }}
                     className="grid grid-cols-2 gap-4"
                   >
-                    <div className="relative">
+                    <div className={`relative ${!isTeamSport ? 'col-span-2' : ''}`}>
                       <input
                         type="number"
                         value={formData.accommodation_days}
@@ -1504,22 +1618,25 @@ const UniversalRegistration = () => {
                         No. of Days
                       </label>
                     </div>
-                    <div className="relative">
-                      <input
-                        type="number"
-                        value={formData.accommodation_people}
-                        onChange={(e) => handleInputChange("accommodation_people", e.target.value)}
-                        className="w-full bg-[#0a0604] border border-[#3a2416] rounded-xl px-4 py-4 text-white placeholder-transparent peer focus:outline-none focus:border-[#ff6b35]"
-                        placeholder="People"
-                        id="accommodation_people"
-                      />
-                      <label
-                        htmlFor="accommodation_people"
-                        className="absolute left-4 -top-2.5 bg-[#0a0604] px-2 text-sm text-[#ff6b35]"
-                      >
-                        No. of People
-                      </label>
-                    </div>
+                    {/* Only show people count for team sports */}
+                    {isTeamSport && (
+                      <div className="relative">
+                        <input
+                          type="number"
+                          value={formData.accommodation_people}
+                          onChange={(e) => handleInputChange("accommodation_people", e.target.value)}
+                          className="w-full bg-[#0a0604] border border-[#3a2416] rounded-xl px-4 py-4 text-white placeholder-transparent peer focus:outline-none focus:border-[#ff6b35]"
+                          placeholder="People"
+                          id="accommodation_people"
+                        />
+                        <label
+                          htmlFor="accommodation_people"
+                          className="absolute left-4 -top-2.5 bg-[#0a0604] px-2 text-sm text-[#ff6b35]"
+                        >
+                          No. of People
+                        </label>
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </div>
@@ -1595,7 +1712,11 @@ const UniversalRegistration = () => {
                 <h3 className="text-2xl md:text-3xl font-bold text-[#ffb77a] mb-2">
                   Build Your Team
                 </h3>
-                <p className="text-gray-400">Add your team members</p>
+                <p className="text-gray-400">
+                  {selectedSport === "Chess" && selectedGender === "team" 
+                    ? "Add exactly 4 team members for Chess team event" 
+                    : "Add your team members"}
+                </p>
               </div>
 
               <div className="bg-[#1a1410]/30 backdrop-blur-sm border border-[#3a2416] rounded-2xl p-6 md:p-8 space-y-6">
@@ -1628,12 +1749,13 @@ const UniversalRegistration = () => {
                     id="num_players"
                     min={teamConfig?.minPlayers}
                     max={teamConfig?.maxPlayers || teamConfig?.exactPlayers}
+                    readOnly={selectedSport === "Chess" && selectedGender === "team"}
                   />
                   <label
                     htmlFor="num_players"
                     className="absolute left-4 -top-2.5 bg-[#0a0604] px-2 text-sm text-[#ff6b35] transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-focus:-top-2.5 peer-focus:text-[#ff6b35] peer-focus:text-sm"
                   >
-                    Number of Players *
+                    Number of Players * {selectedSport === "Chess" && selectedGender === "team" && "(Fixed at 4)"}
                   </label>
                   {/* **REQUIREMENT BADGE** */}
                   {teamConfig && (
@@ -2168,7 +2290,7 @@ const UniversalRegistration = () => {
                     )}
                     {formData.need_accommodation && (
                       <div>
-                        <span className="text-gray-400">Accommodation:</span> Yes ({formData.accommodation_days} days, {formData.accommodation_people} people)
+                        <span className="text-gray-400">Accommodation:</span> Yes ({formData.accommodation_days} days{isTeamSport ? `, ${formData.accommodation_people} people` : ', 1 person'})
                       </div>
                     )}
                   </div>

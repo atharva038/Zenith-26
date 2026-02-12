@@ -216,19 +216,8 @@ export const createSportsRegistration = async (req, res) => {
       });
     }
 
-    // Check for duplicate registration (same sport and email)
-    const existingRegistration = await Registration.findOne({
-      eventName: sportName,
-      email,
-    });
-
-    if (existingRegistration) {
-      return res.status(400).json({
-        success: false,
-        message: `You have already registered for ${sportName}`,
-        registrationNumber: existingRegistration.registrationNumber,
-      });
-    }
+    // NOTE: Duplicate registration check REMOVED - users can register multiple times for same sport
+    // This allows team changes or re-registrations
 
     // Create a virtual eventId for sports (use sport name as identifier)
     const virtualEventId = new mongoose.Types.ObjectId();

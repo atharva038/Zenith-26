@@ -40,9 +40,9 @@ const SPORTS_FEES = {
   "Football": { amount: 3000, note: "per team" },
   "Basketball": { men: 2500, women: 1500, note: "per team" },
   "Volleyball": { men: 2200, women: 1500, note: "per team" },
-  "Badminton": { men: 500, women: 400, note: "per player" },
+  "Badminton": { team: 1000, note: "per team (mixed)" },
   "Table Tennis": { amount: 400, note: "per player" },
-  "Chess": { amount: 200, note: "per player (Open to all age groups)" },
+  "Chess": { team: 500, individual: 200, note: "Team: ₹500 per team | Solo: ₹200 per player (mixed)" },
   "Carrom": { amount: 300, note: "per player" },
   "Athletics": { individual: 200, team: 700, note: "Individual: ₹200 per athlete | Team: ₹700 per team" },
   "Swimming": { amount: 300, note: "per athlete" },
@@ -68,8 +68,62 @@ const getExpectedFee = (sportName) => {
     return `Men: ₹${feeInfo.men} | Women: ₹${feeInfo.women} (${feeInfo.note})`;
   } else if (feeInfo.individual && feeInfo.team) {
     return `${feeInfo.note}`;
+  } else if (feeInfo.team && !feeInfo.individual) {
+    return `₹${feeInfo.team} (${feeInfo.note})`;
   }
   return "N/A";
+};
+
+// Helper function to get category badge info for a registration
+// Handles Chess Team/Solo separately from Men's/Women's sports
+const getCategoryBadgeInfo = (eventName, formData) => {
+  const genderCategory = formData?.gender_category || 
+                         formData?.get?.('gender_category') ||
+                         formData?.sportDetails?.selectedGender;
+  
+  if (!genderCategory) return null;
+  
+  // Chess and Badminton are mixed sports - show Team/Solo instead of Men/Women
+  if (eventName === 'Chess') {
+    if (genderCategory === 'team') {
+      return {
+        label: '👥 Team',
+        shortLabel: '👥 Team',
+        className: 'bg-purple-500/20 text-purple-300 border-purple-500/20',
+        detailClassName: 'bg-purple-500/10 text-purple-400 border border-purple-500/20',
+        isTeam: true
+      };
+    } else if (genderCategory === 'individual') {
+      return {
+        label: '🎯 Solo',
+        shortLabel: '🎯 Solo',
+        className: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/20',
+        detailClassName: 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20',
+        isTeam: false
+      };
+    }
+  }
+  
+  // For all other sports with gender categories
+  if (genderCategory === 'men') {
+    return {
+      label: "👨 Men's Registration",
+      shortLabel: "👨 Men's",
+      className: 'bg-blue-500/20 text-blue-300',
+      detailClassName: 'bg-blue-500/10 text-blue-400 border border-blue-500/20',
+      isTeam: true // Men's sports are typically team sports
+    };
+  } else if (genderCategory === 'women') {
+    return {
+      label: "👩 Women's Registration",
+      shortLabel: "👩 Women's",
+      className: 'bg-pink-500/20 text-pink-300',
+      detailClassName: 'bg-pink-500/10 text-pink-400 border border-pink-500/20',
+      isTeam: true // Women's sports are typically team sports
+    };
+  }
+  
+  return null;
 };
 
 const AdminSportsRegistrations = () => {
@@ -674,24 +728,16 @@ const AdminSportsRegistrations = () => {
                                 <span className="px-3 py-1 bg-purple-500/10 text-purple-400 rounded-lg font-medium">
                                   {reg.eventName}
                                 </span>
-                                {/* Gender Category Badge */}
-                                {(formData.gender_category || 
-                                  formData.get?.('gender_category') ||
-                                  formData.sportDetails?.selectedGender) && (
-                                  <span className={`text-xs px-2 py-0.5 rounded-md font-semibold w-fit ${
-                                    (formData.gender_category || 
-                                     formData.get?.('gender_category') ||
-                                     formData.sportDetails?.selectedGender) === 'men'
-                                      ? 'bg-blue-500/20 text-blue-300'
-                                      : 'bg-pink-500/20 text-pink-300'
-                                  }`}>
-                                    {(formData.gender_category || 
-                                      formData.get?.('gender_category') ||
-                                      formData.sportDetails?.selectedGender) === 'men' 
-                                      ? "👨 Men's" 
-                                      : "👩 Women's"}
-                                  </span>
-                                )}
+                                {/* Category Badge (Team/Solo for Chess, Men's/Women's for others) */}
+                                {(() => {
+                                  const badgeInfo = getCategoryBadgeInfo(reg.eventName, formData);
+                                  if (!badgeInfo) return null;
+                                  return (
+                                    <span className={`text-xs px-2 py-0.5 rounded-md font-semibold w-fit ${badgeInfo.className}`}>
+                                      {badgeInfo.shortLabel}
+                                    </span>
+                                  );
+                                })()}
                               </div>
                             </td>
                             <td className="px-6 py-4 text-sm text-white font-medium">
@@ -707,9 +753,23 @@ const AdminSportsRegistrations = () => {
                               {reg.institution || "N/A"}
                             </td>
                             <td className="px-6 py-4 text-sm text-gray-300">
-                              <span className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded-lg font-medium">
-                                {formData.num_players || formData.get?.('num_players') || "N/A"}
-                              </span>
+                              {/* Show player count only for team registrations, not solo */}
+                              {(() => {
+                                const badgeInfo = getCategoryBadgeInfo(reg.eventName, formData);
+                                // If it's a solo registration, show "1" or dash
+                                if (badgeInfo && !badgeInfo.isTeam) {
+                                  return (
+                                    <span className="px-2 py-1 bg-gray-500/10 text-gray-400 rounded-lg font-medium">
+                                      1
+                                    </span>
+                                  );
+                                }
+                                return (
+                                  <span className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded-lg font-medium">
+                                    {formData.num_players || formData.get?.('num_players') || "N/A"}
+                                  </span>
+                                );
+                              })()}
                             </td>
                             <td className="px-6 py-4 text-sm">
                               <span
@@ -823,24 +883,16 @@ const AdminSportsRegistrations = () => {
                               <span className="px-2 py-1 bg-red-500/10 text-red-400 rounded-lg text-xs">
                                 {reg.eventName}
                               </span>
-                              {/* Gender Category Badge */}
-                              {(formData.gender_category || 
-                                formData.get?.('gender_category') ||
-                                formData.sportDetails?.selectedGender) && (
-                                <span className={`text-xs px-2 py-0.5 rounded-md font-semibold w-fit ${
-                                  (formData.gender_category || 
-                                   formData.get?.('gender_category') ||
-                                   formData.sportDetails?.selectedGender) === 'men'
-                                    ? 'bg-blue-500/20 text-blue-300'
-                                    : 'bg-pink-500/20 text-pink-300'
-                                }`}>
-                                  {(formData.gender_category || 
-                                    formData.get?.('gender_category') ||
-                                    formData.sportDetails?.selectedGender) === 'men' 
-                                    ? "👨 Men's" 
-                                    : "👩 Women's"}
-                                </span>
-                              )}
+                              {/* Category Badge (Team/Solo for Chess, Men's/Women's for others) */}
+                              {(() => {
+                                const badgeInfo = getCategoryBadgeInfo(reg.eventName, formData);
+                                if (!badgeInfo) return null;
+                                return (
+                                  <span className={`text-xs px-2 py-0.5 rounded-md font-semibold w-fit ${badgeInfo.className}`}>
+                                    {badgeInfo.shortLabel}
+                                  </span>
+                                );
+                              })()}
                             </div>
                           </td>
                           <td className="px-6 py-3 text-sm text-gray-300">
@@ -946,27 +998,19 @@ const AdminSportsRegistrations = () => {
                           {selectedRegistration.eventName}
                         </span>
                       </p>
-                      {/* Gender Category */}
-                      {(selectedRegistration.formData?.gender_category || 
-                        selectedRegistration.formData?.get?.('gender_category') ||
-                        selectedRegistration.formData?.sportDetails?.selectedGender) && (
-                        <p className="text-gray-300">
-                          <span className="text-white font-semibold">Category:</span>{" "}
-                          <span className={`px-3 py-1 rounded-lg ml-2 font-semibold ${
-                            (selectedRegistration.formData?.gender_category || 
-                             selectedRegistration.formData?.get?.('gender_category') ||
-                             selectedRegistration.formData?.sportDetails?.selectedGender) === 'men'
-                              ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                              : 'bg-pink-500/10 text-pink-400 border border-pink-500/20'
-                          }`}>
-                            {(selectedRegistration.formData?.gender_category || 
-                              selectedRegistration.formData?.get?.('gender_category') ||
-                              selectedRegistration.formData?.sportDetails?.selectedGender) === 'men' 
-                              ? "👨 Men's Registration" 
-                              : "👩 Women's Registration"}
-                          </span>
-                        </p>
-                      )}
+                      {/* Category Badge (Team/Solo for Chess, Men's/Women's for others) */}
+                      {(() => {
+                        const badgeInfo = getCategoryBadgeInfo(selectedRegistration.eventName, selectedRegistration.formData);
+                        if (!badgeInfo) return null;
+                        return (
+                          <p className="text-gray-300">
+                            <span className="text-white font-semibold">Category:</span>{" "}
+                            <span className={`px-3 py-1 rounded-lg ml-2 font-semibold ${badgeInfo.detailClassName}`}>
+                              {badgeInfo.label}
+                            </span>
+                          </p>
+                        );
+                      })()}
                       <p className="text-gray-300">
                         <span className="text-white font-semibold">Registration Date:</span>{" "}
                         {new Date(selectedRegistration.createdAt).toLocaleDateString()}
@@ -974,25 +1018,33 @@ const AdminSportsRegistrations = () => {
                     </div>
                   </div>
 
-                  {/* Team Information */}
-                  <div className="bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-5 border border-gray-800">
-                    <h3 className="text-lg font-semibold text-blue-400 mb-4 flex items-center gap-2">
-                      <span className="w-1 h-5 bg-blue-500 rounded-full"></span>
-                      Team Information
-                    </h3>
-                    <div className="space-y-3">
-                      <p className="text-gray-300">
-                        <span className="text-white font-semibold">Team Name:</span>{" "}
-                        {selectedRegistration.formData?.team_name || selectedRegistration.formData?.get?.('team_name') || "N/A"}
-                      </p>
-                      <p className="text-gray-300">
-                        <span className="text-white font-semibold">Number of Players:</span>{" "}
-                        <span className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded-lg ml-2">
-                          {selectedRegistration.formData?.num_players || selectedRegistration.formData?.get?.('num_players') || "N/A"}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
+                  {/* Team Information - Only show for team registrations (not Chess solo) */}
+                  {(() => {
+                    const badgeInfo = getCategoryBadgeInfo(selectedRegistration.eventName, selectedRegistration.formData);
+                    // Show team info if: no badge info (default team sport) OR isTeam is true
+                    const showTeamInfo = !badgeInfo || badgeInfo.isTeam;
+                    if (!showTeamInfo) return null;
+                    return (
+                      <div className="bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-5 border border-gray-800">
+                        <h3 className="text-lg font-semibold text-blue-400 mb-4 flex items-center gap-2">
+                          <span className="w-1 h-5 bg-blue-500 rounded-full"></span>
+                          Team Information
+                        </h3>
+                        <div className="space-y-3">
+                          <p className="text-gray-300">
+                            <span className="text-white font-semibold">Team Name:</span>{" "}
+                            {selectedRegistration.formData?.team_name || selectedRegistration.formData?.get?.('team_name') || "N/A"}
+                          </p>
+                          <p className="text-gray-300">
+                            <span className="text-white font-semibold">Number of Players:</span>{" "}
+                            <span className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded-lg ml-2">
+                              {selectedRegistration.formData?.num_players || selectedRegistration.formData?.get?.('num_players') || "N/A"}
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   {/* Captain Information */}
                   <div className="bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-5 border border-gray-800">
