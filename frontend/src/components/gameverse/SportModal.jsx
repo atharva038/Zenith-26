@@ -24,25 +24,26 @@ export default function SportModal({ isOpen, onClose, sport, onRegister, isRegis
 
           {/* Modal - Responsive */}
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center 
-                       p-2 sm:p-4 md:p-6"
+            className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            onClick={onClose}
           >
-            <div
-              className="bg-gradient-to-br from-black via-gray-900 to-black 
-                           border-2 border-[#ffb36a] 
-                           rounded-lg sm:rounded-xl md:rounded-2xl 
-                           max-w-2xl w-full 
-                           max-h-[95vh] sm:max-h-[90vh] 
-                           overflow-y-auto 
-                           shadow-2xl shadow-[#ffb36a]/20"
-            >
-              {/* Header - Responsive */}
               <div
-                className="relative 
+                onClick={(e) => e.stopPropagation()}
+                onWheel={(e) => e.stopPropagation()}
+                className="bg-gradient-to-br from-black via-gray-900 to-black 
+                             border-2 border-[#ffb36a] 
+                             rounded-lg sm:rounded-xl md:rounded-2xl 
+                             max-w-2xl w-full max-h-[90vh]
+                             shadow-2xl shadow-[#ffb36a]/20 flex flex-col"
+                style={{ overflow: "hidden" }}
+              >
+              {/* Header - Fixed */}
+              <div
+                className="relative flex-shrink-0
                              p-4 pb-3 sm:p-6 sm:pb-4 md:p-8 md:pb-6 
                              border-b border-[#ffb36a]/30"
               >
@@ -78,8 +79,15 @@ export default function SportModal({ isOpen, onClose, sport, onRegister, isRegis
                 </div>
               </div>
 
-              {/* Content - Responsive */}
-              <div className="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-5 md:space-y-6">
+              {/* Scrollable Content */}
+              <div 
+                className="flex-1 p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-5 md:space-y-6 custom-scrollbar"
+                style={{
+                  overflowY: "auto",
+                  overflowX: "hidden",
+                  maxHeight: "calc(90vh - 150px)",
+                }}
+              >
                 {/* Description */}
                 <div>
                   <h3 className="text-lg sm:text-xl font-bold text-[#ffb36a] mb-1.5 sm:mb-2">
@@ -270,6 +278,27 @@ export default function SportModal({ isOpen, onClose, sport, onRegister, isRegis
           </motion.div>
         </>
       )}
+
+      {/* Minimal Scrollbar Styles */}
+      <style jsx>{`
+        .custom-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(255, 179, 106, 0.3) transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 179, 106, 0.3);
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 179, 106, 0.5);
+        }
+      `}</style>
     </AnimatePresence>
   );
 }

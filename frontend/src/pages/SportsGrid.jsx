@@ -365,8 +365,8 @@ const sportsData = [
       "Maximum squad: 10 players",
     ],
     coordinators: [
-      { name: "Onkar Sahane", contact: "8767192671" },
-      { name: "Vipakshi Mate", contact: "7972776597" },
+      { name: "Onkar Sahane", phone: "8767192671" },
+      { name: "Vipakshi Mate", phone: "7972776597" },
     ],
     registrationStatus: "open",
   },
@@ -396,8 +396,8 @@ const sportsData = [
       "Age limit: 25 years",
     ],
     coordinators: [
-      { name: "Sairaj Shinde", contact: "8767179744" },
-      { name: "Prem Dhande", contact: "8421230555" },
+      { name: "Sairaj Shinde", phone: "8767179744" },
+      { name: "Prem Dhande", phone: "8421230555" },
     ],
     registrationStatus: "open",
   },
@@ -428,8 +428,8 @@ const sportsData = [
       "Age limit: 25 years",
     ],
     coordinators: [
-      { name: "Dipanshu Sahatpute", contact: "7620666188" },
-      { name: "Shrujan Pal", contact: "8788766970" },
+      { name: "Dipanshu Sahatpute", phone: "7620666188" },
+      { name: "Shrujan Pal", phone: "8788766970" },
     ],
     registrationStatus: "open",
   },
@@ -460,8 +460,8 @@ const sportsData = [
       "Age limit: 25 years",
     ],
     coordinators: [
-      { name: "Tejas Borole", contact: "8767386695" },
-      { name: "Sakshi Done", contact: "9028684180" },
+      { name: "Tejas Borole", phone: "8767386695" },
+      { name: "Sakshi Done", phone: "9028684180" },
     ],
     registrationStatus: "open",
   },
@@ -853,19 +853,21 @@ const SportsGrid = () => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
             onClick={handleCloseModal}
-            className="fixed inset-0 bg-black/95 backdrop-blur-lg z-[1000] flex items-center justify-center p-6 md:p-8 overflow-y-auto"
+            className="fixed inset-0 bg-black/95 backdrop-blur-lg z-[1000] flex items-center justify-center p-4 sm:p-6 md:p-8"
           >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative bg-gradient-to-br from-[#1a0f08]/98 via-black/98 to-[#1a0f08]/98 backdrop-blur-xl border border-orange-500/20 rounded-2xl w-full max-w-2xl max-h-[90vh] shadow-2xl shadow-orange-500/20 flex flex-col my-auto"
-            >
-              {/* Compact Header with Sport Icon & Name */}
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                onClick={(e) => e.stopPropagation()}
+                onWheel={(e) => e.stopPropagation()}
+                className="relative bg-gradient-to-br from-[#1a0f08]/98 via-black/98 to-[#1a0f08]/98 backdrop-blur-xl border border-orange-500/20 rounded-2xl w-full max-w-2xl max-h-[90vh] shadow-2xl shadow-orange-500/20 flex flex-col"
+                style={{ overflow: "hidden" }}
+              >
+              {/* Compact Header with Sport Icon & Name - Fixed */}
               <div
-                className="relative bg-gradient-to-r from-orange-600 via-orange-500 to-red-500 px-6 py-6"
+                className="relative bg-gradient-to-r from-orange-600 via-orange-500 to-red-500 px-6 py-6 flex-shrink-0"
               >
                 {/* Close Button - Inside header, top-right */}
                 <button
@@ -893,8 +895,14 @@ const SportsGrid = () => {
               </div>
 
               {/* Scrollable Content Area */}
-              <div className="flex-1 overflow-y-auto custom-scrollbar" style={{ overscrollBehavior: 'contain' }}>
-                <div className="p-6 md:p-7 space-y-6">
+              <div 
+                className="flex-1 p-6 md:p-7 space-y-6 custom-scrollbar"
+                style={{
+                  overflowY: "auto",
+                  overflowX: "hidden",
+                  maxHeight: "calc(90vh - 180px)",
+                }}
+              >
                   {/* Description */}
                   <div>
                     <h3 className="text-base font-bold text-white mb-3 flex items-center gap-2">
@@ -961,17 +969,16 @@ const SportsGrid = () => {
                               {coord.name}
                             </p>
                             <a
-                              href={`tel:${coord.phone}`}
+                              href={`tel:${coord.phone || coord.contact}`}
                               className="text-sm text-orange-500 hover:text-orange-400 transition-colors font-mono"
                             >
-                              📱 {coord.phone}
+                              📱 {coord.phone || coord.contact}
                             </a>
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
-                </div>
               </div>
 
               {/* Fixed Footer with CTA */}
@@ -1005,21 +1012,24 @@ const SportsGrid = () => {
         )}
       </AnimatePresence>
 
-      {/* Custom Scrollbar Styles */}
+      {/* Minimal Scrollbar Styles */}
       <style jsx>{`
+        .custom-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(249, 115, 22, 0.3) transparent;
+        }
         .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
+          width: 4px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.05);
-          border-radius: 10px;
+          background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(249, 115, 22, 0.5);
-          border-radius: 10px;
+          background: rgba(249, 115, 22, 0.3);
+          border-radius: 4px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(249, 115, 22, 0.8);
+          background: rgba(249, 115, 22, 0.5);
         }
         .delay-1000 {
           animation-delay: 1s;
