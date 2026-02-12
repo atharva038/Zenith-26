@@ -356,26 +356,10 @@ const sportsData = [
     teamSize: "Boys only - 11 playing players",
     registrationFee: "₹6500 per team (Men)",
     rules: [
-<<<<<<< HEAD
-      "15 or 20 overs innings",
-      "Free hit on no-ball",
-      "Super over if tie",
-      "Bowl out in rain",
-      "Max 3-4 overs per bowler",
-      "Turf wickets",
-      "Impact player rule allowed",
-      "Umpire decision final",
-      "Age limit: 25 years",
-    ],
-    coordinators: [
-      { name: "Pranav Godle", contact: "9028783635" },
-      { name: "Shahaji Bhosle", contact: "8308949481" },
-=======
       "T20 format matches",
       "Each team gets 20 overs",
       "Powerplay rules in effect",
       "Maximum 16 players per squad",
->>>>>>> df735b6b997e5e52faef01e61cdcf87f9a0442ee
     ],
     coordinators: [
       { name: "Pranav Godle", phone: "9028783635" },

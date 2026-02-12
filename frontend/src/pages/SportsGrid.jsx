@@ -145,26 +145,10 @@ const sportsData = [
     teamSize: "Boys only - 11 playing players",
     registrationFee: "₹6500 per team (Men)",
     rules: [
-<<<<<<< HEAD
-      "15 or 20 overs innings",
-      "Free hit on no-ball",
-      "Super over if tie",
-      "Bowl out in rain",
-      "Max 3-4 overs per bowler",
-      "Turf wickets",
-      "Impact player rule allowed",
-      "Umpire decision final",
-      "Age limit: 25 years",
-    ],
-    coordinators: [
-      { name: "Pranav Godle", contact: "9028783635" },
-      { name: "Shahaji Bhosle", contact: "8308949481" },
-=======
       "T20 format matches",
       "Each team gets 20 overs",
       "Powerplay rules in effect",
       "Maximum 16 players per squad",
->>>>>>> df735b6b997e5e52faef01e61cdcf87f9a0442ee
     ],
     coordinators: [
       { name: "Pranav Godle", phone: "9028783635" },
@@ -515,8 +499,6 @@ const SportsGrid = () => {
   // Memoized filtered sports - only recalculates when dependencies change
   const filteredSports = useMemo(() => {
     return sportsData.filter((sport) => {
-<<<<<<< HEAD
-=======
       // Check if sport registration is open based on type
       const isCricket = sport.name.toLowerCase().includes('cricket');
       const isRegistrationOpen = isCricket ? isCricketOpen : isOtherSportsOpen;
@@ -527,22 +509,17 @@ const SportsGrid = () => {
       }
       
       const matchesTier = filterTier === "all" || sport.tier === filterTier;
->>>>>>> df735b6b997e5e52faef01e61cdcf87f9a0442ee
       const matchesSearch = sport.name
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
       return matchesSearch;
     });
-<<<<<<< HEAD
-  }, [searchQuery]);
-=======
   }, [filterTier, searchQuery, isCricketOpen, isOtherSportsOpen]);
 
   // Memoized tiers array - calculated once
   const tiers = useMemo(() => {
     return ["all", ...new Set(sportsData.map((s) => s.tier))];
   }, []);
->>>>>>> df735b6b997e5e52faef01e61cdcf87f9a0442ee
 
   // Optimized modal close handler
   const handleCloseModal = useCallback(() => {
@@ -970,39 +947,6 @@ const SportsGrid = () => {
                     </ul>
                   </div>
 
-<<<<<<< HEAD
-                  {/* Coordinators Section */}
-                  {selectedSport.coordinators && selectedSport.coordinators.length > 0 && (
-                    <div>
-                      <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-                        <span className="text-orange-400">📞</span> Event Coordinators
-                      </h3>
-                      <div className="grid grid-cols-1 gap-3">
-                        {selectedSport.coordinators.map((coordinator, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center justify-between bg-orange-500/5 backdrop-blur-sm rounded-lg p-4 border border-orange-500/20 hover:border-orange-500/40 transition-colors"
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                                {coordinator.name.charAt(0)}
-                              </div>
-                              <div>
-                                <p className="text-sm font-semibold text-white">{coordinator.name}</p>
-                                <a 
-                                  href={`tel:+91${coordinator.contact}`}
-                                  className="text-xs text-orange-400 hover:text-orange-300 transition-colors flex items-center gap-1"
-                                >
-                                  <span>📱</span> +91 {coordinator.contact}
-                                </a>
-                              </div>
-                            </div>
-                            <a
-                              href={`tel:+91${coordinator.contact}`}
-                              className="px-4 py-2 bg-gradient-to-r from-orange-500/20 to-red-500/20 hover:from-orange-500/30 hover:to-red-500/30 border border-orange-500/30 rounded-lg text-orange-400 text-xs font-semibold transition-all flex-shrink-0"
-                            >
-                              Call Now
-=======
                   {/* Game Coordinators */}
                   {selectedSport.coordinators && selectedSport.coordinators.length > 0 && (
                     <div>
@@ -1023,7 +967,6 @@ const SportsGrid = () => {
                               className="text-sm text-orange-500 hover:text-orange-400 transition-colors font-mono"
                             >
                               📱 {coord.phone}
->>>>>>> df735b6b997e5e52faef01e61cdcf87f9a0442ee
                             </a>
                           </div>
                         ))}
