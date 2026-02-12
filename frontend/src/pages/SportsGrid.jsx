@@ -63,7 +63,7 @@ const sportsData = [
     glowColor: "rgba(34, 197, 94, 0.4)",
     statusBadge: "OPEN",
     statusIcon: "🔥",
-    ballImage: "/img/sports/football.png",
+    ballImage: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1770888310/zenith-26/sports/zenith-26/sports/football.jpg",
     tier: "Premium",
     tagline: "The Beautiful Game",
     description:
@@ -99,7 +99,7 @@ const sportsData = [
     glowColor: "rgba(249, 115, 22, 0.4)",
     statusBadge: "OPEN",
     statusIcon: "🔥",
-    ballImage: "/img/sports/basketball.png",
+    ballImage: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1770888299/zenith-26/sports/zenith-26/sports/basketball.jpg",
     tier: "Premium",
     tagline: "Hoop Dreams",
     description:
@@ -136,7 +136,7 @@ const sportsData = [
     glowColor: "rgba(37, 99, 235, 0.4)",
     statusBadge: "POPULAR",
     statusIcon: "⭐",
-    ballImage: "/img/sports/cricket.png",
+    ballImage: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1770888308/zenith-26/sports/zenith-26/sports/cricket.jpg",
     tier: "Premium",
     tagline: "Gentleman's Game",
     description:
@@ -167,7 +167,7 @@ const sportsData = [
     glowColor: "rgba(6, 182, 212, 0.4)",
     statusBadge: "OPEN",
     statusIcon: "🔥",
-    ballImage: "/img/sports/volleyball.png",
+    ballImage: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1770888390/zenith-26/sports/zenith-26/sports/volleyball.jpg",
     tier: "Premium",
     tagline: "Spike It High",
     description:
@@ -203,7 +203,7 @@ const sportsData = [
     glowColor: "rgba(132, 204, 22, 0.4)",
     statusBadge: "OPEN",
     statusIcon: "⚡",
-    ballImage: "/img/sports/badminton.jpeg",
+    ballImage: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1770888297/zenith-26/sports/zenith-26/sports/badminton.jpg",
     tier: "Popular",
     tagline: "Smash & Win",
     description:
@@ -239,7 +239,7 @@ const sportsData = [
     glowColor: "rgba(244, 63, 94, 0.4)",
     statusBadge: "OPEN",
     statusIcon: "🔥",
-    ballImage: "/img/sports/handball.jpeg",
+    ballImage: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1770888318/zenith-26/sports/zenith-26/sports/handball.jpg",
     tier: "Popular",
     tagline: "Fast & Furious",
     description:
@@ -275,7 +275,7 @@ const sportsData = [
     glowColor: "rgba(202, 138, 4, 0.4)",
     statusBadge: "POPULAR",
     statusIcon: "⭐",
-    ballImage: "/img/sports/kabaddi.jpeg",
+    ballImage: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1770888338/zenith-26/sports/zenith-26/sports/kabaddi.jpg",
     tier: "Popular",
     tagline: "Raid & Defend",
     description:
@@ -314,7 +314,7 @@ const sportsData = [
     glowColor: "rgba(148, 163, 184, 0.4)",
     statusBadge: "OPEN",
     statusIcon: "🧠",
-    ballImage: "/img/sports/chess.jpeg",
+    ballImage: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1770888307/zenith-26/sports/zenith-26/sports/chess.jpg",
     tier: "Popular",
     tagline: "Checkmate Mastery",
     description:
@@ -348,7 +348,7 @@ const sportsData = [
     glowColor: "rgba(16, 185, 129, 0.4)",
     statusBadge: "OPEN",
     statusIcon: "🔥",
-    ballImage: "/img/sports/rinkFootball.jpeg",
+    ballImage: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1770888349/zenith-26/sports/zenith-26/sports/rinkFootball.jpg",
     tier: "Indoor",
     tagline: "Fast-Paced Football",
     description:
@@ -381,7 +381,7 @@ const sportsData = [
     glowColor: "rgba(249, 115, 22, 0.4)",
     statusBadge: "OPEN",
     statusIcon: "⚡",
-    ballImage: "/img/sports/khokho.jpeg",
+    ballImage: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1770888340/zenith-26/sports/zenith-26/sports/khokho.jpg",
     tier: "Indoor",
     tagline: "Chase & Tag",
     description:
@@ -412,7 +412,7 @@ const sportsData = [
     glowColor: "rgba(234, 88, 12, 0.4)",
     statusBadge: "OPEN",
     statusIcon: "🏆",
-    ballImage: "/img/sports/athletics.jpeg",
+    ballImage: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1770888288/zenith-26/sports/zenith-26/sports/athletics.jpg",
     tier: "Indoor",
     tagline: "Track & Field Glory",
     description:
@@ -444,7 +444,7 @@ const sportsData = [
     glowColor: "rgba(100, 116, 139, 0.4)",
     statusBadge: "OPEN",
     statusIcon: "💪",
-    ballImage: "/img/sports/powerlifting.jpeg",
+    ballImage: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1770888343/zenith-26/sports/zenith-26/sports/powerlifting.jpg",
     tier: "Strength",
     tagline: "Strength Supreme",
     description:
@@ -554,7 +554,7 @@ const SportsGrid = () => {
       <div 
         className="fixed inset-0 z-0"
         style={{
-          backgroundImage: "url('/img/sports/background.png')",
+          backgroundImage: "url('https://res.cloudinary.com/dvmsho3pj/image/upload/v1770888293/zenith-26/sports/zenith-26/sports/background.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundAttachment: "fixed",
