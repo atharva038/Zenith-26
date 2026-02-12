@@ -664,7 +664,7 @@ const UniversalRegistration = () => {
     if (typeof selectedSportData.fees === 'object' && selectedSportData.fees.amount) {
       // Single fee structure
       return `₹${selectedSportData.fees.amount} ${selectedSportData.fees.note || ""}`;
-    } else if (typeof selectedSportData.fees === 'object' && (selectedSportData.fees.team && selectedSportData.fees.individual)) {
+    } else if (typeof selectedSportData.fees === 'object' && selectedSportData.fees.team && selectedSportData.fees.individual) {
       // Team/Individual fees (Chess, Athletics)
       if (selectedGender === 'team' && selectedSportData.fees.team) {
         return `₹${selectedSportData.fees.team} ${selectedSportData.fees.note || ""}`;
@@ -677,6 +677,9 @@ const UniversalRegistration = () => {
         const note = selectedSportData.fees.note ? ` ${selectedSportData.fees.note}` : "";
         return [teamFee, individualFee].filter(Boolean).join(" | ") + note;
       }
+    } else if (typeof selectedSportData.fees === 'object' && selectedSportData.fees.team && !selectedSportData.fees.individual) {
+      // Team-only fee (Badminton - mixed team sport)
+      return `₹${selectedSportData.fees.team} ${selectedSportData.fees.note || ""}`;
     } else if (typeof selectedSportData.fees === 'object' && (selectedSportData.fees.men || selectedSportData.fees.women)) {
       // Gender-based fees
       if (selectedGender === 'men' && selectedSportData.fees.men) {
