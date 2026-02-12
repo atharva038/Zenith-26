@@ -74,6 +74,26 @@ const getExpectedFee = (sportName) => {
   return "N/A";
 };
 
+// Helper function to check if a registration is solo (no captain/team required)
+const isSoloRegistration = (eventName, formData) => {
+  const genderCategory = formData?.gender_category || 
+                         formData?.get?.('gender_category') ||
+                         formData?.sportDetails?.selectedGender;
+  
+  // Solo sports: Athletics, Powerlifting, Chess Solo, Badminton
+  const alwaysSoloSports = ['Athletics', 'Powerlifting'];
+  if (alwaysSoloSports.includes(eventName)) return true;
+  
+  // Chess with individual selection is solo
+  if (eventName === 'Chess' && genderCategory === 'individual') return true;
+  
+  // Badminton is always a team sport (team of players, not individual)
+  // But if you want Badminton to be solo, uncomment this:
+  // if (eventName === 'Badminton') return true;
+  
+  return false;
+};
+
 // Helper function to get category badge info for a registration
 // Handles Chess Team/Solo separately from Men's/Women's sports
 const getCategoryBadgeInfo = (eventName, formData) => {
@@ -365,15 +385,16 @@ const AdminSportsRegistrations = () => {
       .filter((reg) => reg.status !== "cancelled")
       .map((reg, index) => {
       const formData = reg.formData || {};
+      const isSolo = isSoloRegistration(reg.eventName, formData);
       return [
         index + 1,
         reg.registrationNumber || "N/A",
         reg.eventName || "N/A",
-        formData.team_name || formData.get?.('team_name') || "N/A",
-        formData.captain_name || formData.get?.('captain_name') || "N/A",
+        isSolo ? "-" : (formData.team_name || formData.get?.('team_name') || "N/A"),
+        isSolo ? "-" : (formData.captain_name || formData.get?.('captain_name') || "N/A"),
         formData.captain_contact || formData.get?.('captain_contact') || "N/A",
         reg.institution || "N/A",
-        formData.num_players || formData.get?.('num_players') || "N/A",
+        isSolo ? "1" : (formData.num_players || formData.get?.('num_players') || "N/A"),
         reg.status || "N/A",
       ];
     });
@@ -415,18 +436,19 @@ const AdminSportsRegistrations = () => {
       .filter((reg) => reg.status !== "cancelled")
       .map((reg, index) => {
       const formData = reg.formData || {};
+      const isSolo = isSoloRegistration(reg.eventName, formData);
       return {
         "#": index + 1,
         "Registration Number": reg.registrationNumber || "N/A",
         "Sport": reg.eventName || "N/A",
-        "Team Name": formData.team_name || formData.get?.('team_name') || "N/A",
-        "Captain Name": formData.captain_name || formData.get?.('captain_name') || "N/A",
-        "Captain Contact": formData.captain_contact || formData.get?.('captain_contact') || "N/A",
+        "Team Name": isSolo ? "-" : (formData.team_name || formData.get?.('team_name') || "N/A"),
+        "Captain Name": isSolo ? "-" : (formData.captain_name || formData.get?.('captain_name') || "N/A"),
+        "Contact": formData.captain_contact || formData.get?.('captain_contact') || "N/A",
         "Email": reg.email || "N/A",
         "Institution": reg.institution || "N/A",
         "City": reg.city || "N/A",
         "College Address": formData.college_address || formData.get?.('college_address') || "N/A",
-        "Number of Players": formData.num_players || formData.get?.('num_players') || "N/A",
+        "Number of Players": isSolo ? "1" : (formData.num_players || formData.get?.('num_players') || "N/A"),
         "Alternate Contact": formData.alternate_contact || formData.get?.('alternate_contact') || "N/A",
         "Need Accommodation": (formData.need_accommodation || formData.get?.('need_accommodation')) ? "Yes" : "No",
         "Status": reg.status || "N/A",
@@ -741,10 +763,16 @@ const AdminSportsRegistrations = () => {
                               </div>
                             </td>
                             <td className="px-6 py-4 text-sm text-white font-medium">
-                              {formData.team_name || formData.get?.('team_name') || "N/A"}
+                              {isSoloRegistration(reg.eventName, formData) 
+                                ? <span className="text-gray-500">-</span>
+                                : (formData.team_name || formData.get?.('team_name') || "N/A")
+                              }
                             </td>
                             <td className="px-6 py-4 text-sm text-gray-300">
-                              {formData.captain_name || formData.get?.('captain_name') || "N/A"}
+                              {isSoloRegistration(reg.eventName, formData)
+                                ? <span className="text-gray-500">-</span>
+                                : (formData.captain_name || formData.get?.('captain_name') || "N/A")
+                              }
                             </td>
                             <td className="px-6 py-4 text-sm text-gray-300">
                               {formData.captain_contact || formData.get?.('captain_contact') || "N/A"}
@@ -896,10 +924,16 @@ const AdminSportsRegistrations = () => {
                             </div>
                           </td>
                           <td className="px-6 py-3 text-sm text-gray-300">
-                            {formData.team_name || formData.get?.('team_name') || "N/A"}
+                            {isSoloRegistration(reg.eventName, formData)
+                              ? <span className="text-gray-500">-</span>
+                              : (formData.team_name || formData.get?.('team_name') || "N/A")
+                            }
                           </td>
                           <td className="px-6 py-3 text-sm text-gray-400">
-                            {formData.captain_name || formData.get?.('captain_name') || "N/A"}
+                            {isSoloRegistration(reg.eventName, formData)
+                              ? <span className="text-gray-500">-</span>
+                              : (formData.captain_name || formData.get?.('captain_name') || "N/A")
+                            }
                           </td>
                           <td className="px-6 py-3 text-sm text-gray-400">
                             {formData.captain_contact || formData.get?.('captain_contact') || "N/A"}
