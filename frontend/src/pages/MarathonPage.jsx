@@ -67,7 +67,7 @@ const translations = {
     heroLine1: "Before the run,",
     heroLine2: "there is a moment.",
     heroSubtext: "This is that moment.",
-    dateBadge: "February 14, 2026 · 6:00 AM · SGGSIE&T Campus",
+    dateBadge: "📅 POSTPONED TO MARCH · SGGSIE&T Campus",
     ctaButton: "Begin the Journey",
     scroll: "Scroll",
     
@@ -140,7 +140,7 @@ const translations = {
     
     // Schedule
     scheduleTitle: "Race Day Schedule",
-    scheduleSubtitle: "February 14, 2026",
+    scheduleSubtitle: "Postponed to March 2026",
     
     // FAQ
     faqLabel: "Before You Ask",
@@ -165,7 +165,7 @@ const translations = {
     heroLine1: "धावण्यापूर्वी,",
     heroLine2: "एक क्षण असतो.",
     heroSubtext: "हाच तो क्षण आहे.",
-    dateBadge: "१४ फेब्रुवारी, २०२६ · सकाळी ६:०० · SGGSIE&T कॅम्पस",
+    dateBadge: "📅 मार्च मध्ये पुढे ढकलले · SGGSIE&T कॅम्पस",
     ctaButton: "प्रवास सुरू करा",
     scroll: "खाली स्क्रोल करा",
     
@@ -238,7 +238,7 @@ const translations = {
     
     // Schedule
     scheduleTitle: "शर्यतीच्या दिवसाचे वेळापत्रक",
-    scheduleSubtitle: "१४ फेब्रुवारी, २०२६",
+    scheduleSubtitle: "मार्च २०२६ मध्ये पुढे ढकलले",
     
     // FAQ
     faqLabel: "विचारण्यापूर्वी",
@@ -345,8 +345,8 @@ const MarathonPage = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  // Marathon date
-  const marathonDate = new Date("2026-02-14T06:00:00");
+  // Marathon date (POSTPONED to first week of March)
+  const marathonDate = new Date("2026-03-01T06:00:00");
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -1658,7 +1658,7 @@ const MarathonPage = () => {
                   >
                     {t.date}
                   </p>
-                  <p className="text-white font-bold">{language === 'mr' ? '१४ फेब्रु, २०२६' : 'Feb 14, 2026'}</p>
+                  <p className="text-white font-bold">{language === 'mr' ? 'Postponed To March' : 'Postponed To March'}</p>
                 </div>
                 <div className="bg-black/40 rounded-xl p-4 text-center border border-white/5">
                   <span className="text-2xl mb-2 block">⏰</span>

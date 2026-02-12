@@ -498,7 +498,15 @@ const SportsGrid = () => {
 
   // Memoized filtered sports - only recalculates when dependencies change
   const filteredSports = useMemo(() => {
+    // Sports to hide from the site (temporarily disabled)
+    const HIDDEN_SPORTS = ["ATHLETICS"];
+    
     return sportsData.filter((sport) => {
+      // Hide disabled sports
+      if (HIDDEN_SPORTS.includes(sport.name)) {
+        return false;
+      }
+      
       // Check if sport registration is open based on type
       const isCricket = sport.name.toLowerCase().includes('cricket');
       const isRegistrationOpen = isCricket ? isCricketOpen : isOtherSportsOpen;

@@ -1,41 +1,16 @@
-import {useState, useEffect, useRef} from "react";
+import {useRef} from "react";
 import {Link} from "react-router-dom";
 import {motion, useInView} from "framer-motion";
 
 /**
  * MarathonPreview - Eye-catching marathon teaser section for homepage
- * Displays countdown, highlights, and CTA to full marathon page
+ * Displays highlights and CTA to full marathon page (Postponed to March)
  */
 const MarathonPreview = () => {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, {once: true, margin: "-100px"});
 
-  // Marathon date - February 14, 2026 (before main event)
-  const marathonDate = new Date("2026-02-14T06:00:00");
-
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-  });
-
-  useEffect(() => {
-    const calculateTimeLeft = () => {
-      const difference = marathonDate - new Date();
-      if (difference > 0) {
-        return {
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / 1000 / 60) % 60),
-        };
-      }
-      return {days: 0, hours: 0, minutes: 0};
-    };
-
-    setTimeLeft(calculateTimeLeft());
-    const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), 60000);
-    return () => clearInterval(timer);
-  }, []);
+  // Marathon postponed to March - no specific date yet
 
   const highlights = [
     {icon: "🏃", text: "5K Run"},
@@ -208,10 +183,10 @@ const MarathonPreview = () => {
                   }}
                 >
                   <p className="text-orange-300 font-bold text-lg">
-                    📅 February 14, 2026
+                    📅 POSTPONED TO MARCH
                   </p>
                   <p className="text-white/60 text-sm">
-                    Race starts at 6:00 AM
+                    New date will be announced soon
                   </p>
                 </div>
               </div>
@@ -224,37 +199,25 @@ const MarathonPreview = () => {
             animate={isInView ? {opacity: 1, x: 0} : {}}
             transition={{duration: 0.6, delay: 0.3}}
           >
-            {/* Mini countdown */}
+            {/* Postponed Notice (replaces countdown) */}
             <div className="mb-8">
-              <p 
-                className="text-sm text-orange-300 mb-3 tracking-wider font-semibold"
-                style={{ textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}
+              <div 
+                className="text-center px-6 py-4 rounded-xl backdrop-blur-md"
+                style={{
+                  background: "rgba(255,140,50,0.15)",
+                  border: "1px solid rgba(255,140,50,0.4)",
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+                }}
               >
-                RACE STARTS IN
-              </p>
-              <div className="flex gap-4">
-                {[
-                  {value: timeLeft.days, label: "Days"},
-                  {value: timeLeft.hours, label: "Hours"},
-                  {value: timeLeft.minutes, label: "Mins"},
-                ].map((item, i) => (
-                  <div
-                    key={i}
-                    className="text-center px-4 py-3 rounded-xl backdrop-blur-md"
-                    style={{
-                      background: "rgba(0,0,0,0.5)",
-                      border: "1px solid rgba(255,140,50,0.3)",
-                      boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
-                    }}
-                  >
-                    <span className="block text-2xl md:text-3xl font-black text-white">
-                      {String(item.value).padStart(2, "0")}
-                    </span>
-                    <span className="text-xs text-orange-300 font-medium">
-                      {item.label}
-                    </span>
-                  </div>
-                ))}
+                <p className="text-orange-300 text-sm tracking-wider font-semibold mb-1">
+                  📅 EVENT POSTPONED
+                </p>
+                <span className="block text-2xl md:text-3xl font-black text-white">
+                  COMING IN MARCH
+                </span>
+                <p className="text-white/60 text-sm mt-1">
+                  Stay tuned for the new date!
+                </p>
               </div>
             </div>
 

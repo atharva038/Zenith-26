@@ -80,12 +80,15 @@ const isSoloRegistration = (eventName, formData) => {
                          formData?.get?.('gender_category') ||
                          formData?.sportDetails?.selectedGender;
   
-  // Solo sports: Athletics, Powerlifting, Chess Solo, Badminton
-  const alwaysSoloSports = ['Athletics', 'Powerlifting'];
+  // Solo sports: Power Lifting (always solo)
+  const alwaysSoloSports = ['Power Lifting'];
   if (alwaysSoloSports.includes(eventName)) return true;
   
   // Chess with individual selection is solo
   if (eventName === 'Chess' && genderCategory === 'individual') return true;
+  
+  // Athletics with individual selection is solo (otherwise it's 4x100m relay team)
+  if (eventName === 'Athletics' && genderCategory === 'individual') return true;
   
   // Badminton is always a team sport (team of players, not individual)
   // But if you want Badminton to be solo, uncomment this:
@@ -103,12 +106,12 @@ const getCategoryBadgeInfo = (eventName, formData) => {
   
   if (!genderCategory) return null;
   
-  // Chess and Badminton are mixed sports - show Team/Solo instead of Men/Women
-  if (eventName === 'Chess') {
+  // Chess and Athletics are dual-mode sports - show Team/Solo instead of Men/Women
+  if (eventName === 'Chess' || eventName === 'Athletics') {
     if (genderCategory === 'team') {
       return {
-        label: '👥 Team',
-        shortLabel: '👥 Team',
+        label: eventName === 'Athletics' ? '👥 Relay Team' : '👥 Team',
+        shortLabel: eventName === 'Athletics' ? '👥 Relay' : '👥 Team',
         className: 'bg-purple-500/20 text-purple-300 border-purple-500/20',
         detailClassName: 'bg-purple-500/10 text-purple-400 border border-purple-500/20',
         isTeam: true

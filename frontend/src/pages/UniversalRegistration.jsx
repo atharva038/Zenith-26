@@ -375,6 +375,7 @@ const TEAM_SPORTS_CONFIG = {
   "Handball": { minPlayers: 7, maxPlayers: 14, exactPlayers: null },
   "Chess": { minPlayers: 4, maxPlayers: 4, exactPlayers: 4 }, // Team Chess: exactly 4 players
   "Badminton": { minPlayers: 2, maxPlayers: 5, exactPlayers: null }, // Badminton: 2-5 players per team
+  "Athletics": { minPlayers: 4, maxPlayers: 4, exactPlayers: 4 }, // Athletics Relay: exactly 4 players (2 Boys + 2 Girls)
 };
 
 const UniversalRegistration = () => {
@@ -394,9 +395,12 @@ const UniversalRegistration = () => {
     error: statusError
   } = useRegistrationStatus();
   
+  // Sports to hide from the site (temporarily disabled)
+  const HIDDEN_SPORTS = ["Athletics"];
+  
   // Filter available sports based on toggle states
   const availableSports = React.useMemo(() => {
-    const allSports = Object.keys(SPORTS_DATA);
+    const allSports = Object.keys(SPORTS_DATA).filter(sport => !HIDDEN_SPORTS.includes(sport));
     
     // If both are closed, show nothing
     if (!isCricketOpen && !isOtherSportsOpen) {
@@ -625,10 +629,11 @@ const UniversalRegistration = () => {
 
   const selectedSportData = selectedSport ? SPORTS_DATA[selectedSport] : null;
   // Check if sport is a team sport
-  // For sports with team/individual options (Chess), consider it a team sport ONLY if "team" is selected
+  // For sports with team/individual options (Chess, Athletics), consider it a team sport ONLY if "team" is selected
+  const DUAL_MODE_SPORTS = ["Chess", "Athletics"]; // Sports that can be team OR individual
   const isTeamSport = TEAM_SPORTS.includes(selectedSport) || 
-                      (selectedSport === "Chess" && selectedGender === "team");
-  const teamConfig = (isTeamSport || selectedSport === "Chess") ? TEAM_SPORTS_CONFIG[selectedSport] : null;
+                      (DUAL_MODE_SPORTS.includes(selectedSport) && selectedGender === "team");
+  const teamConfig = (isTeamSport || DUAL_MODE_SPORTS.includes(selectedSport)) ? TEAM_SPORTS_CONFIG[selectedSport] : null;
   const hasGenderOptions = selectedSportData?.fees && (selectedSportData.fees.men || selectedSportData.fees.women);
   const hasTeamIndividualOptions = selectedSportData?.fees && (selectedSportData.fees.team && selectedSportData.fees.individual);
   
@@ -636,9 +641,10 @@ const UniversalRegistration = () => {
   const handleGenderSelect = (gender) => {
     setSelectedGender(gender);
     
-    // Auto-set num_players for Chess registration
-    if (selectedSport === "Chess") {
+    // Auto-set num_players for dual-mode sports (Chess, Athletics)
+    if (DUAL_MODE_SPORTS.includes(selectedSport)) {
       if (gender === "team") {
+        // Both Chess and Athletics relay require exactly 4 players
         setFormData(prev => ({ ...prev, num_players: "4" }));
       } else if (gender === "individual") {
         // Clear num_players for solo registration
@@ -647,7 +653,7 @@ const UniversalRegistration = () => {
     }
     
     if (hasTeamIndividualOptions) {
-      // For Chess: team or individual
+      // For Chess/Athletics: team or individual
       toast.success(`${gender === 'team' ? 'Team' : 'Solo'} registration selected! ${gender === 'team' ? '👥' : '🎯'}`, {
         autoClose: 2000
       });
@@ -1703,8 +1709,8 @@ const UniversalRegistration = () => {
                   Build Your Team
                 </h3>
                 <p className="text-gray-400">
-                  {selectedSport === "Chess" && selectedGender === "team" 
-                    ? "Add exactly 4 team members for Chess team event" 
+                  {DUAL_MODE_SPORTS.includes(selectedSport) && selectedGender === "team" 
+                    ? `Add exactly 4 team members for ${selectedSport} team event` 
                     : "Add your team members"}
                 </p>
               </div>
@@ -1739,13 +1745,13 @@ const UniversalRegistration = () => {
                     id="num_players"
                     min={teamConfig?.minPlayers}
                     max={teamConfig?.maxPlayers || teamConfig?.exactPlayers}
-                    readOnly={selectedSport === "Chess" && selectedGender === "team"}
+                    readOnly={DUAL_MODE_SPORTS.includes(selectedSport) && selectedGender === "team"}
                   />
                   <label
                     htmlFor="num_players"
                     className="absolute left-4 -top-2.5 bg-[#0a0604] px-2 text-sm text-[#ff6b35] transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-focus:-top-2.5 peer-focus:text-[#ff6b35] peer-focus:text-sm"
                   >
-                    Number of Players * {selectedSport === "Chess" && selectedGender === "team" && "(Fixed at 4)"}
+                    Number of Players * {DUAL_MODE_SPORTS.includes(selectedSport) && selectedGender === "team" && "(Fixed at 4)"}
                   </label>
                   {/* **REQUIREMENT BADGE** */}
                   {teamConfig && (

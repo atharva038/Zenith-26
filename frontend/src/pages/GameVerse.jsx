@@ -1075,8 +1075,14 @@ export default function GameVerse() {
 
   // Determine which sports to show based on toggles
   const availableSports = useMemo(() => {
-    const cricket = sportsData.find(s => s.name === "CRICKET");
-    const otherSports = sportsData.filter(s => s.name !== "CRICKET");
+    // Sports to hide from the site (temporarily disabled)
+    const HIDDEN_SPORTS = ["ATHLETICS"];
+    
+    // Filter out hidden sports first
+    const visibleSports = sportsData.filter(s => !HIDDEN_SPORTS.includes(s.name));
+    
+    const cricket = visibleSports.find(s => s.name === "CRICKET");
+    const otherSports = visibleSports.filter(s => s.name !== "CRICKET");
     
     // If both are closed, show nothing (coming soon will display)
     if (!isCricketOpen && !isOtherSportsOpen) {
@@ -1094,7 +1100,7 @@ export default function GameVerse() {
     }
     
     // If both are open, show all sports
-    return sportsData;
+    return visibleSports;
   }, [isCricketOpen, isOtherSportsOpen]);
 
   // Simulate loading time for scene initialization

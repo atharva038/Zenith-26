@@ -193,7 +193,7 @@ const RegisterPage = () => {
               <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-orange-500/20">
                 <div className="text-3xl mb-2">📅</div>
                 <div className="text-orange-400 font-bold text-sm mb-1">Date</div>
-                <div className="text-white text-sm">Feb 14, 2026</div>
+                <div className="text-white text-sm">Postponed To March</div>
               </div>
               <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-orange-500/20">
                 <div className="text-3xl mb-2">🏃</div>
