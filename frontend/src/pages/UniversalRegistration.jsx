@@ -451,7 +451,6 @@ const UniversalRegistration = () => {
   // Check if form has been started (user has entered any data)
   const isFormStarted = () => {
     if (registrationComplete) return false; // Don't block after successful registration
-    if (currentStep === 1 && !selectedSport) return false; // On first step with no sport selected
     
     // Check if any form data has been filled
     const hasFormData = Object.values(formData).some(value => {
@@ -524,21 +523,40 @@ const UniversalRegistration = () => {
 
   // Handle preselection from SportsGrid, GameVerse, or URL parameter
   useEffect(() => {
-    // Check URL search params first (e.g., ?sport=Cricket)
+    // PRIORITY 1: Check URL search params first (highest priority - for new selections)
     const searchParams = new URLSearchParams(location.search);
     const sportParam = searchParams.get('sport');
     
     if (sportParam && SPORTS_DATA[sportParam]) {
-      setSelectedSport(sportParam);
-      setCurrentStep(2); // Skip sport selection
-      toast.success(`🏏 ${sportParam} Registration - Let's get started! 🎯`, {
-        autoClose: 3000,
-        style: { fontSize: '16px', fontWeight: 'bold' }
-      });
+      // Only update if it's different from current selection (to avoid unnecessary updates)
+      if (sportParam !== selectedSport) {
+        setSelectedSport(sportParam);
+        localStorage.setItem('zenith_selected_sport', sportParam);
+        // Clear gender if switching sports
+        setSelectedGender('');
+        localStorage.removeItem('zenith_selected_gender');
+        toast.success(`🏏 ${sportParam} Registration - Let's get started! 🎯`, {
+          autoClose: 3000,
+          style: { fontSize: '16px', fontWeight: 'bold' }
+        });
+      }
       return; // Exit early if URL param found
     }
+    
+    // PRIORITY 2: Check localStorage (for page refresh persistence, only if no URL param)
+    const storedSport = localStorage.getItem('zenith_selected_sport');
+    const storedGender = localStorage.getItem('zenith_selected_gender');
+    
+    if (storedSport && SPORTS_DATA[storedSport]) {
+      setSelectedSport(storedSport);
+      if (storedGender) {
+        setSelectedGender(storedGender);
+      }
+      console.log('✅ Restored sport from localStorage:', storedSport);
+      return;
+    }
 
-    // Fallback to state-based preselection from SportsGrid/GameVerse (only on first load)
+    // PRIORITY 3: Fallback to state-based preselection from SportsGrid/GameVerse
     if (!sportPreselected && (location.state?.fromSportsGrid || location.state?.fromGameVerse) && location.state?.preselectedSport) {
       const sportName = location.state.preselectedSport.toUpperCase();
       
@@ -562,7 +580,7 @@ const UniversalRegistration = () => {
       const mappedSport = sportMapping[sportName];
       if (mappedSport && SPORTS_DATA[mappedSport]) {
         setSelectedSport(mappedSport);
-        setCurrentStep(2); // Skip sport selection
+        localStorage.setItem('zenith_selected_sport', mappedSport);
         setSportPreselected(true); // Mark as preselected
         toast.success(`${mappedSport} preselected! 🎯`);
         
@@ -571,6 +589,33 @@ const UniversalRegistration = () => {
       }
     }
   }, [location.search, sportPreselected, location.state]);
+  
+  // Save gender to localStorage when it changes
+  useEffect(() => {
+    if (selectedGender) {
+      localStorage.setItem('zenith_selected_gender', selectedGender);
+    }
+  }, [selectedGender]);
+  
+  // Clear localStorage on successful registration
+  useEffect(() => {
+    if (registrationComplete) {
+      localStorage.removeItem('zenith_selected_sport');
+      localStorage.removeItem('zenith_selected_gender');
+    }
+  }, [registrationComplete]);
+  
+  // Clear localStorage when component unmounts (user navigates away)
+  useEffect(() => {
+    return () => {
+      // Only clear if not on registration success
+      if (!registrationComplete) {
+        console.log('🧹 Clearing sport selection on navigation away');
+        localStorage.removeItem('zenith_selected_sport');
+        localStorage.removeItem('zenith_selected_gender');
+      }
+    };
+  }, [registrationComplete]);
 
   const selectedSportData = selectedSport ? SPORTS_DATA[selectedSport] : null;
   const isTeamSport = TEAM_SPORTS.includes(selectedSport);
@@ -608,8 +653,8 @@ const UniversalRegistration = () => {
     return "N/A";
   };
 
-  // Calculate total steps dynamically
-  const totalSteps = isTeamSport ? 6 : 5; // Sport, Details, Team (optional), Captain (optional), Payment, Review
+  // Calculate total steps dynamically (removed sport selection step)
+  const totalSteps = isTeamSport ? 5 : 4; // Details, Team (optional), Captain (optional), Payment, Review
 
   // Progress calculation
   const progress = (currentStep / totalSteps) * 100;
@@ -671,18 +716,8 @@ const UniversalRegistration = () => {
 
   const nextStep = () => {
     // Validation for each step
-    if (currentStep === 1 && !selectedSport) {
-      toast.error("Please select a sport");
-      return;
-    }
-    
-    // Validate gender selection for sports with gender options
-    if (currentStep === 1 && hasGenderOptions && !selectedGender) {
-      toast.error("Please select Men's or Women's category");
-      return;
-    }
-    
-    if (currentStep === 2) {
+    // Step 1: Participant Details + Gender Selection
+    if (currentStep === 1) {
       if (!formData.captain_name || !formData.captain_contact || !formData.email || !formData.institution) {
         toast.error("Please fill all required fields");
         return;
@@ -697,8 +732,15 @@ const UniversalRegistration = () => {
         toast.error("Please enter a valid email address");
         return;
       }
+      // Validate gender selection for sports with gender options
+      if (hasGenderOptions && !selectedGender) {
+        toast.error("Please select Men's or Women's category");
+        return;
+      }
     }
-    if (currentStep === 3 && isTeamSport) {
+    
+    // Step 2: Team Setup (for team sports)
+    if (currentStep === 2 && isTeamSport) {
       if (!formData.team_name || !formData.num_players) {
         toast.error("Please enter team name and number of players");
         return;
@@ -708,26 +750,28 @@ const UniversalRegistration = () => {
         return; // Validation failed, don't proceed
       }
     }
-    if (currentStep === 4 && isTeamSport && selectedCaptain === null) {
+    
+    // Step 3: Captain Selection (for team sports)
+    if (currentStep === 3 && isTeamSport && selectedCaptain === null) {
       toast.error("Please select a team captain");
       return;
     }
 
     // Skip team setup steps for individual sports
-    if (currentStep === 2 && !isTeamSport) {
-      setCurrentStep(5); // Jump to payment
+    if (currentStep === 1 && !isTeamSport) {
+      setCurrentStep(4); // Jump to payment
+    } else if (currentStep === 2 && !isTeamSport) {
+      setCurrentStep(4);
     } else if (currentStep === 3 && !isTeamSport) {
-      setCurrentStep(5);
-    } else if (currentStep === 4 && !isTeamSport) {
-      setCurrentStep(5);
+      setCurrentStep(4);
     } else {
       setCurrentStep(currentStep + 1);
     }
   };
 
   const prevStep = () => {
-    if (currentStep === 5 && !isTeamSport) {
-      setCurrentStep(2); // Jump back from payment to details for individual sports
+    if (currentStep === 4 && !isTeamSport) {
+      setCurrentStep(1); // Jump back from payment to details for individual sports
     } else {
       setCurrentStep(currentStep - 1);
     }
@@ -914,6 +958,20 @@ const UniversalRegistration = () => {
   if (!isCricketOpen && !isOtherSportsOpen) {
     return <RegistrationClosed message={message} startDate={startDate} endDate={endDate} />;
   }
+  
+  // Redirect to sports page if no sport is selected (e.g., after page refresh without proper URL params)
+  if (!selectedSport) {
+    console.warn('⚠️ No sport selected, redirecting to sports page...');
+    navigate('/sports', { replace: true });
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-gray-400">Redirecting to sports selection...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async () => {
     // Final validation
@@ -943,8 +1001,12 @@ const UniversalRegistration = () => {
         name: selectedSportData.name,
         venue: selectedSportData.venue,
         fees: selectedSportData.fees,
-        selectedGender: null,
-        actualFee: selectedSportData.fees.amount || selectedSportData.fees.individual || selectedSportData.fees.team,
+        selectedGender: selectedGender || null,
+        actualFee: selectedGender === 'men' 
+          ? (selectedSportData.fees.men || selectedSportData.fees.amount || selectedSportData.fees.individual || selectedSportData.fees.team)
+          : selectedGender === 'women'
+          ? (selectedSportData.fees.women || selectedSportData.fees.amount || selectedSportData.fees.individual || selectedSportData.fees.team)
+          : (selectedSportData.fees.amount || selectedSportData.fees.individual || selectedSportData.fees.team),
         coordinators: selectedSportData.coordinators,
       }));
       
@@ -953,7 +1015,7 @@ const UniversalRegistration = () => {
         ...formData,
         sport: selectedSport,
         sport_name: selectedSportData.name,
-        gender_category: null,
+        gender_category: selectedGender || null,
       };
 
       // Add team members if team sport
@@ -1125,187 +1187,10 @@ const UniversalRegistration = () => {
 
         {/* Step Content */}
         <AnimatePresence mode="wait">
-          {/* Step 1: Sport Selection */}
+          {/* Step 1: Participant Details */}
           {currentStep === 1 && (
             <motion.div
               key="step1"
-              variants={fadeInUp}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              transition={{ duration: 0.3 }}
-            >
-              <div className="text-center mb-8">
-                <h2 className="text-2xl md:text-3xl font-bold text-[#ffb77a] mb-2">
-                  Choose Your Sport
-                </h2>
-                <p className="text-gray-400">Select the sport you want to register for</p>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {availableSports.map((sport, index) => (
-                  <motion.div
-                    key={sport}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.05 }}
-                    whileHover={{ scale: 1.05, y: -5 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => handleSportSelect(sport)}
-                    className={`
-                      relative p-6 rounded-xl cursor-pointer transition-all duration-300
-                      ${
-                        selectedSport === sport
-                          ? "bg-gradient-to-br from-[#ff6b35] to-[#ff8c42] shadow-xl shadow-[#ff6b35]/20"
-                          : sport === "Cricket"
-                          ? "bg-gradient-to-br from-[#10b981]/20 to-[#059669]/20 border-2 border-[#10b981] hover:border-[#10b981] hover:shadow-lg hover:shadow-[#10b981]/30"
-                          : "bg-[#1a1410]/50 backdrop-blur-sm border border-[#3a2416] hover:border-[#ff6b35]/50"
-                      }
-                    `}
-                  >
-                    {/* Cricket Featured Badge */}
-                    {sport === "Cricket" && selectedSport !== sport && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="absolute -top-2 -right-2 bg-gradient-to-r from-[#10b981] to-[#059669] text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg"
-                      >
-                        OPEN NOW! 🔥
-                      </motion.div>
-                    )}
-                    
-                    <div className="text-4xl mb-2">{SPORT_ICONS[sport] || "🏆"}</div>
-                    <div className="text-sm font-medium">{sport}</div>
-                    {selectedSport === sport && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
-                      >
-                        <span className="text-[#ff6b35] text-xs">✓</span>
-                      </motion.div>
-                    )}
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* Gender Selection (only for sports with different fees) */}
-              {selectedSport && hasGenderOptions && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="mt-8 p-6 bg-[#1a1410]/30 backdrop-blur-sm border border-[#3a2416] rounded-xl"
-                >
-                  <h3 className="text-lg font-semibold text-[#ffb77a] mb-4 text-center">
-                    Select Category
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    {selectedSportData.fees.men && (
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => handleGenderSelect('men')}
-                        className={`
-                          p-4 rounded-xl transition-all duration-300 text-center
-                          ${
-                            selectedGender === 'men'
-                              ? "bg-gradient-to-br from-blue-600 to-blue-700 shadow-lg shadow-blue-600/20"
-                              : "bg-[#1a1410]/50 border border-[#3a2416] hover:border-blue-500/50"
-                          }
-                        `}
-                      >
-                        <div className="text-2xl mb-2">👨</div>
-                        <div className="font-semibold">Men's Team</div>
-                        <div className="text-sm text-gray-400">₹{selectedSportData.fees.men}</div>
-                        {selectedGender === 'men' && (
-                          <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
-                          >
-                            <span className="text-blue-600 text-xs">✓</span>
-                          </motion.div>
-                        )}
-                      </motion.button>
-                    )}
-                    
-                    {selectedSportData.fees.women && (
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => handleGenderSelect('women')}
-                        className={`
-                          relative p-4 rounded-xl transition-all duration-300 text-center
-                          ${
-                            selectedGender === 'women'
-                              ? "bg-gradient-to-br from-pink-600 to-pink-700 shadow-lg shadow-pink-600/20"
-                              : "bg-[#1a1410]/50 border border-[#3a2416] hover:border-pink-500/50"
-                          }
-                        `}
-                      >
-                        <div className="text-2xl mb-2">👩</div>
-                        <div className="font-semibold">Women's Team</div>
-                        <div className="text-sm text-gray-400">₹{selectedSportData.fees.women}</div>
-                        {selectedGender === 'women' && (
-                          <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
-                          >
-                            <span className="text-pink-600 text-xs">✓</span>
-                          </motion.div>
-                        )}
-                      </motion.button>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-
-              <motion.div
-                className="mt-8 flex justify-between items-center gap-4"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                {/* Fill Test Data Button (Development Tool)
-                {selectedSport && (
-                  <button
-                    onClick={fillTestData}
-                    className="px-6 py-3 rounded-xl font-semibold text-sm
-                             bg-gradient-to-r from-blue-600 to-blue-500
-                             hover:from-blue-500 hover:to-blue-400
-                             hover:shadow-lg hover:shadow-blue-500/30 hover:scale-105
-                             transition-all duration-300
-                             flex items-center gap-2"
-                  >
-                    <span>🧪</span>
-                    <span>Fill Test Data</span>
-                  </button>
-                )}
-                 */}
-                <button
-                  onClick={nextStep}
-                  disabled={!selectedSport || (hasGenderOptions && !selectedGender)}
-                  className={`
-                    px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300
-                    ${
-                      selectedSport && (!hasGenderOptions || selectedGender)
-                        ? "bg-gradient-to-r from-[#ff6b35] to-[#ff8c42] hover:shadow-xl hover:shadow-[#ff6b35]/20 hover:scale-105"
-                        : "bg-gray-700 cursor-not-allowed opacity-50"
-                    }
-                  `}
-                >
-                  Continue →
-                </button>
-              </motion.div>
-            </motion.div>
-          )}
-
-          {/* Step 2: Participant Details */}
-          {currentStep === 2 && (
-            <motion.div
-              key="step2"
               variants={slideIn}
               initial="hidden"
               animate="visible"
@@ -1319,18 +1204,6 @@ const UniversalRegistration = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 className="relative text-center mb-10 bg-gradient-to-br from-[#1a1410]/50 to-[#2a1810]/50 backdrop-blur-sm border border-[#ff6b35]/30 rounded-3xl p-8 shadow-2xl"
               >
-                {/* Change Sport Button */}
-                <button
-                  onClick={() => {
-                    setCurrentStep(1);
-                    toast.info("Select a different sport");
-                  }}
-                  className="absolute top-4 right-4 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-sm font-medium transition-all duration-300 flex items-center gap-2 group"
-                >
-                  <span className="group-hover:rotate-180 transition-transform duration-300">🔄</span>
-                  Change Sport
-                </button>
-
                 <motion.div
                   animate={{ rotate: [0, 5, -5, 0] }}
                   transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
@@ -1341,29 +1214,104 @@ const UniversalRegistration = () => {
                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-[#ff6b35] via-[#ff8c42] to-[#ffa600] bg-clip-text text-transparent mb-3">
                   {selectedSport}
                 </h2>
-                {/* Gender Category Badge */}
-                {hasGenderOptions && selectedGender && (
-                  <div className="inline-block px-4 py-1.5 bg-gradient-to-r from-[#ff6b35]/20 to-[#ff8c42]/20 border border-[#ff6b35]/50 rounded-full mb-2">
-                    <span className="text-sm font-semibold text-[#ffb77a]">
-                      {selectedGender === "men" ? "👨 Men's Category" : "👩 Women's Category"}
-                    </span>
+                
+                {/* Gender Selection for sports with gender-specific fees */}
+                {hasGenderOptions && (
+                  <div className="mt-6">
+                    <h3 className="text-lg font-semibold text-[#ffb77a] mb-4">
+                      Select Category *
+                    </h3>
+                    <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                      {selectedSportData.fees.men && (
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => handleGenderSelect('men')}
+                          className={`
+                            relative p-4 rounded-xl transition-all duration-300 text-center
+                            ${
+                              selectedGender === 'men'
+                                ? "bg-gradient-to-br from-blue-600 to-blue-700 shadow-lg shadow-blue-600/20"
+                                : "bg-[#1a1410]/50 border border-[#3a2416] hover:border-blue-500/50"
+                            }
+                          `}
+                        >
+                          <div className="text-2xl mb-2">👨</div>
+                          <div className="font-semibold">Men's Team</div>
+                          <div className="text-sm text-gray-400">₹{selectedSportData.fees.men}</div>
+                          {selectedGender === 'men' && (
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
+                            >
+                              <span className="text-blue-600 text-xs">✓</span>
+                            </motion.div>
+                          )}
+                        </motion.button>
+                      )}
+                      
+                      {selectedSportData.fees.women && (
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => handleGenderSelect('women')}
+                          className={`
+                            relative p-4 rounded-xl transition-all duration-300 text-center
+                            ${
+                              selectedGender === 'women'
+                                ? "bg-gradient-to-br from-pink-600 to-pink-700 shadow-lg shadow-pink-600/20"
+                                : "bg-[#1a1410]/50 border border-[#3a2416] hover:border-pink-500/50"
+                            }
+                          `}
+                        >
+                          <div className="text-2xl mb-2">👩</div>
+                          <div className="font-semibold">Women's Team</div>
+                          <div className="text-sm text-gray-400">₹{selectedSportData.fees.women}</div>
+                          {selectedGender === 'women' && (
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
+                            >
+                              <span className="text-pink-600 text-xs">✓</span>
+                            </motion.div>
+                          )}
+                        </motion.button>
+                      )}
+                    </div>
                   </div>
                 )}
-                <div className="flex flex-col items-center justify-center gap-2">
+                
+                <div className="flex flex-col items-center justify-center gap-2 mt-6">
                   <div className="flex items-center gap-2 text-gray-400">
                     <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                     <p className="text-sm md:text-base">Registration Form</p>
                   </div>
-                  {/* Registration Fee Display */}
-                  <div className="mt-2 px-4 py-2 bg-[#ff6b35]/20 border border-[#ff6b35] rounded-full">
-                    <p className="text-sm md:text-base font-bold text-[#ffb77a]">
-                      {hasGenderOptions && selectedGender ? 
-                        `Fee: ₹${getDisplayFee()}` : 
-                        hasGenderOptions ? 
-                        `Fee: ${getDisplayFee()}` :
-                        `Fee: ₹${getDisplayFee()}`
-                      }
-                    </p>
+                  
+                  {/* Registration Fee Display and Fill Test Data Button */}
+                  <div className="flex items-center gap-4 mt-2">
+                    {/* Fee Display */}
+                    <div className="px-4 py-2 bg-[#ff6b35]/20 border border-[#ff6b35] rounded-full">
+                      <p className="text-sm md:text-base font-bold text-[#ffb77a]">
+                        Fee: ₹{getDisplayFee()}
+                      </p>
+                    </div>
+                    
+                    {/* Fill Test Data Button */}
+                    <button
+                      onClick={fillTestData}
+                      className="px-4 py-2 rounded-full font-semibold text-sm
+                               bg-gradient-to-r from-blue-600 to-blue-500
+                               hover:from-blue-500 hover:to-blue-400
+                               hover:shadow-lg hover:shadow-blue-500/30 hover:scale-105
+                               transition-all duration-300
+                               flex items-center gap-2"
+                      title="Fill form with test data"
+                    >
+                      <span>🧪</span>
+                      <span>Fill Test Data</span>
+                    </button>
                   </div>
                 </div>
               </motion.div>
@@ -1576,14 +1524,8 @@ const UniversalRegistration = () => {
                 )}
               </div>
 
-              {/* Navigation */}
-              <div className="flex justify-between gap-4">
-                <button
-                  onClick={prevStep}
-                  className="px-6 py-3 rounded-xl font-semibold border border-[#3a2416] hover:border-[#ff6b35] transition-all duration-300"
-                >
-                  ← Back
-                </button>
+              {/* Navigation - Step 1 has no previous step */}
+              <div className="flex justify-end gap-4">
                 <button
                   onClick={nextStep}
                   className="px-8 py-3 rounded-xl font-semibold bg-gradient-to-r from-[#ff6b35] to-[#ff8c42] hover:shadow-xl hover:shadow-[#ff6b35]/20 hover:scale-105 transition-all duration-300"
@@ -1594,10 +1536,10 @@ const UniversalRegistration = () => {
             </motion.div>
           )}
 
-          {/* Step 3: Team Setup (Conditional) */}
-          {currentStep === 3 && isTeamSport && (
+          {/* Step 2: Team Setup (Conditional) */}
+          {currentStep === 2 && isTeamSport && (
             <motion.div
-              key="step3"
+              key="step2"
               variants={slideIn}
               initial="hidden"
               animate="visible"
@@ -1611,18 +1553,6 @@ const UniversalRegistration = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 className="relative text-center mb-10 bg-gradient-to-br from-[#1a1410]/50 to-[#2a1810]/50 backdrop-blur-sm border border-[#ff6b35]/30 rounded-3xl p-8 shadow-2xl"
               >
-                {/* Change Sport Button */}
-                <button
-                  onClick={() => {
-                    setCurrentStep(1);
-                    toast.info("Select a different sport");
-                  }}
-                  className="absolute top-4 right-4 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-sm font-medium transition-all duration-300 flex items-center gap-2 group"
-                >
-                  <span className="group-hover:rotate-180 transition-transform duration-300">🔄</span>
-                  Change Sport
-                </button>
-
                 <motion.div
                   animate={{ rotate: [0, 5, -5, 0] }}
                   transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
@@ -1801,10 +1731,10 @@ const UniversalRegistration = () => {
             </motion.div>
           )}
 
-          {/* Step 4: Captain Selection (Conditional) */}
-          {currentStep === 4 && isTeamSport && teamMembers.length > 0 && (
+          {/* Step 3: Captain Selection (Conditional) */}
+          {currentStep === 3 && isTeamSport && teamMembers.length > 0 && (
             <motion.div
-              key="step4"
+              key="step3"
               variants={slideIn}
               initial="hidden"
               animate="visible"
@@ -1935,10 +1865,10 @@ const UniversalRegistration = () => {
             </motion.div>
           )}
 
-          {/* Step 5: Payment & Documents */}
-          {currentStep === 5 && (
+          {/* Step 4: Payment & Documents */}
+          {currentStep === 4 && (
             <motion.div
-              key="step5"
+              key="step4"
               variants={slideIn}
               initial="hidden"
               animate="visible"
@@ -2168,10 +2098,10 @@ const UniversalRegistration = () => {
             </motion.div>
           )}
 
-          {/* Step 6: Review & Confirm */}
-          {currentStep === 6 && (
+          {/* Step 5: Review & Confirm */}
+          {currentStep === 5 && (
             <motion.div
-              key="step6"
+              key="step5"
               variants={slideIn}
               initial="hidden"
               animate="visible"

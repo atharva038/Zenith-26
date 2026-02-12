@@ -670,9 +670,29 @@ const AdminSportsRegistrations = () => {
                               {reg.registrationNumber || "N/A"}
                             </td>
                             <td className="px-6 py-4 text-sm">
-                              <span className="px-3 py-1 bg-purple-500/10 text-purple-400 rounded-lg font-medium">
-                                {reg.eventName}
-                              </span>
+                              <div className="flex flex-col gap-1">
+                                <span className="px-3 py-1 bg-purple-500/10 text-purple-400 rounded-lg font-medium">
+                                  {reg.eventName}
+                                </span>
+                                {/* Gender Category Badge */}
+                                {(formData.gender_category || 
+                                  formData.get?.('gender_category') ||
+                                  formData.sportDetails?.selectedGender) && (
+                                  <span className={`text-xs px-2 py-0.5 rounded-md font-semibold w-fit ${
+                                    (formData.gender_category || 
+                                     formData.get?.('gender_category') ||
+                                     formData.sportDetails?.selectedGender) === 'men'
+                                      ? 'bg-blue-500/20 text-blue-300'
+                                      : 'bg-pink-500/20 text-pink-300'
+                                  }`}>
+                                    {(formData.gender_category || 
+                                      formData.get?.('gender_category') ||
+                                      formData.sportDetails?.selectedGender) === 'men' 
+                                      ? "👨 Men's" 
+                                      : "👩 Women's"}
+                                  </span>
+                                )}
+                              </div>
                             </td>
                             <td className="px-6 py-4 text-sm text-white font-medium">
                               {formData.team_name || formData.get?.('team_name') || "N/A"}
@@ -799,9 +819,29 @@ const AdminSportsRegistrations = () => {
                             {reg.registrationNumber || "N/A"}
                           </td>
                           <td className="px-6 py-3 text-sm">
-                            <span className="px-2 py-1 bg-red-500/10 text-red-400 rounded-lg text-xs">
-                              {reg.eventName}
-                            </span>
+                            <div className="flex flex-col gap-1">
+                              <span className="px-2 py-1 bg-red-500/10 text-red-400 rounded-lg text-xs">
+                                {reg.eventName}
+                              </span>
+                              {/* Gender Category Badge */}
+                              {(formData.gender_category || 
+                                formData.get?.('gender_category') ||
+                                formData.sportDetails?.selectedGender) && (
+                                <span className={`text-xs px-2 py-0.5 rounded-md font-semibold w-fit ${
+                                  (formData.gender_category || 
+                                   formData.get?.('gender_category') ||
+                                   formData.sportDetails?.selectedGender) === 'men'
+                                    ? 'bg-blue-500/20 text-blue-300'
+                                    : 'bg-pink-500/20 text-pink-300'
+                                }`}>
+                                  {(formData.gender_category || 
+                                    formData.get?.('gender_category') ||
+                                    formData.sportDetails?.selectedGender) === 'men' 
+                                    ? "👨 Men's" 
+                                    : "👩 Women's"}
+                                </span>
+                              )}
+                            </div>
                           </td>
                           <td className="px-6 py-3 text-sm text-gray-300">
                             {formData.team_name || formData.get?.('team_name') || "N/A"}
@@ -906,6 +946,27 @@ const AdminSportsRegistrations = () => {
                           {selectedRegistration.eventName}
                         </span>
                       </p>
+                      {/* Gender Category */}
+                      {(selectedRegistration.formData?.gender_category || 
+                        selectedRegistration.formData?.get?.('gender_category') ||
+                        selectedRegistration.formData?.sportDetails?.selectedGender) && (
+                        <p className="text-gray-300">
+                          <span className="text-white font-semibold">Category:</span>{" "}
+                          <span className={`px-3 py-1 rounded-lg ml-2 font-semibold ${
+                            (selectedRegistration.formData?.gender_category || 
+                             selectedRegistration.formData?.get?.('gender_category') ||
+                             selectedRegistration.formData?.sportDetails?.selectedGender) === 'men'
+                              ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                              : 'bg-pink-500/10 text-pink-400 border border-pink-500/20'
+                          }`}>
+                            {(selectedRegistration.formData?.gender_category || 
+                              selectedRegistration.formData?.get?.('gender_category') ||
+                              selectedRegistration.formData?.sportDetails?.selectedGender) === 'men' 
+                              ? "👨 Men's Registration" 
+                              : "👩 Women's Registration"}
+                          </span>
+                        </p>
+                      )}
                       <p className="text-gray-300">
                         <span className="text-white font-semibold">Registration Date:</span>{" "}
                         {new Date(selectedRegistration.createdAt).toLocaleDateString()}

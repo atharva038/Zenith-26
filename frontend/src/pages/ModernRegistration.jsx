@@ -6,38 +6,8 @@ import api from "../config/api";
 import { useRegistrationStatus } from "../hooks/useRegistrationStatus";
 import RegistrationClosed from "../components/RegistrationClosed";
 
-// Import all sports data from UniversalRegistration
+// Import all sports data from SportsGrid
 const SPORTS_DATA = {
-  Cricket: {
-    name: "Cricket Tournament",
-    venue: "SGGSIE&T Cricket Ground",
-    fees: { amount: 6500, note: "per team" },
-    rules: [
-      "Maximum 15 players per team (11 playing + 4 substitutes)",
-      "Leather ball match - 20 overs per side",
-      "All ICC rules apply",
-      "Proper cricket kit mandatory",
-    ],
-    coordinators: [
-      { name: "Pranav Godle", phone: "9028783635" },
-      { name: "Shahaji Bhosle", phone: "8308949481" },
-    ],
-  },
-  "Box Cricket": {
-    name: "Box Cricket Championship",
-    venue: "Box Cricket Arena",
-    fees: { amount: 3000, note: "per team" },
-    rules: [
-      "Maximum 8 players per team (6 playing + 2 substitutes)",
-      "Shortened pitch format",
-      "Tennis ball cricket",
-      "Modified cricket rules apply",
-    ],
-    coordinators: [
-      { name: "Pranav Godle", phone: "9028783635" },
-      { name: "Shahaji Bhosle", phone: "8308949481" },
-    ],
-  },
   Football: {
     name: "Football Championship",
     venue: "SGGSIE&T Football Ground",
@@ -65,6 +35,21 @@ const SPORTS_DATA = {
     coordinators: [
       { name: "Uday Naukarkar", phone: "9322684201" },
       { name: "Krushna Jadhav", phone: "8208422959" },
+    ],
+  },
+  Cricket: {
+    name: "Cricket Tournament",
+    venue: "SGGSIE&T Cricket Ground",
+    fees: { amount: 6500, note: "per team" },
+    rules: [
+      "Maximum 15 players per team (11 playing + 4 substitutes)",
+      "Leather ball match - 20 overs per side",
+      "All ICC rules apply",
+      "Proper cricket kit mandatory",
+    ],
+    coordinators: [
+      { name: "Pranav Godle", phone: "9028783635" },
+      { name: "Shahaji Bhosle", phone: "8308949481" },
     ],
   },
   Volleyball: {
@@ -95,16 +80,34 @@ const SPORTS_DATA = {
       { name: "Aditi Phulare", phone: "8669995909" },
     ],
   },
-  "Table Tennis": {
-    name: "Table Tennis Championship",
-    fees: { amount: 400, note: "per player" },
-    venue: "Indoor TT Hall",
+  Handball: {
+    name: "Handball Championship",
+    venue: "Outdoor Sports Ground",
+    fees: { amount: 1500, note: "per team" },
     rules: [
-      "Singles and Doubles events",
-      "Best of 5 games to 11 points",
-      "ITTF rules apply",
+      "Maximum 14 players per team (7 playing + 7 substitutes)",
+      "Two halves of 30 minutes each",
+      "IHF rules apply",
     ],
-    coordinators: [{ name: "Pooja Reddy", phone: "9876543217" }],
+    coordinators: [
+      { name: "Aditya Joshi", phone: "7820939780" },
+      { name: "Amarja Dhepe", phone: "9552110021" },
+    ],
+  },
+  Kabaddi: {
+    name: "Kabaddi Tournament",
+    venue: "Outdoor Sports Ground",
+    fees: { men: 2200, women: 1500, note: "per team" },
+    rules: [
+      "Maximum 12 players per team (7 playing + 5 substitutes)",
+      "Two halves of 20 minutes each",
+      "Pro Kabaddi League style rules",
+    ],
+    coordinators: [
+      { name: "Shubham Kale", phone: "7378409793" },
+      { name: "Sonam Chandel", phone: "8329513257" },
+      { name: "Chetan Bante", phone: "8263945881" },
+    ],
   },
   Chess: {
     fees: { amount: 200, note: "per player (Open to all age groups)" },
@@ -120,16 +123,29 @@ const SPORTS_DATA = {
       { name: "Akshit Tupkar", phone: "7028455126" },
     ],
   },
-  Carrom: {
-    fees: { amount: 300, note: "per player" },
-    name: "Carrom Championship",
-    venue: "Indoor Games Room",
-    rules: [
-      "Singles and Doubles events",
-      "25 points per game",
-      "ICF rules apply",
+  "Rink Football": {
+    name: "Rink Football Tournament",
+    venue: "Outdoor Sports Hall",
+    fees: { men: 2200, women: 1500, note: "per team" },
+    rules: ["5-a-side football", "Smaller playing area", "Modified FIFA rules"],
+    coordinators: [
+      { name: "Onkar Sahane", phone: "8767192671" },
+      { name: "Vipakshi Mate", phone: "7972776597" },
     ],
-    coordinators: [{ name: "Neha Gupta", phone: "9876543219" }],
+  },
+  "Kho-Kho": {
+    name: "Kho-Kho Championship",
+    venue: "Outdoor Sports Ground",
+    fees: { men: 1500, women: 1200, note: "per team" },
+    rules: [
+      "Maximum 15 players per team (9 playing + 6 substitutes)",
+      "Two innings of 9 minutes each",
+      "Official Kho-Kho Federation rules",
+    ],
+    coordinators: [
+      { name: "Sairaj Shinde", phone: "8767179744" },
+      { name: "Prem Dhande", phone: "8421230555" },
+    ],
   },
   Athletics: {
     fees: {
@@ -149,107 +165,7 @@ const SPORTS_DATA = {
       { name: "Shrujan Pal", phone: "8788766970" },
     ],
   },
-  Swimming: {
-    fees: { amount: 300, note: "per athlete" },
-    name: "Swimming Competition",
-    venue: "City Swimming Pool",
-    rules: [
-      "50m, 100m, 200m Freestyle",
-      "50m, 100m Backstroke, Breaststroke, Butterfly",
-      "Individual events",
-    ],
-    coordinators: [{ name: "Divya Nair", phone: "9876543221" }],
-  },
-  Kabaddi: {
-    name: "Kabaddi Tournament",
-    venue: "Outdoor Sports Ground",
-    fees: { men: 2200, women: 1500, note: "per team" },
-    rules: [
-      "Maximum 12 players per team (7 playing + 5 substitutes)",
-      "Two halves of 20 minutes each",
-      "Pro Kabaddi League style rules",
-    ],
-    coordinators: [
-      { name: "Shubham Kale", phone: "7378409793" },
-      { name: "Sonam Chandel", phone: "8329513257" },
-      { name: "Chetan Bante", phone: "8263945881" },
-    ],
-  },
-  "Kho-Kho": {
-    name: "Kho-Kho Championship",
-    venue: "Outdoor Sports Ground",
-    fees: { amount: 1500, note: "per team" },
-    rules: [
-      "Maximum 15 players per team (9 playing + 6 substitutes)",
-      "Two innings of 9 minutes each",
-      "Official Kho-Kho Federation rules",
-    ],
-    coordinators: [
-      { name: "Sairaj Shinde", phone: "8767179744" },
-      { name: "Prem Dhande", phone: "8421230555" },
-    ],
-  },
-  Hockey: {
-    name: "Hockey Tournament",
-    venue: "Hockey Turf",
-    fees: { amount: 2500, note: "per team" },
-    rules: [
-      "Maximum 18 players per team (11 playing + 7 substitutes)",
-      "Two halves of 35 minutes each",
-      "FIH rules apply",
-    ],
-    coordinators: [{ name: "Aditya Rao", phone: "9876543224" }],
-  },
-  "Lawn Tennis": {
-    name: "Lawn Tennis Championship",
-    venue: "Tennis Courts",
-    fees: { amount: 500, note: "per player" },
-    rules: [
-      "Singles and Doubles events",
-      "Best of 3 sets",
-      "ATP/WTA rules apply",
-    ],
-    coordinators: [{ name: "Riya Shah", phone: "9876543225" }],
-  },
-  Squash: {
-    name: "Squash Tournament",
-    venue: "Indoor Squash Courts",
-    fees: { amount: 400, note: "per player" },
-    rules: ["Singles event", "Best of 5 games to 11 points", "PSA rules apply"],
-    coordinators: [{ name: "Sameer Khan", phone: "9876543226" }],
-  },
-  Handball: {
-    name: "Handball Championship",
-    venue: "Outdoor Sports Ground",
-    fees: { amount: 1500, note: "per team" },
-    rules: [
-      "Maximum 14 players per team (7 playing + 7 substitutes)",
-      "Two halves of 30 minutes each",
-      "IHF rules apply",
-    ],
-    coordinators: [
-      { name: "Aditya Joshi", phone: "7820939780" },
-      { name: "Amarja Dhepe", phone: "9552110021" },
-    ],
-  },
-  "Rink Football": {
-    name: "Rink Football Tournament",
-    venue: "Outdoor Sports Hall",
-    fees: { men: 2200, women: 1500, note: "per team" },
-    rules: ["5-a-side football", "Smaller playing area", "Modified FIFA rules"],
-    coordinators: [
-      { name: "Onkar Sahane", phone: "8767192671" },
-      { name: "Vipakshi Mate", phone: "7972776597" },
-    ],
-  },
-  "Tug of War": {
-    name: "Tug of War Championship",
-    venue: "Outdoor Sports Ground",
-    fees: { amount: 1000, note: "per team" },
-    rules: ["8 players per team", "Best of 3 pulls", "TWIF rules apply"],
-    coordinators: [{ name: "Swayam Baheti", phone: "7276218795" }],
-  },
-  "Power Lifting": {
+  Powerlifting: {
     name: "Power Lifting Competition",
     venue: "Gymnasium",
     fees: { amount: 300, note: "per player" },
@@ -261,20 +177,6 @@ const SPORTS_DATA = {
     coordinators: [
       { name: "Tejas Borole", phone: "8767386695" },
       { name: "Sakshi Done", phone: "9028684180" },
-    ],
-  },
-  "Basketball (3x3)": {
-    name: "Basketball 3x3 Tournament",
-    venue: "Outdoor Basketball Court",
-    fees: { amount: 500, note: "per team" },
-    rules: [
-      "4 players per team (3 playing + 1 substitute)",
-      "10 minutes or first to 21 points",
-      "FIBA 3x3 rules apply",
-    ],
-    coordinators: [
-      { name: "Uday Naukarkar", phone: "9322684201" },
-      { name: "Krushna Jadhav", phone: "8208422959" },
     ],
   },
 };
@@ -298,43 +200,30 @@ const BACKUP_QR_URLS = [
 
 // Sport icons mapping
 const SPORT_ICONS = {
-  Cricket: "🏏",
-  "Box Cricket": "🏏",
   Football: "⚽",
   Basketball: "🏀",
-  "Basketball (3x3)": "🏀",
+  Cricket: "�",
   Volleyball: "🏐",
   Badminton: "🏸",
-  "Table Tennis": "🏓",
-  Chess: "♟️",
-  Carrom: "🎯",
-  Athletics: "🏃",
-  Swimming: "🏊",
-  Kabaddi: "🤼",
-  "Kho-Kho": "🏃‍♂️",
-  Hockey: "🏒",
-  "Lawn Tennis": "🎾",
-  Squash: "🎾",
   Handball: "🤾",
+  Kabaddi: "🤼",
+  Chess: "♟️",
   "Rink Football": "⚽",
-  "Tug of War": "💪",
-  "Power Lifting": "🏋️",
+  "Kho-Kho": "🏃‍♂️",
+  Athletics: "�",
+  Powerlifting: "🏋️",
 };
 
 // Team sports that require team setup
 const TEAM_SPORTS = [
-  "Cricket",
-  "Box Cricket",
   "Football",
   "Basketball",
-  "Basketball (3x3)",
+  "Cricket",
   "Volleyball",
-  "Kabaddi",
-  "Kho-Kho",
-  "Hockey",
-  "Rink Football",
-  "Tug of War",
   "Handball",
+  "Kabaddi",
+  "Rink Football",
+  "Kho-Kho",
 ];
 
 const ModernRegistration = () => {
@@ -362,6 +251,7 @@ const ModernRegistration = () => {
     need_accommodation: false,
     accommodation_days: "",
     accommodation_people: "",
+    teamGender: "", // "male" or "female" for sports with gender-specific fees
   });
 
   // Show registration closed page if not open
@@ -416,8 +306,7 @@ const ModernRegistration = () => {
       const mappedSport = sportMapping[sportName];
       if (mappedSport && SPORTS_DATA[mappedSport]) {
         setSelectedSport(mappedSport);
-        setCurrentStep(2); // Skip sport selection
-        toast.success(`${mappedSport} preselected! 🎯`);
+        toast.success(`${mappedSport} selected! 🎯`);
       }
     }
   }, [location.state]);
@@ -425,19 +314,15 @@ const ModernRegistration = () => {
   const selectedSportData = selectedSport ? SPORTS_DATA[selectedSport] : null;
   const isTeamSport = TEAM_SPORTS.includes(selectedSport);
 
-  // Calculate total steps dynamically
-  const totalSteps = isTeamSport ? 6 : 5; // Sport, Details, Team (optional), Captain (optional), Payment, Review
+  // Calculate total steps dynamically (removed sport selection step)
+  const totalSteps = isTeamSport ? 5 : 4; // Details, Team (optional), Captain (optional), Payment, Review
 
   // Progress calculation
   const progress = (currentStep / totalSteps) * 100;
 
   const nextStep = () => {
     // Validation for each step
-    if (currentStep === 1 && !selectedSport) {
-      toast.error("Please select a sport");
-      return;
-    }
-    if (currentStep === 2) {
+    if (currentStep === 1) {
       if (!formData.captain_name || !formData.captain_contact || !formData.email || !formData.institution) {
         toast.error("Please fill all required fields");
         return;
@@ -453,7 +338,7 @@ const ModernRegistration = () => {
         return;
       }
     }
-    if (currentStep === 3 && isTeamSport) {
+    if (currentStep === 2 && isTeamSport) {
       if (!formData.team_name || !formData.num_players) {
         toast.error("Please enter team name and number of players");
         return;
@@ -462,27 +347,25 @@ const ModernRegistration = () => {
         toast.error("Please add at least one team member");
         return;
       }
-    }
-    if (currentStep === 4 && isTeamSport && selectedCaptain === null) {
-      toast.error("Please select a team captain");
-      return;
+      if (selectedCaptain === null) {
+        toast.error("Please select a team captain");
+        return;
+      }
     }
 
     // Skip team setup steps for individual sports
-    if (currentStep === 2 && !isTeamSport) {
-      setCurrentStep(5); // Jump to payment
-    } else if (currentStep === 3 && !isTeamSport) {
-      setCurrentStep(5);
-    } else if (currentStep === 4 && !isTeamSport) {
-      setCurrentStep(5);
+    if (currentStep === 1 && !isTeamSport) {
+      setCurrentStep(3); // Jump to payment
+    } else if (currentStep === 2 && !isTeamSport) {
+      setCurrentStep(3);
     } else {
       setCurrentStep(currentStep + 1);
     }
   };
 
   const prevStep = () => {
-    if (currentStep === 5 && !isTeamSport) {
-      setCurrentStep(2); // Jump back from payment to details for individual sports
+    if (currentStep === 3 && !isTeamSport) {
+      setCurrentStep(1); // Jump back from payment to details for individual sports
     } else {
       setCurrentStep(currentStep - 1);
     }
@@ -650,85 +533,10 @@ const ModernRegistration = () => {
 
         {/* Step Content */}
         <AnimatePresence mode="wait">
-          {/* Step 1: Sport Selection */}
+          {/* Step 1: Participant Details */}
           {currentStep === 1 && (
             <motion.div
               key="step1"
-              variants={fadeInUp}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              transition={{ duration: 0.3 }}
-            >
-              <div className="text-center mb-8">
-                <h2 className="text-2xl md:text-3xl font-bold text-[#ffb77a] mb-2">
-                  Choose Your Sport
-                </h2>
-                <p className="text-gray-400">Select the sport you want to register for</p>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {Object.keys(SPORTS_DATA).map((sport, index) => (
-                  <motion.div
-                    key={sport}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.05 }}
-                    whileHover={{ scale: 1.05, y: -5 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => handleSportSelect(sport)}
-                    className={`
-                      relative p-6 rounded-xl cursor-pointer transition-all duration-300
-                      ${
-                        selectedSport === sport
-                          ? "bg-gradient-to-br from-[#ff6b35] to-[#ff8c42] shadow-xl shadow-[#ff6b35]/20"
-                          : "bg-[#1a1410]/50 backdrop-blur-sm border border-[#3a2416] hover:border-[#ff6b35]/50"
-                      }
-                    `}
-                  >
-                    <div className="text-4xl mb-2">{SPORT_ICONS[sport] || "🏆"}</div>
-                    <div className="text-sm font-medium">{sport}</div>
-                    {selectedSport === sport && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
-                      >
-                        <span className="text-[#ff6b35] text-xs">✓</span>
-                      </motion.div>
-                    )}
-                  </motion.div>
-                ))}
-              </div>
-
-              <motion.div
-                className="mt-8 flex justify-end"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                <button
-                  onClick={nextStep}
-                  disabled={!selectedSport}
-                  className={`
-                    px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300
-                    ${
-                      selectedSport
-                        ? "bg-gradient-to-r from-[#ff6b35] to-[#ff8c42] hover:shadow-xl hover:shadow-[#ff6b35]/20 hover:scale-105"
-                        : "bg-gray-700 cursor-not-allowed opacity-50"
-                    }
-                  `}
-                >
-                  Continue →
-                </button>
-              </motion.div>
-            </motion.div>
-          )}
-
-          {/* Step 2: Participant Details */}
-          {currentStep === 2 && (
-            <motion.div
-              key="step2"
               variants={slideIn}
               initial="hidden"
               animate="visible"
@@ -742,6 +550,35 @@ const ModernRegistration = () => {
                   Your Details
                 </h2>
                 <p className="text-gray-400">Tell us about yourself</p>
+                
+                {/* Show selected sport and gender dropdown */}
+                {selectedSport && (
+                  <div className="mt-4 inline-block bg-[#1a1410]/50 backdrop-blur-sm border border-[#3a2416] rounded-xl px-6 py-3">
+                    <p className="text-sm text-gray-400 mb-2">Registering for</p>
+                    <p className="text-lg font-semibold text-[#ff6b35]">{selectedSport}</p>
+                    
+                    {/* Gender Selection Dropdown for sports with gender-specific fees */}
+                    {selectedSportData?.fees?.men && selectedSportData?.fees?.women && (
+                      <div className="mt-3">
+                        <select
+                          value={formData.teamGender || ""}
+                          onChange={(e) => handleInputChange("teamGender", e.target.value)}
+                          className="w-full bg-black/30 border border-white/30 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-[#ff6b35] cursor-pointer"
+                        >
+                          <option value="" disabled className="bg-[#1a1410] text-gray-400">
+                            Select Category *
+                          </option>
+                          <option value="male" className="bg-[#1a1410] text-white">
+                            👨 Men's Team (₹{selectedSportData.fees.men})
+                          </option>
+                          <option value="female" className="bg-[#1a1410] text-white">
+                            👩 Women's Team (₹{selectedSportData.fees.women})
+                          </option>
+                        </select>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="bg-[#1a1410]/30 backdrop-blur-sm border border-[#3a2416] rounded-2xl p-6 md:p-8 space-y-6">
@@ -963,10 +800,10 @@ const ModernRegistration = () => {
             </motion.div>
           )}
 
-          {/* Step 3: Team Setup (Conditional) */}
-          {currentStep === 3 && isTeamSport && (
+          {/* Step 2: Team Setup (Conditional) */}
+          {currentStep === 2 && isTeamSport && (
             <motion.div
-              key="step3"
+              key="step2"
               variants={slideIn}
               initial="hidden"
               animate="visible"
@@ -979,7 +816,7 @@ const ModernRegistration = () => {
                 <h2 className="text-2xl md:text-3xl font-bold text-[#ffb77a] mb-2">
                   Build Your Team
                 </h2>
-                <p className="text-gray-400">Add your team members</p>
+                <p className="text-gray-400">Add your team members and select captain</p>
               </div>
 
               <div className="bg-[#1a1410]/30 backdrop-blur-sm border border-[#3a2416] rounded-2xl p-6 md:p-8 space-y-6">
@@ -1198,14 +1035,31 @@ const ModernRegistration = () => {
                     <span>Total Amount:</span>
                     <span className="text-[#ff6b35]">
                       ₹
-                      {selectedSportData?.fees?.amount ||
-                        selectedSportData?.fees?.men ||
-                        selectedSportData?.fees?.individual ||
-                        "N/A"}
+                      {(() => {
+                        // Check if sport has gender-specific fees
+                        if (selectedSportData?.fees?.men && selectedSportData?.fees?.women) {
+                          return formData.teamGender === "male" 
+                            ? selectedSportData.fees.men 
+                            : formData.teamGender === "female"
+                            ? selectedSportData.fees.women
+                            : "N/A";
+                        }
+                        // Otherwise use standard fee
+                        return selectedSportData?.fees?.amount ||
+                               selectedSportData?.fees?.individual ||
+                               "N/A";
+                      })()}
                     </span>
                   </div>
                   {selectedSportData?.fees?.note && (
-                    <p className="text-sm text-gray-400 mt-2">{selectedSportData.fees.note}</p>
+                    <p className="text-sm text-gray-400 mt-2">
+                      {selectedSportData.fees.note}
+                      {formData.teamGender && (
+                        <span className="ml-2 text-[#ff6b35]">
+                          ({formData.teamGender === "male" ? "Men's" : "Women's"} Category)
+                        </span>
+                      )}
+                    </p>
                   )}
                   
                   {/* Game Coordinators */}
@@ -1402,6 +1256,14 @@ const ModernRegistration = () => {
                     <div>
                       <span className="text-gray-400">Institution:</span> {formData.institution}
                     </div>
+                    {formData.teamGender && (
+                      <div>
+                        <span className="text-gray-400">Team Category:</span>{" "}
+                        <span className="text-[#ff6b35] font-semibold">
+                          {formData.teamGender === "male" ? "Men's" : "Women's"}
+                        </span>
+                      </div>
+                    )}
                     {formData.city && (
                       <div>
                         <span className="text-gray-400">City:</span> {formData.city}
