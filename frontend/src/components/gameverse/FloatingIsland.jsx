@@ -16,6 +16,8 @@ import AthleticsPlanet from "./AthleticsPlanet";
 import CarromPlanet from "./CarromPlanet";
 import KhoKhoPlanet from "./KhoKhoPlanet";
 import FootballPlanet from "./FootballPlanet";
+import BadmintonPlanet from "./BadmintonPlanet";
+import BasketballPlanet from "./BasketballPlanet";
 
 /* ---------------------------------------------------------
    ⚽ Enhanced Football Model
@@ -148,10 +150,6 @@ function SportModel({ sportName }) {
           </Cylinder>
         </group>
       );
-
-    case "BASKETBALL":
-      // Enhanced Basketball Planet
-      return <BasketballModel />;
 
     case "VOLLEYBALL":
       // Volleyball
@@ -646,37 +644,6 @@ function SportModel({ sportName }) {
     default:
       return null;
   }
-}
-
-/* -----------------------------------------------------------
-    🎨 Procedural basketball texture
--------------------------------------------------------------*/
-function useBasketballTexture() {
-  return useMemo(() => {
-    const size = 1024;
-    const canvas = document.createElement("canvas");
-    canvas.width = canvas.height = size;
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-
-    // Base orange
-    ctx.fillStyle = "#f97316";
-    ctx.fillRect(0, 0, size, size);
-
-    // Add light noise dots (basketball rough texture)
-    const imgData = ctx.getImageData(0, 0, size, size);
-    for (let i = 0; i < imgData.data.length; i += 4) {
-      const n = Math.random() * 20; // noise amount
-      imgData.data[i] -= n; // R
-      imgData.data[i + 1] -= n; // G
-      imgData.data[i + 2] -= n; // B
-    }
-    ctx.putImageData(imgData, 0, 0);
-
-    const tex = new THREE.CanvasTexture(canvas);
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.anisotropy = 16;
-    return tex;
-  }, []);
 }
 
 /* -------------------------------------------------------
@@ -1230,280 +1197,6 @@ function useChessTexture({ size = 2048, squares = 16 }) {
 }
 
 /* -----------------------------------------------------------
-    🛠️ Generate proper basketball seams
--------------------------------------------------------------*/
-function createSeams(radius) {
-  return [
-    // Horizontal ring around the middle
-    { r: 1.0, t: 0.11, rot: [0, 0, 0], pos: [0, 0, 0] },
-
-    // Vertical seam 1
-    { r: 1.0, t: 0.11, rot: [Math.PI / 2, 0, 0], pos: [0, 0, 0] },
-
-    // Diagonal seam
-    { r: 1.0, t: 0.11, rot: [Math.PI / 2, Math.PI / 4, 0], pos: [0, 0, 0] },
-
-    // Opposite diagonal seam
-    {
-      r: 1.0,
-      t: 0.11,
-      rot: [Math.PI / 2, -Math.PI / 4, 0],
-      pos: [0, 0, 0],
-    },
-  ];
-}
-
-/* -----------------------------------------------------------
-    🏀 Enhanced Basketball Model
--------------------------------------------------------------*/
-function BasketballModel() {
-  const ballRef = useRef();
-  const seamRef = useRef();
-  const sparkleRef = useRef();
-
-  const ballTex = useBasketballTexture();
-  const radius = 0.5;
-
-  // Sparkle orbit points
-  const sparkData = useMemo(() => {
-    return new Array(8).fill(0).map(() => {
-      return {
-        angle: Math.random() * Math.PI * 2,
-        radius: radius * (1.8 + Math.random() * 0.4),
-        speed: 0.2 + Math.random() * 0.3,
-        y: -0.2 + Math.random() * 0.6,
-      };
-    });
-  }, []);
-
-  useFrame(({ clock }, delta) => {
-    const t = clock.getElapsedTime();
-
-    // Rotate basketball
-    if (ballRef.current) {
-      ballRef.current.rotation.y = t * 0.3;
-      ballRef.current.position.y = 0.6 + Math.sin(t * 1.2) * 0.08;
-    }
-
-    // Rotate seams with ball
-    if (seamRef.current) {
-      seamRef.current.rotation.y = t * 0.3;
-      seamRef.current.position.y = 0.6 + Math.sin(t * 1.2) * 0.08;
-    }
-
-    // floating sparkles
-    if (sparkleRef.current) {
-      sparkleRef.current.children.forEach((child, i) => {
-        const s = sparkData[i];
-        s.angle += delta * s.speed;
-        child.position.set(
-          Math.cos(s.angle) * s.radius,
-          0.6 + s.y + Math.sin(t * 2 + i) * 0.04,
-          Math.sin(s.angle) * s.radius,
-        );
-        child.scale.setScalar(0.06 + Math.sin(t * 3 + i) * 0.02);
-      });
-    }
-  });
-
-  return (
-    <group>
-      {/* 🟠 Base basketball sphere */}
-      <mesh ref={ballRef}>
-        <sphereGeometry args={[radius, 64, 64]} />
-        <meshStandardMaterial map={ballTex} roughness={0.55} metalness={0.1} />
-      </mesh>
-
-      {/* 🟠 Basketball seams */}
-      <group ref={seamRef}>
-        {createSeams(radius).map((cfg, i) => (
-          <mesh key={i} rotation={cfg.rot} position={cfg.pos}>
-            <torusGeometry args={[radius * cfg.r, cfg.t * 0.06, 12, 100]} />
-            <meshStandardMaterial
-              color="#1c1917"
-              roughness={0.8}
-              metalness={0.3}
-            />
-          </mesh>
-        ))}
-      </group>
-
-      {/* ✨ Floating orb sparkles */}
-      <group ref={sparkleRef}>
-        {sparkData.map((_, i) => (
-          <mesh key={i}>
-            <sphereGeometry args={[0.05, 8, 8]} />
-            <meshBasicMaterial color="#ffb36a" transparent opacity={0.8} />
-          </mesh>
-        ))}
-      </group>
-
-      {/* 💡 Additional point light for basketball */}
-      <pointLight
-        position={[1, 1.5, 1]}
-        intensity={0.8}
-        distance={3}
-        color="#ff6b35"
-      />
-    </group>
-  );
-}
-
-/* -----------------------------------------------------------
-    🪐 Premium Basketball Planet (Spherical Design)
--------------------------------------------------------------*/
-function BasketballPlanet({ position, onClick, hovered, setHovered }) {
-  const groupRef = useRef();
-  const planetRef = useRef();
-  const glowRef = useRef();
-  const sparkRef = useRef();
-  const textRef = useRef();
-
-  const radius = 2.2;
-  const theme = { base: "#f97316", glow: "#ffb36a", tint: "#1c1917" };
-
-  // Sparkle orbit data
-  const sparkData = useMemo(() => {
-    return [...Array(16)].map(() => ({
-      angle: Math.random() * Math.PI * 2,
-      radius: radius * (1.4 + Math.random() * 0.4),
-      speed: 0.15 + Math.random() * 0.3,
-      y: -0.4 + Math.random() * 1.2,
-      size: 0.06 + Math.random() * 0.04,
-    }));
-  }, []);
-
-  useFrame(({ clock, camera }, delta) => {
-    const t = clock.getElapsedTime();
-
-    // NO floating motion - keep fixed on orbit
-    // Planets stay at their orbital position
-
-    // Slow rotation
-    if (planetRef.current) {
-      planetRef.current.rotation.y = t * 0.15;
-    }
-
-    // Atmosphere pulse
-    if (glowRef.current) {
-      glowRef.current.material.opacity =
-        0.18 + Math.sin(t * 1.2) * 0.08 + (hovered ? 0.15 : 0);
-      glowRef.current.scale.setScalar(1.07 + Math.sin(t * 0.5) * 0.02);
-    }
-
-    // Orbit sparkles
-    if (sparkRef.current) {
-      sparkRef.current.children.forEach((mesh, i) => {
-        const s = sparkData[i];
-        s.angle += delta * s.speed;
-        mesh.position.set(
-          Math.cos(s.angle) * s.radius,
-          s.y + Math.sin(t * 2 + i) * 0.05,
-          Math.sin(s.angle) * s.radius,
-        );
-      });
-    }
-
-    // Billboard text
-    if (textRef.current) {
-      textRef.current.quaternion.copy(camera.quaternion);
-      textRef.current.position.y = radius * 1.4 + Math.sin(t * 1.2) * 0.04;
-    }
-  });
-
-  const ballTex = useBasketballTexture();
-
-  return (
-    <group ref={groupRef} position={position}>
-      {/* 🪐 Main Sphere Planet with Basketball Texture */}
-      <mesh
-        ref={planetRef}
-        onClick={onClick}
-        onPointerOver={(e) => {
-          e.stopPropagation();
-          setHovered(true);
-          document.body.style.cursor = "pointer";
-        }}
-        onPointerOut={(e) => {
-          e.stopPropagation();
-          setHovered(false);
-          document.body.style.cursor = "auto";
-        }}
-      >
-        <sphereGeometry args={[radius, 128, 128]} />
-        <meshStandardMaterial
-          map={ballTex}
-          roughness={0.45}
-          metalness={0.1}
-          emissive={hovered ? theme.tint : "#000000"}
-          emissiveIntensity={hovered ? 0.6 : 0.15}
-        />
-      </mesh>
-
-      {/* 🟠 Basketball seams on planet */}
-      <group ref={planetRef}>
-        {createSeams(radius).map((cfg, i) => (
-          <mesh key={`seam-${i}`} rotation={cfg.rot} position={cfg.pos}>
-            <torusGeometry args={[radius * cfg.r, cfg.t * 0.15, 16, 120]} />
-            <meshStandardMaterial
-              color="#1c1917"
-              roughness={0.8}
-              metalness={0.3}
-            />
-          </mesh>
-        ))}
-      </group>
-
-      {/* 🌌 Atmosphere Glow (Fresnel-style) */}
-      <mesh ref={glowRef}>
-        <sphereGeometry args={[radius * 1.07, 128, 128]} />
-        <meshBasicMaterial
-          color={theme.glow}
-          transparent
-          opacity={0.22}
-          blending={THREE.AdditiveBlending}
-          depthWrite={false}
-        />
-      </mesh>
-
-      {/* ✨ Sparkle Orbiters */}
-      <group ref={sparkRef}>
-        {sparkData.map((s, i) => (
-          <mesh key={i}>
-            <sphereGeometry args={[s.size, 12, 12]} />
-            <meshBasicMaterial color={theme.glow} transparent opacity={0.85} />
-          </mesh>
-        ))}
-      </group>
-
-      {/* 🏷 Billboard Text */}
-      <Text
-        ref={textRef}
-        fontSize={0.7}
-        color={theme.glow}
-        outlineWidth={0.12}
-        outlineColor="#000000"
-        anchorX="center"
-        anchorY="middle"
-        maxWidth={6}
-        renderOrder={999}
-      >
-        BASKETBALL
-      </Text>
-
-      {/* 💡 Lights */}
-      <pointLight
-        position={[4, 5, 4]}
-        intensity={hovered ? 3 : 2}
-        distance={20}
-        color={theme.glow}
-      />
-      <ambientLight intensity={0.2} />
-    </group>
-  );
-}
-
-/* -----------------------------------------------------------
     🏏 Premium Cricket Planet (Spherical Design)
 -------------------------------------------------------------*/
 function CricketPlanet({ position, onClick, hovered, setHovered }) {
@@ -1650,241 +1343,6 @@ function CricketPlanet({ position, onClick, hovered, setHovered }) {
         distance={18}
       />
       <ambientLight intensity={0.22} />
-    </group>
-  );
-}
-
-/* -------------------------------------------------------
-    🏸 Badminton Shuttlecock Texture (White with Cork Base)
---------------------------------------------------------*/
-function useBadmintonTexture({ size = 2048 }) {
-  return useMemo(() => {
-    const canvas = document.createElement("canvas");
-    canvas.width = canvas.height = size;
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-
-    // White base for shuttlecock body
-    ctx.fillStyle = "#f8f8f8";
-    ctx.fillRect(0, 0, size, size);
-
-    // Add subtle texture noise for feather detail
-    const img = ctx.getImageData(0, 0, size, size);
-    for (let i = 0; i < img.data.length; i += 4) {
-      const grain = Math.random() * 18 - 9;
-      img.data[i] += grain;
-      img.data[i + 1] += grain;
-      img.data[i + 2] += grain;
-    }
-    ctx.putImageData(img, 0, 0);
-
-    // Cork base band (horizontal stripe in middle representing cork bottom)
-    const corkHeight = size * 0.15;
-    const grd = ctx.createLinearGradient(
-      0,
-      size / 2 - corkHeight / 2,
-      0,
-      size / 2 + corkHeight / 2,
-    );
-    grd.addColorStop(0, "#e8d4b8");
-    grd.addColorStop(0.5, "#c79b6a");
-    grd.addColorStop(1, "#e8d4b8");
-    ctx.fillStyle = grd;
-    ctx.fillRect(0, size / 2 - corkHeight / 2, size, corkHeight);
-
-    // Add cork texture spots
-    for (let i = 0; i < 600; i++) {
-      const x = Math.random() * size;
-      const y = size / 2 - corkHeight / 2 + Math.random() * corkHeight;
-      const r = Math.random() * 4;
-      ctx.fillStyle = `rgba(${100 + Math.random() * 50}, ${
-        60 + Math.random() * 40
-      }, ${30 + Math.random() * 30}, ${0.15 + Math.random() * 0.15})`;
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    // Feather lines (vertical stripes to simulate feather pattern)
-    ctx.strokeStyle = "rgba(220, 220, 220, 0.4)";
-    ctx.lineWidth = 3;
-    const featherLines = 32;
-    for (let i = 0; i < featherLines; i++) {
-      const x = (i / featherLines) * size;
-
-      // Upper feathers
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x + size * 0.02, size / 2 - corkHeight / 2);
-      ctx.stroke();
-
-      // Lower feathers
-      ctx.beginPath();
-      ctx.moveTo(x, size);
-      ctx.lineTo(x + size * 0.02, size / 2 + corkHeight / 2);
-      ctx.stroke();
-    }
-
-    const tex = new THREE.CanvasTexture(canvas);
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.anisotropy = 16;
-    tex.needsUpdate = true;
-
-    return tex;
-  }, [size]);
-}
-
-/* -----------------------------------------------------------
-    🏸 Premium Badminton Planet (Spherical Design)
--------------------------------------------------------------*/
-function BadmintonPlanet({ position, onClick, hovered, setHovered }) {
-  const groupRef = useRef();
-  const planetRef = useRef();
-  const glowRef = useRef();
-  const sparkRef = useRef();
-  const textRef = useRef();
-
-  const radius = 2.2;
-  const theme = {
-    base: "#f8f8f8",
-    glow: "#7fe3c8",
-    tint: "#0f6f4f",
-    cork: "#c79b6a",
-  };
-
-  // Sparkle orbit data - cyan/green sparkles for badminton theme
-  const sparkData = useMemo(() => {
-    return [...Array(20)].map(() => ({
-      angle: Math.random() * Math.PI * 2,
-      radius: radius * (1.38 + Math.random() * 0.42),
-      speed: 0.14 + Math.random() * 0.26,
-      y: -0.45 + Math.random() * 1.35,
-      size: 0.04 + Math.random() * 0.06,
-    }));
-  }, []);
-
-  useFrame(({ clock, camera }, delta) => {
-    const t = clock.getElapsedTime();
-
-    // NO floating motion - keep fixed on orbit
-    // Planets stay at their orbital position
-
-    // Slow rotation
-    if (planetRef.current) {
-      planetRef.current.rotation.y = t * 0.16;
-      planetRef.current.rotation.x = Math.sin(t * 0.35) * 0.04;
-    }
-
-    // Atmosphere pulse
-    if (glowRef.current) {
-      glowRef.current.material.opacity =
-        0.22 + Math.sin(t * 1.18) * 0.08 + (hovered ? 0.16 : 0);
-      glowRef.current.scale.setScalar(1.09 + Math.sin(t * 0.54) * 0.022);
-    }
-
-    // Orbit sparkles
-    if (sparkRef.current) {
-      sparkRef.current.children.forEach((mesh, i) => {
-        const s = sparkData[i];
-        s.angle += delta * s.speed;
-        mesh.position.set(
-          Math.cos(s.angle) * s.radius,
-          s.y + Math.sin(t * 2.1 + i) * 0.055,
-          Math.sin(s.angle) * s.radius,
-        );
-      });
-    }
-
-    // Billboard text
-    if (textRef.current) {
-      textRef.current.quaternion.copy(camera.quaternion);
-      textRef.current.position.y = radius * 1.44 + Math.sin(t * 1.2) * 0.045;
-    }
-  });
-
-  const badmintonTex = useBadmintonTexture({ size: 2048 });
-
-  return (
-    <group ref={groupRef} position={position}>
-      {/* 🏸 Main Sphere Planet with Shuttlecock Texture */}
-      <mesh
-        ref={planetRef}
-        onClick={onClick}
-        onPointerOver={(e) => {
-          e.stopPropagation();
-          setHovered(true);
-          document.body.style.cursor = "pointer";
-        }}
-        onPointerOut={(e) => {
-          e.stopPropagation();
-          setHovered(false);
-          document.body.style.cursor = "auto";
-        }}
-      >
-        <sphereGeometry args={[radius, 128, 128]} />
-        <meshStandardMaterial
-          map={badmintonTex}
-          roughness={0.38}
-          metalness={0.08}
-          emissive={hovered ? theme.tint : "#000000"}
-          emissiveIntensity={hovered ? 0.45 : 0.1}
-        />
-      </mesh>
-
-      {/* 🌌 Atmosphere Glow (Cyan/Green Theme) */}
-      <mesh ref={glowRef}>
-        <sphereGeometry args={[radius * 1.09, 128, 128]} />
-        <meshBasicMaterial
-          color={theme.glow}
-          transparent
-          opacity={0.26}
-          blending={THREE.AdditiveBlending}
-          depthWrite={false}
-        />
-      </mesh>
-
-      {/* ✨ Sparkle Orbiters */}
-      <group ref={sparkRef}>
-        {sparkData.map((s, i) => (
-          <mesh key={i}>
-            <sphereGeometry args={[s.size, 12, 12]} />
-            <meshBasicMaterial
-              color={i % 4 === 0 ? "#ffffff" : theme.glow}
-              transparent
-              opacity={0.9}
-            />
-          </mesh>
-        ))}
-      </group>
-
-      {/* 🏷 Billboard Text */}
-      <Text
-        ref={textRef}
-        fontSize={0.68}
-        color={theme.glow}
-        outlineWidth={0.13}
-        outlineColor={theme.tint}
-        anchorX="center"
-        anchorY="middle"
-        maxWidth={6}
-        renderOrder={999}
-      >
-        BADMINTON
-      </Text>
-
-      {/* 💡 Lights */}
-      <pointLight
-        position={[4.2, 5.2, 3.8]}
-        intensity={hovered ? 3.0 : 2.5}
-        distance={23}
-        color="#a8fff0"
-      />
-      <pointLight
-        position={[-3.2, 4.5, -2.8]}
-        intensity={1.5}
-        color={theme.glow}
-        distance={20}
-      />
-      <ambientLight intensity={0.24} />
     </group>
   );
 }
@@ -3005,18 +2463,6 @@ export default function FloatingIsland({
   const [hovered, setHovered] = useState(false);
   const textZOffset = useRef(0);
 
-  // Special rendering for BASKETBALL - Premium Spherical Planet
-  if (sportName === "BASKETBALL") {
-    return (
-      <BasketballPlanet
-        position={position}
-        onClick={onClick}
-        hovered={hovered}
-        setHovered={setHovered}
-      />
-    );
-  }
-
   // Special rendering for CRICKET - Premium Spherical Planet
   if (sportName === "CRICKET") {
     return (
@@ -3033,6 +2479,18 @@ export default function FloatingIsland({
   if (sportName === "BADMINTON") {
     return (
       <BadmintonPlanet
+        position={position}
+        onClick={onClick}
+        hovered={hovered}
+        setHovered={setHovered}
+      />
+    );
+  }
+
+  // Special rendering for BASKETBALL (5X5) - Premium Court Planet
+  if (sportName === "BASKETBALL (5X5)") {
+    return (
+      <BasketballPlanet
         position={position}
         onClick={onClick}
         hovered={hovered}
@@ -3189,10 +2647,13 @@ export default function FloatingIsland({
     const targetZ = hovered ? 3 : 0;
     textZOffset.current += (targetZ - textZOffset.current) * 0.12;
 
+    // Billboard effect - text always faces camera
     if (textRef.current) {
+      textRef.current.quaternion.copy(state.camera.quaternion);
       textRef.current.position.z = textZOffset.current;
     }
     if (textBgRef.current) {
+      textBgRef.current.quaternion.copy(state.camera.quaternion);
       textBgRef.current.position.z = textZOffset.current - 0.1;
     }
   });
