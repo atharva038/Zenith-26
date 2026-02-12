@@ -1406,7 +1406,7 @@ const UniversalRegistration = () => {
                     <p className="text-sm md:text-base">Registration Form</p>
                   </div>
                   
-                  {/* Registration Fee Display and Fill Test Data Button */}
+                  {/* Registration Fee Display */}
                   <div className="flex items-center gap-4 mt-2">
                     {/* Fee Display */}
                     <div className="px-4 py-2 bg-[#ff6b35]/20 border border-[#ff6b35] rounded-full">
@@ -1414,21 +1414,6 @@ const UniversalRegistration = () => {
                         Fee: {getDisplayFee()}
                       </p>
                     </div>
-                    
-                    {/* Fill Test Data Button */}
-                    <button
-                      onClick={fillTestData}
-                      className="px-4 py-2 rounded-full font-semibold text-sm
-                               bg-gradient-to-r from-blue-600 to-blue-500
-                               hover:from-blue-500 hover:to-blue-400
-                               hover:shadow-lg hover:shadow-blue-500/30 hover:scale-105
-                               transition-all duration-300
-                               flex items-center gap-2"
-                      title="Fill form with test data"
-                    >
-                      <span>🧪</span>
-                      <span>Fill Test Data</span>
-                    </button>
                   </div>
                 </div>
               </motion.div>
