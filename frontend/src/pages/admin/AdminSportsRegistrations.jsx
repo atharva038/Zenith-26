@@ -104,6 +104,17 @@ const getCategoryBadgeInfo = (eventName, formData) => {
                          formData?.get?.('gender_category') ||
                          formData?.sportDetails?.selectedGender;
   
+  // Power Lifting is always individual - show Solo badge
+  if (eventName === 'Power Lifting') {
+    return {
+      label: '🎯 Solo',
+      shortLabel: '🎯 Solo',
+      className: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/20',
+      detailClassName: 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20',
+      isTeam: false
+    };
+  }
+  
   if (!genderCategory) return null;
   
   // Chess and Athletics are dual-mode sports - show Team/Solo instead of Men/Women
@@ -784,11 +795,10 @@ const AdminSportsRegistrations = () => {
                               {reg.institution || "N/A"}
                             </td>
                             <td className="px-6 py-4 text-sm text-gray-300">
-                              {/* Show player count only for team registrations, not solo */}
+                              {/* Show player count - "1" for solo sports, actual count for teams */}
                               {(() => {
-                                const badgeInfo = getCategoryBadgeInfo(reg.eventName, formData);
-                                // If it's a solo registration, show "1" or dash
-                                if (badgeInfo && !badgeInfo.isTeam) {
+                                // Check if it's a solo registration (Power Lifting, Chess individual, etc.)
+                                if (isSoloRegistration(reg.eventName, formData)) {
                                   return (
                                     <span className="px-2 py-1 bg-gray-500/10 text-gray-400 rounded-lg font-medium">
                                       1

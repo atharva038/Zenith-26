@@ -287,7 +287,7 @@ const SPORTS_DATA = {
   "Power Lifting": {
     name: "Power Lifting Competition",
     venue: "Gymnasium",
-    fees: { amount: 300, note: "per player" },
+    fees: { individual: 300, note: "₹300 per player (Solo Event)" },
     rules: [
       "Individual event",
       "3 attempts each: Squat, Bench Press, Deadlift",
@@ -637,6 +637,9 @@ const UniversalRegistration = () => {
   const hasGenderOptions = selectedSportData?.fees && (selectedSportData.fees.men || selectedSportData.fees.women);
   const hasTeamIndividualOptions = selectedSportData?.fees && (selectedSportData.fees.team && selectedSportData.fees.individual);
   
+  // Check for individual-only sports (like Power Lifting - has individual fee but no team option)
+  const isIndividualOnlySport = selectedSportData?.fees && selectedSportData.fees.individual && !selectedSportData.fees.team && !selectedSportData.fees.amount;
+  
   // Gender/Team-Individual selection handler
   const handleGenderSelect = (gender) => {
     setSelectedGender(gender);
@@ -665,6 +668,14 @@ const UniversalRegistration = () => {
     }
   };
   
+  // Auto-select "individual" for individual-only sports like Power Lifting
+  useEffect(() => {
+    if (isIndividualOnlySport && selectedSport && !selectedGender) {
+      setSelectedGender("individual");
+      setFormData(prev => ({ ...prev, num_players: "1" }));
+    }
+  }, [selectedSport, isIndividualOnlySport, selectedGender]);
+  
   // Get appropriate fee display
   const getDisplayFee = () => {
     if (!selectedSportData?.fees) return "N/A";
@@ -688,6 +699,9 @@ const UniversalRegistration = () => {
     } else if (typeof selectedSportData.fees === 'object' && selectedSportData.fees.team && !selectedSportData.fees.individual) {
       // Team-only fee (Badminton - mixed team sport)
       return `₹${selectedSportData.fees.team} ${selectedSportData.fees.note || ""}`;
+    } else if (typeof selectedSportData.fees === 'object' && selectedSportData.fees.individual && !selectedSportData.fees.team) {
+      // Individual-only fee (Power Lifting - solo sport)
+      return `₹${selectedSportData.fees.individual} ${selectedSportData.fees.note || ""}`;
     } else if (typeof selectedSportData.fees === 'object' && (selectedSportData.fees.men || selectedSportData.fees.women)) {
       // Gender-based fees
       if (selectedGender === 'men' && selectedSportData.fees.men) {
@@ -1105,6 +1119,9 @@ const UniversalRegistration = () => {
         setRegistrationComplete(true);
         setCurrentStep(totalSteps + 1); // Move to success screen
         toast.success("Registration successful! 🎉");
+        
+        // Scroll to top on mobile to show success screen
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     } catch (error) {
       console.error("Registration error:", error);
@@ -1983,8 +2000,8 @@ const UniversalRegistration = () => {
             </motion.div>
           )}
 
-          {/* Step 4: Payment & Documents */}
-          {currentStep === 4 && (
+          {/* Step 4: Payment & Documents - Hide after registration complete */}
+          {currentStep === 4 && !registrationComplete && (
             <motion.div
               key="step4"
               variants={slideIn}
@@ -2216,8 +2233,8 @@ const UniversalRegistration = () => {
             </motion.div>
           )}
 
-          {/* Step 5: Review & Confirm */}
-          {currentStep === 5 && (
+          {/* Step 5: Review & Confirm - Hide after registration complete */}
+          {currentStep === 5 && !registrationComplete && (
             <motion.div
               key="step5"
               variants={slideIn}
