@@ -356,6 +356,7 @@ const TEAM_SPORTS = [
   "Hockey",
   "Rink Football",
   "Handball",
+  "Badminton", // Mixed team sport (2-5 players)
 ];
 
 // **STRICT TEAM SIZE VALIDATION CONFIG**
@@ -373,6 +374,7 @@ const TEAM_SPORTS_CONFIG = {
   "Rink Football": { minPlayers: 5, maxPlayers: 10, exactPlayers: null },
   "Handball": { minPlayers: 7, maxPlayers: 14, exactPlayers: null },
   "Chess": { minPlayers: 4, maxPlayers: 4, exactPlayers: 4 }, // Team Chess: exactly 4 players
+  "Badminton": { minPlayers: 2, maxPlayers: 5, exactPlayers: null }, // Badminton: 2-5 players per team
 };
 
 const UniversalRegistration = () => {
