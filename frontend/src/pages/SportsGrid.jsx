@@ -508,13 +508,12 @@ const SportsGrid = () => {
         return false;
       }
       
-      const matchesTier = filterTier === "all" || sport.tier === filterTier;
       const matchesSearch = sport.name
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
       return matchesSearch;
     });
-  }, [filterTier, searchQuery, isCricketOpen, isOtherSportsOpen]);
+  }, [searchQuery, isCricketOpen, isOtherSportsOpen]);
 
   // Memoized tiers array - calculated once
   const tiers = useMemo(() => {
