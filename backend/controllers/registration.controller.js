@@ -98,15 +98,7 @@ export const createRegistration = async (req, res) => {
       });
     }
 
-    // Check for duplicate registration
-    const existingRegistration = await Registration.findOne({eventId, email});
-    if (existingRegistration) {
-      return res.status(400).json({
-        success: false,
-        message: "You have already registered for this event",
-        registrationNumber: existingRegistration.registrationNumber,
-      });
-    }
+    // NOTE: Duplicate registration check REMOVED - users can register multiple times
 
     // Create registration with documents
     const registration = new Registration({
@@ -155,16 +147,9 @@ export const createRegistration = async (req, res) => {
   } catch (error) {
     console.error("Create registration error:", error);
 
-    if (error.code === 11000) {
-      return res.status(400).json({
-        success: false,
-        message: "You have already registered for this event",
-      });
-    }
-
     res.status(500).json({
       success: false,
-      message: "Registration failed",
+      message: "Registration failed. Please try again.",
       error: error.message,
     });
   }
@@ -286,16 +271,9 @@ export const createSportsRegistration = async (req, res) => {
   } catch (error) {
     console.error("Create sports registration error:", error);
 
-    if (error.code === 11000) {
-      return res.status(400).json({
-        success: false,
-        message: "You have already registered for this sport",
-      });
-    }
-
     res.status(500).json({
       success: false,
-      message: "Sports registration failed",
+      message: "Sports registration failed. Please try again.",
       error: error.message,
     });
   }

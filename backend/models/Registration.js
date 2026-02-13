@@ -101,8 +101,8 @@ const registrationSchema = new mongoose.Schema(
   }
 );
 
-// Compound index for duplicate prevention
-registrationSchema.index({eventId: 1, email: 1}, {unique: true});
+// Indexes for faster queries (no unique constraint - duplicates allowed)
+registrationSchema.index({eventId: 1, email: 1}); // Removed unique: true to allow duplicate registrations
 registrationSchema.index({createdAt: -1});
 registrationSchema.index({status: 1});
 
