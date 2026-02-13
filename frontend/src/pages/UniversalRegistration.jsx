@@ -2152,7 +2152,12 @@ const UniversalRegistration = () => {
                     {documents.transactionReceipt && (
                       <div className="mt-3 space-y-2">
                         <p className="text-xs text-green-500 font-semibold">✓ File uploaded: {documents.transactionReceipt.name}</p>
-                        {documentPreviews.transactionReceipt && documents.transactionReceipt.type.startsWith('image/') && (
+                        {documents.transactionReceipt.type === 'application/pdf' ? (
+                          <div className="flex items-center gap-2 p-3 bg-blue-500/10 rounded-lg border border-blue-500/30">
+                            <span className="text-2xl">📄</span>
+                            <span className="text-blue-400 text-sm">PDF Document Ready</span>
+                          </div>
+                        ) : documentPreviews.transactionReceipt && (
                           <img 
                             src={documentPreviews.transactionReceipt} 
                             alt="Transaction Receipt Preview" 
@@ -2177,7 +2182,12 @@ const UniversalRegistration = () => {
                     {documents.permissionLetter && (
                       <div className="mt-3 space-y-2">
                         <p className="text-xs text-green-500 font-semibold">✓ File uploaded: {documents.permissionLetter.name}</p>
-                        {documentPreviews.permissionLetter && documents.permissionLetter.type.startsWith('image/') && (
+                        {documents.permissionLetter.type === 'application/pdf' ? (
+                          <div className="flex items-center gap-2 p-3 bg-purple-500/10 rounded-lg border border-purple-500/30">
+                            <span className="text-2xl">📄</span>
+                            <span className="text-purple-400 text-sm">PDF Document Ready</span>
+                          </div>
+                        ) : documentPreviews.permissionLetter && (
                           <img 
                             src={documentPreviews.permissionLetter} 
                             alt="Permission Letter Preview" 
@@ -2202,7 +2212,12 @@ const UniversalRegistration = () => {
                     {documents.captainIdCard && (
                       <div className="mt-3 space-y-2">
                         <p className="text-xs text-green-500 font-semibold">✓ File uploaded: {documents.captainIdCard.name}</p>
-                        {documentPreviews.captainIdCard && documents.captainIdCard.type.startsWith('image/') && (
+                        {documents.captainIdCard.type === 'application/pdf' ? (
+                          <div className="flex items-center gap-2 p-3 bg-green-500/10 rounded-lg border border-green-500/30">
+                            <span className="text-2xl">📄</span>
+                            <span className="text-green-400 text-sm">PDF Document Ready</span>
+                          </div>
+                        ) : documentPreviews.captainIdCard && (
                           <img 
                             src={documentPreviews.captainIdCard} 
                             alt="ID Card Preview" 
