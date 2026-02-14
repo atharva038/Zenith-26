@@ -208,10 +208,13 @@ export const createSportsRegistration = async (req, res) => {
     const virtualEventId = new mongoose.Types.ObjectId();
 
     // Extract accommodation details
-    const accommodationNeeded = formData.needs_accommodation || formData.need_accommodation || false;
-    const numDays = accommodationNeeded ? (formData.num_days || 0) : 0;
-    const numPeople = accommodationNeeded ? (formData.num_people || 0) : 0;
-    const accommodationFee = accommodationNeeded ? (formData.total_accommodation_fee || numDays * 200) : 0;
+    const accommodationNeeded =
+      formData.needs_accommodation || formData.need_accommodation || false;
+    const numDays = accommodationNeeded ? formData.num_days || 0 : 0;
+    const numPeople = accommodationNeeded ? formData.num_people || 0 : 0;
+    const accommodationFee = accommodationNeeded
+      ? formData.total_accommodation_fee || numDays * 200
+      : 0;
 
     // Create registration with documents
     const registration = new Registration({
@@ -297,10 +300,10 @@ export const getAllRegistrations = async (req, res) => {
 
     // Filter by status
     if (status) query.status = status;
-    
+
     // Filter by event name (for sports filtering)
     if (eventName) query.eventName = eventName;
-    
+
     // Filter by payment status
     if (paymentStatus) query.paymentStatus = paymentStatus;
 
@@ -411,7 +414,7 @@ export const getRegistrationById = async (req, res) => {
   try {
     const registration = await Registration.findById(req.params.id).populate(
       "eventId",
-      "name description eventDate venue"
+      "name description eventDate venue",
     );
 
     if (!registration) {
@@ -442,7 +445,7 @@ export const updateRegistrationStatus = async (req, res) => {
 
     const registration = await Registration.findById(req.params.id).populate(
       "eventId",
-      "name eventDate venue"
+      "name eventDate venue",
     );
 
     if (!registration) {
@@ -599,7 +602,7 @@ export const exportRegistrations = async (req, res) => {
         Object.entries(formDataObj).forEach(([key, value]) => {
           if (
             !["email", "name", "phone", "institution", "city"].includes(
-              key.toLowerCase()
+              key.toLowerCase(),
             )
           ) {
             flatData[key] = value;
@@ -615,7 +618,7 @@ export const exportRegistrations = async (req, res) => {
 
     const filename = `${event.name.replace(
       /\s+/g,
-      "_"
+      "_",
     )}_registrations_${Date.now()}.csv`;
 
     res.setHeader("Content-Type", "text/csv");

@@ -126,7 +126,7 @@ const SPORTS_DATA = {
     coordinators: [{ name: "Pooja Reddy", phone: "9876543217" }],
   },
   Chess: {
-    fees: { team: 500, individual: 200, note: "team ₹500 | solo ₹200 (mixed)" },
+    fees: { team: 500, individual: 200, note: "(mixed)" },
     name: "Chess Tournament",
     venue: "Auditorium",
     rules: [
@@ -1709,12 +1709,7 @@ const UniversalRegistration = () => {
                   {/* Registration Fee Display */}
                   <div className="mt-2 px-4 py-2 bg-[#ff6b35]/20 border border-[#ff6b35] rounded-full">
                     <p className="text-sm md:text-base font-bold text-[#ffb77a]">
-                      {hasGenderOptions && selectedGender ? 
-                        `Fee: ₹${getDisplayFee()}` : 
-                        hasGenderOptions ? 
-                        `Fee: ${getDisplayFee()}` :
-                        `Fee: ₹${getDisplayFee()}`
-                      }
+                      Fee: {getDisplayFee()}
                     </p>
                   </div>
                 </div>
@@ -1921,12 +1916,7 @@ const UniversalRegistration = () => {
                   {/* Registration Fee Display */}
                   <div className="mt-2 px-4 py-2 bg-[#ff6b35]/20 border border-[#ff6b35] rounded-full">
                     <p className="text-sm md:text-base font-bold text-[#ffb77a]">
-                      {hasGenderOptions && selectedGender ? 
-                        `Fee: ₹${getDisplayFee()}` : 
-                        hasGenderOptions ? 
-                        `Fee: ${getDisplayFee()}` :
-                        `Fee: ₹${getDisplayFee()}`
-                      }
+                      Fee: {getDisplayFee()}
                     </p>
                   </div>
                 </div>
@@ -2055,12 +2045,7 @@ const UniversalRegistration = () => {
                   {/* Registration Fee Display */}
                   <div className="mt-2 px-4 py-2 bg-[#ff6b35]/20 border border-[#ff6b35] rounded-full">
                     <p className="text-sm md:text-base font-bold text-[#ffb77a]">
-                      {hasGenderOptions && selectedGender ? 
-                        `Fee: ₹${getDisplayFee()}` : 
-                        hasGenderOptions ? 
-                        `Fee: ${getDisplayFee()}` :
-                        `Fee: ₹${getDisplayFee()}`
-                      }
+                      Fee: {getDisplayFee()}
                     </p>
                   </div>
                 </div>
@@ -2081,12 +2066,7 @@ const UniversalRegistration = () => {
                   <div className="flex justify-between items-center text-2xl font-bold">
                     <span>Total Amount:</span>
                     <span className="text-[#ff6b35]">
-                      {hasGenderOptions && selectedGender ? 
-                        `₹${getDisplayFee()}` : 
-                        hasGenderOptions ? 
-                        getDisplayFee() :
-                        `₹${getDisplayFee()}`
-                      }
+                      {getDisplayFee()}
                     </span>
                   </div>
                   {selectedSportData?.fees?.note && (
