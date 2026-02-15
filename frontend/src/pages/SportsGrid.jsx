@@ -416,15 +416,15 @@ const sportsData = [
     tier: "Indoor",
     tagline: "Track & Field Glory",
     description:
-      "Sprint, jump, throw! Compete in various track and field events. Show your athletic excellence across multiple disciplines.",
+      "Sprint, jump, throw! Open for both boys and girls. Compete in track and field events. Show your athletic excellence in individual and team competitions.",
     date: "February 20-22, 2026",
     venue: "Athletic Stadium",
-    teamSize: "Boys only - Team & Individual Events",
+    teamSize: "Both Boys & Girls - Team & Individual Events",
     registrationFee: "Individual: ₹200 | Team: ₹700",
     rules: [
-      "Individual Events: 100m, 400m, Shot Put, Discus, Long Jump",
-      "Team Events: 4x100m Relay, Mixed Relay (2 Boys + 2 Girls)",
-      "20 minutes early reporting",
+      "Individual Events: 100m, Long Jump (₹200 per athlete)",
+      "Team Events: Relay, Mixed Relay - 2 Boys + 2 Girls (₹700 per team)",
+      "20 minutes early reporting required",
       "Player identification verification final",
       "Age limit: 25 years",
     ],
@@ -499,7 +499,7 @@ const SportsGrid = () => {
   // Memoized filtered sports - only recalculates when dependencies change
   const filteredSports = useMemo(() => {
     // Sports to hide from the site (temporarily disabled)
-    const HIDDEN_SPORTS = ["ATHLETICS"];
+    const HIDDEN_SPORTS = [];
     
     return sportsData.filter((sport) => {
       // Hide disabled sports

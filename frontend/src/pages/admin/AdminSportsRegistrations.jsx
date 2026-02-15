@@ -44,7 +44,7 @@ const SPORTS_FEES = {
   "Table Tennis": { amount: 400, note: "per player" },
   "Chess": { team: 500, individual: 200, note: "Team: ₹500 per team | Solo: ₹200 per player (mixed)" },
   "Carrom": { amount: 300, note: "per player" },
-  "Athletics": { individual: 200, team: 700, note: "Individual: ₹200 per athlete | Team: ₹700 per team" },
+  "Athletics": { individual: 200, team: 700, note: "Individual: ₹200 (100m, Long Jump) | Team: ₹700 (Relay, Mixed Relay)" },
   "Swimming": { amount: 300, note: "per athlete" },
   "Kabaddi": { men: 2200, women: 1500, note: "per team" },
   "Kho-Kho": { amount: 1500, note: "per team" },
@@ -408,10 +408,14 @@ const AdminSportsRegistrations = () => {
       .map((reg, index) => {
       const formData = reg.formData || {};
       const isSolo = isSoloRegistration(reg.eventName, formData);
+      // For Athletics, include the event name (100m, Long Jump, etc.)
+      const sportDisplay = reg.eventName === "Athletics" && formData.athleticsEvent 
+        ? `${reg.eventName} - ${formData.athleticsEvent}`
+        : reg.eventName || "N/A";
       return [
         index + 1,
         reg.registrationNumber || "N/A",
-        reg.eventName || "N/A",
+        sportDisplay,
         isSolo ? "-" : (formData.team_name || formData.get?.('team_name') || "N/A"),
         isSolo ? "-" : (formData.captain_name || formData.get?.('captain_name') || "N/A"),
         formData.captain_contact || formData.get?.('captain_contact') || "N/A",
@@ -459,10 +463,14 @@ const AdminSportsRegistrations = () => {
       .map((reg, index) => {
       const formData = reg.formData || {};
       const isSolo = isSoloRegistration(reg.eventName, formData);
+      // For Athletics, include the event name (100m, Long Jump, etc.)
+      const sportDisplay = reg.eventName === "Athletics" && formData.athleticsEvent 
+        ? `${reg.eventName} - ${formData.athleticsEvent}`
+        : reg.eventName || "N/A";
       return {
         "#": index + 1,
         "Registration Number": reg.registrationNumber || "N/A",
-        "Sport": reg.eventName || "N/A",
+        "Sport": sportDisplay,
         "Team Name": isSolo ? "-" : (formData.team_name || formData.get?.('team_name') || "N/A"),
         "Captain Name": isSolo ? "-" : (formData.captain_name || formData.get?.('captain_name') || "N/A"),
         "Contact": formData.captain_contact || formData.get?.('captain_contact') || "N/A",
@@ -772,6 +780,12 @@ const AdminSportsRegistrations = () => {
                                 <span className="px-3 py-1 bg-purple-500/10 text-purple-400 rounded-lg font-medium">
                                   {reg.eventName}
                                 </span>
+                                {/* Athletics Event Display */}
+                                {reg.eventName === "Athletics" && formData.athleticsEvent && (
+                                  <span className="text-xs px-2 py-0.5 rounded-md font-semibold w-fit bg-orange-500/10 text-orange-400">
+                                    {formData.athleticsEvent}
+                                  </span>
+                                )}
                                 {/* Category Badge (Team/Solo for Chess, Men's/Women's for others) */}
                                 {(() => {
                                   const badgeInfo = getCategoryBadgeInfo(reg.eventName, formData);
@@ -932,6 +946,12 @@ const AdminSportsRegistrations = () => {
                               <span className="px-2 py-1 bg-red-500/10 text-red-400 rounded-lg text-xs">
                                 {reg.eventName}
                               </span>
+                              {/* Athletics Event Display */}
+                              {reg.eventName === "Athletics" && formData.athleticsEvent && (
+                                <span className="text-xs px-2 py-0.5 rounded-md font-semibold w-fit bg-orange-500/10 text-orange-400">
+                                  {formData.athleticsEvent}
+                                </span>
+                              )}
                               {/* Category Badge (Team/Solo for Chess, Men's/Women's for others) */}
                               {(() => {
                                 const badgeInfo = getCategoryBadgeInfo(reg.eventName, formData);
@@ -1053,6 +1073,15 @@ const AdminSportsRegistrations = () => {
                           {selectedRegistration.eventName}
                         </span>
                       </p>
+                      {/* Athletics Event Display */}
+                      {selectedRegistration.eventName === "Athletics" && selectedRegistration.formData?.athleticsEvent && (
+                        <p className="text-gray-300">
+                          <span className="text-white font-semibold">Event:</span>{" "}
+                          <span className="px-2 py-1 bg-orange-500/10 text-orange-400 rounded-lg ml-2 font-semibold">
+                            {selectedRegistration.formData.athleticsEvent}
+                          </span>
+                        </p>
+                      )}
                       {/* Category Badge (Team/Solo for Chess, Men's/Women's for others) */}
                       {(() => {
                         const badgeInfo = getCategoryBadgeInfo(selectedRegistration.eventName, selectedRegistration.formData);

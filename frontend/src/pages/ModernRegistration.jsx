@@ -151,14 +151,21 @@ const SPORTS_DATA = {
     fees: {
       individual: 200,
       team: 700,
-      note: "Individual: ₹200 per athlete | Team Events: ₹700 per team",
+      note: "Individual: ₹200 per athlete | Team: ₹700 per team",
     },
     name: "Athletics Meet",
     venue: "SGGSIE&T Athletics Track",
+    events: {
+      individual: ["100m", "Long Jump"],
+      team: ["Relay", "Mixed Relay (2 Boys + 2 Girls)"]
+    },
     rules: [
-      "100m, 200m, 400m, 800m, 1500m events",
-      "Long Jump, High Jump, Shot Put",
-      "Individual events",
+      "Open for both Boys and Girls",
+      "Individual Events: 100m, Long Jump (₹200 per athlete)",
+      "Team Events: Relay, Mixed Relay - 2 Boys + 2 Girls (₹700 per team)",
+      "20 minutes early reporting required",
+      "Player identification verification final",
+      "Age limit: 25 years",
     ],
     coordinators: [
       { name: "Dipanshu Sahatpute", phone: "7620666188" },
@@ -252,6 +259,8 @@ const ModernRegistration = () => {
     accommodation_days: "",
     accommodation_people: "",
     teamGender: "", // "male" or "female" for sports with gender-specific fees
+    athleticsEventType: "", // "individual" or "team" for Athletics
+    athleticsEvent: "", // specific event name for Athletics
   });
 
   // Show registration closed page if not open
@@ -312,7 +321,11 @@ const ModernRegistration = () => {
   }, [location.state]);
 
   const selectedSportData = selectedSport ? SPORTS_DATA[selectedSport] : null;
-  const isTeamSport = TEAM_SPORTS.includes(selectedSport);
+  
+  // Dynamic team sport check - Athletics depends on event type
+  const isTeamSport = selectedSport === "Athletics" 
+    ? formData.athleticsEventType === "team"
+    : TEAM_SPORTS.includes(selectedSport);
 
   // Calculate total steps dynamically (removed sport selection step)
   const totalSteps = isTeamSport ? 5 : 4; // Details, Team (optional), Captain (optional), Payment, Review
@@ -336,6 +349,17 @@ const ModernRegistration = () => {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
         toast.error("Please enter a valid email address");
         return;
+      }
+      // Validate Athletics event selection
+      if (selectedSport === "Athletics") {
+        if (!formData.athleticsEventType) {
+          toast.error("Please select Athletics event type (Individual or Team)");
+          return;
+        }
+        if (!formData.athleticsEvent) {
+          toast.error("Please select a specific Athletics event");
+          return;
+        }
       }
     }
     if (currentStep === 2 && isTeamSport) {
@@ -547,43 +571,168 @@ const ModernRegistration = () => {
               <div className="text-center mb-8">
                 <div className="text-4xl mb-3">{SPORT_ICONS[selectedSport] || "🏆"}</div>
                 <h2 className="text-2xl md:text-3xl font-bold text-[#ffb77a] mb-2">
-                  Your Details
+                  {selectedSport === "Athletics" && !formData.athleticsEvent 
+                    ? "Select Your Event"
+                    : "Your Details"}
                 </h2>
-                <p className="text-gray-400">Tell us about yourself</p>
+                <p className="text-gray-400">
+                  {selectedSport === "Athletics" && !formData.athleticsEvent
+                    ? "Choose event type and specific event to continue"
+                    : "Tell us about yourself"}
+                </p>
                 
-                {/* Show selected sport and gender dropdown */}
+                {/* Show selected sport */}
                 {selectedSport && (
                   <div className="mt-4 inline-block bg-[#1a1410]/50 backdrop-blur-sm border border-[#3a2416] rounded-xl px-6 py-3">
                     <p className="text-sm text-gray-400 mb-2">Registering for</p>
                     <p className="text-lg font-semibold text-[#ff6b35]">{selectedSport}</p>
-                    
-                    {/* Gender Selection Dropdown for sports with gender-specific fees */}
-                    {selectedSportData?.fees?.men && selectedSportData?.fees?.women && (
-                      <div className="mt-3">
-                        <select
-                          value={formData.teamGender || ""}
-                          onChange={(e) => handleInputChange("teamGender", e.target.value)}
-                          className="w-full bg-black/30 border border-white/30 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-[#ff6b35] cursor-pointer"
-                        >
-                          <option value="" disabled className="bg-[#1a1410] text-gray-400">
-                            Select Category *
-                          </option>
-                          <option value="male" className="bg-[#1a1410] text-white">
-                            👨 Men's Team (₹{selectedSportData.fees.men})
-                          </option>
-                          <option value="female" className="bg-[#1a1410] text-white">
-                            👩 Women's Team (₹{selectedSportData.fees.women})
-                          </option>
-                        </select>
-                      </div>
-                    )}
                   </div>
                 )}
               </div>
 
-              <div className="bg-[#1a1410]/30 backdrop-blur-sm border border-[#3a2416] rounded-2xl p-6 md:p-8 space-y-6">
-                {/* Full Name */}
-                <div className="relative">
+              {/* Athletics Event Selection - MUST be completed before showing form */}
+              {selectedSport === "Athletics" && (
+                <div className="bg-[#1a1410]/30 backdrop-blur-sm border border-[#3a2416] rounded-2xl p-6 md:p-8 space-y-6 mb-6">
+                  <div className="text-center mb-4">
+                    <h3 className="text-xl font-bold text-[#ffb77a] mb-2">
+                      Step 1: Select Event Type
+                    </h3>
+                    <p className="text-sm text-gray-400">Individual or Team Competition</p>
+                  </div>
+                  
+                  <div className="max-w-md mx-auto">
+                    <select
+                      value={formData.athleticsEventType || ""}
+                      onChange={(e) => {
+                        handleInputChange("athleticsEventType", e.target.value);
+                        handleInputChange("athleticsEvent", ""); // Reset event selection
+                      }}
+                      className="w-full bg-[#0a0604] border border-[#3a2416] rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#ff6b35] cursor-pointer text-center font-semibold"
+                    >
+                      <option value="" disabled className="bg-[#1a1410] text-gray-400">
+                        -- Select Event Type --
+                      </option>
+                      <option value="individual" className="bg-[#1a1410] text-white">
+                        🏃 Individual Events (₹200 per athlete)
+                      </option>
+                      <option value="team" className="bg-[#1a1410] text-white">
+                        👥 Team Events (₹700 per team)
+                      </option>
+                    </select>
+                  </div>
+                  
+                  {formData.athleticsEventType && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="max-w-md mx-auto"
+                    >
+                      <div className="text-center mb-4">
+                        <h3 className="text-xl font-bold text-[#ffb77a] mb-2">
+                          Step 2: Select Specific Event
+                        </h3>
+                        <p className="text-sm text-gray-400">
+                          {formData.athleticsEventType === "individual" 
+                            ? "Choose your individual event"
+                            : "Choose your team event"}
+                        </p>
+                      </div>
+                      
+                      <select
+                        value={formData.athleticsEvent || ""}
+                        onChange={(e) => handleInputChange("athleticsEvent", e.target.value)}
+                        className="w-full bg-[#0a0604] border border-[#3a2416] rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#ff6b35] cursor-pointer text-center font-semibold"
+                      >
+                        <option value="" disabled className="bg-[#1a1410] text-gray-400">
+                          -- Select Specific Event --
+                        </option>
+                        {formData.athleticsEventType === "individual" && (
+                          <>
+                            <option value="100m" className="bg-[#1a1410] text-white">
+                              🏃 100m Sprint
+                            </option>
+                            <option value="Long Jump" className="bg-[#1a1410] text-white">
+                              🦘 Long Jump
+                            </option>
+                          </>
+                        )}
+                        {formData.athleticsEventType === "team" && (
+                          <>
+                            <option value="Relay" className="bg-[#1a1410] text-white">
+                              🏃‍♂️ Relay Race (4 members)
+                            </option>
+                            <option value="Mixed Relay" className="bg-[#1a1410] text-white">
+                              👥 Mixed Relay (2 Boys + 2 Girls)
+                            </option>
+                          </>
+                        )}
+                      </select>
+                      
+                      {formData.athleticsEvent && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="mt-4 p-4 bg-green-500/10 border border-green-500/30 rounded-xl text-center"
+                        >
+                          <p className="text-green-400 font-semibold">
+                            ✓ Event Selected: {formData.athleticsEvent}
+                          </p>
+                          <p className="text-sm text-gray-400 mt-1">
+                            Fee: ₹{formData.athleticsEventType === "individual" ? "200" : "700"}
+                          </p>
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  )}
+                  
+                  {!formData.athleticsEvent && (
+                    <div className="text-center text-sm text-gray-500 mt-4">
+                      Please complete event selection to continue with registration
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Gender Selection Dropdown for sports with gender-specific fees */}
+              {selectedSportData?.fees?.men && selectedSportData?.fees?.women && (
+                <div className="bg-[#1a1410]/30 backdrop-blur-sm border border-[#3a2416] rounded-2xl p-6 md:p-8 mb-6">
+                  <div className="text-center mb-4">
+                    <h3 className="text-xl font-bold text-[#ffb77a] mb-2">Select Category</h3>
+                  </div>
+                  <div className="max-w-md mx-auto">
+                    <select
+                      value={formData.teamGender || ""}
+                      onChange={(e) => handleInputChange("teamGender", e.target.value)}
+                      className="w-full bg-[#0a0604] border border-[#3a2416] rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#ff6b35] cursor-pointer text-center font-semibold"
+                    >
+                      <option value="" disabled className="bg-[#1a1410] text-gray-400">
+                        -- Select Category --
+                      </option>
+                      <option value="male" className="bg-[#1a1410] text-white">
+                        👨 Men's Team (₹{selectedSportData.fees.men})
+                      </option>
+                      <option value="female" className="bg-[#1a1410] text-white">
+                        👩 Women's Team (₹{selectedSportData.fees.women})
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {/* Only show form fields after Athletics event selection is complete OR for non-Athletics sports */}
+              {(selectedSport !== "Athletics" || (selectedSport === "Athletics" && formData.athleticsEvent)) && (
+                <div className="bg-[#1a1410]/30 backdrop-blur-sm border border-[#3a2416] rounded-2xl p-6 md:p-8 space-y-6">
+                  {selectedSport === "Athletics" && (
+                    <div className="text-center mb-6 pb-6 border-b border-[#3a2416]">
+                      <p className="text-sm text-gray-400">Selected Event</p>
+                      <p className="text-lg font-bold text-[#ff6b35]">
+                        {formData.athleticsEventType === "individual" ? "Individual" : "Team"} - {formData.athleticsEvent}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {/* Full Name */}
+                  <div className="relative">
                   <input
                     type="text"
                     value={formData.captain_name}
@@ -781,6 +930,7 @@ const ModernRegistration = () => {
                   </motion.div>
                 )}
               </div>
+              )}
 
               {/* Navigation */}
               <div className="flex justify-between gap-4">
@@ -792,7 +942,12 @@ const ModernRegistration = () => {
                 </button>
                 <button
                   onClick={nextStep}
-                  className="px-8 py-3 rounded-xl font-semibold bg-gradient-to-r from-[#ff6b35] to-[#ff8c42] hover:shadow-xl hover:shadow-[#ff6b35]/20 hover:scale-105 transition-all duration-300"
+                  disabled={selectedSport === "Athletics" && !formData.athleticsEvent}
+                  className={`px-8 py-3 rounded-xl font-semibold transition-all duration-300 ${
+                    selectedSport === "Athletics" && !formData.athleticsEvent
+                      ? "bg-gray-600 cursor-not-allowed opacity-50"
+                      : "bg-gradient-to-r from-[#ff6b35] to-[#ff8c42] hover:shadow-xl hover:shadow-[#ff6b35]/20 hover:scale-105"
+                  }`}
                 >
                   Continue →
                 </button>
@@ -1036,6 +1191,12 @@ const ModernRegistration = () => {
                     <span className="text-[#ff6b35]">
                       ₹
                       {(() => {
+                        // Athletics - based on event type
+                        if (selectedSport === "Athletics" && formData.athleticsEventType) {
+                          return formData.athleticsEventType === "individual" 
+                            ? selectedSportData.fees.individual 
+                            : selectedSportData.fees.team;
+                        }
                         // Check if sport has gender-specific fees
                         if (selectedSportData?.fees?.men && selectedSportData?.fees?.women) {
                           return formData.teamGender === "male" 
@@ -1057,6 +1218,11 @@ const ModernRegistration = () => {
                       {formData.teamGender && (
                         <span className="ml-2 text-[#ff6b35]">
                           ({formData.teamGender === "male" ? "Men's" : "Women's"} Category)
+                        </span>
+                      )}
+                      {selectedSport === "Athletics" && formData.athleticsEventType && formData.athleticsEvent && (
+                        <span className="ml-2 text-[#ff6b35]">
+                          ({formData.athleticsEventType === "individual" ? "Individual" : "Team"} - {formData.athleticsEvent})
                         </span>
                       )}
                     </p>

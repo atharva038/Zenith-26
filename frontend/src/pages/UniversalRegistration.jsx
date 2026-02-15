@@ -162,10 +162,15 @@ const SPORTS_DATA = {
     },
     name: "Athletics Meet",
     venue: "SGGSIE&T Athletics Track",
+    events: {
+      individual: ["100m", "Long Jump"],
+      team: ["Relay", "Mixed Relay (2 Boys + 2 Girls)"]
+    },
     rules: [
-      "Individual Events: 100m, 400m, Shot Put, Discus, Long Jump",
-      "Team Events: 4x100m Relay, Mixed Relay (2 Boys + 2 Girls)",
-      "20 minutes early reporting",
+      "Open for both Boys and Girls",
+      "Individual Events: 100m, Long Jump (₹200 per athlete)",
+      "Team Events: Relay, Mixed Relay - 2 Boys + 2 Girls (₹700 per team)",
+      "20 minutes early reporting required",
       "Player identification verification final",
       "Age limit: 25 years",
     ],
@@ -396,7 +401,7 @@ const UniversalRegistration = () => {
   } = useRegistrationStatus();
   
   // Sports to hide from the site (temporarily disabled)
-  const HIDDEN_SPORTS = ["Athletics"];
+  const HIDDEN_SPORTS = [];
   
   // Filter available sports based on toggle states
   const availableSports = React.useMemo(() => {
@@ -439,6 +444,8 @@ const UniversalRegistration = () => {
     need_accommodation: false,
     accommodation_days: "",
     accommodation_people: "",
+    athleticsEventType: "", // "individual" or "team" for Athletics
+    athleticsEvent: "", // specific event name for Athletics
   });
   const [teamMembers, setTeamMembers] = useState([]);
   const [selectedCaptain, setSelectedCaptain] = useState(0);
@@ -630,12 +637,13 @@ const UniversalRegistration = () => {
   const selectedSportData = selectedSport ? SPORTS_DATA[selectedSport] : null;
   // Check if sport is a team sport
   // For sports with team/individual options (Chess, Athletics), consider it a team sport ONLY if "team" is selected
-  const DUAL_MODE_SPORTS = ["Chess", "Athletics"]; // Sports that can be team OR individual
+  const DUAL_MODE_SPORTS = ["Chess"]; // Sports that use selectedGender for team/individual
   const isTeamSport = TEAM_SPORTS.includes(selectedSport) || 
-                      (DUAL_MODE_SPORTS.includes(selectedSport) && selectedGender === "team");
-  const teamConfig = (isTeamSport || DUAL_MODE_SPORTS.includes(selectedSport)) ? TEAM_SPORTS_CONFIG[selectedSport] : null;
+                      (DUAL_MODE_SPORTS.includes(selectedSport) && selectedGender === "team") ||
+                      (selectedSport === "Athletics" && formData.athleticsEventType === "team");
+  const teamConfig = (isTeamSport || DUAL_MODE_SPORTS.includes(selectedSport) || selectedSport === "Athletics") ? TEAM_SPORTS_CONFIG[selectedSport] : null;
   const hasGenderOptions = selectedSportData?.fees && (selectedSportData.fees.men || selectedSportData.fees.women);
-  const hasTeamIndividualOptions = selectedSportData?.fees && (selectedSportData.fees.team && selectedSportData.fees.individual);
+  const hasTeamIndividualOptions = selectedSportData?.fees && (selectedSportData.fees.team && selectedSportData.fees.individual) && selectedSport !== "Athletics";
   
   // Check for individual-only sports (like Power Lifting - has individual fee but no team option)
   const isIndividualOnlySport = selectedSportData?.fees && selectedSportData.fees.individual && !selectedSportData.fees.team && !selectedSportData.fees.amount;
@@ -676,15 +684,39 @@ const UniversalRegistration = () => {
     }
   }, [selectedSport, isIndividualOnlySport, selectedGender]);
   
+  // Auto-set num_players for Athletics based on event type
+  useEffect(() => {
+    if (selectedSport === "Athletics" && formData.athleticsEventType) {
+      if (formData.athleticsEventType === "team") {
+        // Relay events require exactly 4 players (2 Boys + 2 Girls for mixed relay, or 4 for regular relay)
+        setFormData(prev => ({ ...prev, num_players: "4" }));
+      } else if (formData.athleticsEventType === "individual") {
+        // Individual events are solo
+        setFormData(prev => ({ ...prev, num_players: "1" }));
+      }
+    }
+  }, [selectedSport, formData.athleticsEventType]);
+  
   // Get appropriate fee display
   const getDisplayFee = () => {
     if (!selectedSportData?.fees) return "N/A";
+    
+    // Special handling for Athletics
+    if (selectedSport === "Athletics") {
+      if (formData.athleticsEventType === "individual") {
+        return `₹${selectedSportData.fees.individual} (Individual - ${formData.athleticsEvent || "Select Event"})`;
+      } else if (formData.athleticsEventType === "team") {
+        return `₹${selectedSportData.fees.team} (Team - ${formData.athleticsEvent || "Select Event"})`;
+      } else {
+        return `Individual: ₹${selectedSportData.fees.individual} | Team: ₹${selectedSportData.fees.team}`;
+      }
+    }
     
     if (typeof selectedSportData.fees === 'object' && selectedSportData.fees.amount) {
       // Single fee structure
       return `₹${selectedSportData.fees.amount} ${selectedSportData.fees.note || ""}`;
     } else if (typeof selectedSportData.fees === 'object' && selectedSportData.fees.team && selectedSportData.fees.individual) {
-      // Team/Individual fees (Chess, Athletics)
+      // Team/Individual fees (Chess)
       if (selectedGender === 'team' && selectedSportData.fees.team) {
         return `₹${selectedSportData.fees.team} ${selectedSportData.fees.note || ""}`;
       } else if (selectedGender === 'individual' && selectedSportData.fees.individual) {
@@ -808,6 +840,17 @@ const UniversalRegistration = () => {
         toast.error("Please select Team or Solo registration type");
         return;
       }
+      // Validate Athletics event selection
+      if (selectedSport === "Athletics") {
+        if (!formData.athleticsEventType) {
+          toast.error("Please select Athletics event type (Individual or Team)");
+          return;
+        }
+        if (!formData.athleticsEvent) {
+          toast.error("Please select a specific Athletics event");
+          return;
+        }
+      }
     }
     
     // Step 2: Team Setup (for team sports)
@@ -864,6 +907,8 @@ const UniversalRegistration = () => {
         need_accommodation: false,
         accommodation_days: "",
         accommodation_people: "",
+        athleticsEventType: "",
+        athleticsEvent: "",
       });
       setTeamMembers([]);
       setSelectedCaptain(0);
@@ -887,7 +932,7 @@ const UniversalRegistration = () => {
   };
 
   const handleInputChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   // Fill Test Data Function for Development
@@ -1300,6 +1345,7 @@ const UniversalRegistration = () => {
                     <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
                       {selectedSportData.fees.men && (
                         <motion.button
+                          type="button"
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                           onClick={() => handleGenderSelect('men')}
@@ -1329,6 +1375,7 @@ const UniversalRegistration = () => {
                       
                       {selectedSportData.fees.women && (
                         <motion.button
+                          type="button"
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                           onClick={() => handleGenderSelect('women')}
@@ -1367,6 +1414,7 @@ const UniversalRegistration = () => {
                     </h3>
                     <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
                       <motion.button
+                        type="button"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => handleGenderSelect('team')}
@@ -1395,6 +1443,7 @@ const UniversalRegistration = () => {
                       </motion.button>
                       
                       <motion.button
+                        type="button"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => handleGenderSelect('individual')}
@@ -1425,6 +1474,248 @@ const UniversalRegistration = () => {
                   </div>
                 )}
                 
+                {/* Athletics Event Type & Event Selection */}
+                {selectedSport === "Athletics" && (
+                  <div className="mt-6 bg-gradient-to-br from-[#2a1810]/80 to-[#1a1410]/80 border-2 border-[#ff6b35] rounded-2xl p-6">
+                    <h3 className="text-xl font-bold text-center text-[#ffb77a] mb-6">
+                      🏃 Select Event Type *
+                    </h3>
+                    <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mb-6">
+                      <motion.button
+                        type="button"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleInputChange("athleticsEventType", "individual");
+                          handleInputChange("athleticsEvent", "");
+                          toast.success("Individual Events selected! 🏃", { autoClose: 2000 });
+                        }}
+                        className={`
+                          relative p-4 rounded-xl transition-all duration-300 text-center
+                          ${
+                            formData.athleticsEventType === 'individual'
+                              ? "bg-gradient-to-br from-green-600 to-green-700 shadow-lg shadow-green-600/20"
+                              : "bg-[#1a1410]/50 border border-[#3a2416] hover:border-green-500/50"
+                          }
+                        `}
+                      >
+                        <div className="text-2xl mb-2">🏃</div>
+                        <div className="font-semibold">Individual Events</div>
+                        <div className="text-sm text-gray-400">₹200</div>
+                        {formData.athleticsEventType === 'individual' && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
+                          >
+                            <span className="text-green-600 text-xs">✓</span>
+                          </motion.div>
+                        )}
+                      </motion.button>
+                      
+                      <motion.button
+                        type="button"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleInputChange("athleticsEventType", "team");
+                          handleInputChange("athleticsEvent", "");
+                          toast.success("Team Events selected! 👥", { autoClose: 2000 });
+                        }}
+                        className={`
+                          relative p-4 rounded-xl transition-all duration-300 text-center
+                          ${
+                            formData.athleticsEventType === 'team'
+                              ? "bg-gradient-to-br from-purple-600 to-purple-700 shadow-lg shadow-purple-600/20"
+                              : "bg-[#1a1410]/50 border border-[#3a2416] hover:border-purple-500/50"
+                          }
+                        `}
+                      >
+                        <div className="text-2xl mb-2">👥</div>
+                        <div className="font-semibold">Team Events</div>
+                        <div className="text-sm text-gray-400">₹700</div>
+                        {formData.athleticsEventType === 'team' && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
+                          >
+                            <span className="text-purple-600 text-xs">✓</span>
+                          </motion.div>
+                        )}
+                      </motion.button>
+                    </div>
+                    
+                    {/* Specific Event Selection */}
+                    {formData.athleticsEventType && (
+                      <div className="max-w-md mx-auto">
+                        <h3 className="text-lg font-semibold text-[#ffb77a] mb-4">
+                          Select Specific Event *
+                        </h3>
+                        <div className="grid grid-cols-2 gap-4">
+                          {formData.athleticsEventType === "individual" && (
+                            <>
+                              <motion.button
+                                type="button"
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleInputChange("athleticsEvent", "100m");
+                                  toast.success("100m Sprint selected! 🏃", { autoClose: 2000 });
+                                }}
+                                className={`
+                                  relative p-4 rounded-xl transition-all duration-300 text-center
+                                  ${
+                                    formData.athleticsEvent === '100m'
+                                      ? "bg-gradient-to-br from-orange-600 to-orange-700 shadow-lg shadow-orange-600/20"
+                                      : "bg-[#1a1410]/50 border border-[#3a2416] hover:border-orange-500/50"
+                                  }
+                                `}
+                              >
+                                <div className="text-2xl mb-2">🏃</div>
+                                <div className="font-semibold">100m Sprint</div>
+                                {formData.athleticsEvent === '100m' && (
+                                  <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
+                                  >
+                                    <span className="text-orange-600 text-xs">✓</span>
+                                  </motion.div>
+                                )}
+                              </motion.button>
+                              
+                              <motion.button
+                                type="button"
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleInputChange("athleticsEvent", "Long Jump");
+                                  toast.success("Long Jump selected! 🦘", { autoClose: 2000 });
+                                }}
+                                className={`
+                                  relative p-4 rounded-xl transition-all duration-300 text-center
+                                  ${
+                                    formData.athleticsEvent === 'Long Jump'
+                                      ? "bg-gradient-to-br from-orange-600 to-orange-700 shadow-lg shadow-orange-600/20"
+                                      : "bg-[#1a1410]/50 border border-[#3a2416] hover:border-orange-500/50"
+                                  }
+                                `}
+                              >
+                                <div className="text-2xl mb-2">🦘</div>
+                                <div className="font-semibold">Long Jump</div>
+                                {formData.athleticsEvent === 'Long Jump' && (
+                                  <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
+                                  >
+                                    <span className="text-orange-600 text-xs">✓</span>
+                                  </motion.div>
+                                )}
+                              </motion.button>
+                            </>
+                          )}
+                          
+                          {formData.athleticsEventType === "team" && (
+                            <>
+                              <motion.button
+                                type="button"
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleInputChange("athleticsEvent", "Relay");
+                                  toast.success("Relay Race selected! 🏃‍♂️", { autoClose: 2000 });
+                                }}
+                                className={`
+                                  relative p-4 rounded-xl transition-all duration-300 text-center
+                                  ${
+                                    formData.athleticsEvent === 'Relay'
+                                      ? "bg-gradient-to-br from-blue-600 to-blue-700 shadow-lg shadow-blue-600/20"
+                                      : "bg-[#1a1410]/50 border border-[#3a2416] hover:border-blue-500/50"
+                                  }
+                                `}
+                              >
+                                <div className="text-2xl mb-2">🏃‍♂️</div>
+                                <div className="font-semibold">Relay Race</div>
+                                {formData.athleticsEvent === 'Relay' && (
+                                  <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
+                                  >
+                                    <span className="text-blue-600 text-xs">✓</span>
+                                  </motion.div>
+                                )}
+                              </motion.button>
+                              
+                              <motion.button
+                                type="button"
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleInputChange("athleticsEvent", "Mixed Relay");
+                                  toast.success("Mixed Relay (2 Boys + 2 Girls) selected! 👥", { autoClose: 2000 });
+                                }}
+                                className={`
+                                  relative p-4 rounded-xl transition-all duration-300 text-center
+                                  ${
+                                    formData.athleticsEvent === 'Mixed Relay'
+                                      ? "bg-gradient-to-br from-blue-600 to-blue-700 shadow-lg shadow-blue-600/20"
+                                      : "bg-[#1a1410]/50 border border-[#3a2416] hover:border-blue-500/50"
+                                  }
+                                `}
+                              >
+                                <div className="text-2xl mb-2">👥</div>
+                                <div className="font-semibold">Mixed Relay</div>
+                                <div className="text-xs text-gray-400 mt-1">2 Boys + 2 Girls</div>
+                                {formData.athleticsEvent === 'Mixed Relay' && (
+                                  <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
+                                  >
+                                    <span className="text-blue-600 text-xs">✓</span>
+                                  </motion.div>
+                                )}
+                              </motion.button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Athletics Selection Confirmation */}
+                    {formData.athleticsEventType && formData.athleticsEvent && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-6 p-4 bg-green-600/20 border border-green-500 rounded-xl text-center"
+                      >
+                        <div className="text-2xl mb-2">✅</div>
+                        <p className="text-green-400 font-semibold">
+                          {formData.athleticsEventType === "individual" ? "Individual" : "Team"} Event Selected: {formData.athleticsEvent}
+                        </p>
+                        <p className="text-sm text-gray-400 mt-2">
+                          Please scroll down to fill your details
+                        </p>
+                      </motion.div>
+                    )}
+                  </div>
+                )}
+                
                 <div className="flex flex-col items-center justify-center gap-2 mt-6">
                   <div className="flex items-center gap-2 text-gray-400">
                     <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
@@ -1443,14 +1734,17 @@ const UniversalRegistration = () => {
                 </div>
               </motion.div>
 
-              <div className="text-center mb-8">
-                <h3 className="text-2xl md:text-3xl font-bold text-[#ffb77a] mb-2">
-                  Your Details
-                </h3>
-                <p className="text-gray-400">Tell us about yourself</p>
-              </div>
+              {/* Only show form fields if Athletics event is selected, or if not Athletics */}
+              {(selectedSport !== "Athletics" || (formData.athleticsEventType && formData.athleticsEvent)) && (
+                <>
+                  <div className="text-center mb-8">
+                    <h3 className="text-2xl md:text-3xl font-bold text-[#ffb77a] mb-2">
+                      Your Details
+                    </h3>
+                    <p className="text-gray-400">Tell us about yourself</p>
+                  </div>
 
-              <div className="bg-[#1a1410]/30 backdrop-blur-sm border border-[#3a2416] rounded-2xl p-6 md:p-8 space-y-6">
+                  <div className="bg-[#1a1410]/30 backdrop-blur-sm border border-[#3a2416] rounded-2xl p-6 md:p-8 space-y-6">
                 {/* Full Name */}
                 <div className="relative">
                   <input
@@ -1653,6 +1947,8 @@ const UniversalRegistration = () => {
                   </motion.div>
                 )}
               </div>
+                </>
+              )}
 
               {/* Navigation - Step 1 has no previous step */}
               <div className="flex justify-end gap-4">
