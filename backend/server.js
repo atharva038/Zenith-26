@@ -15,6 +15,7 @@ import teamMemberRoutes from "./routes/teamMember.routes.js";
 import mediaTeamRoutes from "./routes/mediaTeam.routes.js";
 import settingsRoutes from "./routes/settings.routes.js";
 import pageLikeRoutes from "./routes/pageLike.routes.js";
+import gameCoordinatorRoutes from "./routes/gameCoordinator.routes.js";
 
 // Import models to register schemas
 import "./models/Admin.js";
@@ -28,6 +29,7 @@ import "./models/TeamMember.js";
 import "./models/MediaTeam.js";
 import "./models/Settings.js";
 import "./models/PageLike.js";
+import "./models/GameCoordinator.js";
 
 dotenv.config();
 
@@ -69,6 +71,7 @@ app.use("/api/women-tournament", womenTournamentRoutes);
 app.use("/api/team-members", teamMemberRoutes);
 app.use("/api/media-team/auth", mediaTeamRoutes);
 app.use("/api/settings", settingsRoutes);
+app.use("/api/game-coordinator", gameCoordinatorRoutes);
 app.use("/api/page-likes", pageLikeRoutes);
 
 // Health check

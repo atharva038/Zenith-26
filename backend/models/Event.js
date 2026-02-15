@@ -72,6 +72,10 @@ const eventSchema = new mongoose.Schema(
         "Hockey",
         "Lawn Tennis",
         "Squash",
+        "Handball",
+        "Rink Football",
+        "Tug of War",
+        "Power Lifting",
       ],
       required: true,
     },
@@ -128,14 +132,14 @@ const eventSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Indexes for better query performance
-eventSchema.index({name: "text", description: "text"});
-eventSchema.index({isActive: 1, isPublished: 1});
-eventSchema.index({registrationDeadline: 1});
-eventSchema.index({category: 1});
+eventSchema.index({ name: "text", description: "text" });
+eventSchema.index({ isActive: 1, isPublished: 1 });
+eventSchema.index({ registrationDeadline: 1 });
+eventSchema.index({ category: 1 });
 
 // Virtual for registration count
 eventSchema.virtual("registrationCount", {
@@ -158,7 +162,7 @@ eventSchema.methods.isFull = async function () {
   const Registration = mongoose.model("Registration");
   const count = await Registration.countDocuments({
     eventId: this._id,
-    status: {$in: ["confirmed", "pending"]},
+    status: { $in: ["confirmed", "pending"] },
   });
   return count >= this.maxParticipants;
 };

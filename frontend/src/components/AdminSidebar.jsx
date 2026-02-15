@@ -1,7 +1,7 @@
-import {motion} from "framer-motion";
-import {Link, useNavigate, useLocation} from "react-router-dom";
+import { motion } from "framer-motion";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
-const AdminSidebar = ({sidebarOpen, setSidebarOpen, admin}) => {
+const AdminSidebar = ({ sidebarOpen, setSidebarOpen, admin }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -19,7 +19,7 @@ const AdminSidebar = ({sidebarOpen, setSidebarOpen, admin}) => {
     //   icon: "💻",
     //   path: "/dev",
     // },
-    {id: "marathon", label: "Marathon", icon: "🏃", path: "/admin/marathon"},
+    { id: "marathon", label: "Marathon", icon: "🏃", path: "/admin/marathon" },
     {
       id: "women-tournament",
       label: "Women's Tournament",
@@ -40,7 +40,7 @@ const AdminSidebar = ({sidebarOpen, setSidebarOpen, admin}) => {
     //   path: "/admin/onspot-registration",
     // },
     // {id: "admins", label: "Admins", icon: "👥", path: "/admin/admins"},
-    {id: "gallery", label: "Gallery", icon: "🖼️", path: "/admin/gallery"},
+    { id: "gallery", label: "Gallery", icon: "🖼️", path: "/admin/gallery" },
     // {id: "settings", label: "Settings", icon: "⚙️", path: "/admin/settings"},
   ];
 
@@ -55,9 +55,9 @@ const AdminSidebar = ({sidebarOpen, setSidebarOpen, admin}) => {
       {/* Backdrop Blur Overlay - Only on mobile */}
       {sidebarOpen && (
         <motion.div
-          initial={{opacity: 0}}
-          animate={{opacity: 1}}
-          exit={{opacity: 0}}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           onClick={() => setSidebarOpen(false)}
           className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
         />
@@ -66,10 +66,10 @@ const AdminSidebar = ({sidebarOpen, setSidebarOpen, admin}) => {
       {/* Sidebar */}
       {sidebarOpen && (
         <motion.div
-          initial={{x: -300}}
-          animate={{x: 0}}
-          exit={{x: -300}}
-          transition={{type: "spring", damping: 25, stiffness: 200}}
+          initial={{ x: -300 }}
+          animate={{ x: 0 }}
+          exit={{ x: -300 }}
+          transition={{ type: "spring", damping: 25, stiffness: 200 }}
           className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-gray-900/95 to-black/95 backdrop-blur-xl border-r border-neon-blue/20 z-50 shadow-2xl shadow-neon-blue/20"
         >
           {/* Logo & Toggle */}
@@ -109,7 +109,7 @@ const AdminSidebar = ({sidebarOpen, setSidebarOpen, admin}) => {
               <motion.button
                 key={item.id}
                 onClick={() => navigate(item.path)}
-                whileHover={{x: 5}}
+                whileHover={{ x: 5 }}
                 className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all font-rajdhani ${
                   isActive(item.path)
                     ? "bg-gradient-to-r from-neon-blue/20 to-electric-cyan/20 border border-neon-blue/50 text-white"
@@ -135,8 +135,8 @@ const AdminSidebar = ({sidebarOpen, setSidebarOpen, admin}) => {
             </div>
             <motion.button
               onClick={handleLogout}
-              whileHover={{scale: 1.02}}
-              whileTap={{scale: 0.98}}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               className="w-full py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 rounded-lg text-red-400 font-rajdhani transition-all"
             >
               Logout
