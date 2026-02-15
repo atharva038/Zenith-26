@@ -434,38 +434,38 @@ const sportsData = [
     ],
     registrationStatus: "open",
   },
-  {
-    id: 6,
-    name: "HANDBALL",
-    icon: "🤾",
-    color: "#DC2626",
-    position: [14.14, 0, 14.14], // Southeast
-    orbit: 2,
-    tier: 2,
-    tagline: "Fast & Furious",
-    description:
-      "High-speed action with quick passes and powerful shots! Showcase your agility and teamwork in this exciting handball tournament.",
-    date: "February 20-22, 2026",
-    venue: "Indoor Sports Arena",
-    teamSize: "Boys only - Minimum 9, Maximum 16 players",
-    registrationFee: "₹1500 per team",
-    rules: [
-      "25-minute match (10+10 minutes halves, 5-minute break)",
-      "Rolling substitutions allowed",
-      "20 minutes early reporting",
-      "Disqualification if absent",
-      "Age limit: 25 years",
-    ],
-    coordinators: [
-      { name: "Aditya Joshi", contact: "7820939780" },
-      { name: "Amarja Dhepe", contact: "9552110021" },
-    ],
-    coordinators: [
-      { name: "Aditya Joshi", phone: "7820939780" },
-      { name: "Amarja Dhepe", phone: "9552110021" },
-    ],
-    registrationStatus: "open",
-  },
+  // {
+  //   id: 6,
+  //   name: "HANDBALL",
+  //   icon: "🤾",
+  //   color: "#DC2626",
+  //   position: [14.14, 0, 14.14], // Southeast
+  //   orbit: 2,
+  //   tier: 2,
+  //   tagline: "Fast & Furious",
+  //   description:
+  //     "High-speed action with quick passes and powerful shots! Showcase your agility and teamwork in this exciting handball tournament.",
+  //   date: "February 20-22, 2026",
+  //   venue: "Indoor Sports Arena",
+  //   teamSize: "Boys only - Minimum 9, Maximum 16 players",
+  //   registrationFee: "₹1500 per team",
+  //   rules: [
+  //     "25-minute match (10+10 minutes halves, 5-minute break)",
+  //     "Rolling substitutions allowed",
+  //     "20 minutes early reporting",
+  //     "Disqualification if absent",
+  //     "Age limit: 25 years",
+  //   ],
+  //   coordinators: [
+  //     { name: "Aditya Joshi", contact: "7820939780" },
+  //     { name: "Amarja Dhepe", contact: "9552110021" },
+  //   ],
+  //   coordinators: [
+  //     { name: "Aditya Joshi", phone: "7820939780" },
+  //     { name: "Amarja Dhepe", phone: "9552110021" },
+  //   ],
+  //   registrationStatus: "open",
+  // },
   {
     id: 7,
     name: "KABADDI",
