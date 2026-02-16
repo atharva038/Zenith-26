@@ -207,12 +207,16 @@ const sportsData = [
     tier: "Popular",
     tagline: "Smash & Win",
     description:
-      "Fast-paced rallies and powerful smashes await! Compete in singles and doubles categories to claim the championship.",
+      "Fast-paced rallies and powerful smashes await! Choose from Boys, Girls, or Mixed team categories.",
     date: "February 20-21, 2026",
     venue: "Indoor Sports Complex",
-    teamSize: "Boys only - Maximum 5 players per team",
-    registrationFee: "₹1000 per team",
+    teamSize: "Boys Team: 5 players | Girls Team: 5 players | Mixed Team: 2 players (1 Boy + 1 Girl)",
+    registrationFee: "Boys: ₹1000 | Girls: ₹800 | Mixed: ₹600",
     rules: [
+      "Three team categories available",
+      "Boys Team: 5 players - ₹1000",
+      "Girls Team: 5 players - ₹800",
+      "Mixed Team: 2 players (1 boy + 1 girl) - ₹600",
       "Best of 3 games (15 points each)",
       "Bring own kit",
       "SPPU rules applicable",
@@ -229,42 +233,42 @@ const sportsData = [
     ],
     registrationStatus: "open",
   },
-  {
-    id: 6,
-    name: "HANDBALL",
-    icon: "🤾",
-    color: "#DC2626",
-    gradient: "from-red-600 to-rose-500",
-    premiumGradient: "linear-gradient(135deg, #991b1b 0%, #dc2626 50%, #f43f5e 100%)",
-    glowColor: "rgba(244, 63, 94, 0.4)",
-    statusBadge: "OPEN",
-    statusIcon: "🔥",
-    ballImage: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1770888318/zenith-26/sports/zenith-26/sports/handball.jpg",
-    tier: "Popular",
-    tagline: "Fast & Furious",
-    description:
-      "High-speed action with quick passes and powerful shots! Showcase your agility and teamwork in this exciting handball tournament.",
-    date: "February 20-22, 2026",
-    venue: "Indoor Sports Arena",
-    teamSize: "Boys only - Minimum 9, Maximum 16 players",
-    registrationFee: "₹1500 per team",
-    rules: [
-      "25-minute match (10+10 minutes halves, 5-minute break)",
-      "Rolling substitutions allowed",
-      "20 minutes early reporting",
-      "Disqualification if absent",
-      "Age limit: 25 years",
-    ],
-    coordinators: [
-      { name: "Aditya Joshi", contact: "7820939780" },
-      { name: "Amarja Dhepe", contact: "9552110021" },
-    ],
-    coordinators: [
-      { name: "Aditya Joshi", phone: "7820939780" },
-      { name: "Amarja Dhepe", phone: "9552110021" },
-    ],
-    registrationStatus: "open",
-  },
+  // {
+  //   id: 6,
+  //   name: "HANDBALL",
+  //   icon: "🤾",
+  //   color: "#DC2626",
+  //   gradient: "from-red-600 to-rose-500",
+  //   premiumGradient: "linear-gradient(135deg, #991b1b 0%, #dc2626 50%, #f43f5e 100%)",
+  //   glowColor: "rgba(244, 63, 94, 0.4)",
+  //   statusBadge: "OPEN",
+  //   statusIcon: "🔥",
+  //   ballImage: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1770888318/zenith-26/sports/zenith-26/sports/handball.jpg",
+  //   tier: "Popular",
+  //   tagline: "Fast & Furious",
+  //   description:
+  //     "High-speed action with quick passes and powerful shots! Showcase your agility and teamwork in this exciting handball tournament.",
+  //   date: "February 20-22, 2026",
+  //   venue: "Indoor Sports Arena",
+  //   teamSize: "Boys only - Minimum 9, Maximum 16 players",
+  //   registrationFee: "₹1500 per team",
+  //   rules: [
+  //     "25-minute match (10+10 minutes halves, 5-minute break)",
+  //     "Rolling substitutions allowed",
+  //     "20 minutes early reporting",
+  //     "Disqualification if absent",
+  //     "Age limit: 25 years",
+  //   ],
+  //   coordinators: [
+  //     { name: "Aditya Joshi", contact: "7820939780" },
+  //     { name: "Amarja Dhepe", contact: "9552110021" },
+  //   ],
+  //   coordinators: [
+  //     { name: "Aditya Joshi", phone: "7820939780" },
+  //     { name: "Amarja Dhepe", phone: "9552110021" },
+  //   ],
+  //   registrationStatus: "open",
+  // },
   {
     id: 7,
     name: "KABADDI",
@@ -416,15 +420,15 @@ const sportsData = [
     tier: "Indoor",
     tagline: "Track & Field Glory",
     description:
-      "Sprint, jump, throw! Compete in various track and field events. Show your athletic excellence across multiple disciplines.",
+      "Sprint, jump, throw! Open for both boys and girls. Compete in track and field events. Show your athletic excellence in individual and team competitions.",
     date: "February 20-22, 2026",
     venue: "Athletic Stadium",
-    teamSize: "Boys only - Team & Individual Events",
+    teamSize: "Both Boys & Girls - Team & Individual Events",
     registrationFee: "Individual: ₹200 | Team: ₹700",
     rules: [
-      "Individual Events: 100m, 400m, Shot Put, Discus, Long Jump",
-      "Team Events: 4x100m Relay, Mixed Relay (2 Boys + 2 Girls)",
-      "20 minutes early reporting",
+      "Individual Events: 100m, Long Jump (₹200 per athlete)",
+      "Team Events: Relay, Mixed Relay - 2 Boys + 2 Girls (₹700 per team)",
+      "20 minutes early reporting required",
       "Player identification verification final",
       "Age limit: 25 years",
     ],
@@ -499,7 +503,7 @@ const SportsGrid = () => {
   // Memoized filtered sports - only recalculates when dependencies change
   const filteredSports = useMemo(() => {
     // Sports to hide from the site (temporarily disabled)
-    const HIDDEN_SPORTS = ["ATHLETICS"];
+    const HIDDEN_SPORTS = [];
     
     return sportsData.filter((sport) => {
       // Hide disabled sports
