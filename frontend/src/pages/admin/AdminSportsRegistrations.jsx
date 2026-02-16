@@ -40,7 +40,7 @@ const SPORTS_FEES = {
   "Football": { amount: 3000, note: "per team" },
   "Basketball": { men: 2500, women: 1500, note: "per team" },
   "Volleyball": { men: 2200, women: 1500, note: "per team" },
-  "Badminton": { team: 1000, note: "per team (mixed)" },
+  "Badminton": { boys: 1000, girls: 800, mixed: 600, note: "per team" },
   "Table Tennis": { amount: 400, note: "per player" },
   "Chess": { team: 500, individual: 200, note: "Team: ₹500 per team | Solo: ₹200 per player (mixed)" },
   "Carrom": { amount: 300, note: "per player" },
@@ -64,6 +64,9 @@ const getExpectedFee = (sportName) => {
   
   if (feeInfo.amount) {
     return `₹${feeInfo.amount} (${feeInfo.note})`;
+  } else if (feeInfo.boys && feeInfo.girls && feeInfo.mixed) {
+    // Badminton with three categories
+    return `Boys: ₹${feeInfo.boys} | Girls: ₹${feeInfo.girls} | Mixed: ₹${feeInfo.mixed} (${feeInfo.note})`;
   } else if (feeInfo.men && feeInfo.women) {
     return `Men: ₹${feeInfo.men} | Women: ₹${feeInfo.women} (${feeInfo.note})`;
   } else if (feeInfo.individual && feeInfo.team) {
@@ -116,6 +119,35 @@ const getCategoryBadgeInfo = (eventName, formData) => {
   }
   
   if (!genderCategory) return null;
+  
+  // Badminton has three team categories
+  if (eventName === 'Badminton') {
+    if (genderCategory === 'boys') {
+      return {
+        label: '👨 Boys Team (5 Players)',
+        shortLabel: '👨 Boys',
+        className: 'bg-blue-500/20 text-blue-300 border-blue-500/20',
+        detailClassName: 'bg-blue-500/10 text-blue-400 border border-blue-500/20',
+        isTeam: true
+      };
+    } else if (genderCategory === 'girls') {
+      return {
+        label: '👩 Girls Team (5 Players)',
+        shortLabel: '👩 Girls',
+        className: 'bg-pink-500/20 text-pink-300 border-pink-500/20',
+        detailClassName: 'bg-pink-500/10 text-pink-400 border border-pink-500/20',
+        isTeam: true
+      };
+    } else if (genderCategory === 'mixed') {
+      return {
+        label: '👥 Mixed Team (2 Players)',
+        shortLabel: '👥 Mixed',
+        className: 'bg-purple-500/20 text-purple-300 border-purple-500/20',
+        detailClassName: 'bg-purple-500/10 text-purple-400 border border-purple-500/20',
+        isTeam: true
+      };
+    }
+  }
   
   // Chess and Athletics are dual-mode sports - show Team/Solo instead of Men/Women
   if (eventName === 'Chess' || eventName === 'Athletics') {

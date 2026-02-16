@@ -98,11 +98,12 @@ const SPORTS_DATA = {
   },
   Badminton: {
     name: "Badminton Tournament",
-    fees: { team: 1000, note: "per team (mixed)" },
+    fees: { boys: 1000, girls: 800, mixed: 600, note: "per team" },
     venue: "Indoor Badminton Courts",
     rules: [
-      "Maximum 5 players per team",
-      "Mixed team (Men & Women)",
+      "Boys Team: 5 players - ₹1000",
+      "Girls Team: 5 players - ₹800",
+      "Mixed Team: 2 players (1 boy + 1 girl) - ₹600",
       "Best of 3 games (15 points each)",
       "Bring own kit",
       "SPPU rules applicable",
@@ -641,8 +642,21 @@ const UniversalRegistration = () => {
   const isTeamSport = TEAM_SPORTS.includes(selectedSport) || 
                       (DUAL_MODE_SPORTS.includes(selectedSport) && selectedGender === "team") ||
                       (selectedSport === "Athletics" && formData.athleticsEventType === "team");
-  const teamConfig = (isTeamSport || DUAL_MODE_SPORTS.includes(selectedSport) || selectedSport === "Athletics") ? TEAM_SPORTS_CONFIG[selectedSport] : null;
+  
+  // Dynamic teamConfig for Badminton based on selected category
+  let teamConfig = (isTeamSport || DUAL_MODE_SPORTS.includes(selectedSport) || selectedSport === "Athletics") ? TEAM_SPORTS_CONFIG[selectedSport] : null;
+  
+  // Override Badminton teamConfig based on selected category
+  if (selectedSport === "Badminton" && selectedGender) {
+    if (selectedGender === 'mixed') {
+      teamConfig = { minPlayers: 2, maxPlayers: 2, exactPlayers: 2 }; // Mixed: exactly 2 players
+    } else if (selectedGender === 'boys' || selectedGender === 'girls') {
+      teamConfig = { minPlayers: 5, maxPlayers: 5, exactPlayers: 5 }; // Boys/Girls: exactly 5 players
+    }
+  }
+  
   const hasGenderOptions = selectedSportData?.fees && (selectedSportData.fees.men || selectedSportData.fees.women);
+  const hasBadmintonOptions = selectedSport === "Badminton" && selectedSportData?.fees && (selectedSportData.fees.boys && selectedSportData.fees.girls && selectedSportData.fees.mixed);
   const hasTeamIndividualOptions = selectedSportData?.fees && (selectedSportData.fees.team && selectedSportData.fees.individual) && selectedSport !== "Athletics";
   
   // Check for individual-only sports (like Power Lifting - has individual fee but no team option)
@@ -734,6 +748,18 @@ const UniversalRegistration = () => {
     } else if (typeof selectedSportData.fees === 'object' && selectedSportData.fees.individual && !selectedSportData.fees.team) {
       // Individual-only fee (Power Lifting - solo sport)
       return `₹${selectedSportData.fees.individual} ${selectedSportData.fees.note || ""}`;
+    } else if (selectedSport === "Badminton" && selectedSportData.fees.boys && selectedSportData.fees.girls && selectedSportData.fees.mixed) {
+      // Badminton-specific fees (three options)
+      if (selectedGender === 'boys') {
+        return `₹${selectedSportData.fees.boys} (Boys Team - 5 Players)`;
+      } else if (selectedGender === 'girls') {
+        return `₹${selectedSportData.fees.girls} (Girls Team - 5 Players)`;
+      } else if (selectedGender === 'mixed') {
+        return `₹${selectedSportData.fees.mixed} (Mixed Team - 2 Players)`;
+      } else if (!selectedGender) {
+        // Show all three options if no selection made
+        return `Boys: ₹${selectedSportData.fees.boys} | Girls: ₹${selectedSportData.fees.girls} | Mixed: ₹${selectedSportData.fees.mixed}`;
+      }
     } else if (typeof selectedSportData.fees === 'object' && (selectedSportData.fees.men || selectedSportData.fees.women)) {
       // Gender-based fees
       if (selectedGender === 'men' && selectedSportData.fees.men) {
@@ -834,6 +860,10 @@ const UniversalRegistration = () => {
       // Validate category selection for sports with options
       if (hasGenderOptions && !selectedGender) {
         toast.error("Please select Men's or Women's category");
+        return;
+      }
+      if (hasBadmintonOptions && !selectedGender) {
+        toast.error("Please select a Badminton team category (Boys/Girls/Mixed)");
         return;
       }
       if (hasTeamIndividualOptions && !selectedGender) {
@@ -1402,6 +1432,103 @@ const UniversalRegistration = () => {
                           )}
                         </motion.button>
                       )}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Badminton Team Selection - Three Options */}
+                {hasBadmintonOptions && (
+                  <div className="mt-6">
+                    <h3 className="text-lg font-semibold text-[#ffb77a] mb-4">
+                      Select Team Category *
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+                      <motion.button
+                        type="button"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handleGenderSelect('boys')}
+                        className={`
+                          relative p-4 rounded-xl transition-all duration-300 text-center
+                          ${
+                            selectedGender === 'boys'
+                              ? "bg-gradient-to-br from-blue-600 to-blue-700 shadow-lg shadow-blue-600/20"
+                              : "bg-[#1a1410]/50 border border-[#3a2416] hover:border-blue-500/50"
+                          }
+                        `}
+                      >
+                        <div className="text-2xl mb-2">👨</div>
+                        <div className="font-semibold">Boys Team</div>
+                        <div className="text-xs text-gray-400 mb-1">5 Players</div>
+                        <div className="text-sm text-gray-400">₹{selectedSportData.fees.boys}</div>
+                        {selectedGender === 'boys' && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
+                          >
+                            <span className="text-blue-600 text-xs">✓</span>
+                          </motion.div>
+                        )}
+                      </motion.button>
+                      
+                      <motion.button
+                        type="button"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handleGenderSelect('girls')}
+                        className={`
+                          relative p-4 rounded-xl transition-all duration-300 text-center
+                          ${
+                            selectedGender === 'girls'
+                              ? "bg-gradient-to-br from-pink-600 to-pink-700 shadow-lg shadow-pink-600/20"
+                              : "bg-[#1a1410]/50 border border-[#3a2416] hover:border-pink-500/50"
+                          }
+                        `}
+                      >
+                        <div className="text-2xl mb-2">👩</div>
+                        <div className="font-semibold">Girls Team</div>
+                        <div className="text-xs text-gray-400 mb-1">5 Players</div>
+                        <div className="text-sm text-gray-400">₹{selectedSportData.fees.girls}</div>
+                        {selectedGender === 'girls' && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
+                          >
+                            <span className="text-pink-600 text-xs">✓</span>
+                          </motion.div>
+                        )}
+                      </motion.button>
+                      
+                      <motion.button
+                        type="button"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handleGenderSelect('mixed')}
+                        className={`
+                          relative p-4 rounded-xl transition-all duration-300 text-center
+                          ${
+                            selectedGender === 'mixed'
+                              ? "bg-gradient-to-br from-purple-600 to-purple-700 shadow-lg shadow-purple-600/20"
+                              : "bg-[#1a1410]/50 border border-[#3a2416] hover:border-purple-500/50"
+                          }
+                        `}
+                      >
+                        <div className="text-2xl mb-2">👥</div>
+                        <div className="font-semibold">Mixed Team</div>
+                        <div className="text-xs text-gray-400 mb-1">2 Players (1 Boy + 1 Girl)</div>
+                        <div className="text-sm text-gray-400">₹{selectedSportData.fees.mixed}</div>
+                        {selectedGender === 'mixed' && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
+                          >
+                            <span className="text-purple-600 text-xs">✓</span>
+                          </motion.div>
+                        )}
+                      </motion.button>
                     </div>
                   </div>
                 )}

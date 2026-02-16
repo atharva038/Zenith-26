@@ -68,10 +68,12 @@ const SPORTS_DATA = {
   },
   Badminton: {
     name: "Badminton Tournament",
-    fees: { men: 500, women: 400, note: "per player" },
+    fees: { boys: 1000, girls: 800, mixed: 600, note: "per team" },
     venue: "Indoor Badminton Courts",
     rules: [
-      "Singles and Doubles events",
+      "Boys Team: 5 players - ₹1000",
+      "Girls Team: 5 players - ₹800",
+      "Mixed Team: 2 players (1 boy + 1 girl) - ₹600",
       "Best of 3 games to 21 points",
       "BWF rules apply",
     ],
@@ -693,8 +695,37 @@ const ModernRegistration = () => {
                 </div>
               )}
 
-              {/* Gender Selection Dropdown for sports with gender-specific fees */}
-              {selectedSportData?.fees?.men && selectedSportData?.fees?.women && (
+              {/* Gender Selection Dropdown for Badminton with three options */}
+              {selectedSport === "Badminton" && selectedSportData?.fees?.boys && selectedSportData?.fees?.girls && selectedSportData?.fees?.mixed && (
+                <div className="bg-[#1a1410]/30 backdrop-blur-sm border border-[#3a2416] rounded-2xl p-6 md:p-8 mb-6">
+                  <div className="text-center mb-4">
+                    <h3 className="text-xl font-bold text-[#ffb77a] mb-2">Select Team Category</h3>
+                  </div>
+                  <div className="max-w-md mx-auto">
+                    <select
+                      value={formData.teamGender || ""}
+                      onChange={(e) => handleInputChange("teamGender", e.target.value)}
+                      className="w-full bg-[#0a0604] border border-[#3a2416] rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#ff6b35] cursor-pointer text-center font-semibold"
+                    >
+                      <option value="" disabled className="bg-[#1a1410] text-gray-400">
+                        -- Select Team Category --
+                      </option>
+                      <option value="boys" className="bg-[#1a1410] text-white">
+                        👨 Boys Team - 5 Players (₹{selectedSportData.fees.boys})
+                      </option>
+                      <option value="girls" className="bg-[#1a1410] text-white">
+                        👩 Girls Team - 5 Players (₹{selectedSportData.fees.girls})
+                      </option>
+                      <option value="mixed" className="bg-[#1a1410] text-white">
+                        👥 Mixed Team - 2 Players (1 Boy + 1 Girl) (₹{selectedSportData.fees.mixed})
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {/* Gender Selection Dropdown for sports with gender-specific fees (not Badminton) */}
+              {selectedSport !== "Badminton" && selectedSportData?.fees?.men && selectedSportData?.fees?.women && (
                 <div className="bg-[#1a1410]/30 backdrop-blur-sm border border-[#3a2416] rounded-2xl p-6 md:p-8 mb-6">
                   <div className="text-center mb-4">
                     <h3 className="text-xl font-bold text-[#ffb77a] mb-2">Select Category</h3>
