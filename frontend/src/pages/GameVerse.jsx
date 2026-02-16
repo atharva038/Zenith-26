@@ -412,21 +412,21 @@ const sportsData = [
     tier: 2,
     tagline: "Smash & Win",
     description:
-      "Fast-paced rallies and powerful smashes await! Compete in singles and doubles categories to claim the championship.",
+      "Fast-paced rallies and powerful smashes await! Choose from Boys, Girls, or Mixed team categories.",
     date: "February 20-21, 2026",
     venue: "Indoor Sports Complex",
-    teamSize: "Boys only - Maximum 5 players per team",
-    registrationFee: "₹1000 per team",
+    teamSize: "Boys Team: 5 players | Girls Team: 5 players | Mixed Team: 2 players (1 Boy + 1 Girl)",
+    registrationFee: "Boys: ₹1000 | Girls: ₹800 | Mixed: ₹600",
     rules: [
+      "Three team categories available",
+      "Boys Team: 5 players - ₹1000",
+      "Girls Team: 5 players - ₹800",
+      "Mixed Team: 2 players (1 boy + 1 girl) - ₹600",
       "Best of 3 games (15 points each)",
       "Bring own kit",
       "SPPU rules applicable",
       "20 minutes early reporting",
       "Age limit: 25 years",
-    ],
-    coordinators: [
-      { name: "Harsh Keshkar", contact: "8010529661" },
-      { name: "Aditi Phulare", contact: "8669995909" },
     ],
     coordinators: [
       { name: "Harsh Keshkar", phone: "8010529661" },
