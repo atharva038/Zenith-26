@@ -646,35 +646,7 @@ const AdminSportsRegistrations = () => {
           </div>
         )}
 
-        {/* Sport-wise Stats */}
-        {stats &&
-          stats.sportCounts &&
-          Object.keys(stats.sportCounts).length > 0 && (
-            <div className="bg-gradient-to-br from-[#1a1a1a] to-[#252525] rounded-2xl p-6 border border-gray-800 mb-8 shadow-lg">
-              <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                <span className="w-1 h-6 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></span>
-                Sport-wise Registrations
-              </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                {Object.entries(stats.sportCounts)
-                  .sort((a, b) => b[1] - a[1])
-                  .map(([sport, count]) => (
-                    <div
-                      key={sport}
-                      className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-4 text-center hover:border-purple-500/50 hover:bg-[#151515] transition-all duration-300 cursor-pointer group"
-                      onClick={() => handleFilterChange({ sport })}
-                    >
-                      <p className="text-3xl font-bold text-purple-400 group-hover:scale-110 transition-transform">
-                        {count}
-                      </p>
-                      <p className="text-sm text-gray-400 mt-2 group-hover:text-gray-300">
-                        {sport}
-                      </p>
-                    </div>
-                  ))}
-              </div>
-            </div>
-          )}
+       
 
         {/* Filters */}
         <div className="bg-gradient-to-br from-[#1a1a1a] to-[#252525] rounded-2xl p-6 border border-gray-800 mb-6 shadow-lg">

@@ -6,28 +6,114 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import api from "../../config/api";
 
-const SPORTS_LIST = [
-  "All Sports",
-  "Cricket",
-  "Football",
-  "Basketball",
-  "Volleyball",
-  "Badminton",
-  "Table Tennis",
-  "Chess",
-  "Carrom",
-  "Athletics",
-  "Swimming",
-  "Kabaddi",
-  "Kho-Kho",
-  "Hockey",
-  "Lawn Tennis",
-  "Squash",
-  "Handball",
-  "Rink Football",
-  "Tug of War",
-  "Power Lifting",
+const SPORTS_CARDS = [
+  {
+    name: "Football",
+    tagline: "The Beautiful Game",
+    date: "February 20-22, 2026",
+    requirements: "Boys only - Maximum 16 players",
+    fee: "₹3000 per team",
+    image: "🏈",
+    gradient: "from-green-900/40 via-green-800/30 to-black/40",
+  },
+  {
+    name: "Basketball",
+    tagline: "Hoop Dreams",
+    date: "February 20-22, 2026",
+    requirements: "Both (Men & Women) - 5 vs 5, Maximum 12 players per team",
+    fee: "Men: ₹2500 | Women: ₹1500 per team",
+    image: "🏀",
+    gradient: "from-orange-900/40 via-orange-800/30 to-black/40",
+  },
+  {
+    name: "Cricket",
+    tagline: "Gentleman's Game",
+    date: "February 16-19, 2026",
+    requirements: "Boys only - 11 playing players",
+    fee: "₹6500 per team (Men)",
+    image: "🏏",
+    gradient: "from-blue-900/40 via-blue-800/30 to-black/40",
+  },
+  {
+    name: "Volleyball",
+    tagline: "Spike It High",
+    date: "February 20-22, 2026",
+    requirements: "Both (Men & Women) - 6 playing players, Maximum 12 per team",
+    fee: "Men: ₹2200 | Women: ₹1500 per team",
+    image: "🏐",
+    gradient: "from-yellow-900/40 via-yellow-800/30 to-black/40",
+  },
+  {
+    name: "Badminton",
+    tagline: "Smash & Win",
+    date: "February 20-21, 2026",
+    requirements: "Boys only - Maximum 5 players per team",
+    fee: "₹1000 per team",
+    image: "🏸",
+    gradient: "from-red-900/40 via-red-800/30 to-black/40",
+  },
+
+  {
+    name: "Kabaddi",
+    tagline: "Raid & Defend",
+    date: "February 20-22, 2026",
+    requirements: "Both (Men & Women) - Maximum 12 players per team",
+    fee: "Men: ₹2200 | Women: ₹1500 per team",
+    image: "🤼",
+    gradient: "from-pink-900/40 via-pink-800/30 to-black/40",
+  },
+  {
+    name: "Chess",
+    tagline: "Checkmate Mastery",
+    date: "February 20-22, 2026",
+    requirements: "Mixed - Team (4 players) & Solo",
+    fee: "Team: ₹500 | Solo: ₹200",
+    image: "♟️",
+    gradient: "from-gray-900/40 via-gray-800/30 to-black/40",
+  },
+
+  {
+    name: "Athletics",
+    tagline: "Run, Jump, Throw",
+    date: "February 20-22, 2026",
+    requirements: "Mixed - Individual & Relay Team",
+    fee: "Individual: ₹200 | Relay: ₹800",
+    image: "🏃",
+    gradient: "from-indigo-900/40 via-indigo-800/30 to-black/40",
+  },
+
+  {
+    name: "Kho-Kho",
+    tagline: "Chase & Catch",
+    date: "February 20-22, 2026",
+    requirements: "Boys only - Maximum 15 players per team",
+    fee: "₹1500 per team",
+    image: "🏃‍♂️",
+    gradient: "from-lime-900/40 via-lime-800/30 to-black/40",
+  },
+
+  {
+    name: "Rink Football",
+    tagline: "Indoor Action",
+    date: "February 20-22, 2026",
+    requirements: "Boys only - Maximum 10 players",
+    fee: "₹2000 per team",
+    image: "⚽",
+    gradient: "from-sky-900/40 via-sky-800/30 to-black/40",
+  },
+
+  {
+    name: "Power Lifting",
+    tagline: "Strength Supreme",
+    date: "February 20-22, 2026",
+    requirements: "Solo - Individual competition",
+    fee: "₹500 per individual",
+    image: "🏋️",
+    gradient: "from-red-900/40 via-red-800/30 to-black/40",
+  },
 ];
+
+const SPORTS_LIST = ["All Sports", ...SPORTS_CARDS.map((sport) => sport.name)];
 
 const isSoloRegistration = (eventName, formData) => {
   const genderCategory =
@@ -96,11 +182,11 @@ const getCategoryBadgeInfo = (eventName, formData) => {
 const CoordinatorDashboard = () => {
   const navigate = useNavigate();
   const [coordinator, setCoordinator] = useState(null);
-  const [stats, setStats] = useState(null);
   const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [initialLoading, setInitialLoading] = useState(true);
   const [pagination, setPagination] = useState({});
+  const [selectedSport, setSelectedSport] = useState(null); // null = show all cards
+  const [sportStats, setSportStats] = useState({});
   const [filters, setFilters] = useState({
     sport: "",
     status: "",
@@ -112,99 +198,69 @@ const CoordinatorDashboard = () => {
   const [selectedRegistration, setSelectedRegistration] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
-  // Calculate statistics from registrations - matches admin dashboard logic
-  const calculateStats = (data) => {
-    const sportCounts = {};
-    let totalTeams = 0;
-    let totalPlayers = 0;
-    let needAccommodation = 0;
-    let pendingStatus = 0;
-    let confirmed = 0;
-    let cancelled = 0;
+  // Fetch sport-wise statistics
+  const fetchSportsStats = useCallback(async () => {
+    try {
+      const response = await api.get("/registrations?limit=9999");
+      if (response.data.success) {
+        const allRegistrations = response.data.data || [];
+        const stats = {};
 
-    data.forEach((reg) => {
-      // Count status for all registrations
-      if (reg.status === "pending") pendingStatus++;
-      if (reg.status === "confirmed") confirmed++;
-      if (reg.status === "cancelled") {
-        cancelled++;
-        return; // Skip cancelled registrations from other counts
+        // Count registrations per sport (excluding cancelled)
+        SPORTS_CARDS.forEach((sport) => {
+          const sportRegs = allRegistrations.filter(
+            (reg) => reg.eventName === sport.name && reg.status !== "cancelled",
+          );
+          stats[sport.name] = sportRegs.length;
+        });
+
+        setSportStats(stats);
       }
+    } catch (error) {
+      console.error("Failed to fetch sport stats:", error);
+    }
+  }, []);
 
-      // Only count active registrations (confirmed/pending) for the following:
-
-      // Sport counts (exclude cancelled)
-      const sport = reg.eventName;
-      sportCounts[sport] = (sportCounts[sport] || 0) + 1;
-
-      // Total teams (exclude cancelled)
-      totalTeams++;
-
-      // Total players (exclude cancelled)
-      const numPlayers = parseInt(
-        reg.formData?.num_players || reg.formData?.get?.("num_players") || 0,
-      );
-      totalPlayers += numPlayers;
-
-      // Accommodation (exclude cancelled)
-      const needAccom =
-        reg.accommodation?.needed ||
-        reg.formData?.needs_accommodation ||
-        reg.formData?.need_accommodation ||
-        reg.formData?.get?.("need_accommodation");
-      if (needAccom) needAccommodation++;
-    });
-
-    setStats({
-      sportCounts,
-      totalTeams,
-      totalPlayers,
-      needAccommodation,
-      pendingStatus,
-      confirmed,
-      cancelled,
+  // Handle sport card click
+  const handleSportCardClick = (sportName) => {
+    setSelectedSport(sportName);
+    // Reset all filters when selecting a new sport
+    setFilters({
+      sport: sportName,
+      status: "",
+      search: "",
+      needAccommodation: "",
+      page: 1,
+      limit: 50,
     });
   };
 
-  // Fetch ALL registrations for statistics
-  const fetchAllRegistrationsForStats = useCallback(async () => {
-    try {
-      const queryParams = new URLSearchParams();
-      queryParams.append("limit", "9999"); // Get all registrations
-
-      const response = await api.get(`/registrations?${queryParams}`);
-
-      if (response.data.success) {
-        let allRegistrations = response.data.data || [];
-
-        // Filter by sports only (exclude Marathon, Women's Tournament, etc.)
-        allRegistrations = allRegistrations.filter((reg) =>
-          SPORTS_LIST.includes(reg.eventName),
-        );
-
-        // Calculate stats from ALL registrations
-        calculateStats(allRegistrations);
-      }
-    } catch (error) {
-      console.error("Failed to fetch statistics:", error);
-      if (error.response?.status === 401 || error.response?.status === 403) {
-        toast.error("Session expired. Please login again.");
-        localStorage.removeItem("coordinatorToken");
-        localStorage.removeItem("coordinatorData");
-        navigate("/coordinator/login");
-      }
-    }
-  }, [navigate]);
+  // Handle back to cards view
+  const handleBackToCards = () => {
+    setSelectedSport(null);
+    setFilters({
+      sport: "",
+      status: "",
+      search: "",
+      needAccommodation: "",
+      page: 1,
+      limit: 50,
+    });
+  };
 
   const fetchRegistrations = useCallback(async () => {
+    // Only fetch if a sport is selected
+    if (!selectedSport) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const queryParams = new URLSearchParams();
 
-      // Filter by sport using eventName field
-      if (filters.sport && filters.sport !== "All Sports") {
-        queryParams.append("eventName", filters.sport);
-      }
+      // Always filter by the selected sport
+      queryParams.append("eventName", selectedSport);
 
       if (filters.status) queryParams.append("status", filters.status);
       if (filters.search) queryParams.append("search", filters.search);
@@ -216,9 +272,9 @@ const CoordinatorDashboard = () => {
       if (response.data.success) {
         let allRegistrations = response.data.data || [];
 
-        // Filter by sports only (exclude Marathon, Women's Tournament, etc.)
-        allRegistrations = allRegistrations.filter((reg) =>
-          SPORTS_LIST.includes(reg.eventName),
+        // Additional client-side filter to ensure only selected sport
+        allRegistrations = allRegistrations.filter(
+          (reg) => reg.eventName === selectedSport,
         );
 
         // Additional filter for accommodation if set
@@ -250,9 +306,8 @@ const CoordinatorDashboard = () => {
       console.error(error);
     } finally {
       setLoading(false);
-      setInitialLoading(false);
     }
-  }, [filters, navigate]);
+  }, [selectedSport, filters, navigate]);
 
   useEffect(() => {
     const coordinatorData = localStorage.getItem("coordinatorData");
@@ -268,10 +323,9 @@ const CoordinatorDashboard = () => {
     fetchRegistrations();
   }, [fetchRegistrations]);
 
-  // Fetch all registrations for statistics on initial load
   useEffect(() => {
-    fetchAllRegistrationsForStats();
-  }, [fetchAllRegistrationsForStats]);
+    fetchSportsStats();
+  }, [fetchSportsStats]);
 
   const handleLogout = () => {
     localStorage.removeItem("coordinatorToken");
@@ -291,26 +345,21 @@ const CoordinatorDashboard = () => {
     }));
   };
 
-  // Clear all filters
-  const handleClearAllFilters = () => {
+  // Check if any filters are active (excluding sport filter since it's always set when viewing registrations)
+  const hasActiveFilters = () => {
+    return filters.status || filters.search || filters.needAccommodation;
+  };
+
+  // Clear filters except sport
+  const handleClearFiltersExceptSport = () => {
     setFilters({
-      sport: "",
+      sport: selectedSport || "",
       status: "",
       search: "",
       needAccommodation: "",
       page: 1,
       limit: 50,
     });
-  };
-
-  // Check if any filters are active
-  const hasActiveFilters = () => {
-    return (
-      filters.sport ||
-      filters.status ||
-      filters.search ||
-      filters.needAccommodation
-    );
   };
 
   const handleViewDetails = (registration) => {
@@ -473,167 +522,131 @@ const CoordinatorDashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-            Sports Registrations
-          </h1>
-          <p className="text-gray-400">
-            Monitor all sports event registrations for Zenith 2026
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                {selectedSport
+                  ? `${selectedSport} Registrations`
+                  : "Sports Events"}
+              </h1>
+              <p className="text-gray-400">
+                {selectedSport
+                  ? `View all registrations for ${selectedSport}`
+                  : "Click on a sport card to view its registrations"}
+              </p>
+            </div>
+            {selectedSport && (
+              <button
+                onClick={handleBackToCards}
+                className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-purple-500/50 flex items-center gap-2"
+              >
+                ← Back to Sports
+              </button>
+            )}
+          </div>
         </div>
 
-        {initialLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-500 border-t-transparent"></div>
+        {/* Show Cards or Registrations based on selectedSport */}
+        {!selectedSport ? (
+          /* Sports Cards Grid */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {SPORTS_CARDS.map((sport, index) => {
+              const registrationCount = sportStats[sport.name] || 0;
+              return (
+                <motion.div
+                  key={sport.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  onClick={() => handleSportCardClick(sport.name)}
+                  className="group cursor-pointer"
+                >
+                  <div
+                    className={`relative bg-gradient-to-br ${sport.gradient} backdrop-blur-sm rounded-2xl border border-gray-700/50 overflow-hidden hover:border-purple-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/20 hover:scale-105`}
+                  >
+                    {/* Background Pattern */}
+                    <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAgTSAwIDIwIEwgNDAgMjAgTSAyMCAwIEwgMjAgNDAgTSAwIDMwIEwgNDAgMzAgTSAzMCAwIEwgMzAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjAzIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30"></div>
+
+                    {/* Registration Count Badge */}
+                    {registrationCount > 0 && (
+                      <div className="absolute top-4 right-4 z-10">
+                        <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+                          {registrationCount}{" "}
+                          {registrationCount === 1 ? "Team" : "Teams"}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="relative p-6">
+                      {/* Sport Icon */}
+                      <div className="text-6xl mb-4 transform group-hover:scale-110 transition-transform duration-300">
+                        {sport.image}
+                      </div>
+
+                      {/* Sport Name */}
+                      <h3 className="text-2xl font-bold text-white mb-2 font-orbitron">
+                        {sport.name}
+                      </h3>
+
+                      {/* Tagline */}
+                      <p className="text-gray-300 text-sm mb-4 font-rajdhani">
+                        {sport.tagline}
+                      </p>
+
+                      {/* Event Details */}
+                      <div className="space-y-2 mb-4">
+                        <div className="flex items-start gap-2 text-gray-300 text-sm">
+                          <span className="text-lg">📅</span>
+                          <span>{sport.date}</span>
+                        </div>
+                        <div className="flex items-start gap-2 text-gray-300 text-sm">
+                          <span className="text-lg">👥</span>
+                          <span>{sport.requirements}</span>
+                        </div>
+                        <div className="flex items-start gap-2 text-gray-300 text-sm">
+                          <span className="text-lg">💰</span>
+                          <span>{sport.fee}</span>
+                        </div>
+                      </div>
+
+                      {/* View Button */}
+                      <div className="mt-6 pt-4 border-t border-gray-600/30">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-400">
+                            Click to view registrations
+                          </span>
+                          <span className="text-purple-400 group-hover:text-purple-300 transition-colors">
+                            →
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         ) : (
+          /* Registrations View */
           <>
-            {/* Statistics Cards */}
-            {stats && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-gradient-to-br from-[#1a1a1a] to-[#252525] rounded-2xl p-6 border border-gray-800 hover:border-purple-500/50 transition-all duration-300 shadow-lg hover:shadow-purple-500/20"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-gray-400 text-sm font-medium">
-                      Total Teams
-                    </span>
-                    <div className="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center">
-                      <span className="text-2xl">🏆</span>
-                    </div>
-                  </div>
-                  <p className="text-4xl font-bold text-white mb-1">
-                    {stats.totalTeams}
-                  </p>
-                  <p className="text-xs text-gray-500">Registered teams</p>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="bg-gradient-to-br from-[#1a1a1a] to-[#252525] rounded-2xl p-6 border border-gray-800 hover:border-blue-500/50 transition-all duration-300 shadow-lg hover:shadow-blue-500/20"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-gray-400 text-sm font-medium">
-                      Total Players
-                    </span>
-                    <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center">
-                      <span className="text-2xl">👥</span>
-                    </div>
-                  </div>
-                  <p className="text-4xl font-bold text-white mb-1">
-                    {stats.totalPlayers}
-                  </p>
-                  <p className="text-xs text-gray-500">All participants</p>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="bg-gradient-to-br from-[#1a1a1a] to-[#252525] rounded-2xl p-6 border border-gray-800 hover:border-green-500/50 transition-all duration-300 shadow-lg hover:shadow-green-500/20"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-gray-400 text-sm font-medium">
-                      Need Accommodation
-                    </span>
-                    <div className="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center">
-                      <span className="text-2xl">🏨</span>
-                    </div>
-                  </div>
-                  <p className="text-4xl font-bold text-white mb-1">
-                    {stats.needAccommodation}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    Accommodation required
-                  </p>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="bg-gradient-to-br from-[#1a1a1a] to-[#252525] rounded-2xl p-6 border border-gray-800 hover:border-yellow-500/50 transition-all duration-300 shadow-lg hover:shadow-yellow-500/20"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-gray-400 text-sm font-medium">
-                      Pending Review
-                    </span>
-                    <div className="w-12 h-12 bg-yellow-500/10 rounded-xl flex items-center justify-center">
-                      <span className="text-2xl">⏳</span>
-                    </div>
-                  </div>
-                  <p className="text-4xl font-bold text-white mb-1">
-                    {stats.pendingStatus}
-                  </p>
-                  <p className="text-xs text-gray-500">Awaiting verification</p>
-                </motion.div>
-              </div>
-            )}
-
-            {/* Sport-wise Stats */}
-            {stats &&
-              stats.sportCounts &&
-              Object.keys(stats.sportCounts).length > 0 && (
-                <div className="bg-gradient-to-br from-[#1a1a1a] to-[#252525] rounded-2xl p-6 border border-gray-800 mb-8 shadow-lg">
-                  <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                    <span className="w-1 h-6 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></span>
-                    Sport-wise Registrations
-                  </h2>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                    {Object.entries(stats.sportCounts)
-                      .sort((a, b) => b[1] - a[1])
-                      .map(([sport, count]) => (
-                        <div
-                          key={sport}
-                          className="bg-[#0a0a0a] border border-gray-800 rounded-xl p-4 text-center hover:border-purple-500/50 hover:bg-[#151515] transition-all duration-300 cursor-pointer group"
-                          onClick={() => handleFilterChange({ sport })}
-                        >
-                          <p className="text-3xl font-bold text-purple-400 group-hover:scale-110 transition-transform">
-                            {count}
-                          </p>
-                          <p className="text-sm text-gray-400 mt-2 group-hover:text-gray-300">
-                            {sport}
-                          </p>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-
             {/* Filters */}
             <div className="bg-gradient-to-br from-[#1a1a1a] to-[#252525] rounded-2xl p-6 border border-gray-800 mb-6 shadow-lg">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-lg font-semibold flex items-center gap-2">
                   <span className="w-1 h-6 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full"></span>
-                  Filters
                 </h2>
                 {hasActiveFilters() && (
                   <button
-                    onClick={handleClearAllFilters}
+                    onClick={handleClearFiltersExceptSport}
                     className="text-sm text-pink-400 hover:text-pink-300 transition-colors px-4 py-2 bg-pink-500/10 rounded-lg hover:bg-pink-500/20"
                   >
-                    Clear All
+                    Clear Filters
                   </button>
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <select
-                  value={filters.sport}
-                  onChange={(e) =>
-                    handleFilterChange({ sport: e.target.value })
-                  }
-                  className="bg-[#0a0a0a] border border-gray-800 rounded-xl px-4 py-3 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all text-white"
-                >
-                  {SPORTS_LIST.map((sport) => (
-                    <option key={sport} value={sport} className="bg-[#1a1a1a]">
-                      {sport}
-                    </option>
-                  ))}
-                </select>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Sport dropdown removed - already filtering by selected sport */}
 
                 <select
                   value={filters.status}
@@ -722,10 +735,10 @@ const CoordinatorDashboard = () => {
                   </p>
                   {hasActiveFilters() && (
                     <button
-                      onClick={handleClearAllFilters}
+                      onClick={handleClearFiltersExceptSport}
                       className="mt-4 text-purple-400 hover:text-purple-300 transition-colors px-6 py-2 bg-purple-500/10 rounded-xl hover:bg-purple-500/20"
                     >
-                      Clear filters to see all registrations
+                      Clear filters to see all {selectedSport} registrations
                     </button>
                   )}
                 </div>
