@@ -73,27 +73,47 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Determine which user type based on the failed request URL
-      const url = error.config?.url || "";
+    const status = error.response?.status;
+    const url = error.config?.url || "";
 
+    // Handle authentication errors (401) and authorization errors (403)
+    if (status === 401 || status === 403) {
+      // Get current tokens to determine who is actually logged in
+      const adminToken = localStorage.getItem("adminToken");
+      const coordinatorToken = localStorage.getItem("coordinatorToken");
+      const mediaTeamToken = localStorage.getItem("mediaTeamToken");
+
+      // Determine which user type based on the failed request URL and which token is present
       if (url.includes("/game-coordinator") || url.includes("/coordinator")) {
-        // Coordinator session expired
-        localStorage.removeItem("coordinatorToken");
-        localStorage.removeItem("coordinatorData");
-        window.location.href = "/coordinator/login";
+        // Only clear/redirect if coordinator was actually trying to use this endpoint
+        if (coordinatorToken) {
+          localStorage.removeItem("coordinatorToken");
+          localStorage.removeItem("coordinatorData");
+          if (!window.location.pathname.includes("/coordinator/login")) {
+            window.location.href = "/coordinator/login";
+          }
+        }
+        // If no coordinator token but admin/media token exists, don't redirect
+        // (admin/media might be on wrong page, let them handle it)
       } else if (url.includes("/media-team")) {
-        // Media team session expired
-        localStorage.removeItem("mediaTeamToken");
-        localStorage.removeItem("mediaTeamData");
-        window.location.href = "/media-team/login";
+        // Only clear/redirect if media team was actually trying to use this endpoint
+        if (mediaTeamToken) {
+          localStorage.removeItem("mediaTeamToken");
+          localStorage.removeItem("mediaTeamData");
+          if (!window.location.pathname.includes("/media-team/login")) {
+            window.location.href = "/media-team/login";
+          }
+        }
       } else if (url.includes("/admin")) {
-        // Admin session expired
-        localStorage.removeItem("adminToken");
-        localStorage.removeItem("adminData");
-        window.location.href = "/admin/login";
+        // Only clear/redirect if admin was actually trying to use this endpoint
+        if (adminToken) {
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("adminData");
+          if (!window.location.pathname.includes("/admin/login")) {
+            window.location.href = "/admin/login";
+          }
+        }
       }
-      // For other endpoints, don't auto-redirect
     }
     return Promise.reject(error);
   },
