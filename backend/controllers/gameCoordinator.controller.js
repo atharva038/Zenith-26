@@ -191,22 +191,17 @@ export const getRegistrations = async (req, res) => {
       sortOrder = "desc",
     } = req.query;
 
-    // Build sports query
-    const sportsQuery =
-      coordinator.assignedSports.length > 0
-        ? { category: { $in: coordinator.assignedSports } }
-        : {};
-
-    // Get events for assigned sports
-    const events = await Event.find(sportsQuery).select("_id name");
-    const eventIds = events.map((e) => e._id);
-
-    // Build registrations query
-    const query = eventIds.length > 0 ? { eventId: { $in: eventIds } } : {};
+    // Build registrations query based on assigned sports (using eventName)
+    const query = {};
+    
+    // Filter by assigned sports if coordinator has specific sports assigned
+    if (coordinator.assignedSports.length > 0) {
+      query.eventName = { $in: coordinator.assignedSports };
+    }
 
     // Apply filters
     if (status) query.status = status;
-    if (eventName) query.eventName = eventName;
+    if (eventName) query.eventName = eventName; // Override with specific eventName if provided
     if (paymentStatus) query.paymentStatus = paymentStatus;
 
     // Search

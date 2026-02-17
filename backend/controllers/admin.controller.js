@@ -1,4 +1,5 @@
 import Admin from "../models/Admin.js";
+import Registration from "../models/Registration.js";
 
 // @desc    Get dashboard statistics
 // @route   GET /api/admin/dashboard/stats
@@ -12,6 +13,36 @@ export const getDashboardStats = async (req, res) => {
       .limit(5)
       .select("-password");
 
+    // Get registration fee collection stats for confirmed payments
+    const registrationStats = await Registration.aggregate([
+      {
+        $facet: {
+          totalRegistrations: [{$count: "count"}],
+          confirmedRegistrations: [
+            {$match: {status: "confirmed"}},
+            {$count: "count"},
+          ],
+          pendingRegistrations: [
+            {$match: {status: "pending"}},
+            {$count: "count"},
+          ],
+          feeCollection: [
+            {$match: {status: "confirmed"}},
+            {
+              $group: {
+                _id: null,
+                totalRegistrationFee: {$sum: "$amount"},
+                totalAccommodationFee: {$sum: "$accommodation.totalFee"},
+              },
+            },
+          ],
+        },
+      },
+    ]);
+
+    const regStats = registrationStats[0] || {};
+    const feeData = regStats.feeCollection?.[0] || {};
+
     res.json({
       success: true,
       data: {
@@ -19,6 +50,17 @@ export const getDashboardStats = async (req, res) => {
           totalAdmins,
           activeAdmins,
           inactiveAdmins: totalAdmins - activeAdmins,
+          // Registration stats
+          totalRegistrations: regStats.totalRegistrations?.[0]?.count || 0,
+          confirmedRegistrations:
+            regStats.confirmedRegistrations?.[0]?.count || 0,
+          pendingRegistrations: regStats.pendingRegistrations?.[0]?.count || 0,
+          // Fee collection (confirmed payments only)
+          totalRegistrationFee: feeData.totalRegistrationFee || 0,
+          totalAccommodationFee: feeData.totalAccommodationFee || 0,
+          totalFeeCollected:
+            (feeData.totalRegistrationFee || 0) +
+            (feeData.totalAccommodationFee || 0),
         },
         recentAdmins,
       },

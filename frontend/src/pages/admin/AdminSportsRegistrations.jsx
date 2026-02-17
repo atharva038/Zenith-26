@@ -367,11 +367,18 @@ const AdminSportsRegistrations = () => {
     let pendingStatus = 0;
     let confirmed = 0;
     let cancelled = 0;
+    let totalRegistrationFee = 0;
+    let totalAccommodationFee = 0;
 
     data.forEach((reg) => {
       // Count status for all registrations
       if (reg.status === "pending") pendingStatus++;
-      if (reg.status === "confirmed") confirmed++;
+      if (reg.status === "confirmed") {
+        confirmed++;
+        // Calculate fee only for confirmed registrations
+        totalRegistrationFee += reg.amount || 0;
+        totalAccommodationFee += reg.accommodation?.totalFee || 0;
+      }
       if (reg.status === "cancelled") {
         cancelled++;
         return; // Skip cancelled registrations from other counts
@@ -409,6 +416,9 @@ const AdminSportsRegistrations = () => {
       pendingStatus,
       confirmed,
       cancelled,
+      totalRegistrationFee,
+      totalAccommodationFee,
+      totalFeeCollected: totalRegistrationFee + totalAccommodationFee,
     });
   };
 
@@ -688,6 +698,50 @@ const AdminSportsRegistrations = () => {
               </p>
               <p className="text-xs text-gray-500">Awaiting verification</p>
             </motion.div>
+          </div>
+        )}
+
+        {/* Fee Collection Section - Confirmed Payments Only */}
+        {stats && (
+          <div className="bg-gradient-to-br from-[#1a1a1a] to-[#252525] rounded-2xl p-6 border border-gray-800 mb-8 shadow-lg">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <span className="w-1 h-6 bg-gradient-to-b from-green-500 to-emerald-500 rounded-full"></span>
+              Fee Collection
+              <span className="text-sm font-normal text-gray-400 ml-2">
+                (Confirmed Payments Only)
+              </span>
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="bg-[#0a0a0a] rounded-xl p-5 border border-green-500/20"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-2xl">📝</span>
+                  <span className="text-gray-400 text-sm">Registration Fees</span>
+                </div>
+                <p className="text-3xl font-bold text-green-400">
+                  ₹{(stats.totalRegistrationFee || 0).toLocaleString("en-IN")}
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="bg-[#0a0a0a] rounded-xl p-5 border border-orange-500/20"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-2xl">💰</span>
+                  <span className="text-gray-400 text-sm">Total Collected</span>
+                </div>
+                <p className="text-3xl font-bold text-orange-400">
+                  ₹{(stats.totalRegistrationFee || 0).toLocaleString("en-IN")}
+                </p>
+              </motion.div>
+            </div>
           </div>
         )}
 
