@@ -145,13 +145,14 @@ const AdminDashboard = () => {
               </div>
 
               {/* Registration & Fee Collection Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                 {[
                   {
                     label: "Total Registrations",
                     value: stats?.totalRegistrations || 0,
                     icon: "📝",
                     color: "purple-500",
+                    subtitle: "(All statuses)",
                   },
                   {
                     label: "Confirmed",
@@ -166,13 +167,19 @@ const AdminDashboard = () => {
                     color: "yellow-500",
                   },
                   {
+                    label: "Cancelled",
+                    value: stats?.cancelledRegistrations || 0,
+                    icon: "❌",
+                    color: "red-500",
+                  },
+                  {
                     label: "Total Fee Collected",
-                    value: `₹${(stats?.totalFeeCollected || 0).toLocaleString(
+                    value: `₹${(stats?.totalRegistrationFee || 0).toLocaleString(
                       "en-IN"
                     )}`,
                     icon: "💰",
                     color: "neon-orange",
-                    subtitle: "(Confirmed Payments)",
+                    subtitle: `(${stats?.confirmedRegistrations || 0} confirmed only)`,
                   },
                 ].map((stat, index) => (
                   <motion.div

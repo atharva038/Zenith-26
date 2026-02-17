@@ -708,7 +708,7 @@ const AdminSportsRegistrations = () => {
               <span className="w-1 h-6 bg-gradient-to-b from-green-500 to-emerald-500 rounded-full"></span>
               Fee Collection
               <span className="text-sm font-normal text-gray-400 ml-2">
-                (Confirmed Payments Only)
+                ({stats.confirmed || 0} Confirmed Payments)
               </span>
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -725,6 +725,9 @@ const AdminSportsRegistrations = () => {
                 <p className="text-3xl font-bold text-green-400">
                   ₹{(stats.totalRegistrationFee || 0).toLocaleString("en-IN")}
                 </p>
+                <p className="text-xs text-gray-500 mt-2">
+                  From {stats.confirmed || 0} confirmed registrations
+                </p>
               </motion.div>
 
               <motion.div
@@ -739,6 +742,9 @@ const AdminSportsRegistrations = () => {
                 </div>
                 <p className="text-3xl font-bold text-orange-400">
                   ₹{(stats.totalRegistrationFee || 0).toLocaleString("en-IN")}
+                </p>
+                <p className="text-xs text-gray-500 mt-2">
+                  Excluding {stats.pendingStatus || 0} pending
                 </p>
               </motion.div>
             </div>

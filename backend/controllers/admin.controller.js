@@ -26,6 +26,10 @@ export const getDashboardStats = async (req, res) => {
             {$match: {status: "pending"}},
             {$count: "count"},
           ],
+          cancelledRegistrations: [
+            {$match: {status: "cancelled"}},
+            {$count: "count"},
+          ],
           feeCollection: [
             {$match: {status: "confirmed"}},
             {
@@ -55,6 +59,8 @@ export const getDashboardStats = async (req, res) => {
           confirmedRegistrations:
             regStats.confirmedRegistrations?.[0]?.count || 0,
           pendingRegistrations: regStats.pendingRegistrations?.[0]?.count || 0,
+          cancelledRegistrations:
+            regStats.cancelledRegistrations?.[0]?.count || 0,
           // Fee collection (confirmed payments only)
           totalRegistrationFee: feeData.totalRegistrationFee || 0,
           totalAccommodationFee: feeData.totalAccommodationFee || 0,

@@ -7,6 +7,84 @@ import {
   sendApprovedRegistrationEmail,
 } from "../services/email.service.js";
 
+// Sport fees configuration - must match frontend
+const SPORTS_FEES = {
+  Cricket: {amount: 6500, note: "per team"},
+  "Box Cricket": {amount: 3000, note: "per team"},
+  Football: {amount: 3000, note: "per team"},
+  Basketball: {men: 2500, women: 1500, note: "per team"},
+  Volleyball: {men: 2200, women: 1500, note: "per team"},
+  Badminton: {boys: 1000, girls: 800, mixed: 600, note: "per team"},
+  "Table Tennis": {amount: 400, note: "per player"},
+  Chess: {
+    team: 500,
+    individual: 200,
+    note: "Team: ₹500 per team | Solo: ₹200 per player (mixed)",
+  },
+  Carrom: {amount: 300, note: "per player"},
+  Athletics: {
+    individual: 200,
+    team: 700,
+    note: "Individual: ₹200 (100m, Long Jump) | Team: ₹700 (Relay, Mixed Relay)",
+  },
+  Swimming: {amount: 300, note: "per athlete"},
+  Kabaddi: {men: 2200, women: 1500, note: "per team"},
+  "Kho-Kho": {amount: 1500, note: "per team"},
+  Hockey: {amount: 2500, note: "per team"},
+  "Lawn Tennis": {amount: 500, note: "per player"},
+  Squash: {amount: 400, note: "per player"},
+  Handball: {amount: 1500, note: "per team"},
+  "Rink Football": {men: 2200, women: 1500, note: "per team"},
+  "Tug of War": {amount: 1000, note: "per team"},
+  "Power Lifting": {amount: 300, note: "per player"},
+};
+
+// Helper function to calculate registration fee based on sport and category
+const calculateSportFee = (sportName, genderCategory) => {
+  const feeInfo = SPORTS_FEES[sportName];
+
+  if (!feeInfo) {
+    console.warn(`No fee info found for sport: ${sportName}`);
+    return 500; // Default fallback
+  }
+
+  // If fee has a single amount, return it
+  if (feeInfo.amount) {
+    return feeInfo.amount;
+  }
+
+  // Handle gender/category-specific fees
+  if (genderCategory) {
+    const category = genderCategory.toLowerCase();
+
+    // For sports with men/women categories
+    if (feeInfo.men && category === "men") return feeInfo.men;
+    if (feeInfo.women && category === "women") return feeInfo.women;
+
+    // For sports with boys/girls/mixed categories (Badminton)
+    if (feeInfo.boys && category === "boys") return feeInfo.boys;
+    if (feeInfo.girls && category === "girls") return feeInfo.girls;
+    if (feeInfo.mixed && category === "mixed") return feeInfo.mixed;
+
+    // For sports with team/individual categories (Chess, Athletics)
+    if (feeInfo.team && category === "team") return feeInfo.team;
+    if (feeInfo.individual && category === "individual") return feeInfo.individual;
+  }
+
+  // Fallback: return first available fee
+  return (
+    feeInfo.amount ||
+    feeInfo.men ||
+    feeInfo.women ||
+    feeInfo.boys ||
+    feeInfo.girls ||
+    feeInfo.mixed ||
+    feeInfo.team ||
+    feeInfo.individual ||
+    500
+  );
+};
+
 // Create new registration
 export const createRegistration = async (req, res) => {
   try {
@@ -216,6 +294,18 @@ export const createSportsRegistration = async (req, res) => {
       ? formData.total_accommodation_fee || numDays * 200
       : 0;
 
+    // Calculate registration fee based on sport and gender category
+    const genderCategory =
+      formData.gender_category ||
+      sportDetails?.selectedGender ||
+      sportDetails?.category ||
+      null;
+    const registrationFee = calculateSportFee(sportName, genderCategory);
+
+    console.log(
+      `Calculating fee for ${sportName} (${genderCategory}): ₹${registrationFee}`
+    );
+
     // Create registration with documents
     const registration = new Registration({
       eventId: virtualEventId,
@@ -229,7 +319,7 @@ export const createSportsRegistration = async (req, res) => {
       phone,
       institution,
       city,
-      amount: 500, // Fixed entry fee
+      amount: registrationFee, // Calculated registration fee
       status: "pending", // Single unified status
       accommodation: {
         needed: accommodationNeeded,
