@@ -35,11 +35,10 @@ const SPORTS_LIST = [
 const SPORTS_FEES = {
   Cricket: { amount: 6500, note: "per team" },
   "Box Cricket": { amount: 3000, note: "per team" },
-<<<<<<< HEAD
   Football: { amount: 3000, note: "per team" },
   Basketball: { men: 2500, women: 1500, note: "per team" },
   Volleyball: { men: 2200, women: 1500, note: "per team" },
-  Badminton: { team: 1000, note: "per team (mixed)" },
+  Badminton: { boys: 1000, girls: 800, mixed: 600, note: "per team" },
   "Table Tennis": { amount: 400, note: "per player" },
   Chess: {
     team: 500,
@@ -50,22 +49,10 @@ const SPORTS_FEES = {
   Athletics: {
     individual: 200,
     team: 700,
-    note: "Individual: ₹200 per athlete | Team: ₹700 per team",
+    note: "Individual: ₹200 (100m, Long Jump) | Team: ₹700 (Relay, Mixed Relay)",
   },
   Swimming: { amount: 300, note: "per athlete" },
   Kabaddi: { men: 2200, women: 1500, note: "per team" },
-=======
-  "Football": { amount: 3000, note: "per team" },
-  "Basketball": { men: 2500, women: 1500, note: "per team" },
-  "Volleyball": { men: 2200, women: 1500, note: "per team" },
-  "Badminton": { boys: 1000, girls: 800, mixed: 600, note: "per team" },
-  "Table Tennis": { amount: 400, note: "per player" },
-  "Chess": { team: 500, individual: 200, note: "Team: ₹500 per team | Solo: ₹200 per player (mixed)" },
-  "Carrom": { amount: 300, note: "per player" },
-  "Athletics": { individual: 200, team: 700, note: "Individual: ₹200 (100m, Long Jump) | Team: ₹700 (Relay, Mixed Relay)" },
-  "Swimming": { amount: 300, note: "per athlete" },
-  "Kabaddi": { men: 2200, women: 1500, note: "per team" },
->>>>>>> 8ab3152f75a5d309722e690b24bc4f1bdcf4b33f
   "Kho-Kho": { amount: 1500, note: "per team" },
   Hockey: { amount: 2500, note: "per team" },
   "Lawn Tennis": { amount: 500, note: "per player" },
@@ -140,40 +127,39 @@ const getCategoryBadgeInfo = (eventName, formData) => {
   }
 
   if (!genderCategory) return null;
-<<<<<<< HEAD
 
-=======
-  
   // Badminton has three team categories
-  if (eventName === 'Badminton') {
-    if (genderCategory === 'boys') {
+  if (eventName === "Badminton") {
+    if (genderCategory === "boys") {
       return {
-        label: '👨 Boys Team (5 Players)',
-        shortLabel: '👨 Boys',
-        className: 'bg-blue-500/20 text-blue-300 border-blue-500/20',
-        detailClassName: 'bg-blue-500/10 text-blue-400 border border-blue-500/20',
-        isTeam: true
+        label: "👨 Boys Team (5 Players)",
+        shortLabel: "👨 Boys",
+        className: "bg-blue-500/20 text-blue-300 border-blue-500/20",
+        detailClassName:
+          "bg-blue-500/10 text-blue-400 border border-blue-500/20",
+        isTeam: true,
       };
-    } else if (genderCategory === 'girls') {
+    } else if (genderCategory === "girls") {
       return {
-        label: '👩 Girls Team (5 Players)',
-        shortLabel: '👩 Girls',
-        className: 'bg-pink-500/20 text-pink-300 border-pink-500/20',
-        detailClassName: 'bg-pink-500/10 text-pink-400 border border-pink-500/20',
-        isTeam: true
+        label: "👩 Girls Team (5 Players)",
+        shortLabel: "👩 Girls",
+        className: "bg-pink-500/20 text-pink-300 border-pink-500/20",
+        detailClassName:
+          "bg-pink-500/10 text-pink-400 border border-pink-500/20",
+        isTeam: true,
       };
-    } else if (genderCategory === 'mixed') {
+    } else if (genderCategory === "mixed") {
       return {
-        label: '👥 Mixed Team (2 Players)',
-        shortLabel: '👥 Mixed',
-        className: 'bg-purple-500/20 text-purple-300 border-purple-500/20',
-        detailClassName: 'bg-purple-500/10 text-purple-400 border border-purple-500/20',
-        isTeam: true
+        label: "👥 Mixed Team (2 Players)",
+        shortLabel: "👥 Mixed",
+        className: "bg-purple-500/20 text-purple-300 border-purple-500/20",
+        detailClassName:
+          "bg-purple-500/10 text-purple-400 border border-purple-500/20",
+        isTeam: true,
       };
     }
   }
-  
->>>>>>> 8ab3152f75a5d309722e690b24bc4f1bdcf4b33f
+
   // Chess and Athletics are dual-mode sports - show Team/Solo instead of Men/Women
   if (eventName === "Chess" || eventName === "Athletics") {
     if (genderCategory === "team") {
@@ -482,13 +468,17 @@ const AdminSportsRegistrations = () => {
     const tableData = registrations
       .filter((reg) => reg.status !== "cancelled")
       .map((reg, index) => {
-<<<<<<< HEAD
         const formData = reg.formData || {};
         const isSolo = isSoloRegistration(reg.eventName, formData);
+        // For Athletics, include the event name (100m, Long Jump, etc.)
+        const sportDisplay =
+          reg.eventName === "Athletics" && formData.athleticsEvent
+            ? `${reg.eventName} - ${formData.athleticsEvent}`
+            : reg.eventName || "N/A";
         return [
           index + 1,
           reg.registrationNumber || "N/A",
-          reg.eventName || "N/A",
+          sportDisplay,
           isSolo
             ? "-"
             : formData.team_name || formData.get?.("team_name") || "N/A",
@@ -505,26 +495,6 @@ const AdminSportsRegistrations = () => {
           reg.status || "N/A",
         ];
       });
-=======
-      const formData = reg.formData || {};
-      const isSolo = isSoloRegistration(reg.eventName, formData);
-      // For Athletics, include the event name (100m, Long Jump, etc.)
-      const sportDisplay = reg.eventName === "Athletics" && formData.athleticsEvent 
-        ? `${reg.eventName} - ${formData.athleticsEvent}`
-        : reg.eventName || "N/A";
-      return [
-        index + 1,
-        reg.registrationNumber || "N/A",
-        sportDisplay,
-        isSolo ? "-" : (formData.team_name || formData.get?.('team_name') || "N/A"),
-        isSolo ? "-" : (formData.captain_name || formData.get?.('captain_name') || "N/A"),
-        formData.captain_contact || formData.get?.('captain_contact') || "N/A",
-        reg.institution || "N/A",
-        isSolo ? "1" : (formData.num_players || formData.get?.('num_players') || "N/A"),
-        reg.status || "N/A",
-      ];
-    });
->>>>>>> 8ab3152f75a5d309722e690b24bc4f1bdcf4b33f
 
     // Add table
     autoTable(doc, {
@@ -565,13 +535,17 @@ const AdminSportsRegistrations = () => {
     const csvData = registrations
       .filter((reg) => reg.status !== "cancelled")
       .map((reg, index) => {
-<<<<<<< HEAD
         const formData = reg.formData || {};
         const isSolo = isSoloRegistration(reg.eventName, formData);
+        // For Athletics, include the event name (100m, Long Jump, etc.)
+        const sportDisplay =
+          reg.eventName === "Athletics" && formData.athleticsEvent
+            ? `${reg.eventName} - ${formData.athleticsEvent}`
+            : reg.eventName || "N/A";
         return {
           "#": index + 1,
           "Registration Number": reg.registrationNumber || "N/A",
-          Sport: reg.eventName || "N/A",
+          Sport: sportDisplay,
           "Team Name": isSolo
             ? "-"
             : formData.team_name || formData.get?.("team_name") || "N/A",
@@ -605,33 +579,6 @@ const AdminSportsRegistrations = () => {
           "Registered On": new Date(reg.createdAt).toLocaleDateString(),
         };
       });
-=======
-      const formData = reg.formData || {};
-      const isSolo = isSoloRegistration(reg.eventName, formData);
-      // For Athletics, include the event name (100m, Long Jump, etc.)
-      const sportDisplay = reg.eventName === "Athletics" && formData.athleticsEvent 
-        ? `${reg.eventName} - ${formData.athleticsEvent}`
-        : reg.eventName || "N/A";
-      return {
-        "#": index + 1,
-        "Registration Number": reg.registrationNumber || "N/A",
-        "Sport": sportDisplay,
-        "Team Name": isSolo ? "-" : (formData.team_name || formData.get?.('team_name') || "N/A"),
-        "Captain Name": isSolo ? "-" : (formData.captain_name || formData.get?.('captain_name') || "N/A"),
-        "Contact": formData.captain_contact || formData.get?.('captain_contact') || "N/A",
-        "Email": reg.email || "N/A",
-        "Institution": reg.institution || "N/A",
-        "City": reg.city || "N/A",
-        "College Address": formData.college_address || formData.get?.('college_address') || "N/A",
-        "Number of Players": isSolo ? "1" : (formData.num_players || formData.get?.('num_players') || "N/A"),
-        "Alternate Contact": formData.alternate_contact || formData.get?.('alternate_contact') || "N/A",
-        "Need Accommodation": (formData.need_accommodation || formData.get?.('need_accommodation')) ? "Yes" : "No",
-        "Status": reg.status || "N/A",
-        "Amount": reg.amount || "N/A",
-        "Registered On": new Date(reg.createdAt).toLocaleDateString(),
-      };
-    });
->>>>>>> 8ab3152f75a5d309722e690b24bc4f1bdcf4b33f
 
     const csv = [
       Object.keys(csvData[0]).join(","),
@@ -743,8 +690,6 @@ const AdminSportsRegistrations = () => {
             </motion.div>
           </div>
         )}
-
-       
 
         {/* Filters */}
         <div className="bg-gradient-to-br from-[#1a1a1a] to-[#252525] rounded-2xl p-6 border border-gray-800 mb-6 shadow-lg">
@@ -918,7 +863,6 @@ const AdminSportsRegistrations = () => {
                       {registrations
                         .filter((reg) => reg.status !== "cancelled")
                         .map((reg, index) => {
-<<<<<<< HEAD
                           const formData = reg.formData || {};
                           return (
                             <motion.tr
@@ -983,55 +927,17 @@ const AdminSportsRegistrations = () => {
                                 {reg.institution || "N/A"}
                               </td>
                               <td className="px-6 py-4 text-sm text-gray-300">
-                                {/* Show player count - "1" for solo sports, actual count for teams */}
-=======
-                        const formData = reg.formData || {};
-                        return (
-                          <motion.tr
-                            key={reg._id}
-                            initial={{opacity: 0}}
-                            animate={{opacity: 1}}
-                            transition={{delay: index * 0.05}}
-                            className="hover:bg-[#0a0a0a] transition-colors"
-                          >
-                            <td className="px-6 py-4 text-sm text-gray-400">
-                              {(filters.page - 1) * filters.limit + index + 1}
-                            </td>
-                            <td className="px-6 py-4 text-sm text-white font-mono">
-                              {reg.registrationNumber || "N/A"}
-                            </td>
-                            <td className="px-6 py-4 text-sm">
-                              <div className="flex flex-col gap-1">
-                                <span className="px-3 py-1 bg-purple-500/10 text-purple-400 rounded-lg font-medium">
-                                  {reg.eventName}
-                                </span>
-                                {/* Athletics Event Display */}
-                                {reg.eventName === "Athletics" && formData.athleticsEvent && (
-                                  <span className="text-xs px-2 py-0.5 rounded-md font-semibold w-fit bg-orange-500/10 text-orange-400">
-                                    {formData.athleticsEvent}
+                                {isSoloRegistration(reg.eventName, formData) ? (
+                                  <span className="px-2 py-1 bg-gray-500/10 text-gray-400 rounded-lg font-medium">
+                                    1
+                                  </span>
+                                ) : (
+                                  <span className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded-lg font-medium">
+                                    {formData.num_players ||
+                                      formData.get?.("num_players") ||
+                                      "N/A"}
                                   </span>
                                 )}
-                                {/* Category Badge (Team/Solo for Chess, Men's/Women's for others) */}
->>>>>>> 8ab3152f75a5d309722e690b24bc4f1bdcf4b33f
-                                {(() => {
-                                  // Check if it's a solo registration (Power Lifting, Chess individual, etc.)
-                                  if (
-                                    isSoloRegistration(reg.eventName, formData)
-                                  ) {
-                                    return (
-                                      <span className="px-2 py-1 bg-gray-500/10 text-gray-400 rounded-lg font-medium">
-                                        1
-                                      </span>
-                                    );
-                                  }
-                                  return (
-                                    <span className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded-lg font-medium">
-                                      {formData.num_players ||
-                                        formData.get?.("num_players") ||
-                                        "N/A"}
-                                    </span>
-                                  );
-                                })()}
                               </td>
                               <td className="px-6 py-4 text-sm">
                                 <span
@@ -1160,11 +1066,12 @@ const AdminSportsRegistrations = () => {
                                 {reg.eventName}
                               </span>
                               {/* Athletics Event Display */}
-                              {reg.eventName === "Athletics" && formData.athleticsEvent && (
-                                <span className="text-xs px-2 py-0.5 rounded-md font-semibold w-fit bg-orange-500/10 text-orange-400">
-                                  {formData.athleticsEvent}
-                                </span>
-                              )}
+                              {reg.eventName === "Athletics" &&
+                                formData.athleticsEvent && (
+                                  <span className="text-xs px-2 py-0.5 rounded-md font-semibold w-fit bg-orange-500/10 text-orange-400">
+                                    {formData.athleticsEvent}
+                                  </span>
+                                )}
                               {/* Category Badge (Team/Solo for Chess, Men's/Women's for others) */}
                               {(() => {
                                 const badgeInfo = getCategoryBadgeInfo(
@@ -1288,7 +1195,6 @@ const AdminSportsRegistrations = () => {
                   }}
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-<<<<<<< HEAD
                     {/* Sport Information */}
                     <div className="bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-5 border border-gray-800">
                       <h3 className="text-lg font-semibold text-purple-400 mb-4 flex items-center gap-2">
@@ -1302,167 +1208,20 @@ const AdminSportsRegistrations = () => {
                           </span>{" "}
                           <span className="px-2 py-1 bg-purple-500/10 text-purple-400 rounded-lg ml-2">
                             {selectedRegistration.eventName}
-=======
-                  {/* Sport Information */}
-                  <div className="bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-5 border border-gray-800">
-                    <h3 className="text-lg font-semibold text-purple-400 mb-4 flex items-center gap-2">
-                      <span className="w-1 h-5 bg-purple-500 rounded-full"></span>
-                      Sport Information
-                    </h3>
-                    <div className="space-y-3">
-                      <p className="text-gray-300">
-                        <span className="text-white font-semibold">Sport:</span>{" "}
-                        <span className="px-2 py-1 bg-purple-500/10 text-purple-400 rounded-lg ml-2">
-                          {selectedRegistration.eventName}
-                        </span>
-                      </p>
-                      {/* Athletics Event Display */}
-                      {selectedRegistration.eventName === "Athletics" && selectedRegistration.formData?.athleticsEvent && (
-                        <p className="text-gray-300">
-                          <span className="text-white font-semibold">Event:</span>{" "}
-                          <span className="px-2 py-1 bg-orange-500/10 text-orange-400 rounded-lg ml-2 font-semibold">
-                            {selectedRegistration.formData.athleticsEvent}
                           </span>
                         </p>
-                      )}
-                      {/* Category Badge (Team/Solo for Chess, Men's/Women's for others) */}
-                      {(() => {
-                        const badgeInfo = getCategoryBadgeInfo(selectedRegistration.eventName, selectedRegistration.formData);
-                        if (!badgeInfo) return null;
-                        return (
-                          <p className="text-gray-300">
-                            <span className="text-white font-semibold">Category:</span>{" "}
-                            <span className={`px-3 py-1 rounded-lg ml-2 font-semibold ${badgeInfo.detailClassName}`}>
-                              {badgeInfo.label}
-                            </span>
-                          </p>
-                        );
-                      })()}
-                      <p className="text-gray-300">
-                        <span className="text-white font-semibold">Registration Date:</span>{" "}
-                        {new Date(selectedRegistration.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Team Information - Only show for team registrations (not Chess solo) */}
-                  {(() => {
-                    const badgeInfo = getCategoryBadgeInfo(selectedRegistration.eventName, selectedRegistration.formData);
-                    // Show team info if: no badge info (default team sport) OR isTeam is true
-                    const showTeamInfo = !badgeInfo || badgeInfo.isTeam;
-                    if (!showTeamInfo) return null;
-                    return (
-                      <div className="bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-5 border border-gray-800">
-                        <h3 className="text-lg font-semibold text-blue-400 mb-4 flex items-center gap-2">
-                          <span className="w-1 h-5 bg-blue-500 rounded-full"></span>
-                          Team Information
-                        </h3>
-                        <div className="space-y-3">
-                          <p className="text-gray-300">
-                            <span className="text-white font-semibold">Team Name:</span>{" "}
-                            {selectedRegistration.formData?.team_name || selectedRegistration.formData?.get?.('team_name') || "N/A"}
-                          </p>
-                          <p className="text-gray-300">
-                            <span className="text-white font-semibold">Number of Players:</span>{" "}
-                            <span className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded-lg ml-2">
-                              {selectedRegistration.formData?.num_players || selectedRegistration.formData?.get?.('num_players') || "N/A"}
-                            </span>
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })()}
-
-                  {/* Captain Information */}
-                  <div className="bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-5 border border-gray-800">
-                    <h3 className="text-lg font-semibold text-green-400 mb-4 flex items-center gap-2">
-                      <span className="w-1 h-5 bg-green-500 rounded-full"></span>
-                      Captain Information
-                    </h3>
-                    <div className="space-y-2">
-                      <p className="text-gray-300">
-                        <span className="text-white font-semibold">Name:</span>{" "}
-                        {selectedRegistration.formData?.captain_name || selectedRegistration.formData?.get?.('captain_name') || "N/A"}
-                      </p>
-                      <p className="text-gray-300">
-                        <span className="text-white font-semibold">Contact:</span>{" "}
-                        {selectedRegistration.formData?.captain_contact || selectedRegistration.formData?.get?.('captain_contact') || "N/A"}
-                      </p>
-                      <p className="text-gray-300">
-                        <span className="text-white font-semibold">Email:</span>{" "}
-                        {selectedRegistration.email || "N/A"}
-                      </p>
-                      <p className="text-gray-300">
-                        <span className="text-white font-semibold">Alternate Contact:</span>{" "}
-                        {selectedRegistration.formData?.alternate_contact || selectedRegistration.formData?.get?.('alternate_contact') || "N/A"}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Institution Information */}
-                  <div className="bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-5 border border-gray-800">
-                    <h3 className="text-lg font-semibold text-orange-400 mb-4 flex items-center gap-2">
-                      <span className="w-1 h-5 bg-orange-500 rounded-full"></span>
-                      Institution Information
-                    </h3>
-                    <div className="space-y-3">
-                      <p className="text-gray-300">
-                        <span className="text-white font-semibold">Institution:</span>{" "}
-                        {selectedRegistration.institution || "N/A"}
-                      </p>
-                      <p className="text-gray-300">
-                        <span className="text-white font-semibold">City:</span>{" "}
-                        {selectedRegistration.city || "N/A"}
-                      </p>
-                      <p className="text-gray-300">
-                        <span className="text-white font-semibold">Address:</span>{" "}
-                        {selectedRegistration.formData?.college_address || selectedRegistration.formData?.get?.('college_address') || "N/A"}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Accommodation */}
-                  <div className="bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-5 border border-gray-800">
-                    <h3 className="text-lg font-semibold text-cyan-400 mb-4 flex items-center gap-2">
-                      <span className="w-1 h-5 bg-cyan-500 rounded-full"></span>
-                      Accommodation
-                    </h3>
-                    <p className="text-gray-300">
-                      {(selectedRegistration.formData?.need_accommodation || selectedRegistration.formData?.get?.('need_accommodation')) ? (
-                        <span className="flex items-center gap-2 px-3 py-2 bg-green-500/10 text-green-400 rounded-xl border border-green-500/20 w-fit">
-                          <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                          Accommodation Required
-                        </span>
-                      ) : (
-                        <span className="flex items-center gap-2 px-3 py-2 bg-gray-500/10 text-gray-400 rounded-xl border border-gray-500/20 w-fit">
-                          <span className="w-2 h-2 bg-gray-500 rounded-full"></span>
-                          No Accommodation Required
-                        </span>
-                      )}
-                    </p>
-                  </div>
-
-                  {/* Payment Information */}
-                  <div className="bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-5 border border-gray-800">
-                    <h3 className="text-lg font-semibold text-yellow-400 mb-4 flex items-center gap-2">
-                      <span className="w-1 h-5 bg-yellow-500 rounded-full"></span>
-                      Payment Information
-                    </h3>
-                    <div className="space-y-3">
-                      <p className="text-gray-300">
-                        <span className="text-white font-semibold">Expected Registration Fee:</span>{" "}
-                        <span className="px-3 py-1 bg-yellow-500/10 text-yellow-400 rounded-lg ml-2 font-bold">
-                          {getExpectedFee(selectedRegistration.eventName)}
-                        </span>
-                      </p>
-                      <div className="pt-3 mt-3 border-t border-gray-700">
-                        <p className="text-sm text-orange-400 flex items-start gap-2">
-                          <span className="text-lg">⚠️</span>
-                          <span className="flex-1">
-                            <strong>Important:</strong> Please verify the payment screenshot in the documents section below to confirm the actual amount received matches the registration fee.
->>>>>>> 8ab3152f75a5d309722e690b24bc4f1bdcf4b33f
-                          </span>
-                        </p>
+                        {/* Athletics Event Display */}
+                        {selectedRegistration.eventName === "Athletics" &&
+                          selectedRegistration.formData?.athleticsEvent && (
+                            <p className="text-gray-300">
+                              <span className="text-white font-semibold">
+                                Event:
+                              </span>{" "}
+                              <span className="px-2 py-1 bg-orange-500/10 text-orange-400 rounded-lg ml-2 font-semibold">
+                                {selectedRegistration.formData.athleticsEvent}
+                              </span>
+                            </p>
+                          )}
                         {/* Category Badge (Team/Solo for Chess, Men's/Women's for others) */}
                         {(() => {
                           const badgeInfo = getCategoryBadgeInfo(
@@ -1493,178 +1252,200 @@ const AdminSportsRegistrations = () => {
                         </p>
                       </div>
                     </div>
+                  </div>
 
-                    {/* Team Information - Only show for team registrations (not Chess solo) */}
-                    {(() => {
-                      const badgeInfo = getCategoryBadgeInfo(
-                        selectedRegistration.eventName,
-                        selectedRegistration.formData,
-                      );
-                      // Show team info if: no badge info (default team sport) OR isTeam is true
-                      const showTeamInfo = !badgeInfo || badgeInfo.isTeam;
-                      if (!showTeamInfo) return null;
-                      return (
-                        <div className="bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-5 border border-gray-800">
-                          <h3 className="text-lg font-semibold text-blue-400 mb-4 flex items-center gap-2">
-                            <span className="w-1 h-5 bg-blue-500 rounded-full"></span>
-                            Team Information
-                          </h3>
-                          <div className="space-y-3">
-                            <p className="text-gray-300">
-                              <span className="text-white font-semibold">
-                                Team Name:
-                              </span>{" "}
-                              {selectedRegistration.formData?.team_name ||
+                  {/* Team Information - Only show for team registrations (not Chess solo) */}
+                  {(() => {
+                    const badgeInfo = getCategoryBadgeInfo(
+                      selectedRegistration.eventName,
+                      selectedRegistration.formData,
+                    );
+                    // Show team info if: no badge info (default team sport) OR isTeam is true
+                    const showTeamInfo = !badgeInfo || badgeInfo.isTeam;
+                    if (!showTeamInfo) return null;
+                    return (
+                      <div className="bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-5 border border-gray-800">
+                        <h3 className="text-lg font-semibold text-blue-400 mb-4 flex items-center gap-2">
+                          <span className="w-1 h-5 bg-blue-500 rounded-full"></span>
+                          Team Information
+                        </h3>
+                        <div className="space-y-3">
+                          <p className="text-gray-300">
+                            <span className="text-white font-semibold">
+                              Team Name:
+                            </span>{" "}
+                            {selectedRegistration.formData?.team_name ||
+                              selectedRegistration.formData?.get?.(
+                                "team_name",
+                              ) ||
+                              "N/A"}
+                          </p>
+                          <p className="text-gray-300">
+                            <span className="text-white font-semibold">
+                              Number of Players:
+                            </span>{" "}
+                            <span className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded-lg ml-2">
+                              {selectedRegistration.formData?.num_players ||
                                 selectedRegistration.formData?.get?.(
-                                  "team_name",
+                                  "num_players",
                                 ) ||
                                 "N/A"}
-                            </p>
-                            <p className="text-gray-300">
-                              <span className="text-white font-semibold">
-                                Number of Players:
-                              </span>{" "}
-                              <span className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded-lg ml-2">
-                                {selectedRegistration.formData?.num_players ||
-                                  selectedRegistration.formData?.get?.(
-                                    "num_players",
-                                  ) ||
-                                  "N/A"}
-                              </span>
-                            </p>
-                          </div>
-                        </div>
-                      );
-                    })()}
-
-                    {/* Captain Information */}
-                    <div className="bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-5 border border-gray-800">
-                      <h3 className="text-lg font-semibold text-green-400 mb-4 flex items-center gap-2">
-                        <span className="w-1 h-5 bg-green-500 rounded-full"></span>
-                        Captain Information
-                      </h3>
-                      <div className="space-y-2">
-                        <p className="text-gray-300">
-                          <span className="text-white font-semibold">
-                            Name:
-                          </span>{" "}
-                          {selectedRegistration.formData?.captain_name ||
-                            selectedRegistration.formData?.get?.(
-                              "captain_name",
-                            ) ||
-                            "N/A"}
-                        </p>
-                        <p className="text-gray-300">
-                          <span className="text-white font-semibold">
-                            Contact:
-                          </span>{" "}
-                          {selectedRegistration.formData?.captain_contact ||
-                            selectedRegistration.formData?.get?.(
-                              "captain_contact",
-                            ) ||
-                            "N/A"}
-                        </p>
-                        <p className="text-gray-300">
-                          <span className="text-white font-semibold">
-                            Email:
-                          </span>{" "}
-                          {selectedRegistration.email || "N/A"}
-                        </p>
-                        <p className="text-gray-300">
-                          <span className="text-white font-semibold">
-                            Alternate Contact:
-                          </span>{" "}
-                          {selectedRegistration.formData?.alternate_contact ||
-                            selectedRegistration.formData?.get?.(
-                              "alternate_contact",
-                            ) ||
-                            "N/A"}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Institution Information */}
-                    <div className="bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-5 border border-gray-800">
-                      <h3 className="text-lg font-semibold text-orange-400 mb-4 flex items-center gap-2">
-                        <span className="w-1 h-5 bg-orange-500 rounded-full"></span>
-                        Institution Information
-                      </h3>
-                      <div className="space-y-3">
-                        <p className="text-gray-300">
-                          <span className="text-white font-semibold">
-                            Institution:
-                          </span>{" "}
-                          {selectedRegistration.institution || "N/A"}
-                        </p>
-                        <p className="text-gray-300">
-                          <span className="text-white font-semibold">
-                            City:
-                          </span>{" "}
-                          {selectedRegistration.city || "N/A"}
-                        </p>
-                        <p className="text-gray-300">
-                          <span className="text-white font-semibold">
-                            Address:
-                          </span>{" "}
-                          {selectedRegistration.formData?.college_address ||
-                            selectedRegistration.formData?.get?.(
-                              "college_address",
-                            ) ||
-                            "N/A"}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Accommodation */}
-                    <div className="bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-5 border border-gray-800">
-                      <h3 className="text-lg font-semibold text-cyan-400 mb-4 flex items-center gap-2">
-                        <span className="w-1 h-5 bg-cyan-500 rounded-full"></span>
-                        Accommodation
-                      </h3>
-                      <p className="text-gray-300">
-                        {selectedRegistration.formData?.need_accommodation ||
-                        selectedRegistration.formData?.get?.(
-                          "need_accommodation",
-                        ) ? (
-                          <span className="flex items-center gap-2 px-3 py-2 bg-green-500/10 text-green-400 rounded-xl border border-green-500/20 w-fit">
-                            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                            Accommodation Required
-                          </span>
-                        ) : (
-                          <span className="flex items-center gap-2 px-3 py-2 bg-gray-500/10 text-gray-400 rounded-xl border border-gray-500/20 w-fit">
-                            <span className="w-2 h-2 bg-gray-500 rounded-full"></span>
-                            No Accommodation Required
-                          </span>
-                        )}
-                      </p>
-                    </div>
-
-                    {/* Payment Information */}
-                    <div className="bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-5 border border-gray-800">
-                      <h3 className="text-lg font-semibold text-yellow-400 mb-4 flex items-center gap-2">
-                        <span className="w-1 h-5 bg-yellow-500 rounded-full"></span>
-                        Payment Information
-                      </h3>
-                      <div className="space-y-3">
-                        <p className="text-gray-300">
-                          <span className="text-white font-semibold">
-                            Expected Registration Fee:
-                          </span>{" "}
-                          <span className="px-3 py-1 bg-yellow-500/10 text-yellow-400 rounded-lg ml-2 font-bold">
-                            {getExpectedFee(selectedRegistration.eventName)}
-                          </span>
-                        </p>
-                        <div className="pt-3 mt-3 border-t border-gray-700">
-                          <p className="text-sm text-orange-400 flex items-start gap-2">
-                            <span className="text-lg">⚠️</span>
-                            <span className="flex-1">
-                              <strong>Important:</strong> Please verify the
-                              payment screenshot in the documents section below
-                              to confirm the actual amount received matches the
-                              registration fee.
                             </span>
                           </p>
                         </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Captain Information */}
+                  <div className="bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-5 border border-gray-800">
+                    <h3 className="text-lg font-semibold text-green-400 mb-4 flex items-center gap-2">
+                      <span className="w-1 h-5 bg-green-500 rounded-full"></span>
+                      Captain Information
+                    </h3>
+                    <div className="space-y-2">
+                      <p className="text-gray-300">
+                        <span className="text-white font-semibold">Name:</span>{" "}
+                        {selectedRegistration.formData?.captain_name ||
+                          selectedRegistration.formData?.get?.(
+                            "captain_name",
+                          ) ||
+                          "N/A"}
+                      </p>
+                      <p className="text-gray-300">
+                        <span className="text-white font-semibold">
+                          Contact:
+                        </span>{" "}
+                        {selectedRegistration.formData?.captain_contact ||
+                          selectedRegistration.formData?.get?.(
+                            "captain_contact",
+                          ) ||
+                          "N/A"}
+                      </p>
+                      <p className="text-gray-300">
+                        <span className="text-white font-semibold">Email:</span>{" "}
+                        {selectedRegistration.email || "N/A"}
+                      </p>
+                      <p className="text-gray-300">
+                        <span className="text-white font-semibold">
+                          Alternate Contact:
+                        </span>{" "}
+                        {selectedRegistration.formData?.alternate_contact ||
+                          selectedRegistration.formData?.get?.(
+                            "alternate_contact",
+                          ) ||
+                          "N/A"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Institution Information */}
+                  <div className="bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-5 border border-gray-800">
+                    <h3 className="text-lg font-semibold text-orange-400 mb-4 flex items-center gap-2">
+                      <span className="w-1 h-5 bg-orange-500 rounded-full"></span>
+                      Institution Information
+                    </h3>
+                    <div className="space-y-3">
+                      <p className="text-gray-300">
+                        <span className="text-white font-semibold">
+                          Institution:
+                        </span>{" "}
+                        {selectedRegistration.institution || "N/A"}
+                      </p>
+                      <p className="text-gray-300">
+                        <span className="text-white font-semibold">City:</span>{" "}
+                        {selectedRegistration.city || "N/A"}
+                      </p>
+                      <p className="text-gray-300">
+                        <span className="text-white font-semibold">
+                          Address:
+                        </span>{" "}
+                        {selectedRegistration.formData?.college_address ||
+                          selectedRegistration.formData?.get?.(
+                            "college_address",
+                          ) ||
+                          "N/A"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Accommodation */}
+                  <div className="bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-5 border border-gray-800">
+                    <h3 className="text-lg font-semibold text-cyan-400 mb-4 flex items-center gap-2">
+                      <span className="w-1 h-5 bg-cyan-500 rounded-full"></span>
+                      Accommodation
+                    </h3>
+                    <p className="text-gray-300">
+                      {selectedRegistration.formData?.need_accommodation ||
+                      selectedRegistration.formData?.get?.(
+                        "need_accommodation",
+                      ) ? (
+                        <span className="flex items-center gap-2 px-3 py-2 bg-green-500/10 text-green-400 rounded-xl border border-green-500/20 w-fit">
+                          <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                          Accommodation Required
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-2 px-3 py-2 bg-gray-500/10 text-gray-400 rounded-xl border border-gray-500/20 w-fit">
+                          <span className="w-2 h-2 bg-gray-500 rounded-full"></span>
+                          No Accommodation Required
+                        </span>
+                      )}
+                    </p>
+                  </div>
+
+                  {/* Payment Information */}
+                  <div className="bg-gradient-to-br from-[#151515] to-[#1f1f1f] rounded-2xl p-5 border border-gray-800">
+                    <h3 className="text-lg font-semibold text-yellow-400 mb-4 flex items-center gap-2">
+                      <span className="w-1 h-5 bg-yellow-500 rounded-full"></span>
+                      Payment Information
+                    </h3>
+                    <div className="space-y-3">
+                      <p className="text-gray-300">
+                        <span className="text-white font-semibold">
+                          Expected Registration Fee:
+                        </span>{" "}
+                        <span className="px-3 py-1 bg-yellow-500/10 text-yellow-400 rounded-lg ml-2 font-bold">
+                          {getExpectedFee(selectedRegistration.eventName)}
+                        </span>
+                      </p>
+                      <div className="pt-3 mt-3 border-t border-gray-700">
+                        <p className="text-sm text-orange-400 flex items-start gap-2">
+                          <span className="text-lg">⚠️</span>
+                          <span className="flex-1">
+                            <strong>Important:</strong> Please verify the
+                            payment screenshot in the documents section below to
+                            confirm the actual amount received matches the
+                            registration fee.
+                          </span>
+                        </p>
+                        {/* Category Badge (Team/Solo for Chess, Men's/Women's for others) */}
+                        {(() => {
+                          const badgeInfo = getCategoryBadgeInfo(
+                            selectedRegistration.eventName,
+                            selectedRegistration.formData,
+                          );
+                          if (!badgeInfo) return null;
+                          return (
+                            <p className="text-gray-300">
+                              <span className="text-white font-semibold">
+                                Category:
+                              </span>{" "}
+                              <span
+                                className={`px-3 py-1 rounded-lg ml-2 font-semibold ${badgeInfo.detailClassName}`}
+                              >
+                                {badgeInfo.label}
+                              </span>
+                            </p>
+                          );
+                        })()}
+                        <p className="text-gray-300">
+                          <span className="text-white font-semibold">
+                            Registration Date:
+                          </span>{" "}
+                          {new Date(
+                            selectedRegistration.createdAt,
+                          ).toLocaleDateString()}
+                        </p>
                       </div>
                     </div>
                   </div>
