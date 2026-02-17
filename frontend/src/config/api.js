@@ -57,10 +57,22 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid
-      localStorage.removeItem("adminToken");
-      localStorage.removeItem("adminData");
-      window.location.href = "/admin/login";
+      // Check which type of user is logged in and redirect appropriately
+      const coordinatorToken = localStorage.getItem("coordinatorToken");
+      const adminToken = localStorage.getItem("adminToken");
+
+      if (coordinatorToken) {
+        // Coordinator session expired
+        localStorage.removeItem("coordinatorToken");
+        localStorage.removeItem("coordinatorData");
+        window.location.href = "/coordinator/login";
+      } else if (adminToken) {
+        // Admin session expired
+        localStorage.removeItem("adminToken");
+        localStorage.removeItem("adminData");
+        window.location.href = "/admin/login";
+      }
+      // If neither token exists, don't redirect (user is not logged in)
     }
     return Promise.reject(error);
   },
