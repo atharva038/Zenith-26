@@ -36,7 +36,12 @@ const api = axios.create({
 // Add auth token to requests
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("adminToken");
+    // Check for admin token first, then coordinator token
+    const adminToken = localStorage.getItem("adminToken");
+    const coordinatorToken = localStorage.getItem("coordinatorToken");
+
+    const token = adminToken || coordinatorToken;
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -44,7 +49,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Handle response errors
@@ -58,10 +63,10 @@ api.interceptors.response.use(
       window.location.href = "/admin/login";
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;
 
 // Also export base URL for backward compatibility
-export {API_BASE_URL};
+export { API_BASE_URL };

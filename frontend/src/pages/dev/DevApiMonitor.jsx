@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { 
-  FiArrowLeft, 
-  FiActivity, 
-  FiCheckCircle, 
-  FiXCircle, 
+import {
+  FiArrowLeft,
+  FiActivity,
+  FiCheckCircle,
+  FiXCircle,
   FiClock,
   FiRefreshCw,
   FiFilter,
   FiDownload,
-  FiTrash2
+  FiTrash2,
+  FiSearch,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
-import api from "../../config/api";
+// import api from "../../config/api";
 
 const DevApiMonitor = () => {
   const [logs, setLogs] = useState([]);
@@ -23,10 +24,11 @@ const DevApiMonitor = () => {
     total: 0,
     success: 0,
     error: 0,
-    avgResponseTime: 0
+    avgResponseTime: 0,
   });
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [selectedLog, setSelectedLog] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Mock data for demonstration - In production, this would come from your backend
   const mockLogs = [
@@ -39,7 +41,8 @@ const DevApiMonitor = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 1),
       requestBody: null,
       responseBody: { success: true, isOpen: true },
-      userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+      userAgent:
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
     },
     {
       id: 2,
@@ -49,8 +52,12 @@ const DevApiMonitor = () => {
       responseTime: 234,
       timestamp: new Date(Date.now() - 1000 * 60 * 3),
       requestBody: { email: "admin@zenith.com" },
-      responseBody: { success: true, token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." },
-      userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+      responseBody: {
+        success: true,
+        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      },
+      userAgent:
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
     },
     {
       id: 3,
@@ -61,7 +68,8 @@ const DevApiMonitor = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 5),
       requestBody: null,
       responseBody: { success: true, count: 45, data: "..." },
-      userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+      userAgent:
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
     },
     {
       id: 4,
@@ -72,7 +80,7 @@ const DevApiMonitor = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 7),
       requestBody: null,
       responseBody: { success: true, count: 89, data: "..." },
-      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
     },
     {
       id: 5,
@@ -83,7 +91,8 @@ const DevApiMonitor = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 10),
       requestBody: {},
       responseBody: { success: true, isOpen: false },
-      userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+      userAgent:
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
     },
     {
       id: 6,
@@ -94,7 +103,8 @@ const DevApiMonitor = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 12),
       requestBody: null,
       responseBody: { success: true, images: "..." },
-      userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15"
+      userAgent:
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15",
     },
     {
       id: 7,
@@ -103,9 +113,13 @@ const DevApiMonitor = () => {
       status: 201,
       responseTime: 567,
       timestamp: new Date(Date.now() - 1000 * 60 * 15),
-      requestBody: { sport: "Football", teamName: "Warriors", captain: "John Doe" },
+      requestBody: {
+        sport: "Football",
+        teamName: "Warriors",
+        captain: "John Doe",
+      },
       responseBody: { success: true, registrationId: "REG123456" },
-      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
     },
     {
       id: 8,
@@ -116,7 +130,8 @@ const DevApiMonitor = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 18),
       requestBody: null,
       responseBody: { success: true, totalRegistrations: 134, activeEvents: 8 },
-      userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+      userAgent:
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
     },
     {
       id: 9,
@@ -127,7 +142,8 @@ const DevApiMonitor = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 20),
       requestBody: { registrationMessage: "Registrations open now!" },
       responseBody: { success: true, updated: true },
-      userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+      userAgent:
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
     },
     {
       id: 10,
@@ -138,7 +154,8 @@ const DevApiMonitor = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 22),
       requestBody: null,
       responseBody: { success: true, count: 23, data: "..." },
-      userAgent: "Mozilla/5.0 (iPad; CPU OS 14_6 like Mac OS X) AppleWebKit/605.1.15"
+      userAgent:
+        "Mozilla/5.0 (iPad; CPU OS 14_6 like Mac OS X) AppleWebKit/605.1.15",
     },
     {
       id: 11,
@@ -149,7 +166,7 @@ const DevApiMonitor = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 25),
       requestBody: { imageData: "base64..." },
       responseBody: { success: true, url: "https://cloudinary.com/..." },
-      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
     },
     {
       id: 12,
@@ -160,7 +177,8 @@ const DevApiMonitor = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 28),
       requestBody: null,
       responseBody: { success: true, events: "..." },
-      userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+      userAgent:
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
     },
     {
       id: 13,
@@ -171,7 +189,8 @@ const DevApiMonitor = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 30),
       requestBody: null,
       responseBody: { success: true, deleted: true },
-      userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+      userAgent:
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
     },
     {
       id: 14,
@@ -182,7 +201,7 @@ const DevApiMonitor = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 32),
       requestBody: null,
       responseBody: { success: false, error: "Database connection failed" },
-      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
     },
     {
       id: 15,
@@ -193,7 +212,8 @@ const DevApiMonitor = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 35),
       requestBody: { refreshToken: "invalid_token" },
       responseBody: { success: false, error: "Invalid refresh token" },
-      userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15"
+      userAgent:
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15",
     },
     {
       id: 16,
@@ -204,7 +224,8 @@ const DevApiMonitor = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 38),
       requestBody: null,
       responseBody: { success: true, members: "..." },
-      userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+      userAgent:
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
     },
     {
       id: 17,
@@ -215,7 +236,7 @@ const DevApiMonitor = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 40),
       requestBody: { name: "Jane Smith", category: "5K" },
       responseBody: { success: true, registrationId: "MAR789" },
-      userAgent: "Mozilla/5.0 (Android; Mobile) AppleWebKit/537.36"
+      userAgent: "Mozilla/5.0 (Android; Mobile) AppleWebKit/537.36",
     },
     {
       id: 18,
@@ -225,8 +246,11 @@ const DevApiMonitor = () => {
       responseTime: 45,
       timestamp: new Date(Date.now() - 1000 * 60 * 42),
       requestBody: null,
-      responseBody: { success: true, sports: ["Football", "Cricket", "Basketball"] },
-      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+      responseBody: {
+        success: true,
+        sports: ["Football", "Cricket", "Basketball"],
+      },
+      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
     },
     {
       id: 19,
@@ -237,7 +261,8 @@ const DevApiMonitor = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 45),
       requestBody: null,
       responseBody: { success: false, message: "Endpoint not found" },
-      userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+      userAgent:
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
     },
     {
       id: 20,
@@ -248,7 +273,8 @@ const DevApiMonitor = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 48),
       requestBody: { status: "approved" },
       responseBody: { success: true, updated: true },
-      userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+      userAgent:
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
     },
     {
       id: 21,
@@ -259,7 +285,8 @@ const DevApiMonitor = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 50),
       requestBody: null,
       responseBody: { success: true, images: "..." },
-      userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+      userAgent:
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
     },
     {
       id: 22,
@@ -270,7 +297,7 @@ const DevApiMonitor = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 52),
       requestBody: { email: "spam@test.com", message: "..." },
       responseBody: { success: false, error: "Too many requests" },
-      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
     },
     {
       id: 23,
@@ -281,7 +308,7 @@ const DevApiMonitor = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 55),
       requestBody: null,
       responseBody: { status: "healthy", uptime: 345678 },
-      userAgent: "StatusCake/1.0"
+      userAgent: "StatusCake/1.0",
     },
     {
       id: 24,
@@ -292,7 +319,8 @@ const DevApiMonitor = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 58),
       requestBody: { transactionId: "TXN123456" },
       responseBody: { success: true, verified: true },
-      userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15"
+      userAgent:
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15",
     },
     {
       id: 25,
@@ -302,9 +330,13 @@ const DevApiMonitor = () => {
       responseTime: 5002,
       timestamp: new Date(Date.now() - 1000 * 60 * 60),
       requestBody: null,
-      responseBody: { success: false, error: "Service temporarily unavailable" },
-      userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
-    }
+      responseBody: {
+        success: false,
+        error: "Service temporarily unavailable",
+      },
+      userAgent:
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+    },
   ];
 
   useEffect(() => {
@@ -333,46 +365,58 @@ const DevApiMonitor = () => {
 
   const calculateStats = (logData) => {
     const total = logData.length;
-    const success = logData.filter(log => log.status >= 200 && log.status < 300).length;
-    const error = logData.filter(log => log.status >= 400).length;
+    const success = logData.filter(
+      (log) => log.status >= 200 && log.status < 300,
+    ).length;
+    const error = logData.filter((log) => log.status >= 400).length;
     const avgResponseTime = Math.round(
-      logData.reduce((sum, log) => sum + log.responseTime, 0) / total
+      logData.reduce((sum, log) => sum + log.responseTime, 0) / total,
     );
 
     setStats({ total, success, error, avgResponseTime });
   };
 
   const getFilteredLogs = () => {
-    if (filter === "success") {
-      return logs.filter(log => log.status >= 200 && log.status < 300);
-    }
-    if (filter === "error") {
-      return logs.filter(log => log.status >= 400);
-    }
-    return logs;
-  };
+    let filtered = logs;
 
-  const getStatusColor = (status) => {
-    if (status >= 200 && status < 300) return "text-green-400";
-    if (status >= 400 && status < 500) return "text-yellow-400";
-    if (status >= 500) return "text-red-400";
-    return "text-gray-400";
+    if (filter === "success") {
+      filtered = filtered.filter(
+        (log) => log.status >= 200 && log.status < 300,
+      );
+    } else if (filter === "error") {
+      filtered = filtered.filter((log) => log.status >= 400);
+    }
+
+    if (searchTerm) {
+      filtered = filtered.filter((log) =>
+        log.endpoint.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
+    }
+
+    return filtered;
   };
 
   const getStatusBg = (status) => {
-    if (status >= 200 && status < 300) return "bg-green-500/20 border-green-500/50";
-    if (status >= 400 && status < 500) return "bg-yellow-500/20 border-yellow-500/50";
+    if (status >= 200 && status < 300)
+      return "bg-green-500/20 border-green-500/50";
+    if (status >= 400 && status < 500)
+      return "bg-yellow-500/20 border-yellow-500/50";
     if (status >= 500) return "bg-red-500/20 border-red-500/50";
     return "bg-gray-500/20 border-gray-500/50";
   };
 
   const getMethodColor = (method) => {
     switch (method) {
-      case "GET": return "bg-blue-500/20 text-blue-400 border-blue-500/50";
-      case "POST": return "bg-green-500/20 text-green-400 border-green-500/50";
-      case "PUT": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/50";
-      case "DELETE": return "bg-red-500/20 text-red-400 border-red-500/50";
-      default: return "bg-gray-500/20 text-gray-400 border-gray-500/50";
+      case "GET":
+        return "bg-blue-500/20 text-blue-400 border-blue-500/50";
+      case "POST":
+        return "bg-green-500/20 text-green-400 border-green-500/50";
+      case "PUT":
+        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/50";
+      case "DELETE":
+        return "bg-red-500/20 text-red-400 border-red-500/50";
+      default:
+        return "bg-gray-500/20 text-gray-400 border-gray-500/50";
     }
   };
 
@@ -400,7 +444,7 @@ const DevApiMonitor = () => {
     const diff = now - date;
     const minutes = Math.floor(diff / 1000 / 60);
     const hours = Math.floor(minutes / 60);
-    
+
     if (minutes < 1) return "Just now";
     if (minutes < 60) return `${minutes}m ago`;
     if (hours < 24) return `${hours}h ago`;
@@ -487,7 +531,10 @@ const DevApiMonitor = () => {
             </div>
             <p className="text-3xl font-bold text-green-400">{stats.success}</p>
             <p className="text-xs text-gray-500 mt-1">
-              {stats.total > 0 ? Math.round((stats.success / stats.total) * 100) : 0}% success rate
+              {stats.total > 0
+                ? Math.round((stats.success / stats.total) * 100)
+                : 0}
+              % success rate
             </p>
           </motion.div>
 
@@ -503,7 +550,10 @@ const DevApiMonitor = () => {
             </div>
             <p className="text-3xl font-bold text-red-400">{stats.error}</p>
             <p className="text-xs text-gray-500 mt-1">
-              {stats.total > 0 ? Math.round((stats.error / stats.total) * 100) : 0}% error rate
+              {stats.total > 0
+                ? Math.round((stats.error / stats.total) * 100)
+                : 0}
+              % error rate
             </p>
           </motion.div>
 
@@ -517,46 +567,60 @@ const DevApiMonitor = () => {
               <span className="text-gray-400 text-sm">Avg Response</span>
               <FiClock className="text-blue-400 text-xl" />
             </div>
-            <p className="text-3xl font-bold text-blue-400">{stats.avgResponseTime}ms</p>
+            <p className="text-3xl font-bold text-blue-400">
+              {stats.avgResponseTime}ms
+            </p>
           </motion.div>
         </div>
 
         {/* Filters and Actions Bar */}
         <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-xl rounded-xl border border-gray-700/50 p-4 mb-6 flex items-center justify-between flex-wrap gap-4">
-          <div className="flex items-center gap-3">
-            <FiFilter className="text-gray-400" />
-            <span className="text-gray-400 text-sm">Filter:</span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setFilter("all")}
-                className={`px-3 py-1 rounded-lg text-sm transition-all ${
-                  filter === "all"
-                    ? "bg-purple-500/30 text-purple-400 border border-purple-500/50"
-                    : "bg-gray-800/50 text-gray-400 border border-gray-700/50 hover:border-gray-600"
-                }`}
-              >
-                All ({logs.length})
-              </button>
-              <button
-                onClick={() => setFilter("success")}
-                className={`px-3 py-1 rounded-lg text-sm transition-all ${
-                  filter === "success"
-                    ? "bg-green-500/30 text-green-400 border border-green-500/50"
-                    : "bg-gray-800/50 text-gray-400 border border-gray-700/50 hover:border-gray-600"
-                }`}
-              >
-                Success ({stats.success})
-              </button>
-              <button
-                onClick={() => setFilter("error")}
-                className={`px-3 py-1 rounded-lg text-sm transition-all ${
-                  filter === "error"
-                    ? "bg-red-500/30 text-red-400 border border-red-500/50"
-                    : "bg-gray-800/50 text-gray-400 border border-gray-700/50 hover:border-gray-600"
-                }`}
-              >
-                Errors ({stats.error})
-              </button>
+          <div className="flex items-center gap-6 flex-wrap">
+            <div className="flex items-center gap-3">
+              <FiFilter className="text-gray-400" />
+              <span className="text-gray-400 text-sm">Filter:</span>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setFilter("all")}
+                  className={`px-3 py-1 rounded-lg text-sm transition-all ${
+                    filter === "all"
+                      ? "bg-purple-500/30 text-purple-400 border border-purple-500/50"
+                      : "bg-gray-800/50 text-gray-400 border border-gray-700/50 hover:border-gray-600"
+                  }`}
+                >
+                  All ({logs.length})
+                </button>
+                <button
+                  onClick={() => setFilter("success")}
+                  className={`px-3 py-1 rounded-lg text-sm transition-all ${
+                    filter === "success"
+                      ? "bg-green-500/30 text-green-400 border border-green-500/50"
+                      : "bg-gray-800/50 text-gray-400 border border-gray-700/50 hover:border-gray-600"
+                  }`}
+                >
+                  Success ({stats.success})
+                </button>
+                <button
+                  onClick={() => setFilter("error")}
+                  className={`px-3 py-1 rounded-lg text-sm transition-all ${
+                    filter === "error"
+                      ? "bg-red-500/30 text-red-400 border border-red-500/50"
+                      : "bg-gray-800/50 text-gray-400 border border-gray-700/50 hover:border-gray-600"
+                  }`}
+                >
+                  Errors ({stats.error})
+                </button>
+              </div>
+            </div>
+            <div className="relative">
+              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+              <input
+                type="text"
+                placeholder="Search endpoints..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-gray-800/50 border border-gray-700/50 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:ring-purple-500 focus:border-purple-500 transition-all w-64"
+              />
             </div>
           </div>
 
@@ -593,19 +657,33 @@ const DevApiMonitor = () => {
             <div className="text-center p-12">
               <FiActivity className="text-6xl text-gray-600 mx-auto mb-4" />
               <p className="text-gray-400">No API logs found</p>
-              <p className="text-gray-600 text-sm mt-2">Logs will appear here as requests are made</p>
+              <p className="text-gray-600 text-sm mt-2">
+                Logs will appear here as requests are made
+              </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-900/50 border-b border-gray-700/50">
                   <tr>
-                    <th className="text-left p-4 text-gray-400 font-semibold text-sm">Method</th>
-                    <th className="text-left p-4 text-gray-400 font-semibold text-sm">Endpoint</th>
-                    <th className="text-left p-4 text-gray-400 font-semibold text-sm">Status</th>
-                    <th className="text-left p-4 text-gray-400 font-semibold text-sm">Response Time</th>
-                    <th className="text-left p-4 text-gray-400 font-semibold text-sm">Timestamp</th>
-                    <th className="text-left p-4 text-gray-400 font-semibold text-sm">Actions</th>
+                    <th className="text-left p-4 text-gray-400 font-semibold text-sm">
+                      Method
+                    </th>
+                    <th className="text-left p-4 text-gray-400 font-semibold text-sm">
+                      Endpoint
+                    </th>
+                    <th className="text-left p-4 text-gray-400 font-semibold text-sm">
+                      Status
+                    </th>
+                    <th className="text-left p-4 text-gray-400 font-semibold text-sm">
+                      Response Time
+                    </th>
+                    <th className="text-left p-4 text-gray-400 font-semibold text-sm">
+                      Timestamp
+                    </th>
+                    <th className="text-left p-4 text-gray-400 font-semibold text-sm">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -618,25 +696,35 @@ const DevApiMonitor = () => {
                       className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors"
                     >
                       <td className="p-4">
-                        <span className={`px-2 py-1 rounded text-xs font-semibold border ${getMethodColor(log.method)}`}>
+                        <span
+                          className={`px-2 py-1 rounded text-xs font-semibold border ${getMethodColor(log.method)}`}
+                        >
                           {log.method}
                         </span>
                       </td>
                       <td className="p-4">
-                        <span className="text-gray-300 font-mono text-sm">{log.endpoint}</span>
+                        <span className="text-gray-300 font-mono text-sm">
+                          {log.endpoint}
+                        </span>
                       </td>
                       <td className="p-4">
-                        <span className={`px-2 py-1 rounded text-xs font-semibold border ${getStatusBg(log.status)}`}>
+                        <span
+                          className={`px-2 py-1 rounded text-xs font-semibold border ${getStatusBg(log.status)}`}
+                        >
                           {log.status}
                         </span>
                       </td>
                       <td className="p-4">
-                        <span className={`text-sm ${log.responseTime > 1000 ? 'text-red-400' : log.responseTime > 500 ? 'text-yellow-400' : 'text-green-400'}`}>
+                        <span
+                          className={`text-sm ${log.responseTime > 1000 ? "text-red-400" : log.responseTime > 500 ? "text-yellow-400" : "text-green-400"}`}
+                        >
                           {log.responseTime}ms
                         </span>
                       </td>
                       <td className="p-4">
-                        <span className="text-gray-400 text-sm">{formatTimestamp(log.timestamp)}</span>
+                        <span className="text-gray-400 text-sm">
+                          {formatTimestamp(log.timestamp)}
+                        </span>
                       </td>
                       <td className="p-4">
                         <button
@@ -662,8 +750,9 @@ const DevApiMonitor = () => {
           className="mt-6 p-4 bg-blue-900/20 border border-blue-500/30 rounded-xl"
         >
           <p className="text-blue-400 text-sm">
-            <strong>Note:</strong> This is a demonstration of API monitoring capabilities. 
-            In production, this would connect to a real logging service to track actual API requests.
+            <strong>Note:</strong> This is a demonstration of API monitoring
+            capabilities. In production, this would connect to a real logging
+            service to track actual API requests.
           </p>
         </motion.div>
       </motion.div>
@@ -688,39 +777,61 @@ const DevApiMonitor = () => {
                 onClick={() => setSelectedLog(null)}
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="text-gray-400 text-sm">Method & Endpoint</label>
+                <label className="text-gray-400 text-sm">
+                  Method & Endpoint
+                </label>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className={`px-2 py-1 rounded text-xs font-semibold border ${getMethodColor(selectedLog.method)}`}>
+                  <span
+                    className={`px-2 py-1 rounded text-xs font-semibold border ${getMethodColor(selectedLog.method)}`}
+                  >
                     {selectedLog.method}
                   </span>
-                  <span className="text-white font-mono">{selectedLog.endpoint}</span>
+                  <span className="text-white font-mono">
+                    {selectedLog.endpoint}
+                  </span>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-gray-400 text-sm">Status Code</label>
-                  <div className={`mt-1 px-3 py-2 rounded border ${getStatusBg(selectedLog.status)} inline-block`}>
+                  <div
+                    className={`mt-1 px-3 py-2 rounded border ${getStatusBg(selectedLog.status)} inline-block`}
+                  >
                     {selectedLog.status}
                   </div>
                 </div>
                 <div>
                   <label className="text-gray-400 text-sm">Response Time</label>
-                  <p className="text-white mt-1">{selectedLog.responseTime}ms</p>
+                  <p className="text-white mt-1">
+                    {selectedLog.responseTime}ms
+                  </p>
                 </div>
               </div>
 
               <div>
                 <label className="text-gray-400 text-sm">Timestamp</label>
-                <p className="text-white mt-1">{selectedLog.timestamp.toLocaleString()}</p>
+                <p className="text-white mt-1">
+                  {selectedLog.timestamp.toLocaleString()}
+                </p>
               </div>
 
               {selectedLog.requestBody && (
@@ -741,7 +852,9 @@ const DevApiMonitor = () => {
 
               <div>
                 <label className="text-gray-400 text-sm">User Agent</label>
-                <p className="text-gray-400 text-xs mt-1 break-all">{selectedLog.userAgent}</p>
+                <p className="text-gray-400 text-xs mt-1 break-all">
+                  {selectedLog.userAgent}
+                </p>
               </div>
             </div>
           </motion.div>

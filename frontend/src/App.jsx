@@ -35,6 +35,11 @@ import DevApiMonitor from "./pages/dev/DevApiMonitor";
 // Media Team
 import MediaTeamLogin from "./pages/media-team/MediaTeamLogin";
 import MediaTeamDashboard from "./pages/media-team/MediaTeamDashboard";
+
+// Game Coordinator
+import CoordinatorLogin from "./pages/coordinator/CoordinatorLogin";
+import CoordinatorDashboard from "./pages/coordinator/CoordinatorDashboard";
+
 import "lenis/dist/lenis.css";
 import UniversalRegistration from "./pages/UniversalRegistration";
 import ModernRegistration from "./pages/ModernRegistration";
@@ -62,7 +67,7 @@ function App() {
         <Router>
           {/* Global Cursor Click Effect */}
           <CursorClickEffect />
-          
+
           <AnimatePresence mode="wait">
             <Routes>
               <Route path="/" element={<CinematicIntro />} />
@@ -71,8 +76,14 @@ function App() {
               <Route path="/sports" element={<SportsGrid />} />
 
               {/* Universal Sports Registration */}
-              <Route path="/register-sports" element={<UniversalRegistration />} />
-              <Route path="/register-sports-modern" element={<ModernRegistration />} />
+              <Route
+                path="/register-sports"
+                element={<UniversalRegistration />}
+              />
+              <Route
+                path="/register-sports-modern"
+                element={<ModernRegistration />}
+              />
               <Route path="/register" element={<RegisterPage />} />
 
               {/* Marathon Routes */}
@@ -147,6 +158,14 @@ function App() {
                 path="/media-team/dashboard"
                 element={<MediaTeamDashboard />}
               />
+
+              {/* Game Coordinator Routes */}
+              <Route path="/coordinator/login" element={<CoordinatorLogin />} />
+              <Route
+                path="/coordinator/dashboard"
+                element={<CoordinatorDashboard />}
+              />
+
               <Route
                 path="/admin/marathon"
                 element={
@@ -180,13 +199,13 @@ function App() {
                   </ProtectedRoute>
                 }
               /> */}
-              
+
               {/* T-shirt Distribution - Public access for team members */}
               <Route
                 path="/tshirt-distribution"
                 element={<TshirtDistribution />}
               />
-              
+
               <Route
                 path="/admin/admins"
                 element={
