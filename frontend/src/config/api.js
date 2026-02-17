@@ -33,14 +33,31 @@ const api = axios.create({
   timeout: 60000, // 60 second timeout for large media uploads
 });
 
-// Add auth token to requests
+// Add auth token to requests - use appropriate token based on API endpoint
 api.interceptors.request.use(
   (config) => {
-    // Check for admin token first, then coordinator token
     const adminToken = localStorage.getItem("adminToken");
     const coordinatorToken = localStorage.getItem("coordinatorToken");
+    const mediaTeamToken = localStorage.getItem("mediaTeamToken");
 
-    const token = adminToken || coordinatorToken;
+    // Determine which token to use based on the URL path
+    const url = config.url || "";
+    let token = null;
+
+    if (url.includes("/game-coordinator") || url.includes("/coordinator")) {
+      // Coordinator API calls should use coordinator token
+      token = coordinatorToken;
+    } else if (url.includes("/media-team")) {
+      // Media team API calls should use media team token
+      token = mediaTeamToken;
+    } else if (url.includes("/admin")) {
+      // Admin API calls should use admin token
+      token = adminToken;
+    } else {
+      // For other endpoints, prefer the most specific token available
+      // based on which user type is likely making the request
+      token = adminToken || coordinatorToken || mediaTeamToken;
+    }
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -57,22 +74,26 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Check which type of user is logged in and redirect appropriately
-      const coordinatorToken = localStorage.getItem("coordinatorToken");
-      const adminToken = localStorage.getItem("adminToken");
+      // Determine which user type based on the failed request URL
+      const url = error.config?.url || "";
 
-      if (coordinatorToken) {
+      if (url.includes("/game-coordinator") || url.includes("/coordinator")) {
         // Coordinator session expired
         localStorage.removeItem("coordinatorToken");
         localStorage.removeItem("coordinatorData");
         window.location.href = "/coordinator/login";
-      } else if (adminToken) {
+      } else if (url.includes("/media-team")) {
+        // Media team session expired
+        localStorage.removeItem("mediaTeamToken");
+        localStorage.removeItem("mediaTeamData");
+        window.location.href = "/media-team/login";
+      } else if (url.includes("/admin")) {
         // Admin session expired
         localStorage.removeItem("adminToken");
         localStorage.removeItem("adminData");
         window.location.href = "/admin/login";
       }
-      // If neither token exists, don't redirect (user is not logged in)
+      // For other endpoints, don't auto-redirect
     }
     return Promise.reject(error);
   },
