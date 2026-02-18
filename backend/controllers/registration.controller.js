@@ -40,7 +40,7 @@ const SPORTS_FEES = {
 };
 
 // Helper function to calculate registration fee based on sport and category
-const calculateSportFee = (sportName, genderCategory) => {
+const calculateSportFee = (sportName, genderCategory, formData = null) => {
   const feeInfo = SPORTS_FEES[sportName];
 
   if (!feeInfo) {
@@ -51,6 +51,20 @@ const calculateSportFee = (sportName, genderCategory) => {
   // If fee has a single amount, return it
   if (feeInfo.amount) {
     return feeInfo.amount;
+  }
+
+  // Special handling for Athletics - use athleticsEventType field
+  if (sportName === "Athletics" && formData) {
+    const athleticsType = formData.athleticsEventType;
+    if (athleticsType === "individual") return feeInfo.individual;
+    if (athleticsType === "team") return feeInfo.team;
+  }
+
+  // Special handling for Chess - use chessCategory field
+  if (sportName === "Chess" && formData) {
+    const chessCategory = formData.chessCategory;
+    if (chessCategory === "individual") return feeInfo.individual;
+    if (chessCategory === "team") return feeInfo.team;
   }
 
   // Handle gender/category-specific fees
@@ -300,7 +314,7 @@ export const createSportsRegistration = async (req, res) => {
       sportDetails?.selectedGender ||
       sportDetails?.category ||
       null;
-    const registrationFee = calculateSportFee(sportName, genderCategory);
+    const registrationFee = calculateSportFee(sportName, genderCategory, formData);
 
     console.log(
       `Calculating fee for ${sportName} (${genderCategory}): ₹${registrationFee}`

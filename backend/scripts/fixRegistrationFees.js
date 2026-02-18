@@ -34,7 +34,7 @@ const SPORTS_FEES = {
 };
 
 // Calculate correct fee based on sport and category
-const calculateSportFee = (sportName, genderCategory) => {
+const calculateSportFee = (sportName, genderCategory, formData = null) => {
   const feeInfo = SPORTS_FEES[sportName];
 
   if (!feeInfo) {
@@ -46,8 +46,28 @@ const calculateSportFee = (sportName, genderCategory) => {
     return feeInfo.amount;
   }
 
+  // Special handling for Athletics - use athleticsEventType field
+  if (sportName === "Athletics" && formData) {
+    const athleticsType = 
+      formData.athleticsEventType || 
+      formData.get?.("athleticsEventType");
+    
+    if (athleticsType === "individual") return feeInfo.individual;
+    if (athleticsType === "team") return feeInfo.team;
+  }
+
+  // Special handling for Chess - use chessCategory field
+  if (sportName === "Chess" && formData) {
+    const chessCategory = 
+      formData.chessCategory || 
+      formData.get?.("chessCategory");
+    
+    if (chessCategory === "individual") return feeInfo.individual;
+    if (chessCategory === "team") return feeInfo.team;
+  }
+
   if (genderCategory) {
-    const category = genderCategory.toLowerCase();
+    const category = genderCategory.toLowerCase(); 
 
     if (feeInfo.men && category === "men") return feeInfo.men;
     if (feeInfo.women && category === "women") return feeInfo.women;
@@ -94,8 +114,8 @@ const fixRegistrationFees = async () => {
           reg.formData?.gender_category ||
           null;
 
-        // Calculate correct fee
-        const correctFee = calculateSportFee(reg.eventName, genderCategory);
+        // Calculate correct fee (pass formData for special sports like Athletics & Chess)
+        const correctFee = calculateSportFee(reg.eventName, genderCategory, reg.formData);
 
         // Update if fee is different
         if (reg.amount !== correctFee) {

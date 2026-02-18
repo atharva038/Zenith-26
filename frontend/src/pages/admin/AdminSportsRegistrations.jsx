@@ -219,6 +219,7 @@ const AdminSportsRegistrations = () => {
   const navigate = useNavigate();
   const [registrations, setRegistrations] = useState([]);
   const [stats, setStats] = useState(null);
+  const [filteredSportAmount, setFilteredSportAmount] = useState(null);
   const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [selectedRegistration, setSelectedRegistration] = useState(null);
@@ -297,6 +298,53 @@ const AdminSportsRegistrations = () => {
     }
   }, []);
 
+  // Calculate filtered sport total amount
+  const calculateFilteredSportAmount = useCallback(async () => {
+    if (!filters.sport || filters.sport === "All Sports") {
+      setFilteredSportAmount(null);
+      return;
+    }
+
+    try {
+      const queryParams = new URLSearchParams();
+      queryParams.append("eventName", filters.sport);
+      queryParams.append("limit", "9999"); // Get all for calculation
+
+      const response = await api.get(`/registrations?${queryParams}`);
+
+      if (response.data.success) {
+        let sportRegistrations = response.data.data || [];
+        
+        // Calculate total for confirmed registrations only
+        const confirmedTotal = sportRegistrations
+          .filter((reg) => reg.status === "confirmed")
+          .reduce((sum, reg) => sum + (reg.amount || 0), 0);
+        
+        const confirmedCount = sportRegistrations.filter(
+          (reg) => reg.status === "confirmed"
+        ).length;
+        
+        const pendingCount = sportRegistrations.filter(
+          (reg) => reg.status === "pending"
+        ).length;
+        
+        const cancelledCount = sportRegistrations.filter(
+          (reg) => reg.status === "cancelled"
+        ).length;
+
+        setFilteredSportAmount({
+          total: confirmedTotal,
+          confirmedCount,
+          pendingCount,
+          cancelledCount,
+          sportName: filters.sport,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to calculate filtered sport amount:", error);
+    }
+  }, [filters.sport]);
+
   // Fetch registrations for current page
   const fetchRegistrations = useCallback(async () => {
     try {
@@ -357,6 +405,11 @@ const AdminSportsRegistrations = () => {
   useEffect(() => {
     fetchAllRegistrationsForStats();
   }, [fetchAllRegistrationsForStats]);
+
+  // Calculate filtered sport amount when sport filter changes
+  useEffect(() => {
+    calculateFilteredSportAmount();
+  }, [calculateFilteredSportAmount]);
 
   // Calculate statistics
   const calculateStats = (data) => {
@@ -831,6 +884,59 @@ const AdminSportsRegistrations = () => {
             />
           </div>
         </div>
+
+        {/* Filtered Sport Amount Display */}
+        {filteredSportAmount && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="bg-gradient-to-br from-emerald-500/10 to-green-600/10 rounded-2xl p-6 border-2 border-emerald-500/30 mb-6 shadow-lg shadow-emerald-500/10"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-emerald-400 mb-2 flex items-center gap-2">
+                  <span className="text-2xl">💰</span>
+                  {filteredSportAmount.sportName} - Total Collection
+                </h3>
+                <p className="text-4xl font-bold text-white mb-3">
+                  ₹{filteredSportAmount.total.toLocaleString("en-IN")}
+                </p>
+                <div className="flex gap-6 text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                    <span className="text-gray-400">Confirmed:</span>
+                    <span className="text-white font-semibold">
+                      {filteredSportAmount.confirmedCount}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                    <span className="text-gray-400">Pending:</span>
+                    <span className="text-white font-semibold">
+                      {filteredSportAmount.pendingCount}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                    <span className="text-gray-400">Cancelled:</span>
+                    <span className="text-white font-semibold">
+                      {filteredSportAmount.cancelledCount}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="w-24 h-24 bg-emerald-500/20 rounded-2xl flex items-center justify-center">
+                <span className="text-5xl">🏆</span>
+              </div>
+            </div>
+            <div className="mt-4 pt-4 border-t border-emerald-500/20">
+              <p className="text-xs text-gray-400">
+                💡 This shows only confirmed payments for {filteredSportAmount.sportName}. Pending and cancelled registrations are excluded from the total.
+              </p>
+            </div>
+          </motion.div>
+        )}
 
         {/* Export Buttons */}
         <div className="flex gap-4 mb-6">
