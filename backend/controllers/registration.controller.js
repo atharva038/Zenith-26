@@ -33,7 +33,7 @@ const SPORTS_FEES = {
   Hockey: {amount: 2500, note: "per team"},
   "Lawn Tennis": {amount: 500, note: "per player"},
   Squash: {amount: 400, note: "per player"},
-  Handball: {amount: 1500, note: "per team"},
+  Handball: {boys: 1500, girls: 1500, note: "per team"},
   "Rink Football": {men: 2200, women: 1500, note: "per team"},
   "Tug of War": {amount: 1000, note: "per team"},
   "Power Lifting": {amount: 300, note: "per player"},

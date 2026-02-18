@@ -447,9 +447,11 @@ const sportsData = [
       "High-speed action with quick passes and powerful shots! Showcase your agility and teamwork in this exciting handball tournament.",
     date: "February 20-22, 2026",
     venue: "Indoor Sports Arena",
-    teamSize: "Boys only - Minimum 9, Maximum 16 players",
+    teamSize: "Separate teams for Boys and Girls - Minimum 9, Maximum 16 players per team",
     registrationFee: "₹1500 per team",
     rules: [
+      "Boys Team: 9-16 players - ₹1500",
+      "Girls Team: 9-16 players - ₹1500",
       "25-minute match (10+10 minutes halves, 5-minute break)",
       "Rolling substitutions allowed",
       "20 minutes early reporting",
