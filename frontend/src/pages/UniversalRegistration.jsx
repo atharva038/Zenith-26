@@ -255,23 +255,23 @@ const SPORTS_DATA = {
     rules: ["Singles event", "Best of 5 games to 11 points", "PSA rules apply"],
     coordinators: [{ name: "Sameer Khan", phone: "9876543226" }],
   },
-  // Handball: {
-  //   name: "Handball Championship",
-  //   venue: "Outdoor Sports Ground",
-  //   fees: { amount: 1500, note: "per team" },
-  //   rules: [
-  //     "Minimum 9, Maximum 16 players",
-  //     "25-minute match (10+10 minutes halves, 5-minute break)",
-  //     "Rolling substitutions allowed",
-  //     "20 minutes early reporting",
-  //     "Disqualification if absent",
-  //     "Age limit: 25 years",
-  //   ],
-  //   coordinators: [
-  //     { name: "Aditya Joshi", phone: "7820939780" },
-  //     { name: "Amarja Dhepe", phone: "9552110021" },
-  //   ],
-  // },
+  Handball: {
+    name: "Handball Championship",
+    venue: "Outdoor Sports Ground",
+    fees: { amount: 1500, note: "per team" },
+    rules: [
+      "Minimum 9, Maximum 16 players",
+      "25-minute match (10+10 minutes halves, 5-minute break)",
+      "Rolling substitutions allowed",
+      "20 minutes early reporting",
+      "Disqualification if absent",
+      "Age limit: 25 years",
+    ],
+    coordinators: [
+      { name: "Aditya Joshi", phone: "7820939780" },
+      { name: "Amarja Dhepe", phone: "9552110021" },
+    ],
+  },
   "Rink Football": {
     name: "Rink Football Tournament",
     venue: "Outdoor Sports Hall",
@@ -345,7 +345,7 @@ const SPORT_ICONS = {
   Hockey: "🏒",
   "Lawn Tennis": "🎾",
   Squash: "🎾",
-  // Handball: "🤾",
+  Handball: "🤾",
   "Rink Football": "⚽",
   "Power Lifting": "🏋️",
 };
@@ -361,7 +361,7 @@ const TEAM_SPORTS = [
   "Kho-Kho",
   "Hockey",
   "Rink Football",
-  // "Handball",
+  "Handball",
   "Badminton", // Mixed team sport (2-5 players)
 ];
 
@@ -378,7 +378,7 @@ const TEAM_SPORTS_CONFIG = {
   "Kho-Kho": { minPlayers: 9, maxPlayers: 15, exactPlayers: null },
   "Hockey": { minPlayers: 11, maxPlayers: 18, exactPlayers: null },
   "Rink Football": { minPlayers: 5, maxPlayers: 10, exactPlayers: null },
-  // "Handball": { minPlayers: 7, maxPlayers: 14, exactPlayers: null },
+  "Handball": { minPlayers: 7, maxPlayers: 14, exactPlayers: null },
   "Chess": { minPlayers: 4, maxPlayers: 4, exactPlayers: 4 }, // Team Chess: exactly 4 players
   "Badminton": { minPlayers: 2, maxPlayers: 5, exactPlayers: null }, // Badminton: 2-5 players per team
   "Athletics": { minPlayers: 4, maxPlayers: 4, exactPlayers: 4 }, // Athletics Relay: exactly 4 players (2 Boys + 2 Girls)
@@ -591,7 +591,7 @@ const UniversalRegistration = () => {
         ATHLETICS: "Athletics",
         POWERLIFTING: "Power Lifting",
         KABADDI: "Kabaddi",
-        // HANDBALL: "Handball",
+        HANDBALL: "Handball",
         "RINK FOOTBALL": "Rink Football",
         "KHO-KHO": "Kho-Kho",
       };
