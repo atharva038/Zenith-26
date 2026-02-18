@@ -139,3 +139,128 @@ export const deleteAdmin = async (req, res) => {
     });
   }
 };
+
+// @desc    Get players needing accommodation (excluding cricket, no duplicate phone numbers)
+// @route   GET /api/admin/accommodation-list
+// @access  Private
+export const getAccommodationList = async (req, res) => {
+  try {
+    // Get all registrations with accommodation needs (excluding cricket)
+    const registrations = await Registration.find({
+      "accommodation.needed": true,
+      status: { $ne: "cancelled" },
+      eventName: { $not: /cricket/i }
+    }).sort({ createdAt: 1 });
+
+    // Map to extract all individual players
+    const allPlayers = [];
+    const phoneMap = new Map(); // Track unique phone numbers
+
+    for (const reg of registrations) {
+      // Extract team members from formData
+      let teamMembers = [];
+      
+      if (reg.formData) {
+        // Try to get team_members from Map or object
+        const teamMembersData = reg.formData.get ? reg.formData.get('team_members') : reg.formData.team_members;
+        
+        if (teamMembersData) {
+          // If it's a string (JSON), parse it
+          if (typeof teamMembersData === 'string') {
+            try {
+              teamMembers = JSON.parse(teamMembersData);
+            } catch (e) {
+              console.error('Failed to parse team members:', e);
+            }
+          } else if (Array.isArray(teamMembersData)) {
+            teamMembers = teamMembersData;
+          }
+        }
+      }
+
+      // If team members exist, add each player individually
+      if (teamMembers && teamMembers.length > 0) {
+        for (const member of teamMembers) {
+          const phone = member.contact || member.phone;
+          const name = member.name;
+          
+          if (!phone || !name) continue;
+          
+          // Skip if phone number already exists
+          if (phoneMap.has(phone)) continue;
+          
+          phoneMap.set(phone, true);
+          allPlayers.push({
+            registrationId: reg._id,
+            name: name,
+            email: reg.email, // Registration email
+            phone: phone,
+            institution: reg.institution,
+            city: reg.city,
+            eventName: reg.eventName,
+            status: reg.status,
+            numDays: reg.accommodation?.numDays || 0,
+            numPeople: reg.accommodation?.numPeople || 0,
+            accommodationFee: reg.accommodation?.totalFee || 0,
+            registrationDate: reg.createdAt,
+            registrationNumber: reg.registrationNumber
+          });
+        }
+      } else {
+        // Solo registration - add captain/player
+        const phone = reg.phone;
+        const name = reg.name;
+        
+        if (phone && name && !phoneMap.has(phone)) {
+          phoneMap.set(phone, true);
+          allPlayers.push({
+            registrationId: reg._id,
+            name: name,
+            email: reg.email,
+            phone: phone,
+            institution: reg.institution,
+            city: reg.city,
+            eventName: reg.eventName,
+            status: reg.status,
+            numDays: reg.accommodation?.numDays || 0,
+            numPeople: reg.accommodation?.numPeople || 0,
+            accommodationFee: reg.accommodation?.totalFee || 0,
+            registrationDate: reg.createdAt,
+            registrationNumber: reg.registrationNumber
+          });
+        }
+      }
+    }
+
+    // Sort by name
+    allPlayers.sort((a, b) => a.name.localeCompare(b.name));
+
+    // Calculate summary statistics
+    const totalPlayers = allPlayers.length;
+    const totalDays = allPlayers.reduce((sum, player) => sum + (player.numDays || 0), 0);
+    const totalPeople = allPlayers.reduce((sum, player) => sum + (player.numPeople || 0), 0);
+    const totalAccommodationFee = allPlayers.reduce((sum, player) => sum + (player.accommodationFee || 0), 0);
+
+    res.json({
+      success: true,
+      data: {
+        players: allPlayers,
+        summary: {
+          totalPlayers,
+          totalDays,
+          totalPeople,
+          totalAccommodationFee,
+          confirmedPlayers: allPlayers.filter(p => p.status === 'confirmed').length,
+          pendingPlayers: allPlayers.filter(p => p.status === 'pending').length
+        }
+      }
+    });
+  } catch (error) {
+    console.error("Get accommodation list error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching accommodation list",
+      error: error.message
+    });
+  }
+};

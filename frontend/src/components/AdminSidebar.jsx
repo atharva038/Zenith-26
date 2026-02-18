@@ -32,6 +32,12 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen, admin }) => {
       icon: "🏆",
       path: "/admin/sports-registrations",
     },
+    {
+      id: "accommodation",
+      label: "Accommodation",
+      icon: "🏨",
+      path: "/admin/accommodation",
+    },
     // 🔒 HIDDEN: On-Spot Registration (Tournament Closed)
     // {
     //   id: "onspot-registration",
