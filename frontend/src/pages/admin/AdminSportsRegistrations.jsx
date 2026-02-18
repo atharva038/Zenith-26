@@ -53,7 +53,7 @@ const SPORTS_FEES = {
   },
   Swimming: { amount: 300, note: "per athlete" },
   Kabaddi: { men: 2200, women: 1500, note: "per team" },
-  "Kho-Kho": { amount: 1500, note: "per team" },
+  "Kho-Kho": { men: 1500, women: 1200, note: "per team" },
   Hockey: { amount: 2500, note: "per team" },
   "Lawn Tennis": { amount: 500, note: "per player" },
   Squash: { amount: 400, note: "per player" },

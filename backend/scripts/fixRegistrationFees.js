@@ -1,8 +1,13 @@
 import mongoose from "mongoose";
 import Registration from "../models/Registration.js";
 import dotenv from "dotenv";
+import path from "path";
+import {fileURLToPath} from "url";
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({path: path.join(__dirname, "../.env")});
 
 // Sport fees configuration - must match registration controller
 const SPORTS_FEES = {
@@ -18,7 +23,7 @@ const SPORTS_FEES = {
   Athletics: {individual: 200, team: 700},
   Swimming: {amount: 300},
   Kabaddi: {men: 2200, women: 1500},
-  "Kho-Kho": {amount: 1500},
+  "Kho-Kho": {men: 1500, women: 1200},
   Hockey: {amount: 2500},
   "Lawn Tennis": {amount: 500},
   Squash: {amount: 400},
