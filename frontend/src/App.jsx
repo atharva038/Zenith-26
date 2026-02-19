@@ -26,6 +26,7 @@ import AdminOnSpotRegistration from "./pages/admin/AdminOnSpotRegistration";
 import AdminAdmins from "./pages/admin/AdminAdmins";
 import AdminGallery from "./pages/admin/AdminGallery";
 import AdminSettings from "./pages/admin/AdminSettings";
+import AdminAccommodation from "./pages/admin/AdminAccommodation";
 
 // Dev Portal
 import DevPortal from "./pages/dev/DevPortal";
@@ -190,7 +191,16 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              {/* 🔒 HIDDEN: On-Spot Registration Route (Tournament Closed) */}
+              <Route
+                path="/admin/accommodation"
+                element={
+                  <ProtectedRoute>
+                    <AdminAccommodation />
+                  </ProtectedRoute>
+                }
+              />
+              
+              {/* On-Spot Registration Route (Tournament Closed) */}
               {/* <Route
                 path="/admin/onspot-registration"
                 element={
