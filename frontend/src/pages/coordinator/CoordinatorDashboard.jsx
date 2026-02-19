@@ -103,6 +103,26 @@ const SPORTS_CARDS = [
   },
 
   {
+    name: "Handball",
+    tagline: "Fast-Paced Team Sport",
+    date: "February 20-22, 2026",
+    requirements: "Both (Boys & Girls) - 9-16 players per team",
+    fee: "Boys: ₹1500 | Girls: ₹1500 per team",
+    image: "🤾",
+    gradient: "from-teal-900/40 via-teal-800/30 to-black/40",
+  },
+
+  {
+    name: "Tug of War",
+    tagline: "Strength & Teamwork",
+    date: "February 20-22, 2026",
+    requirements: "Both (Men & Women) - Exactly 8 players per team",
+    fee: "Men: ₹1000 | Women: ₹1000 per team",
+    image: "🪢",
+    gradient: "from-amber-900/40 via-amber-800/30 to-black/40",
+  },
+
+  {
     name: "Power Lifting",
     tagline: "Strength Supreme",
     date: "February 20-22, 2026",
@@ -172,6 +192,18 @@ const getCategoryBadgeInfo = (eventName, formData) => {
     return {
       label: "👩 Women's Registration",
       shortLabel: "👩 Women's",
+      className: "bg-pink-500/20 text-pink-300",
+    };
+  } else if (genderCategory === "boys") {
+    return {
+      label: "👦 Boys Team",
+      shortLabel: "👦 Boys",
+      className: "bg-blue-500/20 text-blue-300",
+    };
+  } else if (genderCategory === "girls") {
+    return {
+      label: "👧 Girls Team",
+      shortLabel: "👧 Girls",
       className: "bg-pink-500/20 text-pink-300",
     };
   }
