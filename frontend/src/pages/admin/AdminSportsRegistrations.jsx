@@ -59,7 +59,7 @@ const SPORTS_FEES = {
   Squash: { amount: 400, note: "per player" },
   Handball: { boys: 1500, girls: 1500, note: "per team" },
   "Rink Football": { men: 2200, women: 1500, note: "per team" },
-  "Tug of War": { amount: 1000, note: "per team" },
+  "Tug of War": { men: 1000, women: 1000, note: "per team" },
   "Power Lifting": { amount: 300, note: "per player" },
 };
 

@@ -308,6 +308,24 @@ const SPORTS_DATA = {
       { name: "Sakshi Done", phone: "9028684180" },
     ],
   },
+  "Tug of War": {
+    name: "Tug of War Championship",
+    venue: "Outdoor Sports Ground",
+    fees: { men: 1000, women: 1000, note: "per team" },
+    rules: [
+      "Men's Team: 8 players - ₹1000",
+      "Women's Team: 8 players - ₹1000",
+      "8 players per team required",
+      "Best of 3 pulls format",
+      "TWIF (Tug of War International Federation) rules apply",
+      "Team weight regulations enforced",
+      "20 minutes early reporting",
+      "Age limit: 25 years",
+    ],
+    coordinators: [
+      { name: "Swayam Baheti", phone: "7276218795" },
+    ],
+  },
 };
 
 // Payment QR Code - Main Zenith QR (Pramila Patil)
@@ -349,6 +367,7 @@ const SPORT_ICONS = {
   Handball: "🤾",
   "Rink Football": "⚽",
   "Power Lifting": "🏋️",
+  "Tug of War": "🪢",
 };
 
 // Team sports that require team setup
@@ -364,6 +383,7 @@ const TEAM_SPORTS = [
   "Rink Football",
   "Handball",
   "Badminton", // Mixed team sport (2-5 players)
+  "Tug of War",
 ];
 
 // **STRICT TEAM SIZE VALIDATION CONFIG**
@@ -383,6 +403,7 @@ const TEAM_SPORTS_CONFIG = {
   "Chess": { minPlayers: 4, maxPlayers: 4, exactPlayers: 4 }, // Team Chess: exactly 4 players
   "Badminton": { minPlayers: 2, maxPlayers: 5, exactPlayers: null }, // Badminton: 2-5 players per team
   "Athletics": { minPlayers: 4, maxPlayers: 4, exactPlayers: 4 }, // Athletics Relay: exactly 4 players (2 Boys + 2 Girls)
+  "Tug of War": { minPlayers: 8, maxPlayers: 8, exactPlayers: 8 }, // Tug of War: exactly 8 players per team
 };
 
 const UniversalRegistration = () => {
@@ -595,6 +616,7 @@ const UniversalRegistration = () => {
         HANDBALL: "Handball",
         "RINK FOOTBALL": "Rink Football",
         "KHO-KHO": "Kho-Kho",
+        "TUG OF WAR": "Tug of War",
       };
       const mappedSport = sportMapping[sportName];
       if (mappedSport && SPORTS_DATA[mappedSport]) {

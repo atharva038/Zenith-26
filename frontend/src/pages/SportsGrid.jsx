@@ -468,6 +468,40 @@ const sportsData = [
     ],
     registrationStatus: "open",
   },
+  {
+    id: 13,
+    name: "TUG OF WAR",
+    icon: "🪢",
+    color: "#D97706",
+    gradient: "from-amber-600 to-yellow-500",
+    premiumGradient: "linear-gradient(135deg, #b45309 0%, #d97706 50%, #eab308 100%)",
+    glowColor: "rgba(234, 179, 8, 0.4)",
+    statusBadge: "OPEN",
+    statusIcon: "💪",
+    ballImage: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1770888360/zenith-26/sports/zenith-26/sports/tugofwar.jpg",
+    tier: "Strength",
+    tagline: "Pull Together",
+    description:
+      "The ultimate test of team strength and coordination! Compete in this classic battle of power as teams pull against each other in an epic tug of war showdown.",
+    date: "February 20-22, 2026",
+    venue: "Outdoor Sports Ground",
+    teamSize: "Both (Men & Women) - 8 players per team",
+    registrationFee: "Men: ₹1000 | Women: ₹1000 per team",
+    rules: [
+      "Men's Team: 8 players - ₹1000",
+      "Women's Team: 8 players - ₹1000",
+      "8 players per team required",
+      "Best of 3 pulls format",
+      "TWIF (Tug of War International Federation) rules apply",
+      "Team weight regulations enforced",
+      "20 minutes early reporting",
+      "Age limit: 25 years",
+    ],
+    coordinators: [
+      { name: "Swayam Baheti", phone: "7276218795" },
+    ],
+    registrationStatus: "open",
+  },
 ];
 
 const SportsGrid = () => {
