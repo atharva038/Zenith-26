@@ -98,11 +98,11 @@ const SPORTS_DATA = {
   },
   Badminton: {
     name: "Badminton Tournament",
-    fees: { boys: 1000, girls: 800, mixed: 600, note: "per team" },
+    fees: { boys: 1000, soloWomen: 250, mixed: 600, note: "per team" },
     venue: "Indoor Badminton Courts",
     rules: [
       "Boys Team: 5 players - ₹1000",
-      "Girls Team: 5 players - ₹800",
+      "Solo Women: 1 player - ₹250",
       "Mixed Team: 2 players (1 boy + 1 girl) - ₹600",
       "Best of 3 games (15 points each)",
       "Bring own kit",
@@ -661,25 +661,30 @@ const UniversalRegistration = () => {
   const selectedSportData = selectedSport ? SPORTS_DATA[selectedSport] : null;
   // Check if sport is a team sport
   // For sports with team/individual options (Chess, Athletics), consider it a team sport ONLY if "team" is selected
+  // For Badminton Solo Women, treat as individual sport (skip team pages)
   const DUAL_MODE_SPORTS = ["Chess"]; // Sports that use selectedGender for team/individual
-  const isTeamSport = TEAM_SPORTS.includes(selectedSport) || 
-                      (DUAL_MODE_SPORTS.includes(selectedSport) && selectedGender === "team") ||
-                      (selectedSport === "Athletics" && formData.athleticsEventType === "team");
+  const isTeamSport = selectedSport === "Badminton" && selectedGender === "soloWomen"
+    ? false  // Solo Women badminton is individual, skip team pages
+    : TEAM_SPORTS.includes(selectedSport) || 
+      (DUAL_MODE_SPORTS.includes(selectedSport) && selectedGender === "team") ||
+      (selectedSport === "Athletics" && formData.athleticsEventType === "team");
   
   // Dynamic teamConfig for Badminton based on selected category
   let teamConfig = (isTeamSport || DUAL_MODE_SPORTS.includes(selectedSport) || selectedSport === "Athletics") ? TEAM_SPORTS_CONFIG[selectedSport] : null;
   
   // Override Badminton teamConfig based on selected category
   if (selectedSport === "Badminton" && selectedGender) {
-    if (selectedGender === 'mixed') {
+    if (selectedGender === 'soloWomen') {
+      teamConfig = { minPlayers: 1, maxPlayers: 1, exactPlayers: 1 }; // Solo Women: exactly 1 player
+    } else if (selectedGender === 'mixed') {
       teamConfig = { minPlayers: 2, maxPlayers: 2, exactPlayers: 2 }; // Mixed: exactly 2 players
-    } else if (selectedGender === 'boys' || selectedGender === 'girls') {
-      teamConfig = { minPlayers: 5, maxPlayers: 5, exactPlayers: 5 }; // Boys/Girls: exactly 5 players
+    } else if (selectedGender === 'boys') {
+      teamConfig = { minPlayers: 5, maxPlayers: 5, exactPlayers: 5 }; // Boys: exactly 5 players
     }
   }
   
   const hasGenderOptions = selectedSportData?.fees && (selectedSportData.fees.men || selectedSportData.fees.women);
-  const hasBadmintonOptions = selectedSport === "Badminton" && selectedSportData?.fees && (selectedSportData.fees.boys && selectedSportData.fees.girls && selectedSportData.fees.mixed);
+  const hasBadmintonOptions = selectedSport === "Badminton" && selectedSportData?.fees && (selectedSportData.fees.boys && selectedSportData.fees.soloWomen && selectedSportData.fees.mixed);
   const hasHandballOptions = selectedSport === "Handball" && selectedSportData?.fees && (selectedSportData.fees.boys && selectedSportData.fees.girls);
   const hasTeamIndividualOptions = selectedSportData?.fees && (selectedSportData.fees.team && selectedSportData.fees.individual) && selectedSport !== "Athletics";
   
@@ -707,8 +712,8 @@ const UniversalRegistration = () => {
         autoClose: 2000
       });
     } else if (hasBadmintonOptions) {
-      // For Badminton: boys/girls/mixed
-      const categoryLabel = gender === 'boys' ? 'Boys Team' : gender === 'girls' ? 'Girls Team' : 'Mixed Team';
+      // For Badminton: boys/soloWomen/mixed
+      const categoryLabel = gender === 'boys' ? 'Boys Team' : gender === 'soloWomen' ? 'Solo Women' : 'Mixed Team';
       toast.success(`${categoryLabel} selected! 🏸`, {
         autoClose: 2000
       });
@@ -784,17 +789,17 @@ const UniversalRegistration = () => {
     } else if (typeof selectedSportData.fees === 'object' && selectedSportData.fees.individual && !selectedSportData.fees.team) {
       // Individual-only fee (Power Lifting - solo sport)
       return `₹${selectedSportData.fees.individual} ${selectedSportData.fees.note || ""}`;
-    } else if (selectedSport === "Badminton" && selectedSportData.fees.boys && selectedSportData.fees.girls && selectedSportData.fees.mixed) {
+    } else if (selectedSport === "Badminton" && selectedSportData.fees.boys && selectedSportData.fees.soloWomen && selectedSportData.fees.mixed) {
       // Badminton-specific fees (three options)
       if (selectedGender === 'boys') {
         return `₹${selectedSportData.fees.boys} (Boys Team - 5 Players)`;
-      } else if (selectedGender === 'girls') {
-        return `₹${selectedSportData.fees.girls} (Girls Team - 5 Players)`;
+      } else if (selectedGender === 'soloWomen') {
+        return `₹${selectedSportData.fees.soloWomen} (Solo Women - 1 Player)`;
       } else if (selectedGender === 'mixed') {
         return `₹${selectedSportData.fees.mixed} (Mixed Team - 2 Players)`;
       } else if (!selectedGender) {
         // Show all three options if no selection made
-        return `Boys: ₹${selectedSportData.fees.boys} | Girls: ₹${selectedSportData.fees.girls} | Mixed: ₹${selectedSportData.fees.mixed}`;
+        return `Boys: ₹${selectedSportData.fees.boys} | Solo Women: ₹${selectedSportData.fees.soloWomen} | Mixed: ₹${selectedSportData.fees.mixed}`;
       }
     } else if (selectedSport === "Handball" && selectedSportData.fees.boys && selectedSportData.fees.girls) {
       // Handball-specific fees (two options)
@@ -909,7 +914,7 @@ const UniversalRegistration = () => {
         return;
       }
       if (hasBadmintonOptions && !selectedGender) {
-        toast.error("Please select a Badminton team category (Boys/Girls/Mixed)");
+        toast.error("Please select a Badminton team category (Boys/Solo Women/Mixed)");
         return;
       }
       if (hasHandballOptions && !selectedGender) {
@@ -1604,21 +1609,21 @@ const UniversalRegistration = () => {
                         type="button"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={() => handleGenderSelect('girls')}
+                        onClick={() => handleGenderSelect('soloWomen')}
                         className={`
                           relative p-4 rounded-xl transition-all duration-300 text-center
                           ${
-                            selectedGender === 'girls'
+                            selectedGender === 'soloWomen'
                               ? "bg-gradient-to-br from-pink-600 to-pink-700 shadow-lg shadow-pink-600/20"
                               : "bg-[#1a1410]/50 border border-[#3a2416] hover:border-pink-500/50"
                           }
                         `}
                       >
                         <div className="text-2xl mb-2">👩</div>
-                        <div className="font-semibold">Girls Team</div>
-                        <div className="text-xs text-gray-400 mb-1">5 Players</div>
-                        <div className="text-sm text-gray-400">₹{selectedSportData.fees.girls}</div>
-                        {selectedGender === 'girls' && (
+                        <div className="font-semibold">Solo Women</div>
+                        <div className="text-xs text-gray-400 mb-1">1 Player</div>
+                        <div className="text-sm text-gray-400">₹{selectedSportData.fees.soloWomen}</div>
+                        {selectedGender === 'soloWomen' && (
                           <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}

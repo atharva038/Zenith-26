@@ -38,7 +38,7 @@ const SPORTS_FEES = {
   Football: { amount: 3000, note: "per team" },
   Basketball: { men: 2500, women: 1500, note: "per team" },
   Volleyball: { men: 2200, women: 1500, note: "per team" },
-  Badminton: { boys: 1000, girls: 800, mixed: 600, note: "per team" },
+  Badminton: { boys: 1000, soloWomen: 250, mixed: 600, note: "per team" },
   "Table Tennis": { amount: 400, note: "per player" },
   Chess: {
     team: 500,
@@ -139,14 +139,14 @@ const getCategoryBadgeInfo = (eventName, formData) => {
           "bg-blue-500/10 text-blue-400 border border-blue-500/20",
         isTeam: true,
       };
-    } else if (genderCategory === "girls") {
+    } else if (genderCategory === "soloWomen") {
       return {
-        label: "👩 Girls Team (5 Players)",
-        shortLabel: "👩 Girls",
+        label: "👩 Solo Women (1 Player)",
+        shortLabel: "👩 Solo Women",
         className: "bg-pink-500/20 text-pink-300 border-pink-500/20",
         detailClassName:
           "bg-pink-500/10 text-pink-400 border border-pink-500/20",
-        isTeam: true,
+        isTeam: false,
       };
     } else if (genderCategory === "mixed") {
       return {

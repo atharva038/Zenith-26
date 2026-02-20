@@ -68,11 +68,11 @@ const SPORTS_DATA = {
   },
   Badminton: {
     name: "Badminton Tournament",
-    fees: { boys: 1000, girls: 800, mixed: 600, note: "per team" },
+    fees: { boys: 1000, soloWomen: 250, mixed: 600, note: "per team" },
     venue: "Indoor Badminton Courts",
     rules: [
       "Boys Team: 5 players - ₹1000",
-      "Girls Team: 5 players - ₹800",
+      "Solo Women: 1 player - ₹250",
       "Mixed Team: 2 players (1 boy + 1 girl) - ₹600",
       "Best of 3 games to 21 points",
       "BWF rules apply",
@@ -324,9 +324,11 @@ const ModernRegistration = () => {
 
   const selectedSportData = selectedSport ? SPORTS_DATA[selectedSport] : null;
   
-  // Dynamic team sport check - Athletics depends on event type
+  // Dynamic team sport check - Athletics depends on event type, Badminton Solo Women is individual
   const isTeamSport = selectedSport === "Athletics" 
     ? formData.athleticsEventType === "team"
+    : selectedSport === "Badminton" && formData.teamGender === "soloWomen"
+    ? false  // Solo Women badminton is individual, skip team pages
     : TEAM_SPORTS.includes(selectedSport);
 
   // Calculate total steps dynamically (removed sport selection step)
@@ -696,7 +698,7 @@ const ModernRegistration = () => {
               )}
 
               {/* Gender Selection Dropdown for Badminton with three options */}
-              {selectedSport === "Badminton" && selectedSportData?.fees?.boys && selectedSportData?.fees?.girls && selectedSportData?.fees?.mixed && (
+              {selectedSport === "Badminton" && selectedSportData?.fees?.boys && selectedSportData?.fees?.soloWomen && selectedSportData?.fees?.mixed && (
                 <div className="bg-[#1a1410]/30 backdrop-blur-sm border border-[#3a2416] rounded-2xl p-6 md:p-8 mb-6">
                   <div className="text-center mb-4">
                     <h3 className="text-xl font-bold text-[#ffb77a] mb-2">Select Team Category</h3>
@@ -713,8 +715,8 @@ const ModernRegistration = () => {
                       <option value="boys" className="bg-[#1a1410] text-white">
                         👨 Boys Team - 5 Players (₹{selectedSportData.fees.boys})
                       </option>
-                      <option value="girls" className="bg-[#1a1410] text-white">
-                        👩 Girls Team - 5 Players (₹{selectedSportData.fees.girls})
+                      <option value="soloWomen" className="bg-[#1a1410] text-white">
+                        👩 Solo Women - 1 Player (₹{selectedSportData.fees.soloWomen})
                       </option>
                       <option value="mixed" className="bg-[#1a1410] text-white">
                         👥 Mixed Team - 2 Players (1 Boy + 1 Girl) (₹{selectedSportData.fees.mixed})
