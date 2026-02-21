@@ -801,6 +801,17 @@ const AdminSportsRegistrations = () => {
     try {
       toast.info("Fetching all registrations for export...");
       
+      // Helper function to escape CSV values
+      const escapeCSV = (value) => {
+        if (value === null || value === undefined) return "N/A";
+        const str = String(value);
+        // If the value contains comma, quote, or newline, wrap it in quotes and escape quotes
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+          return `"${str.replace(/"/g, '""')}"`;
+        }
+        return str;
+      };
+      
       // Fetch ALL registrations (not just current page)
       const allRegistrations = await fetchAllRegistrationsForExport();
       
@@ -875,29 +886,29 @@ const AdminSportsRegistrations = () => {
 
           const row = [
             serialNumber++,
-            reg.registrationNumber || "N/A",
-            sportDisplay,
-            genderCategory,
-            isSolo ? "-" : formData.team_name || formData.get?.("team_name") || "N/A",
-            isSolo ? "-" : formData.captain_name || formData.get?.("captain_name") || "N/A",
-            formData.captain_contact || formData.get?.("captain_contact") || "N/A",
-            reg.email || "N/A",
-            reg.institution || "N/A",
-            reg.city || "N/A",
-            formData.college_address || formData.get?.("college_address") || "N/A",
-            isSolo ? "1" : formData.num_players || formData.get?.("num_players") || "N/A",
-            formData.alternate_contact || formData.get?.("alternate_contact") || "N/A",
+            escapeCSV(reg.registrationNumber),
+            escapeCSV(sportDisplay),
+            escapeCSV(genderCategory),
+            isSolo ? "-" : escapeCSV(formData.team_name || formData.get?.("team_name")),
+            isSolo ? "-" : escapeCSV(formData.captain_name || formData.get?.("captain_name")),
+            escapeCSV(formData.captain_contact || formData.get?.("captain_contact")),
+            escapeCSV(reg.email),
+            escapeCSV(reg.institution),
+            escapeCSV(reg.city),
+            escapeCSV(formData.college_address || formData.get?.("college_address")),
+            isSolo ? "1" : escapeCSV(formData.num_players || formData.get?.("num_players")),
+            escapeCSV(formData.alternate_contact || formData.get?.("alternate_contact")),
             formData.need_accommodation || formData.get?.("need_accommodation") ? "Yes" : "No",
-            reg.status || "N/A",
+            escapeCSV(reg.status),
             amount,
-            new Date(reg.createdAt).toLocaleDateString()
+            escapeCSV(new Date(reg.createdAt).toLocaleDateString())
           ];
           
           csvRows.push(row.join(","));
         });
 
         // Add sport subtotal
-        csvRows.push(`,,,,,,,,,,,,,,${sportName} SUBTOTAL,Rs.${sportTotal.toLocaleString()},`);
+        csvRows.push(`,,,,,,,,,,,,,,${escapeCSV(sportName + " SUBTOTAL")},Rs.${sportTotal},`);
         csvRows.push(""); // Empty line for spacing
         
         grandTotal += sportTotal;
@@ -910,11 +921,11 @@ const AdminSportsRegistrations = () => {
       csvRows.push("Sport,Registrations,Total Amount");
       
       sportSummaries.forEach((summary) => {
-        csvRows.push(`${summary.sport},${summary.count},Rs.${summary.total.toLocaleString()}`);
+        csvRows.push(`${escapeCSV(summary.sport)},${summary.count},Rs.${summary.total}`);
       });
       
       csvRows.push(""); // Empty line
-      csvRows.push(`GRAND TOTAL,${allRegistrations.length},Rs.${grandTotal.toLocaleString()}`);
+      csvRows.push(`GRAND TOTAL,${allRegistrations.length},Rs.${grandTotal}`);
 
       const csv = csvRows.join("\n");
 
@@ -931,6 +942,360 @@ const AdminSportsRegistrations = () => {
     } catch (error) {
       console.error("CSV Export Error:", error);
       toast.error("Failed to export CSV");
+    }
+  };
+
+  // Export Boys/Girls Summary PDF
+  const exportGenderSummaryPDF = async () => {
+    try {
+      toast.info("Generating city-wise gender summary report...");
+      
+      // Fetch ALL registrations for summary
+      const allRegistrations = await fetchAllRegistrationsForExport();
+      
+      if (allRegistrations.length === 0) {
+        toast.warning("No registrations to export");
+        return;
+      }
+
+      const doc = new jsPDF();
+
+      // Add cover page
+      doc.setFontSize(24);
+      doc.setTextColor(147, 51, 234);
+      doc.text("ZENITH 2026", 105, 40, { align: "center" });
+      
+      doc.setFontSize(18);
+      doc.setTextColor(0, 0, 0);
+      doc.text("City-wise Boys/Girls Report", 105, 55, { align: "center" });
+      
+      doc.setFontSize(12);
+      doc.text(`Generated on: ${new Date().toLocaleString()}`, 105, 70, { align: "center" });
+      doc.text(`Total Registrations: ${allRegistrations.length}`, 105, 80, { align: "center" });
+      doc.text(`Total Amount: Rs.${allRegistrations.reduce((sum, r) => sum + (r.amount || 0), 0).toLocaleString()}`, 105, 90, { align: "center" });
+      
+      // Function to normalize city names (handle variations like Aurangabad/Sambhajinagar)
+      const normalizeCityName = (cityName) => {
+        if (!cityName) return "unknown city";
+        
+        const normalized = cityName.toLowerCase().trim();
+        
+        // Aurangabad and Sambhajinagar are the same city
+        if (normalized.includes("aurangabad") || normalized.includes("sambhajinagar")) {
+          return "sambhajinagar";
+        }
+        
+        // Add other city normalizations if needed
+        return normalized;
+      };
+      
+      // Get display name for normalized city
+      const getDisplayCityName = (normalizedKey, originalName) => {
+        // For Sambhajinagar, use consistent display name
+        if (normalizedKey === "sambhajinagar") {
+          return "Sambhajinagar (Aurangabad)";
+        }
+        // For others, capitalize each word
+        return originalName
+          .split(' ')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+          .join(' ');
+      };
+
+      // Group by city (normalized), then by gender and sport
+      const cityData = {};
+      const cityDisplayNames = {}; // Keep display names
+      
+      allRegistrations.forEach((reg) => {
+        const cityOriginal = reg.city || "Unknown City";
+        const cityKey = normalizeCityName(cityOriginal); // Normalize for grouping
+        const sportName = reg.eventName || "Unknown";
+        const formData = reg.formData || {};
+        const genderCategory = formData?.gender_category || 
+                             formData?.get?.("gender_category") || 
+                             formData?.sportDetails?.selectedGender || "General";
+        
+        // Store display city name
+        if (!cityDisplayNames[cityKey]) {
+          cityDisplayNames[cityKey] = getDisplayCityName(cityKey, cityOriginal);
+        }
+        
+        if (!cityData[cityKey]) {
+          cityData[cityKey] = {
+            boys: {},
+            girls: {}
+          };
+        }
+
+        const teamName = formData.team_name || formData.get?.("team_name") || 
+                        formData.captain_name || formData.get?.("captain_name") || 
+                        reg.registrationNumber || "Team";
+        
+        // Categorize as boys or girls (treating men=boys, women=girls)
+        const isBoys = genderCategory.toLowerCase().includes("men") || 
+                      genderCategory.toLowerCase().includes("boys");
+        const isGirls = genderCategory.toLowerCase().includes("women") || 
+                       genderCategory.toLowerCase().includes("girls") ||
+                       genderCategory.toLowerCase().includes("solowomen");
+        
+        if (isBoys) {
+          if (!cityData[cityKey].boys[sportName]) {
+            cityData[cityKey].boys[sportName] = [];
+          }
+          cityData[cityKey].boys[sportName].push({
+            team: teamName,
+            regNo: reg.registrationNumber,
+            amount: reg.amount || 0
+          });
+        } else if (isGirls) {
+          if (!cityData[cityKey].girls[sportName]) {
+            cityData[cityKey].girls[sportName] = [];
+          }
+          cityData[cityKey].girls[sportName].push({
+            team: teamName,
+            regNo: reg.registrationNumber,
+            amount: reg.amount || 0
+          });
+        }
+      });
+
+      // Create city-wise pages (sorted alphabetically by lowercase city name)
+      Object.keys(cityData).sort().forEach((cityKey, cityIndex) => {
+        const cityName = cityDisplayNames[cityKey]; // Use original capitalization
+        doc.addPage();
+        
+        // City header
+        doc.setFontSize(18);
+        doc.setTextColor(147, 51, 234);
+        doc.text(`City: ${cityName}`, 14, 20);
+        
+        let currentY = 35;
+        const pageHeight = doc.internal.pageSize.height;
+        
+        // Boys/Men Section
+        doc.setFontSize(14);
+        doc.setTextColor(30, 144, 255); // Blue for boys
+        doc.text("BOYS / MEN", 14, currentY);
+        currentY += 8;
+        
+        const boysData = cityData[cityKey].boys;
+        let boysTotal = 0;
+        let boysAmount = 0;
+        
+        if (Object.keys(boysData).length > 0) {
+          Object.keys(boysData).sort().forEach((sport) => {
+            const teams = boysData[sport];
+            boysTotal += teams.length;
+            boysAmount += teams.reduce((sum, t) => sum + t.amount, 0);
+            
+            // Check if we need a new page
+            if (currentY > pageHeight - 40) {
+              doc.addPage();
+              currentY = 20;
+              doc.setFontSize(14);
+              doc.setTextColor(30, 144, 255);
+              doc.text(`${cityName} - BOYS/MEN (continued)`, 14, currentY);
+              currentY += 8;
+            }
+            
+            doc.setFontSize(11);
+            doc.setTextColor(0, 0, 0);
+            doc.setFont(undefined, 'bold');
+            doc.text(`${sport} (${teams.length} ${teams.length === 1 ? 'team' : 'teams'})`, 20, currentY);
+            doc.setFont(undefined, 'normal');
+            currentY += 6;
+            
+            teams.forEach((team, idx) => {
+              if (currentY > pageHeight - 40) {
+                doc.addPage();
+                currentY = 20;
+                doc.setFontSize(14);
+                doc.setTextColor(30, 144, 255);
+                doc.text(`${cityName} - BOYS/MEN (continued)`, 14, currentY);
+                currentY += 8;
+              }
+              
+              doc.setFontSize(9);
+              doc.setTextColor(80, 80, 80);
+              doc.text(`${idx + 1}. ${team.team} (${team.regNo}) - Rs.${team.amount}`, 26, currentY);
+              currentY += 5;
+            });
+            
+            currentY += 3;
+          });
+          
+          // Boys subtotal
+          doc.setFontSize(10);
+          doc.setTextColor(30, 144, 255);
+          doc.setFont(undefined, 'bold');
+          doc.text(`Boys/Men Total: ${boysTotal} teams | Rs.${boysAmount.toLocaleString()}`, 20, currentY);
+          doc.setFont(undefined, 'normal');
+          currentY += 10;
+        } else {
+          doc.setFontSize(10);
+          doc.setTextColor(120, 120, 120);
+          doc.text("No boys/men registrations", 20, currentY);
+          currentY += 10;
+        }
+        
+        // Girls/Women Section
+        if (currentY > pageHeight - 60) {
+          doc.addPage();
+          currentY = 20;
+        }
+        
+        doc.setFontSize(14);
+        doc.setTextColor(255, 20, 147); // Pink for girls
+        doc.text("GIRLS / WOMEN", 14, currentY);
+        currentY += 8;
+        
+        const girlsData = cityData[cityKey].girls;
+        let girlsTotal = 0;
+        let girlsAmount = 0;
+        
+        if (Object.keys(girlsData).length > 0) {
+          Object.keys(girlsData).sort().forEach((sport) => {
+            const teams = girlsData[sport];
+            girlsTotal += teams.length;
+            girlsAmount += teams.reduce((sum, t) => sum + t.amount, 0);
+            
+            // Check if we need a new page
+            if (currentY > pageHeight - 40) {
+              doc.addPage();
+              currentY = 20;
+              doc.setFontSize(14);
+              doc.setTextColor(255, 20, 147);
+              doc.text(`${cityName} - GIRLS/WOMEN (continued)`, 14, currentY);
+              currentY += 8;
+            }
+            
+            doc.setFontSize(11);
+            doc.setTextColor(0, 0, 0);
+            doc.setFont(undefined, 'bold');
+            doc.text(`${sport} (${teams.length} ${teams.length === 1 ? 'team' : 'teams'})`, 20, currentY);
+            doc.setFont(undefined, 'normal');
+            currentY += 6;
+            
+            teams.forEach((team, idx) => {
+              if (currentY > pageHeight - 40) {
+                doc.addPage();
+                currentY = 20;
+                doc.setFontSize(14);
+                doc.setTextColor(255, 20, 147);
+                doc.text(`${cityName} - GIRLS/WOMEN (continued)`, 14, currentY);
+                currentY += 8;
+              }
+              
+              doc.setFontSize(9);
+              doc.setTextColor(80, 80, 80);
+              doc.text(`${idx + 1}. ${team.team} (${team.regNo}) - Rs.${team.amount}`, 26, currentY);
+              currentY += 5;
+            });
+            
+            currentY += 3;
+          });
+          
+          // Girls subtotal
+          doc.setFontSize(10);
+          doc.setTextColor(255, 20, 147);
+          doc.setFont(undefined, 'bold');
+          doc.text(`Girls/Women Total: ${girlsTotal} teams | Rs.${girlsAmount.toLocaleString()}`, 20, currentY);
+          doc.setFont(undefined, 'normal');
+          currentY += 10;
+        } else {
+          doc.setFontSize(10);
+          doc.setTextColor(120, 120, 120);
+          doc.text("No girls/women registrations", 20, currentY);
+          currentY += 10;
+        }
+        
+        // City total
+        if (currentY > pageHeight - 30) {
+          doc.addPage();
+          currentY = 20;
+        }
+        
+        doc.setFontSize(12);
+        doc.setTextColor(147, 51, 234);
+        doc.setFont(undefined, 'bold');
+        doc.text(`${cityName} Total: ${boysTotal + girlsTotal} teams | Rs.${(boysAmount + girlsAmount).toLocaleString()}`, 14, currentY);
+        doc.setFont(undefined, 'normal');
+      });
+
+      // Add final summary page
+      doc.addPage();
+      doc.setFontSize(16);
+      doc.setTextColor(147, 51, 234);
+      doc.text("Overall Summary", 14, 20);
+      
+      doc.setFontSize(11);
+      doc.setTextColor(80, 80, 80);
+      doc.text(`Total Cities: ${Object.keys(cityData).length}`, 14, 28);
+
+      const summaryData = [];
+      let grandTotalBoys = 0;
+      let grandTotalGirls = 0;
+      let grandAmountBoys = 0;
+      let grandAmountGirls = 0;
+
+      Object.keys(cityData).sort().forEach((cityKey) => {
+        const cityName = cityDisplayNames[cityKey]; // Use original capitalization for display
+        const boysCount = Object.values(cityData[cityKey].boys).reduce((sum, teams) => sum + teams.length, 0);
+        const girlsCount = Object.values(cityData[cityKey].girls).reduce((sum, teams) => sum + teams.length, 0);
+        const boysAmt = Object.values(cityData[cityKey].boys).reduce((sum, teams) => 
+          sum + teams.reduce((s, t) => s + t.amount, 0), 0);
+        const girlsAmt = Object.values(cityData[cityKey].girls).reduce((sum, teams) => 
+          sum + teams.reduce((s, t) => s + t.amount, 0), 0);
+        
+        grandTotalBoys += boysCount;
+        grandTotalGirls += girlsCount;
+        grandAmountBoys += boysAmt;
+        grandAmountGirls += girlsAmt;
+        
+        summaryData.push([
+          cityName,
+          boysCount,
+          `Rs.${boysAmt.toLocaleString()}`,
+          girlsCount,
+          `Rs.${girlsAmt.toLocaleString()}`,
+          boysCount + girlsCount,
+          `Rs.${(boysAmt + girlsAmt).toLocaleString()}`
+        ]);
+      });
+
+      autoTable(doc, {
+        startY: 35,
+        head: [["City", "Boys", "Boys Amt", "Girls", "Girls Amt", "Total", "Total Amt"]],
+        body: summaryData,
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [147, 51, 234] },
+        columnStyles: {
+          0: { cellWidth: 40 },
+          1: { cellWidth: 20 },
+          2: { cellWidth: 25 },
+          3: { cellWidth: 20 },
+          4: { cellWidth: 25 },
+          5: { cellWidth: 20 },
+          6: { cellWidth: 30 }
+        },
+        foot: [[
+          { content: 'GRAND TOTAL:', styles: { halign: 'right', fontStyle: 'bold' } },
+          { content: grandTotalBoys.toString(), styles: { fontStyle: 'bold', fillColor: [30, 144, 255], textColor: [255, 255, 255] } },
+          { content: `Rs.${grandAmountBoys.toLocaleString()}`, styles: { fontStyle: 'bold', fillColor: [30, 144, 255], textColor: [255, 255, 255] } },
+          { content: grandTotalGirls.toString(), styles: { fontStyle: 'bold', fillColor: [255, 20, 147], textColor: [255, 255, 255] } },
+          { content: `Rs.${grandAmountGirls.toLocaleString()}`, styles: { fontStyle: 'bold', fillColor: [255, 20, 147], textColor: [255, 255, 255] } },
+          { content: (grandTotalBoys + grandTotalGirls).toString(), styles: { fontStyle: 'bold', fillColor: [147, 51, 234], textColor: [255, 255, 255] } },
+          { content: `Rs.${(grandAmountBoys + grandAmountGirls).toLocaleString()}`, styles: { fontStyle: 'bold', fillColor: [147, 51, 234], textColor: [255, 255, 255] } }
+        ]],
+        footStyles: { fillColor: [147, 51, 234], textColor: [255, 255, 255] },
+      });
+
+      // Save PDF
+      doc.save(`zenith-2026-city-gender-summary-${Date.now()}.pdf`);
+      toast.success(`City-wise gender summary exported successfully`);
+    } catch (error) {
+      console.error("Gender Summary Export Error:", error);
+      toast.error("Failed to export gender summary");
     }
   };
 
@@ -1232,6 +1597,14 @@ const AdminSportsRegistrations = () => {
           >
             <span>📊</span>
             Export to CSV
+          </button>
+          <button
+            onClick={exportGenderSummaryPDF}
+            disabled={registrations.length === 0}
+            className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-green-500/50 flex items-center gap-2"
+          >
+            <span>👫</span>
+            Boys/Girls Summary
           </button>
         </div>
 
