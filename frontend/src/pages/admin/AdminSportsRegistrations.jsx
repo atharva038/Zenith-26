@@ -511,150 +511,427 @@ const AdminSportsRegistrations = () => {
     }
   };
 
+  // Fetch ALL registrations for export (not paginated)
+  const fetchAllRegistrationsForExport = async () => {
+    try {
+      const queryParams = new URLSearchParams();
+
+      // Apply same filters as current view
+      if (filters.sport && filters.sport !== "All Sports") {
+        queryParams.append("eventName", filters.sport);
+      }
+      if (filters.status) queryParams.append("status", filters.status);
+      if (filters.search) queryParams.append("search", filters.search);
+      
+      // Fetch all data
+      queryParams.append("limit", "9999");
+
+      const response = await api.get(`/registrations?${queryParams}`);
+
+      if (response.data.success) {
+        let allRegistrations = response.data.data || [];
+
+        // Filter by sports only (exclude Marathon, Women's Tournament, etc.)
+        allRegistrations = allRegistrations.filter((reg) =>
+          SPORTS_LIST.includes(reg.eventName),
+        );
+
+        // Additional filter for accommodation if set
+        if (filters.needAccommodation) {
+          allRegistrations = allRegistrations.filter((reg) => {
+            const needAccom =
+              reg.accommodation?.needed ||
+              reg.formData?.needs_accommodation ||
+              reg.formData?.need_accommodation ||
+              reg.formData?.get?.("need_accommodation");
+            return filters.needAccommodation === "yes"
+              ? needAccom === true
+              : needAccom === false;
+          });
+        }
+
+        // Only include confirmed registrations (exclude cancelled and pending)
+        allRegistrations = allRegistrations.filter((reg) => reg.status === "confirmed");
+
+        // Sort by sport name first, then by gender category within each sport
+        allRegistrations.sort((a, b) => {
+          // First sort by sport name
+          if (a.eventName !== b.eventName) {
+            return (a.eventName || "").localeCompare(b.eventName || "");
+          }
+          
+          // Within same sport, sort by gender category
+          const getGender = (reg) => {
+            const formData = reg.formData || {};
+            const genderCategory = formData?.gender_category || 
+                                 formData?.get?.("gender_category") || 
+                                 formData?.sportDetails?.selectedGender || "";
+            
+            // Normalize gender categories for consistent sorting
+            // Men/Boys first, then Women/Girls, then Mixed
+            if (genderCategory.toLowerCase().includes("men") || 
+                genderCategory.toLowerCase().includes("boys")) {
+              return "1-men";
+            } else if (genderCategory.toLowerCase().includes("women") || 
+                       genderCategory.toLowerCase().includes("girls") ||
+                       genderCategory.toLowerCase().includes("solowomen")) {
+              return "2-women";
+            } else if (genderCategory.toLowerCase().includes("mixed")) {
+              return "3-mixed";
+            } else if (genderCategory.toLowerCase().includes("individual") ||
+                       genderCategory.toLowerCase().includes("solo")) {
+              return "4-individual";
+            }
+            return "5-other";
+          };
+          
+          return getGender(a).localeCompare(getGender(b));
+        });
+
+        return allRegistrations;
+      }
+      return [];
+    } catch (error) {
+      console.error("Failed to fetch all registrations:", error);
+      toast.error("Failed to fetch data for export");
+      return [];
+    }
+  };
+
   // Export to PDF
-  const exportToPDF = () => {
-    const doc = new jsPDF();
-    const sportFilter =
-      filters.sport && filters.sport !== "All Sports"
-        ? filters.sport
-        : "All Sports";
+  const exportToPDF = async () => {
+    try {
+      toast.info("Fetching all registrations for export...");
+      
+      // Fetch ALL registrations (not just current page)
+      const allRegistrations = await fetchAllRegistrationsForExport();
+      
+      if (allRegistrations.length === 0) {
+        toast.warning("No registrations to export");
+        return;
+      }
 
-    // Add title
-    doc.setFontSize(18);
-    doc.text(`Sports Registrations - ${sportFilter}`, 14, 20);
+      const doc = new jsPDF();
+      const sportFilter =
+        filters.sport && filters.sport !== "All Sports"
+          ? filters.sport
+          : "All Sports";
 
-    // Add date
-    doc.setFontSize(10);
-    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
-
-    // Prepare table data (exclude cancelled registrations)
-    const tableData = registrations
-      .filter((reg) => reg.status !== "cancelled")
-      .map((reg, index) => {
-        const formData = reg.formData || {};
-        const isSolo = isSoloRegistration(reg.eventName, formData);
-        // For Athletics, include the event name (100m, Long Jump, etc.)
-        const sportDisplay =
-          reg.eventName === "Athletics" && formData.athleticsEvent
-            ? `${reg.eventName} - ${formData.athleticsEvent}`
-            : reg.eventName || "N/A";
-        return [
-          index + 1,
-          reg.registrationNumber || "N/A",
-          sportDisplay,
-          isSolo
-            ? "-"
-            : formData.team_name || formData.get?.("team_name") || "N/A",
-          isSolo
-            ? "-"
-            : formData.captain_name || formData.get?.("captain_name") || "N/A",
-          formData.captain_contact ||
-            formData.get?.("captain_contact") ||
-            "N/A",
-          reg.institution || "N/A",
-          isSolo
-            ? "1"
-            : formData.num_players || formData.get?.("num_players") || "N/A",
-          reg.status || "N/A",
-        ];
+      // Group registrations by sport
+      const groupedBySport = {};
+      allRegistrations.forEach((reg) => {
+        const sportName = reg.eventName || "Unknown";
+        if (!groupedBySport[sportName]) {
+          groupedBySport[sportName] = [];
+        }
+        groupedBySport[sportName].push(reg);
       });
 
-    // Add table
-    autoTable(doc, {
-      startY: 35,
-      head: [
-        [
-          "#",
-          "Reg No.",
-          "Sport",
-          "Team Name",
-          "Captain",
-          "Contact",
-          "Institution",
-          "Players",
-          "Status",
-        ],
-      ],
-      body: tableData,
-      styles: { fontSize: 8 },
-      headStyles: { fillColor: [147, 51, 234] },
-    });
+      // Calculate totals
+      let grandTotal = 0;
+      let totalRegistrations = 0;
+      const sportSummaries = [];
 
-    // Save PDF
-    doc.save(
-      `sports-registrations-${sportFilter.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.pdf`,
-    );
-    toast.success("PDF exported successfully");
+      // Add cover page
+      doc.setFontSize(24);
+      doc.setTextColor(147, 51, 234);
+      doc.text("ZENITH 2026", 105, 40, { align: "center" });
+      
+      doc.setFontSize(18);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Sports Registrations Report`, 105, 55, { align: "center" });
+      
+      doc.setFontSize(12);
+      doc.text(`Filter: ${sportFilter}`, 105, 70, { align: "center" });
+      doc.text(`Generated on: ${new Date().toLocaleString()}`, 105, 80, { align: "center" });
+      doc.text(`Total Sports: ${Object.keys(groupedBySport).length}`, 105, 90, { align: "center" });
+      doc.text(`Total Registrations: ${allRegistrations.length}`, 105, 100, { align: "center" });
+
+      // Process each sport on separate pages
+      let serialNumber = 1;
+      Object.keys(groupedBySport).sort().forEach((sportName, sportIndex) => {
+        const sportRegs = groupedBySport[sportName];
+        
+        // Calculate sport totals
+        const sportTotal = sportRegs.reduce((sum, reg) => sum + (reg.amount || 0), 0);
+        grandTotal += sportTotal;
+        totalRegistrations += sportRegs.length;
+
+        // Add new page for each sport (except first one already on cover page)
+        doc.addPage();
+
+        // Sport header
+        doc.setFontSize(16);
+        doc.setTextColor(147, 51, 234);
+        doc.text(`${sportName}`, 14, 20);
+        
+        doc.setFontSize(10);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Registrations: ${sportRegs.length} | Total Amount: Rs.${sportTotal.toLocaleString()}`, 14, 28);
+
+        // Group by gender within sport
+        const genderGroups = {};
+        sportRegs.forEach((reg) => {
+          const formData = reg.formData || {};
+          const genderCategory = formData?.gender_category || 
+                               formData?.get?.("gender_category") || 
+                               formData?.sportDetails?.selectedGender || "General";
+          if (!genderGroups[genderCategory]) {
+            genderGroups[genderCategory] = [];
+          }
+          genderGroups[genderCategory].push(reg);
+        });
+
+        // Prepare table data for this sport
+        const tableData = [];
+        Object.keys(genderGroups).sort().forEach((gender) => {
+          genderGroups[gender].forEach((reg) => {
+            const formData = reg.formData || {};
+            const isSolo = isSoloRegistration(reg.eventName, formData);
+            
+            tableData.push([
+              serialNumber++,
+              reg.registrationNumber || "N/A",
+              gender,
+              isSolo ? "-" : formData.team_name || formData.get?.("team_name") || "N/A",
+              isSolo ? "-" : formData.captain_name || formData.get?.("captain_name") || "N/A",
+              formData.captain_contact || formData.get?.("captain_contact") || "N/A",
+              reg.institution || "N/A",
+              isSolo ? "1" : formData.num_players || formData.get?.("num_players") || "N/A",
+              `Rs.${reg.amount || 0}`,
+              reg.status || "N/A",
+            ]);
+          });
+        });
+
+        // Add table for this sport
+        autoTable(doc, {
+          startY: 35,
+          head: [
+            [
+              "#",
+              "Reg No.",
+              "Category",
+              "Team Name",
+              "Captain",
+              "Contact",
+              "Institution",
+              "Players",
+              "Amount",
+              "Status",
+            ],
+          ],
+          body: tableData,
+          styles: { fontSize: 8 },
+          headStyles: { fillColor: [147, 51, 234] },
+          columnStyles: {
+            0: { cellWidth: 8 },
+            1: { cellWidth: 20 },
+            2: { cellWidth: 18 },
+            3: { cellWidth: 25 },
+            4: { cellWidth: 25 },
+            5: { cellWidth: 20 },
+            6: { cellWidth: 25 },
+            7: { cellWidth: 12 },
+            8: { cellWidth: 22 },
+            9: { cellWidth: 15 }
+          },
+          foot: [[
+            { content: `${sportName} Total:`, colSpan: 8, styles: { halign: 'right', fontStyle: 'bold' } },
+            { content: `Rs.${sportTotal.toLocaleString()}`, styles: { fontStyle: 'bold', fillColor: [230, 230, 250], cellWidth: 22 } },
+            { content: '', colSpan: 1 }
+          ]],
+          footStyles: { fillColor: [240, 240, 255], textColor: [0, 0, 0] },
+        });
+
+        sportSummaries.push({
+          sport: sportName,
+          count: sportRegs.length,
+          total: sportTotal
+        });
+      });
+
+      // Add summary page
+      doc.addPage();
+      doc.setFontSize(18);
+      doc.setTextColor(147, 51, 234);
+      doc.text("Summary Report", 14, 20);
+
+      // Summary table
+      const summaryData = sportSummaries.map((summary, index) => [
+        index + 1,
+        summary.sport,
+        summary.count,
+        `Rs.${summary.total.toLocaleString()}`,
+      ]);
+
+      autoTable(doc, {
+        startY: 30,
+        head: [["#", "Sport", "Registrations", "Total Amount"]],
+        body: summaryData,
+        styles: { fontSize: 10 },
+        headStyles: { fillColor: [147, 51, 234] },
+        columnStyles: {
+          0: { cellWidth: 15 },
+          1: { cellWidth: 60 },
+          2: { cellWidth: 35 },
+          3: { cellWidth: 50 }
+        },
+        foot: [[
+          { content: 'GRAND TOTAL:', colSpan: 2, styles: { halign: 'right', fontStyle: 'bold', fontSize: 12 } },
+          { content: totalRegistrations.toString(), styles: { fontStyle: 'bold', fontSize: 12, fillColor: [147, 51, 234], textColor: [255, 255, 255] } },
+          { content: `Rs.${grandTotal.toLocaleString()}`, styles: { fontStyle: 'bold', fontSize: 12, fillColor: [147, 51, 234], textColor: [255, 255, 255], cellWidth: 50 } }
+        ]],
+        footStyles: { fillColor: [147, 51, 234], textColor: [255, 255, 255] },
+      });
+
+      // Save PDF
+      doc.save(
+        `sports-registrations-${sportFilter.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.pdf`,
+      );
+      toast.success(`PDF exported: ${totalRegistrations} registrations, Total: Rs.${grandTotal.toLocaleString()}`);
+    } catch (error) {
+      console.error("PDF Export Error:", error);
+      toast.error("Failed to export PDF");
+    }
   };
 
   // Export to CSV
-  const exportToCSV = () => {
-    const sportFilter =
-      filters.sport && filters.sport !== "All Sports"
-        ? filters.sport
-        : "All Sports";
+  const exportToCSV = async () => {
+    try {
+      toast.info("Fetching all registrations for export...");
+      
+      // Fetch ALL registrations (not just current page)
+      const allRegistrations = await fetchAllRegistrationsForExport();
+      
+      if (allRegistrations.length === 0) {
+        toast.warning("No registrations to export");
+        return;
+      }
 
-    // Exclude cancelled registrations from export
-    const csvData = registrations
-      .filter((reg) => reg.status !== "cancelled")
-      .map((reg, index) => {
-        const formData = reg.formData || {};
-        const isSolo = isSoloRegistration(reg.eventName, formData);
-        // For Athletics, include the event name (100m, Long Jump, etc.)
-        const sportDisplay =
-          reg.eventName === "Athletics" && formData.athleticsEvent
-            ? `${reg.eventName} - ${formData.athleticsEvent}`
-            : reg.eventName || "N/A";
-        return {
-          "#": index + 1,
-          "Registration Number": reg.registrationNumber || "N/A",
-          Sport: sportDisplay,
-          "Team Name": isSolo
-            ? "-"
-            : formData.team_name || formData.get?.("team_name") || "N/A",
-          "Captain Name": isSolo
-            ? "-"
-            : formData.captain_name || formData.get?.("captain_name") || "N/A",
-          Contact:
-            formData.captain_contact ||
-            formData.get?.("captain_contact") ||
-            "N/A",
-          Email: reg.email || "N/A",
-          Institution: reg.institution || "N/A",
-          City: reg.city || "N/A",
-          "College Address":
-            formData.college_address ||
-            formData.get?.("college_address") ||
-            "N/A",
-          "Number of Players": isSolo
-            ? "1"
-            : formData.num_players || formData.get?.("num_players") || "N/A",
-          "Alternate Contact":
-            formData.alternate_contact ||
-            formData.get?.("alternate_contact") ||
-            "N/A",
-          "Need Accommodation":
-            formData.need_accommodation || formData.get?.("need_accommodation")
-              ? "Yes"
-              : "No",
-          Status: reg.status || "N/A",
-          Amount: reg.amount || "N/A",
-          "Registered On": new Date(reg.createdAt).toLocaleDateString(),
-        };
+      const sportFilter =
+        filters.sport && filters.sport !== "All Sports"
+          ? filters.sport
+          : "All Sports";
+
+      // Group registrations by sport
+      const groupedBySport = {};
+      allRegistrations.forEach((reg) => {
+        const sportName = reg.eventName || "Unknown";
+        if (!groupedBySport[sportName]) {
+          groupedBySport[sportName] = [];
+        }
+        groupedBySport[sportName].push(reg);
       });
 
-    const csv = [
-      Object.keys(csvData[0]).join(","),
-      ...csvData.map((row) => Object.values(row).join(",")),
-    ].join("\n");
+      // Prepare CSV data with sport sections
+      const csvRows = [];
+      
+      // Add header
+      const headers = [
+        "#",
+        "Registration Number",
+        "Sport",
+        "Gender Category",
+        "Team Name",
+        "Captain Name",
+        "Contact",
+        "Email",
+        "Institution",
+        "City",
+        "College Address",
+        "Number of Players",
+        "Alternate Contact",
+        "Need Accommodation",
+        "Status",
+        "Amount",
+        "Registered On"
+      ];
+      csvRows.push(headers.join(","));
 
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `sports-registrations-${sportFilter.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.csv`;
-    a.click();
-    toast.success("CSV exported successfully");
+      let serialNumber = 1;
+      let grandTotal = 0;
+      const sportSummaries = [];
+
+      // Process each sport
+      Object.keys(groupedBySport).sort().forEach((sportName) => {
+        const sportRegs = groupedBySport[sportName];
+        let sportTotal = 0;
+
+        sportRegs.forEach((reg) => {
+          const formData = reg.formData || {};
+          const isSolo = isSoloRegistration(reg.eventName, formData);
+          const sportDisplay =
+            reg.eventName === "Athletics" && formData.athleticsEvent
+              ? `${reg.eventName} - ${formData.athleticsEvent}`
+              : reg.eventName || "N/A";
+          
+          const genderCategory = formData?.gender_category || 
+                               formData?.get?.("gender_category") || 
+                               formData?.sportDetails?.selectedGender || "N/A";
+          
+          const amount = reg.amount || 0;
+          sportTotal += amount;
+
+          const row = [
+            serialNumber++,
+            reg.registrationNumber || "N/A",
+            sportDisplay,
+            genderCategory,
+            isSolo ? "-" : formData.team_name || formData.get?.("team_name") || "N/A",
+            isSolo ? "-" : formData.captain_name || formData.get?.("captain_name") || "N/A",
+            formData.captain_contact || formData.get?.("captain_contact") || "N/A",
+            reg.email || "N/A",
+            reg.institution || "N/A",
+            reg.city || "N/A",
+            formData.college_address || formData.get?.("college_address") || "N/A",
+            isSolo ? "1" : formData.num_players || formData.get?.("num_players") || "N/A",
+            formData.alternate_contact || formData.get?.("alternate_contact") || "N/A",
+            formData.need_accommodation || formData.get?.("need_accommodation") ? "Yes" : "No",
+            reg.status || "N/A",
+            amount,
+            new Date(reg.createdAt).toLocaleDateString()
+          ];
+          
+          csvRows.push(row.join(","));
+        });
+
+        // Add sport subtotal
+        csvRows.push(`,,,,,,,,,,,,,,${sportName} SUBTOTAL,Rs.${sportTotal.toLocaleString()},`);
+        csvRows.push(""); // Empty line for spacing
+        
+        grandTotal += sportTotal;
+        sportSummaries.push({ sport: sportName, count: sportRegs.length, total: sportTotal });
+      });
+
+      // Add summary section
+      csvRows.push(""); // Empty line
+      csvRows.push("=== SUMMARY REPORT ===");
+      csvRows.push("Sport,Registrations,Total Amount");
+      
+      sportSummaries.forEach((summary) => {
+        csvRows.push(`${summary.sport},${summary.count},Rs.${summary.total.toLocaleString()}`);
+      });
+      
+      csvRows.push(""); // Empty line
+      csvRows.push(`GRAND TOTAL,${allRegistrations.length},Rs.${grandTotal.toLocaleString()}`);
+
+      const csv = csvRows.join("\n");
+
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `sports-registrations-${sportFilter.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.success(`CSV exported: ${allRegistrations.length} registrations, Total: Rs.${grandTotal.toLocaleString()}`);
+    } catch (error) {
+      console.error("CSV Export Error:", error);
+      toast.error("Failed to export CSV");
+    }
   };
 
   return (
