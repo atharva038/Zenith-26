@@ -239,7 +239,8 @@ export const getAccommodationList = async (req, res) => {
     const totalPlayers = allPlayers.length;
     const totalDays = allPlayers.reduce((sum, player) => sum + (player.numDays || 0), 0);
     const totalPeople = allPlayers.reduce((sum, player) => sum + (player.numPeople || 0), 0);
-    const totalAccommodationFee = allPlayers.reduce((sum, player) => sum + (player.accommodationFee || 0), 0);
+    const rawTotal = allPlayers.reduce((sum, player) => sum + (player.accommodationFee || 0), 0);
+    const totalAccommodationFee = rawTotal - 20000; // Total fee = total - 20k
 
     res.json({
       success: true,
