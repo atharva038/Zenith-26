@@ -1444,8 +1444,8 @@ const AdminSportsRegistrations = () => {
           </>
         )}
 
-        {/* Cancelled/Rejected Registrations Section */}
-        {registrations.filter((reg) => reg.status === "cancelled").length >
+        {/* Cancelled/Rejected Registrations Section - HIDDEN */}
+        {/* {registrations.filter((reg) => reg.status === "cancelled").length >
           0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -1508,14 +1508,12 @@ const AdminSportsRegistrations = () => {
                               <span className="px-2 py-1 bg-red-500/10 text-red-400 rounded-lg text-xs">
                                 {reg.eventName}
                               </span>
-                              {/* Athletics Event Display */}
                               {reg.eventName === "Athletics" &&
                                 formData.athleticsEvent && (
                                   <span className="text-xs px-2 py-0.5 rounded-md font-semibold w-fit bg-orange-500/10 text-orange-400">
                                     {formData.athleticsEvent}
                                   </span>
                                 )}
-                              {/* Category Badge (Team/Solo for Chess, Men's/Women's for others) */}
                               {(() => {
                                 const badgeInfo = getCategoryBadgeInfo(
                                   reg.eventName,
@@ -1583,7 +1581,8 @@ const AdminSportsRegistrations = () => {
               </table>
             </div>
           </motion.div>
-        )}
+        )} */}
+
 
         {/* Details Modal */}
         <AnimatePresence>
