@@ -18,7 +18,6 @@ import MarathonPage from "./pages/MarathonPage";
 
 // Admin Pages
 import AdminLogin from "./pages/admin/AdminLogin";
-import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminMarathon from "./pages/admin/AdminMarathon";
 import AdminWomenTournament from "./pages/admin/AdminWomenTournament";
 import AdminSportsRegistrations from "./pages/admin/AdminSportsRegistrations";
@@ -120,11 +119,7 @@ function App() {
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route
                 path="/admin/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
+                element={<Navigate to="/admin/sports-registrations" replace />}
               />
 
               {/* Developer Portal Routes */}

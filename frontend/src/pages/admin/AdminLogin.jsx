@@ -36,8 +36,8 @@ const AdminLogin = () => {
           JSON.stringify(response.data.data.admin)
         );
 
-        // Navigate to dashboard
-        navigate("/admin/dashboard");
+        // Navigate to sports registrations
+        navigate("/admin/sports-registrations");
       }
     } catch (err) {
       setError(
