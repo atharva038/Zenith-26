@@ -234,7 +234,7 @@ const AdminAccommodation = () => {
             </div>
           </motion.div>
 
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
@@ -244,7 +244,7 @@ const AdminAccommodation = () => {
             <div className="text-2xl font-bold text-orange-400">
               ₹{summary.totalAccommodationFee.toLocaleString()}
             </div>
-          </motion.div>
+          </motion.div> */}
         </div>
       )}
 
