@@ -253,6 +253,131 @@ const AdminMarathon = () => {
     setShowScreenshotModal(true);
   };
 
+  // Download individual registration receipt
+  const downloadReceipt = (registration) => {
+    const doc = new jsPDF();
+    
+    // Header with official look
+    doc.setFillColor(0, 191, 255); // Electric Cyan
+    doc.rect(0, 0, 210, 50, 'F');
+    
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(28);
+    doc.setFont('helvetica', 'bold');
+    doc.text('ZENITH 2026', 105, 20, { align: 'center' });
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'normal');
+    doc.text('OFFICIAL MARATHON RECEIPT', 105, 30, { align: 'center' });
+    
+    doc.setFontSize(11);
+    doc.text('5K Marathon Registration', 105, 38, { align: 'center' });
+    doc.text(registration.registrationNumber || 'N/A', 105, 45, { align: 'center' });
+    
+    // Reset text color
+    doc.setTextColor(0, 0, 0);
+    
+    let yPos = 60;
+    
+    // Personal Information
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('PERSONAL INFORMATION', 14, yPos);
+    yPos += 1;
+    doc.setLineWidth(0.5);
+    doc.setDrawColor(0, 191, 255);
+    doc.line(14, yPos, 196, yPos);
+    yPos += 7;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Full Name: ${registration.fullName || 'N/A'}`, 14, yPos);
+    yPos += 6;
+    doc.text(`Email: ${registration.email || 'N/A'}`, 14, yPos);
+    yPos += 6;
+    doc.text(`Phone: ${registration.phone || 'N/A'}`, 14, yPos);
+    yPos += 6;
+    doc.text(`Age: ${registration.age || 'N/A'}     Gender: ${registration.gender || 'N/A'}`, 14, yPos);
+    yPos += 6;
+    doc.text(`College/Organization: ${registration.college || 'N/A'}`, 14, yPos);
+    yPos += 10;
+    
+    // Marathon Details
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('MARATHON DETAILS', 14, yPos);
+    yPos += 1;
+    doc.line(14, yPos, 196, yPos);
+    yPos += 7;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Event: 5K Marathon', 14, yPos);
+    yPos += 6;
+    doc.text(`T-Shirt Size: ${registration.tshirtSize || 'Not specified'}`, 14, yPos);
+    yPos += 6;
+    doc.text(`T-Shirt Distributed: ${registration.tshirtDistributed ? 'Yes' : 'No'}`, 14, yPos);
+    yPos += 6;
+    const medConditions = registration.medicalConditions || 'None';
+    const medConditionsLines = doc.splitTextToSize(`Medical Conditions: ${medConditions}`, 180);
+    doc.text(medConditionsLines, 14, yPos);
+    yPos += (medConditionsLines.length * 6) + 4;
+    
+    doc.text(`Registration Date: ${new Date(registration.createdAt).toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    })}`, 14, yPos);
+    yPos += 10;
+    
+    // Emergency Contact
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('EMERGENCY CONTACT', 14, yPos);
+    yPos += 1;
+    doc.line(14, yPos, 196, yPos);
+    yPos += 7;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Name: ${registration.emergencyContact?.name || 'N/A'}`, 14, yPos);
+    yPos += 6;
+    doc.text(`Phone: ${registration.emergencyContact?.phone || 'N/A'}`, 14, yPos);
+    yPos += 10;
+    
+    // Payment Information
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('PAYMENT INFORMATION', 14, yPos);
+    yPos += 1;
+    doc.line(14, yPos, 196, yPos);
+    yPos += 7;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Registration Fee: Rs. 99/-', 14, yPos);
+    yPos += 6;
+    doc.text(`Payment Screenshot: ${registration.paymentDetails?.paymentScreenshot ? 'Uploaded' : 'Not Uploaded'}`, 14, yPos);
+    yPos += 8;
+    
+    // Status
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Registration Status: ${registration.status?.toUpperCase() || 'PENDING'}`, 14, yPos);
+    
+    // Footer
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'italic');
+    doc.setTextColor(100, 100, 100);
+    doc.text('This is an official digitally generated receipt from Zenith 2026 Marathon', 105, 285, { align: 'center' });
+    doc.text(`Generated on: ${new Date().toLocaleString('en-IN')}`, 105, 290, { align: 'center' });
+    
+    // Save the PDF
+    const fileName = `Zenith_Marathon_${registration.registrationNumber || registration._id}.pdf`;
+    doc.save(fileName);
+    toast.success('Receipt downloaded successfully!');
+  };
+
   // Export to CSV
   const exportToCSV = async () => {
     try {
@@ -1146,6 +1271,16 @@ const AdminMarathon = () => {
                   </p>
                 </div>
                 <div className="flex items-center gap-4">
+                  <motion.button
+                    whileHover={{scale: 1.05}}
+                    whileTap={{scale: 0.95}}
+                    onClick={() => downloadReceipt(selectedRegistration)}
+                    className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 rounded-lg transition-all text-white text-sm font-semibold flex items-center gap-2 shadow-lg"
+                    title="Download Receipt"
+                  >
+                    <span className="text-lg">📄</span>
+                    Download Receipt
+                  </motion.button>
                   <span
                     className={`px-4 py-2 text-sm font-semibold rounded-full ${
                       selectedRegistration.status === "confirmed"

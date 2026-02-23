@@ -490,6 +490,250 @@ const AdminSportsRegistrations = () => {
     setShowScreenshotModal(true);
   };
 
+  // Download individual registration receipt
+  const downloadReceipt = (registration) => {
+    const doc = new jsPDF();
+    const formData = registration.formData || {};
+    const isSolo = isSoloRegistration(registration.eventName, formData);
+    
+    // Get category info and clean label (remove emojis for PDF)
+    const badgeInfo = getCategoryBadgeInfo(registration.eventName, formData);
+    let categoryText = '';
+    if (badgeInfo) {
+      // Remove emojis and clean up the label
+      categoryText = badgeInfo.label
+        .replace(/👨|👩|👥|🎯/g, '')
+        .trim();
+    }
+    
+    // Header with official look
+    doc.setFillColor(75, 0, 130); // Indigo
+    doc.rect(0, 0, 210, 50, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(28);
+    doc.setFont('helvetica', 'bold');
+    doc.text('ZENITH 2026', 105, 20, { align: 'center' });
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'normal');
+    doc.text('OFFICIAL REGISTRATION RECEIPT', 105, 30, { align: 'center' });
+    
+    doc.setFontSize(11);
+    doc.text('Sports Festival', 105, 38, { align: 'center' });
+    doc.text(registration.registrationNumber || 'N/A', 105, 45, { align: 'center' });
+    
+    // Reset text color
+    doc.setTextColor(0, 0, 0);
+    
+    let yPos = 60;
+    
+    // Sport Information
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('SPORT INFORMATION', 14, yPos);
+    yPos += 1;
+    doc.setLineWidth(0.5);
+    doc.setDrawColor(75, 0, 130);
+    doc.line(14, yPos, 196, yPos);
+    yPos += 7;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    
+    const sportDisplay = registration.eventName === "Athletics" && formData.athleticsEvent
+      ? `${registration.eventName} - ${formData.athleticsEvent}`
+      : registration.eventName || "N/A";
+    
+    doc.text(`Sport: ${sportDisplay}`, 14, yPos);
+    yPos += 6;
+    
+    // Show if Solo or Team
+    if (isSolo || (badgeInfo && !badgeInfo.isTeam)) {
+      doc.setFont('helvetica', 'bold');
+      doc.text('Type: SOLO REGISTRATION', 14, yPos);
+      doc.setFont('helvetica', 'normal');
+      yPos += 6;
+    } else {
+      doc.text(`Type: TEAM REGISTRATION${categoryText ? ` (${categoryText})` : ''}`, 14, yPos);
+      yPos += 6;
+    }
+    
+    doc.text(`Registration Date: ${new Date(registration.createdAt).toLocaleDateString('en-IN', {day: '2-digit', month: 'short', year: 'numeric'})}`, 14, yPos);
+    yPos += 10;
+    
+    // Team Information (if applicable)
+    if (!isSolo && badgeInfo?.isTeam !== false) {
+      doc.setFontSize(13);
+      doc.setFont('helvetica', 'bold');
+      doc.text('TEAM INFORMATION', 14, yPos);
+      yPos += 1;
+      doc.line(14, yPos, 196, yPos);
+      yPos += 7;
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Team Name: ${formData.team_name || formData.get?.('team_name') || 'N/A'}`, 14, yPos);
+      yPos += 6;
+      doc.text(`Number of Players: ${formData.num_players || formData.get?.('num_players') || 'N/A'}`, 14, yPos);
+      yPos += 10;
+    }
+    
+    // Captain/Primary Contact Information
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text(isSolo ? 'PARTICIPANT INFORMATION' : 'CAPTAIN INFORMATION', 14, yPos);
+    yPos += 1;
+    doc.line(14, yPos, 196, yPos);
+    yPos += 7;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Name: ${formData.captain_name || formData.get?.('captain_name') || 'N/A'}`, 14, yPos);
+    yPos += 6;
+    doc.text(`Contact: ${formData.captain_contact || formData.get?.('captain_contact') || 'N/A'}`, 14, yPos);
+    yPos += 6;
+    doc.text(`Email: ${registration.email || 'N/A'}`, 14, yPos);
+    yPos += 6;
+    doc.text(`Alternate Contact: ${formData.alternate_contact || formData.get?.('alternate_contact') || 'N/A'}`, 14, yPos);
+    yPos += 10;
+    
+    // Team Members List (if available and not solo)
+    if (!isSolo && badgeInfo?.isTeam !== false) {
+      let teamMembers = formData.teamMembers || formData.team_members || 
+                       formData.get?.('teamMembers') || formData.get?.('team_members');
+      
+      if (typeof teamMembers === 'string') {
+        try {
+          teamMembers = JSON.parse(teamMembers);
+        } catch {
+          teamMembers = [];
+        }
+      }
+      
+      if (!Array.isArray(teamMembers)) {
+        teamMembers = [];
+      }
+      
+      if (teamMembers.length > 0) {
+        doc.setFontSize(13);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`ALL TEAM MEMBERS (${teamMembers.length})`, 14, yPos);
+        yPos += 1;
+        doc.line(14, yPos, 196, yPos);
+        yPos += 7;
+        
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        
+        teamMembers.forEach((member, index) => {
+          // Check if we need a new page
+          if (yPos > 270) {
+            doc.addPage();
+            yPos = 20;
+          }
+          
+          const memberName = member.name || 'N/A';
+          const memberContact = member.contact || member.phone || 'N/A';
+          const memberEmail = member.email || '';
+          
+          doc.text(`${index + 1}. ${memberName}`, 20, yPos);
+          yPos += 5;
+          doc.text(`   Contact: ${memberContact}`, 20, yPos);
+          if (memberEmail) {
+            yPos += 5;
+            doc.text(`   Email: ${memberEmail}`, 20, yPos);
+          }
+          yPos += 6;
+        });
+        yPos += 4;
+      }
+    }
+    
+    // Check if we need a new page
+    if (yPos > 240) {
+      doc.addPage();
+      yPos = 20;
+    }
+    
+    // Institution Information
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('INSTITUTION INFORMATION', 14, yPos);
+    yPos += 1;
+    doc.line(14, yPos, 196, yPos);
+    yPos += 7;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Institution: ${registration.institution || 'N/A'}`, 14, yPos);
+    yPos += 6;
+    doc.text(`City: ${registration.city || 'N/A'}`, 14, yPos);
+    yPos += 6;
+    const address = formData.college_address || formData.get?.('college_address') || 'N/A';
+    const addressLines = doc.splitTextToSize(`Address: ${address}`, 180);
+    doc.text(addressLines, 14, yPos);
+    yPos += (addressLines.length * 6) + 4;
+    
+    // Payment Information
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('PAYMENT INFORMATION', 14, yPos);
+    yPos += 1;
+    doc.line(14, yPos, 196, yPos);
+    yPos += 7;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    
+    // Show actual amount paid
+    const registrationFee = registration.amount || 0;
+    const accommodationFee = registration.accommodation?.totalFee || 0;
+    const totalAmount = registrationFee + accommodationFee;
+    
+    doc.text(`Registration Fee Paid: Rs. ${registrationFee}/-`, 14, yPos);
+    yPos += 6;
+    
+    if (accommodationFee > 0) {
+      doc.text(`Accommodation Fee: Rs. ${accommodationFee}/-`, 14, yPos);
+      yPos += 6;
+    }
+    
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.text(`Total Amount Paid: Rs. ${totalAmount}/-`, 14, yPos);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    yPos += 8;
+    
+    // Accommodation
+    const needsAccommodation = formData.need_accommodation || formData.get?.('need_accommodation');
+    doc.text(`Accommodation: ${needsAccommodation ? 'Required' : 'Not Required'}`, 14, yPos);
+    yPos += 8;
+    
+    // Status
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Registration Status: ${registration.status?.toUpperCase() || 'PENDING'}`, 14, yPos);
+    
+    // Footer on last page
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'italic');
+      doc.setTextColor(100, 100, 100);
+      doc.text('This is an official digitally generated receipt from Zenith 2026 Sports Festival', 105, 285, { align: 'center' });
+      doc.text(`Generated on: ${new Date().toLocaleString('en-IN')}`, 105, 290, { align: 'center' });
+      doc.text(`Page ${i} of ${pageCount}`, 195, 290, { align: 'right' });
+    }
+    
+    // Save the PDF
+    const fileName = `Zenith_${registration.registrationNumber || registration._id}.pdf`;
+    doc.save(fileName);
+    toast.success('Receipt downloaded successfully!');
+  };
+
   // Update registration status
   const handleUpdateStatus = async (registrationId, newStatus) => {
     try {
@@ -1343,12 +1587,22 @@ const AdminSportsRegistrations = () => {
                       {selectedRegistration.registrationNumber}
                     </p>
                   </div>
-                  <button
-                    onClick={() => setShowDetailsModal(false)}
-                    className="w-10 h-10 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-xl transition-colors text-gray-400 hover:text-white"
-                  >
-                    <span className="text-2xl">×</span>
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => downloadReceipt(selectedRegistration)}
+                      className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-xl transition-all text-white text-sm font-medium flex items-center gap-2 shadow-lg hover:shadow-purple-500/50"
+                      title="Download Receipt"
+                    >
+                      <span className="text-lg">📄</span>
+                      Download Receipt
+                    </button>
+                    <button
+                      onClick={() => setShowDetailsModal(false)}
+                      className="w-10 h-10 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-xl transition-colors text-gray-400 hover:text-white"
+                    >
+                      <span className="text-2xl">×</span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Scrollable Content */}
