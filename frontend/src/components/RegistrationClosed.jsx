@@ -51,23 +51,23 @@ const RegistrationClosed = ({ message, startDate, endDate }) => {
             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
             className="mb-8"
           >
-            <div className="inline-flex items-center justify-center w-32 h-32 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30">
-              <span className="text-6xl">🔒</span>
+            <div className="inline-flex items-center justify-center w-32 h-32 rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-500/30">
+              <span className="text-6xl">🎉</span>
             </div>
           </motion.div>
 
           {/* Main Heading */}
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
-            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
-              Registration
+            <span className="bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent">
+              Event
             </span>
             <br />
-            <span className="text-white/90">Coming Soon!</span>
+            <span className="text-white/90">Ended!</span>
           </h1>
 
           {/* Message */}
           <p className="text-gray-400 text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed">
-            {message || "Registrations will open soon. Stay tuned!"}
+            {message || "Thank you for participating in ZENITH 2026! We hope you had an amazing experience. See you next year!"}
           </p>
 
           {/* Dates Display */}
@@ -110,16 +110,16 @@ const RegistrationClosed = ({ message, startDate, endDate }) => {
             </motion.div>
           )}
 
-          {/* Coming Soon Badge */}
+          {/* Event Ended Badge */}
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.3, type: "spring" }}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-full border border-yellow-500/30 mb-8"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-full border border-green-500/30 mb-8"
           >
-            <span className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></span>
-            <span className="text-yellow-300 text-sm font-medium">
-              Stay Tuned for Updates! ⏳
+            <span className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></span>
+            <span className="text-green-300 text-sm font-medium">
+              Thank you for an amazing event! 🙏
             </span>
           </motion.div>
 
@@ -127,15 +127,15 @@ const RegistrationClosed = ({ message, startDate, endDate }) => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/home"
-              className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-xl font-semibold text-white transition-all transform hover:scale-105 shadow-lg shadow-purple-500/25"
+              className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 rounded-xl font-semibold text-white transition-all transform hover:scale-105 shadow-lg shadow-green-500/25"
             >
-              Explore Zenith
+              ← Back to Home
             </Link>
             <Link
               to="/sports"
               className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-xl font-semibold text-white transition-all transform hover:scale-105 border border-white/20"
             >
-              View Sports Events
+              View Past Events
             </Link>
           </div>
 
@@ -147,7 +147,7 @@ const RegistrationClosed = ({ message, startDate, endDate }) => {
             className="mt-12 p-6 bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700/50"
           >
             <p className="text-gray-400 text-sm leading-relaxed">
-              📧 For updates and announcements, follow us on social media or contact the organizing team.
+              � Thanks for making ZENITH 2026 memorable! Stay connected with us for updates on next year's events and announcements.
               <br />
               We'll notify you as soon as registration opens!
             </p>

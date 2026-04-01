@@ -935,7 +935,7 @@ const AdminSportsRegistrations = () => {
             
             tableData.push([
               serialNumber++,
-              reg.registrationNumber || "N/A",
+              reg.createdAt ? new Date(reg.createdAt).toLocaleDateString() : "N/A",
               gender,
               isSolo ? "-" : formData.team_name || formData.get?.("team_name") || "N/A",
               isSolo ? "-" : formData.captain_name || formData.get?.("captain_name") || "N/A",
@@ -943,7 +943,6 @@ const AdminSportsRegistrations = () => {
               reg.institution || "N/A",
               isSolo ? "1" : formData.num_players || formData.get?.("num_players") || "N/A",
               `Rs.${reg.amount || 0}`,
-              reg.status || "N/A",
             ]);
           });
         });
@@ -954,7 +953,7 @@ const AdminSportsRegistrations = () => {
           head: [
             [
               "#",
-              "Reg No.",
+              "Date",
               "Category",
               "Team Name",
               "Captain",
@@ -962,7 +961,6 @@ const AdminSportsRegistrations = () => {
               "Institution",
               "Players",
               "Amount",
-              "Status",
             ],
           ],
           body: tableData,
@@ -970,20 +968,18 @@ const AdminSportsRegistrations = () => {
           headStyles: { fillColor: [147, 51, 234] },
           columnStyles: {
             0: { cellWidth: 8 },
-            1: { cellWidth: 20 },
+            1: { cellWidth: 22 },
             2: { cellWidth: 18 },
-            3: { cellWidth: 25 },
-            4: { cellWidth: 25 },
+            3: { cellWidth: 27 },
+            4: { cellWidth: 27 },
             5: { cellWidth: 20 },
-            6: { cellWidth: 25 },
+            6: { cellWidth: 27 },
             7: { cellWidth: 12 },
             8: { cellWidth: 22 },
-            9: { cellWidth: 15 }
           },
           foot: [[
             { content: `${sportName} Total:`, colSpan: 8, styles: { halign: 'right', fontStyle: 'bold' } },
             { content: `Rs.${sportTotal.toLocaleString()}`, styles: { fontStyle: 'bold', fillColor: [230, 230, 250], cellWidth: 22 } },
-            { content: '', colSpan: 1 }
           ]],
           footStyles: { fillColor: [240, 240, 255], textColor: [0, 0, 0] },
         });
@@ -1921,7 +1917,6 @@ const AdminSportsRegistrations = () => {
                     </thead>
                     <tbody className="divide-y divide-gray-800">
                       {registrations
-                        .filter((reg) => reg.status !== "cancelled")
                         .map((reg, index) => {
                           const formData = reg.formData || {};
                           return (
@@ -2061,8 +2056,8 @@ const AdminSportsRegistrations = () => {
           </>
         )}
 
-        {/* Cancelled/Rejected Registrations Section - HIDDEN */}
-        {/* {registrations.filter((reg) => reg.status === "cancelled").length >
+        {/* Cancelled/Rejected Registrations Section */}
+        {registrations.filter((reg) => reg.status === "cancelled").length >
           0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -2198,7 +2193,7 @@ const AdminSportsRegistrations = () => {
               </table>
             </div>
           </motion.div>
-        )} */}
+        )}
 
 
         {/* Details Modal */}

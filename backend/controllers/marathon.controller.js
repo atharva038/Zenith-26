@@ -262,6 +262,12 @@ const getMarathonRejectionEmail = (registration) => {
 // @access  Public
 export const registerMarathon = async (req, res) => {
   try {
+    // Marathon is not happening this year - deny all new registrations
+    return res.status(403).json({
+      success: false,
+      message: "Marathon is not happening this year. Registration is currently closed.",
+    });
+
     const {
       fullName,
       email,

@@ -673,665 +673,81 @@ const MarathonRegistration = () => {
             </div>
           </div>
 
-          {/* Registration Form */}
+          {/* Registration Closed Notice */}
           <motion.div
             initial={{opacity: 0, scale: 0.95}}
             animate={{opacity: 1, scale: 1}}
-            className="bg-gradient-to-br from-[#1a0f08] to-[#0a0604] backdrop-blur-md rounded-2xl shadow-2xl p-8 border-2 border-[#ff8b1f]/20"
+            className="bg-gradient-to-br from-red-950/40 to-red-900/30 backdrop-blur-md rounded-2xl shadow-2xl p-8 border-2 border-red-600/40"
           >
-            {/* Test Data Button - For Development */}
-            {/* <div className="flex justify-end mb-4">
-              <motion.button
-                type="button"
-                onClick={fillTestData}
-                whileHover={{scale: 1.05}}
-                whileTap={{scale: 0.95}}
-                className="px-4 py-2 bg-purple-600/30 border border-purple-500/50 rounded-lg text-purple-300 hover:bg-purple-600/50 transition-all text-sm font-semibold"
+            <div className="text-center space-y-6">
+              <motion.div
+                initial={{scale: 0}}
+                animate={{scale: 1}}
+                transition={{type: "spring", stiffness: 200}}
               >
-                🧪 Fill Test Data
-              </motion.button>
-            </div> */}
+                <p className="text-6xl mb-4">🚫</p>
+              </motion.div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Personal Information */}
-              <div className="space-y-4">
-                <h2 className="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] border-b border-[#ff8b1f]/30 pb-2">
-                  Personal Information
+              <div>
+                <h2 className="text-4xl font-bold text-red-300 mb-3">
+                  Marathon Not Happening This Year
                 </h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-[#ffdcb3] mb-2">
-                      Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
-                      placeholder="Enter your full name"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#ffdcb3] mb-2">
-                      Email *
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
-                      placeholder="your.email@example.com"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#ffdcb3] mb-2">
-                      Phone Number *
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      required
-                      pattern="[0-9]{10}"
-                      className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
-                      placeholder="10-digit number"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#ffdcb3] mb-2">
-                      Age *
-                    </label>
-                    <input
-                      type="number"
-                      name="age"
-                      value={formData.age}
-                      onChange={handleChange}
-                      required
-                      min="1"
-                      max="100"
-                      className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
-                      placeholder="Enter your age"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#ffdcb3] mb-2">
-                      Gender *
-                    </label>
-                    <select
-                      name="gender"
-                      value={formData.gender}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
-                    >
-                      <option value="" className="bg-[#1a0f08]">
-                        Select Gender
-                      </option>
-                      <option value="Male" className="bg-[#1a0f08]">
-                        Male
-                      </option>
-                      <option value="Female" className="bg-[#1a0f08]">
-                        Female
-                      </option>
-                      <option value="Other" className="bg-[#1a0f08]">
-                        Other
-                      </option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#ffdcb3] mb-2">
-                      T-Shirt Size *
-                    </label>
-                    <select
-                      name="tshirtSize"
-                      value={formData.tshirtSize}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
-                    >
-                      <option value="" className="bg-[#1a0f08]">
-                        Select T-Shirt Size
-                      </option>
-                      <option value="XS" className="bg-[#1a0f08]">
-                        XS (Extra Small)
-                      </option>
-                      <option value="S" className="bg-[#1a0f08]">
-                        S (Small)
-                      </option>
-                      <option value="M" className="bg-[#1a0f08]">
-                        M (Medium)
-                      </option>
-                      <option value="L" className="bg-[#1a0f08]">
-                        L (Large)
-                      </option>
-                      <option value="XL" className="bg-[#1a0f08]">
-                        XL (Extra Large)
-                      </option>
-                      <option value="XXL" className="bg-[#1a0f08]">
-                        XXL (2XL)
-                      </option>
-                      <option value="XXXL" className="bg-[#1a0f08]">
-                        XXXL (3XL)
-                      </option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#ffdcb3] mb-2">
-                      College/Organization *
-                    </label>
-                    <input
-                      type="text"
-                      name="college"
-                      value={formData.college}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
-                      placeholder="Your institution"
-                    />
-                  </div>
-                </div>
+                <p className="text-lg text-red-200 mb-4">
+                  We regret to inform you that the ZENITH Marathon 2026 will not be held this year.
+                </p>
+                <p className="text-gray-300 mb-6">
+                  Registration is currently closed. Thank you for your interest and support!
+                </p>
               </div>
 
-              {/* Emergency Contact */}
-              <div className="space-y-4">
-                <h2 className="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] border-b border-[#ff8b1f]/30 pb-2">
-                  Emergency Contact
-                </h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-[#ffdcb3] mb-2">
-                      Contact Name *
-                    </label>
-                    <input
-                      type="text"
-                      name="emergency_name"
-                      value={formData.emergencyContact.name}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
-                      placeholder="Emergency contact name"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#ffdcb3] mb-2">
-                      Contact Phone *
-                    </label>
-                    <input
-                      type="tel"
-                      name="emergency_phone"
-                      value={formData.emergencyContact.phone}
-                      onChange={handleChange}
-                      required
-                      pattern="[0-9]{10}"
-                      className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
-                      placeholder="10-digit number"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Medical Information */}
-              <div className="space-y-4">
-                <h2 className="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] border-b border-[#ff8b1f]/30 pb-2">
-                  Medical Information (Optional)
-                </h2>
-
-                <div>
-                  <label className="block text-sm font-medium text-[#ffdcb3] mb-2">
-                    Any Medical Conditions?
-                  </label>
-                  <textarea
-                    name="medicalConditions"
-                    value={formData.medicalConditions}
-                    onChange={handleChange}
-                    rows="3"
-                    className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
-                    placeholder="Please mention any medical conditions, allergies, or health concerns (Optional)"
-                  />
-                </div>
-              </div>
-
-              {/* Payment Section with QR Code */}
-              <div className="space-y-4">
-                <h2 className="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] border-b border-[#ff8b1f]/30 pb-2">
-                  Payment Details
-                </h2>
-
-                <div className="bg-gradient-to-br from-[#ff8b1f]/10 to-[#ffb36a]/10 border-2 border-[#ff8b1f]/30 rounded-xl p-6">
-                  <div className="text-center mb-4">
-                    <p className="text-[#ffdcb3] text-lg font-semibold mb-2">
-                      Registration Fee: ₹99
-                    </p>
-                    <p className="text-gray-400 text-sm">
-                      Scan the QR code below to make payment
-                    </p>
-                  </div>
-
-                  {/* Payment QR Code */}
-                  <div className="flex justify-center mb-6">
-                    <div className="bg-white p-4 rounded-lg shadow-xl">
-                      <img
-                        src={PAYMENT_QR_URL}
-                        alt="Payment QR Code - Scan to pay"
-                        className="w-64 h-auto object-contain"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="bg-black/40 rounded-lg p-4 border border-[#ff8b1f]/20 text-center mb-4">
-                    <p className="text-[#ffdcb3] text-sm font-semibold">
-                      UPI ID:{" "}
-                      <span className="text-white font-mono">
-                        sagarubale2004@oksbi
-                      </span>
-                    </p>
-                  </div>
-
-                  {/* Backup QR Codes Dropdown */}
-                  <div className="mt-4">
-                    <button
-                      type="button"
-                      onClick={() => setShowBackupQR(!showBackupQR)}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/40 rounded-lg text-orange-300 font-medium transition-all"
-                    >
-                      <span>🔄</span>
-                      <span>
-                        {showBackupQR
-                          ? "Hide Backup Payment Options"
-                          : "Show Backup Payment Options"}
-                      </span>
-                      <svg
-                        className={`w-5 h-5 transition-transform ${
-                          showBackupQR ? "rotate-180" : ""
-                        }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </button>
-
-                    <AnimatePresence>
-                      {showBackupQR && (
-                        <motion.div
-                          initial={{height: 0, opacity: 0}}
-                          animate={{height: "auto", opacity: 1}}
-                          exit={{height: 0, opacity: 0}}
-                          transition={{duration: 0.3}}
-                          className="overflow-hidden"
-                        >
-                          <div className="mt-4 space-y-6 pt-4 border-t border-orange-500/20">
-                            {BACKUP_QR_URLS.map((qr, index) => (
-                              <div
-                                key={index}
-                                className="bg-orange-500/5 p-6 rounded-lg border border-orange-500/20"
-                              >
-                                <p className="text-sm text-orange-300 mb-3 font-medium text-center">
-                                  {qr.name}
-                                </p>
-                                <div className="bg-white p-2 rounded-lg shadow-lg w-fit mx-auto">
-                                  <img
-                                    src={qr.url}
-                                    alt={`Backup QR ${index + 1}`}
-                                    className="w-64 h-auto"
-                                  />
-                                </div>
-                                <p className="text-xs text-gray-400 mt-3 text-center break-all">
-                                  UPI ID: {qr.upiId}
-                                </p>
-                              </div>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </div>
-
-                {/* Payment Screenshot Upload */}
-                <div className="mt-6">
-                  <label className="block text-[#ffdcb3] font-medium mb-4 text-lg">
-                    Upload Payment Screenshot{" "}
-                    <span className="text-red-500">*</span>
-                  </label>
-                  <p className="text-sm text-gray-400 mb-4">
-                    Please upload a screenshot of your payment transaction.
-                    Accepted formats: JPG, PNG, PDF (Max 10MB)
-                  </p>
-
-                  {/* Important Notice */}
-                  <div className="mb-4 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-l-4 border-yellow-500 rounded-lg p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 mt-0.5">
-                        <svg
-                          className="w-5 h-5 text-yellow-500"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-yellow-500 font-semibold text-sm mb-1">
-                          📌 Important: Transaction ID Required
-                        </p>
-                        <p className="text-yellow-200/90 text-xs leading-relaxed">
-                          Please ensure your screenshot clearly shows the{" "}
-                          <span className="font-bold text-yellow-400">
-                            Transaction ID / UTR Number
-                          </span>
-                          . Upload the complete payment receipt from your
-                          banking app or UPI app.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {!screenshotPreview ? (
-                    <div className="relative">
-                      <input
-                        type="file"
-                        id="payment-screenshot"
-                        accept="image/jpeg,image/jpg,image/png,application/pdf"
-                        onChange={handleScreenshotChange}
-                        disabled={isUploadingScreenshot}
-                        className="hidden"
-                      />
-                      <label
-                        htmlFor="payment-screenshot"
-                        className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-[#ff8b1f]/30 rounded-lg cursor-pointer hover:border-[#ff8b1f] transition-colors ${
-                          isUploadingScreenshot
-                            ? "opacity-50 cursor-not-allowed"
-                            : ""
-                        }`}
-                      >
-                        <svg
-                          className="w-12 h-12 text-gray-400 mb-3"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                          />
-                        </svg>
-                        <p className="text-gray-300 text-sm">
-                          {isUploadingScreenshot
-                            ? "Uploading..."
-                            : "Click to upload payment screenshot"}
-                        </p>
-                        <p className="text-gray-500 text-xs mt-1">
-                          JPG, PNG or PDF (MAX. 10MB)
-                        </p>
-                      </label>
-                    </div>
-                  ) : (
-                    <div className="bg-black/40 border border-[#ff8b1f]/20 rounded-lg p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          {screenshotPreview === "PDF" ? (
-                            <div className="w-16 h-16 bg-red-500/20 rounded-lg flex items-center justify-center">
-                              <svg
-                                className="w-8 h-8 text-red-500"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                                />
-                              </svg>
-                            </div>
-                          ) : (
-                            <img
-                              src={screenshotPreview}
-                              alt="Payment Screenshot"
-                              className="w-16 h-16 object-cover rounded-lg"
-                            />
-                          )}
-                          <div>
-                            <p className="text-white font-medium">
-                              {paymentScreenshot?.name}
-                            </p>
-                            <p className="text-gray-400 text-sm">
-                              {(paymentScreenshot?.size / 1024 / 1024).toFixed(
-                                2,
-                              )}{" "}
-                              MB
-                            </p>
-                            {isUploadingScreenshot ? (
-                              <p className="text-yellow-400 text-xs mt-1 flex items-center">
-                                <svg
-                                  className="animate-spin h-3 w-3 mr-1"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <circle
-                                    className="opacity-25"
-                                    cx="12"
-                                    cy="12"
-                                    r="10"
-                                    stroke="currentColor"
-                                    strokeWidth="4"
-                                  ></circle>
-                                  <path
-                                    className="opacity-75"
-                                    fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                  ></path>
-                                </svg>
-                                Uploading...
-                              </p>
-                            ) : formData.paymentScreenshotUrl ? (
-                              <p className="text-green-400 text-xs mt-1">
-                                ✓ Uploaded successfully
-                              </p>
-                            ) : null}
-                          </div>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={handleRemoveScreenshot}
-                          className="text-red-500 hover:text-red-400 transition-colors"
-                          title={
-                            isUploadingScreenshot
-                              ? "Cancel upload"
-                              : "Remove screenshot"
-                          }
-                        >
-                          <svg
-                            className="w-6 h-6"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div className="mt-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
-                  <p className="text-yellow-300 text-xs">
-                    ⚠️ <strong>Important:</strong> Registration will be
-                    confirmed only after payment verification. Admin will review
-                    your payment screenshot and approve your registration.
-                  </p>
-                </div>
-              </div>
-
-              {/* Terms and Conditions Checkbox */}
+              {/* Contact Information */}
               <motion.div
                 initial={{opacity: 0, y: 20}}
                 animate={{opacity: 1, y: 0}}
-                transition={{delay: 0.6}}
-                className="bg-white/5 border border-orange-500/30 rounded-lg p-4"
+                transition={{delay: 0.3}}
+                className="bg-black/30 rounded-lg p-6 border border-orange-500/20"
               >
-                <label className="flex items-start gap-3 cursor-pointer group">
-                  <div className="relative flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={termsAccepted}
-                      onChange={(e) => setTermsAccepted(e.target.checked)}
-                      className="w-5 h-5 rounded border-2 border-orange-500/50 bg-black/50 checked:bg-orange-500 checked:border-orange-500 cursor-pointer appearance-none flex items-center justify-center"
-                      style={{
-                        accentColor: "#ff8b1f",
-                      }}
-                    />
-                    {termsAccepted && (
-                      <svg
-                        className="w-5 h-5 absolute pointer-events-none text-white"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={3}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    )}
+                <h3 className="text-orange-400 font-semibold mb-3">For More Information</h3>
+                <div className="space-y-2 text-gray-300">
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-orange-400">📧</span>
+                    <span>Check back for future events</span>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-gray-300 text-sm leading-relaxed">
-                      I hereby declare that I am physically fit to participate
-                      in the ZENITH Marathon 2026. I understand that
-                      participation is at my own risk and I release the
-                      organizers from any liability. I agree to follow all event
-                      rules and safety guidelines. The information provided
-                      above is accurate and complete.
-                    </p>
-                    <a
-                      href="/marathon/terms-and-conditions"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block mt-2 text-orange-400 hover:text-orange-300 text-sm font-semibold underline transition-colors"
-                    >
-                      📋 Read Full Terms & Conditions →
-                    </a>
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-orange-400">🔔</span>
+                    <span>Follow us for announcements</span>
                   </div>
-                </label>
+                </div>
               </motion.div>
 
-              {/* Submit Button */}
-              <div className="flex gap-4">
-                <motion.button
-                  whileHover={{
-                    scale: loading || isUploadingScreenshot ? 1 : 1.02,
-                  }}
-                  whileTap={{
-                    scale: loading || isUploadingScreenshot ? 1 : 0.98,
-                  }}
-                  type="submit"
-                  disabled={
-                    loading ||
-                    isUploadingScreenshot ||
-                    !formData.paymentScreenshotUrl ||
-                    !termsAccepted
-                  }
-                  className="flex-1 font-semibold py-4 px-6 rounded-lg transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-[#2c1506]"
-                  style={{
-                    background: "linear-gradient(90deg, #ffb36a, #ff8b1f)",
-                    boxShadow:
-                      "0 12px 28px rgba(255,140,40,0.3), inset 0 -2px 6px rgba(0,0,0,0.12)",
-                  }}
-                >
-                  {isUploadingScreenshot ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                          fill="none"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        />
-                      </svg>
-                      Uploading Screenshot...
-                    </span>
-                  ) : loading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                          fill="none"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        />
-                      </svg>
-                      Registering...
-                    </span>
-                  ) : (
-                    "Submit🏃"
-                  )}
-                </motion.button>
-
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4">
                 <motion.button
                   whileHover={{scale: 1.02}}
                   whileTap={{scale: 0.98}}
-                  type="button"
                   onClick={() => navigate("/marathon-event")}
-                  className="px-6 py-4 bg-black/40 text-[#ffdcb3] font-semibold rounded-lg border border-[#ff8b1f]/30 hover:bg-black/60 transition-all"
+                  className="flex-1 py-3 text-white font-semibold rounded-lg transition-all"
+                  style={{
+                    background: "linear-gradient(90deg, #ff8b1f, #ea580c)",
+                    boxShadow: "0 8px 24px rgba(255, 139, 31, 0.3)",
+                  }}
                 >
-                  ← Back
+                  View Marathon Page
+                </motion.button>
+                <motion.button
+                  whileHover={{scale: 1.02}}
+                  whileTap={{scale: 0.98}}
+                  onClick={() => navigate("/home")}
+                  className="flex-1 py-3 font-semibold rounded-lg transition-all text-white"
+                  style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                  }}
+                >
+                  Back to Home
                 </motion.button>
               </div>
-            </form>
+            </div>
           </motion.div>
         </motion.div>
       </div>

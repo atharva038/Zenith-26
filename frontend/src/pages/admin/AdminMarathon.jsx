@@ -590,6 +590,27 @@ const AdminMarathon = () => {
 
   return (
     <AdminLayout title="Marathon">
+      {/* Marathon Cancelled Banner */}
+      <motion.div
+        className="w-full bg-gradient-to-r from-red-900/80 via-red-800/80 to-red-900/80 border border-red-500/50 rounded-lg py-4 px-6 mb-6"
+        initial={{opacity: 0, y: -20}}
+        animate={{opacity: 1, y: 0}}
+        transition={{duration: 0.6}}
+      >
+        <div className="flex items-center gap-4">
+          <span className="text-2xl">🚫</span>
+          <div className="flex-1">
+            <h2 className="text-lg font-bold text-white mb-1">
+              Marathon 2026 Cancelled - Registration Closed
+            </h2>
+            <p className="text-sm text-red-100">
+              The marathon will not be happening this year. No new registrations are being accepted.
+              Previously registered participants should refer to their confirmation emails for updates.
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
       {/* Statistics Cards */}
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">

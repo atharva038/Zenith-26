@@ -409,6 +409,7 @@ const TEAM_SPORTS_CONFIG = {
 const UniversalRegistration = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const isZenithEventEnded = true;
   
   // Check registration status with separate toggles (MUST be before any conditional returns)
   const { 
@@ -1155,8 +1156,8 @@ const UniversalRegistration = () => {
     );
   }
   
-  // Show registration closed page if BOTH toggles are off
-  if (!isCricketOpen && !isOtherSportsOpen) {
+  // Zenith 2026 is over: always show ended state on register-sports page
+  if (isZenithEventEnded) {
     return <RegistrationClosed message={message} startDate={startDate} endDate={endDate} />;
   }
   

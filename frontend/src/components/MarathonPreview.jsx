@@ -74,40 +74,7 @@ const MarathonPreview = () => {
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
-        {/* Section header */}
-        <motion.div
-          className="text-center mb-12"
-          initial={{opacity: 0, y: 30}}
-          animate={isInView ? {opacity: 1, y: 0} : {}}
-          transition={{duration: 0.6}}
-        >
-          <motion.span
-            className="inline-block px-5 py-2 mb-6 text-sm font-bold tracking-[3px] text-orange-300 border border-orange-500/40 rounded-full bg-orange-500/20 backdrop-blur-sm"
-            initial={{opacity: 0, scale: 0.8}}
-            animate={isInView ? {opacity: 1, scale: 1} : {}}
-            transition={{duration: 0.4, delay: 0.2}}
-          >
-            🔥 COMING SOON
-          </motion.span>
-
-          <h2 
-            className="text-5xl md:text-7xl font-black mb-4"
-            style={{ textShadow: "0 4px 20px rgba(0,0,0,0.5)" }}
-          >
-            <span className="text-white">ZENITH</span>
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500">
-              MARATHON
-            </span>
-          </h2>
-
-          <p 
-            className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto font-light"
-            style={{ textShadow: "0 2px 10px rgba(0,0,0,0.5)" }}
-          >
-            Kick off the Zenith festivities with our first-ever marathon! Run
-            through the historic SGGSIE&T campus.
-          </p>
-        </motion.div>
+        {/* Section header removed */}
 
         {/* Main content grid */}
         <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
@@ -178,15 +145,15 @@ const MarathonPreview = () => {
                 <div
                   className="backdrop-blur-md rounded-xl p-4 text-center"
                   style={{
-                    background: "rgba(0,0,0,0.7)",
-                    border: "1px solid rgba(255,140,50,0.3)",
+                    background: "rgba(127, 29, 29, 0.7)",
+                    border: "1px solid rgba(239, 68, 68, 0.3)",
                   }}
                 >
-                  <p className="text-orange-300 font-bold text-lg">
-                    📅 POSTPONED TO MARCH
+                  <p className="text-red-300 font-bold text-lg">
+                    🚫 CANCELLED
                   </p>
                   <p className="text-white/60 text-sm">
-                    New date will be announced soon
+                    Not happening this year
                   </p>
                 </div>
               </div>
@@ -199,28 +166,6 @@ const MarathonPreview = () => {
             animate={isInView ? {opacity: 1, x: 0} : {}}
             transition={{duration: 0.6, delay: 0.3}}
           >
-            {/* Postponed Notice (replaces countdown) */}
-            <div className="mb-8">
-              <div 
-                className="text-center px-6 py-4 rounded-xl backdrop-blur-md"
-                style={{
-                  background: "rgba(255,140,50,0.15)",
-                  border: "1px solid rgba(255,140,50,0.4)",
-                  boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
-                }}
-              >
-                <p className="text-orange-300 text-sm tracking-wider font-semibold mb-1">
-                  📅 EVENT POSTPONED
-                </p>
-                <span className="block text-2xl md:text-3xl font-black text-white">
-                  COMING IN MARCH
-                </span>
-                <p className="text-white/60 text-sm mt-1">
-                  Stay tuned for the new date!
-                </p>
-              </div>
-            </div>
-
             {/* Highlights grid */}
             <div className="grid grid-cols-2 gap-3 mb-8">
               {highlights.map((item, i) => (
@@ -247,51 +192,32 @@ const MarathonPreview = () => {
               className="mb-6 p-5 rounded-xl backdrop-blur-md"
               style={{
                 background:
-                  "linear-gradient(135deg, rgba(255,215,0,0.15) 0%, rgba(255,140,50,0.15) 100%)",
-                border: "1px solid rgba(255,215,0,0.3)",
+                  "linear-gradient(135deg, rgba(239,68,68,0.1) 0%, rgba(220,38,38,0.1) 100%)",
+                border: "1px solid rgba(239,68,68,0.3)",
                 boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
               }}
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-white/70 text-sm font-medium">Registration Fee</p>
-                  <p className="text-3xl font-black text-white">
-                    ₹99{" "}
-                    <span className="text-sm text-white/60 font-normal">
-                      only
-                    </span>
+                  <p className="text-white/70 text-sm font-medium">Event Status</p>
+                  <p className="text-3xl font-black text-red-400">
+                    CANCELLED
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-orange-400 text-sm font-bold">
-                    🎉 Register Now
+                  <p className="text-red-400 text-sm font-bold">
+                    🚫 Closed
                   </p>
                   <p className="text-white/60 text-xs">
-                    Limited slots available
+                    Not happening this year
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* CTA Buttons */}
+            {/* CTA Buttons - Registration button removed */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/marathon" className="flex-1">
-                <motion.button
-                  className="w-full py-4 px-6 rounded-xl font-bold text-lg text-black transition-all"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, #ffd700 0%, #ffa500 50%, #ff6b1f 100%)",
-                    boxShadow: "0 10px 40px rgba(255,165,0,0.4)",
-                  }}
-                  whileHover={{
-                    scale: 1.03,
-                    boxShadow: "0 15px 50px rgba(255,165,0,0.5)",
-                  }}
-                  whileTap={{scale: 0.98}}
-                >
-                  🏃 Register for Marathon
-                </motion.button>
-              </Link>
+              {/* Registration button removed */}
 
               <Link to="/marathon-event" className="flex-1">
                 <motion.button
