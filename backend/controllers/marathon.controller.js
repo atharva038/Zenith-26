@@ -1,6 +1,8 @@
 import Marathon from "../models/Marathon.js";
 import { Parser } from "json2csv";
 import { sendEmail } from "../config/email.js";
+import fs from "fs";
+import path from "path";
 
 // Email template for marathon registration confirmation
 const getMarathonConfirmationEmail = (registration) => {
@@ -380,11 +382,24 @@ export const registerMarathon = async (req, res) => {
 // @access  Private/Admin
 export const getAllRegistrations = async (req, res) => {
   try {
-    const { status, search, gender, tshirtSize, tshirtDistributed, page = 1, limit = 50 } = req.query;
+    const {
+      status,
+      excludeStatus,
+      search,
+      gender,
+      tshirtSize,
+      tshirtDistributed,
+      page = 1,
+      limit = 50,
+    } = req.query;
 
     // Build filter
     const filter = {};
-    if (status) filter.status = status;
+    if (status) {
+      filter.status = status;
+    } else if (excludeStatus) {
+      filter.status = { $ne: excludeStatus };
+    }
     if (gender) filter.gender = gender;
     if (tshirtSize) filter.tshirtSize = tshirtSize;
     if (tshirtDistributed) {
@@ -821,6 +836,264 @@ export const getTshirtDistributionStats = async (req, res) => {
       success: false,
       message: "Failed to get T-shirt distribution statistics",
       error: error.message,
+    });
+  }
+};
+
+const ACCOUNT_MAP = {
+  "sagar ubale": { key: "sagar", label: "Sagar Ubale" },
+  "balaji anil kalyankar": { key: "balaji", label: "Balaji Anil Kalyankar" },
+  "atharva joshi": { key: "atharva", label: "Atharva Joshi" },
+  unknown: { key: "unknown", label: "Unknown" },
+};
+
+const parseCsvLine = (line) => {
+  const values = [];
+  let current = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+
+    if (ch === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (ch === "," && !inQuotes) {
+      values.push(current);
+      current = "";
+    } else {
+      current += ch;
+    }
+  }
+
+  values.push(current);
+  return values;
+};
+
+const parseCsv = (csvText) => {
+  const lines = csvText.split(/\r?\n/).filter((line) => line.trim());
+  if (!lines.length) return [];
+
+  const headers = parseCsvLine(lines[0]);
+  const rows = [];
+
+  for (let i = 1; i < lines.length; i++) {
+    const values = parseCsvLine(lines[i]);
+    const row = {};
+    headers.forEach((header, idx) => {
+      row[header] = values[idx] ?? "";
+    });
+    rows.push(row);
+  }
+
+  return rows;
+};
+
+const normalizeAccount = (value) => {
+  const key = String(value || "").trim().toLowerCase();
+  return ACCOUNT_MAP[key] || ACCOUNT_MAP.unknown;
+};
+
+const syncRefundDataFromCsv = async () => {
+  const csvPath = path.resolve(process.cwd(), "scripts/output/refund-collected-data.csv");
+  if (!fs.existsSync(csvPath)) {
+    return { synced: 0, skipped: 0, found: false };
+  }
+
+  const raw = fs.readFileSync(csvPath, "utf8");
+  const rows = parseCsv(raw);
+
+  let synced = 0;
+  let skipped = 0;
+
+  for (const row of rows) {
+    const registrationNumber = (row.registrationNumber || "").trim();
+    if (!registrationNumber) {
+      skipped++;
+      continue;
+    }
+
+    const account = normalizeAccount(row.account);
+    const transactionId = (row.transactionId || "").trim();
+    const confidence = ["high", "medium", "low"].includes((row.confidence || "").toLowerCase())
+      ? row.confidence.toLowerCase()
+      : "low";
+
+    const result = await Marathon.updateOne(
+      { registrationNumber },
+      {
+        $set: {
+          "refund.accountKey": account.key,
+          "refund.accountLabel": account.label,
+          "refund.confidence": confidence,
+          "refund.transactionId": transactionId,
+        },
+      }
+    );
+
+    if (result.matchedCount > 0) synced++;
+    else skipped++;
+  }
+
+  return { synced, skipped, found: true };
+};
+
+// @desc    Get marathon refund list grouped by account
+// @route   GET /api/marathon/refund
+// @access  Private/Admin
+export const getMarathonRefundList = async (req, res) => {
+  try {
+    const shouldSync = req.query.sync !== "false";
+    let syncResult = null;
+    if (shouldSync) {
+      syncResult = await syncRefundDataFromCsv();
+    }
+
+    const registrations = await Marathon.find({
+      "paymentDetails.paymentScreenshot": { $exists: true, $ne: "" },
+    }).sort({ createdAt: 1 });
+
+    const grouped = {
+      atharva: [],
+      balaji: [],
+      sagar: [],
+      unknown: [],
+      rejected: [],
+    };
+
+    for (const reg of registrations) {
+      const refundItem = {
+        _id: reg._id,
+        registrationNumber: reg.registrationNumber,
+        fullName: reg.fullName,
+        phone: reg.phone,
+        amount: reg.paymentDetails?.amount || 99,
+        screenshotUrl: reg.paymentDetails?.paymentScreenshot || "",
+        transactionId: reg.refund?.transactionId || "",
+        confidence: reg.refund?.confidence || "low",
+        refundCompleted: !!reg.refund?.isCompleted,
+        refundCompletedAt: reg.refund?.completedAt || null,
+        refundCompletedBy: reg.refund?.completedBy || null,
+        status: reg.status,
+      };
+
+      // Keep cancelled registrations in separate section
+      if (reg.status === "cancelled") {
+        grouped.rejected.push(refundItem);
+        continue;
+      }
+
+      const accountKey = reg.refund?.accountKey || "unknown";
+      const targetKey = grouped[accountKey] ? accountKey : "unknown";
+      grouped[targetKey].push(refundItem);
+    }
+
+    Object.keys(grouped).forEach((key) => {
+      grouped[key].sort((a, b) => {
+        if (a.refundCompleted !== b.refundCompleted) {
+          return a.refundCompleted ? 1 : -1;
+        }
+        return a.fullName.localeCompare(b.fullName);
+      });
+    });
+
+    const summary = {
+      total: registrations.length,
+      atharva: grouped.atharva.length,
+      balaji: grouped.balaji.length,
+      sagar: grouped.sagar.length,
+      unknown: grouped.unknown.length,
+      rejected: grouped.rejected.length,
+      refundCompleted: registrations.filter((r) => r.status !== "cancelled" && r.refund?.isCompleted).length,
+      refundPending: registrations.filter((r) => r.status !== "cancelled" && !r.refund?.isCompleted).length,
+    };
+
+    res.json({
+      success: true,
+      sync: syncResult,
+      summary,
+      data: grouped,
+    });
+  } catch (error) {
+    console.error("Get marathon refund list error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch marathon refund list",
+    });
+  }
+};
+
+// @desc    Manually sync marathon refund data from generated CSV
+// @route   POST /api/marathon/refund/sync
+// @access  Private/Admin
+export const syncMarathonRefundData = async (req, res) => {
+  try {
+    const result = await syncRefundDataFromCsv();
+    if (!result.found) {
+      return res.status(404).json({
+        success: false,
+        message: "refund-collected-data.csv not found in backend/scripts/output",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Refund data synced from CSV",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Sync marathon refund data error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to sync refund data from CSV",
+    });
+  }
+};
+
+// @desc    Update refund completion status
+// @route   PATCH /api/marathon/refund/:id
+// @access  Private/Admin
+export const updateMarathonRefundStatus = async (req, res) => {
+  try {
+    const { completed } = req.body;
+    const registration = await Marathon.findById(req.params.id);
+
+    if (!registration) {
+      return res.status(404).json({
+        success: false,
+        message: "Registration not found",
+      });
+    }
+
+    const isCompleted = !!completed;
+    registration.refund = {
+      ...registration.refund,
+      isCompleted,
+      completedAt: isCompleted ? new Date() : null,
+      completedBy: isCompleted ? req.admin?.username || req.admin?.email || "admin" : null,
+    };
+
+    await registration.save();
+
+    res.json({
+      success: true,
+      message: isCompleted ? "Refund marked as completed" : "Refund marked as pending",
+      data: {
+        _id: registration._id,
+        refundCompleted: registration.refund.isCompleted,
+        refundCompletedAt: registration.refund.completedAt,
+        refundCompletedBy: registration.refund.completedBy,
+      },
+    });
+  } catch (error) {
+    console.error("Update marathon refund status error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update refund status",
     });
   }
 };

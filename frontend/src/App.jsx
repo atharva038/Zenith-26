@@ -19,6 +19,7 @@ import MarathonPage from "./pages/MarathonPage";
 // Admin Pages
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminMarathon from "./pages/admin/AdminMarathon";
+import AdminMarathonRefund from "./pages/admin/AdminMarathonRefund";
 import AdminWomenTournament from "./pages/admin/AdminWomenTournament";
 import AdminSportsRegistrations from "./pages/admin/AdminSportsRegistrations";
 import AdminOnSpotRegistration from "./pages/admin/AdminOnSpotRegistration";
@@ -167,6 +168,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <AdminMarathon />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/marathon/refund"
+                element={
+                  <ProtectedRoute>
+                    <AdminMarathonRefund />
                   </ProtectedRoute>
                 }
               />

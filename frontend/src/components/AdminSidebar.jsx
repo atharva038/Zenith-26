@@ -21,6 +21,12 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen, admin }) => {
     // },
     { id: "marathon", label: "Marathon", icon: "🏃", path: "/admin/marathon" },
     {
+      id: "marathon-refund",
+      label: "Marathon Refund",
+      icon: "💸",
+      path: "/admin/marathon/refund",
+    },
+    {
       id: "women-tournament",
       label: "Women's Tournament",
       icon: "👩‍🎓",

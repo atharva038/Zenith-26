@@ -14,6 +14,7 @@ const AdminMarathon = () => {
   const [stats, setStats] = useState(null);
   const [initialLoading, setInitialLoading] = useState(true); // For full-page spinner on first load
   const [loading, setLoading] = useState(false); // For filter/search operations
+  const [rejectedRegistrations, setRejectedRegistrations] = useState([]);
   const [selectedRegistration, setSelectedRegistration] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showScreenshotModal, setShowScreenshotModal] = useState(false);
@@ -75,22 +76,39 @@ const AdminMarathon = () => {
   const fetchRegistrations = useCallback(async () => {
     try {
       setLoading(true);
-      const queryParams = new URLSearchParams();
-      if (filters.status) queryParams.append("status", filters.status);
-      if (filters.search) queryParams.append("search", filters.search);
-      if (filters.gender) queryParams.append("gender", filters.gender);
+      const mainQueryParams = new URLSearchParams();
+      if (filters.status && filters.status !== "cancelled") {
+        mainQueryParams.append("status", filters.status);
+      } else {
+        mainQueryParams.append("excludeStatus", "cancelled");
+      }
+      if (filters.search) mainQueryParams.append("search", filters.search);
+      if (filters.gender) mainQueryParams.append("gender", filters.gender);
       if (filters.tshirtSize)
-        queryParams.append("tshirtSize", filters.tshirtSize);
+        mainQueryParams.append("tshirtSize", filters.tshirtSize);
       if (filters.tshirtDistributed)
-        queryParams.append("tshirtDistributed", filters.tshirtDistributed);
-      queryParams.append("page", filters.page);
-      queryParams.append("limit", filters.limit);
+        mainQueryParams.append("tshirtDistributed", filters.tshirtDistributed);
+      mainQueryParams.append("page", filters.page);
+      mainQueryParams.append("limit", filters.limit);
 
-      const response = await api.get(`/marathon/registrations?${queryParams}`);
-      if (response.data.success) {
-        setRegistrations(response.data.data);
-        setStats(response.data.stats);
-        setPagination(response.data.pagination || {});
+      const rejectedQueryParams = new URLSearchParams();
+      rejectedQueryParams.append("status", "cancelled");
+      if (filters.search) rejectedQueryParams.append("search", filters.search);
+      rejectedQueryParams.append("page", 1);
+      rejectedQueryParams.append("limit", 500);
+
+      const [mainResponse, rejectedResponse] = await Promise.all([
+        api.get(`/marathon/registrations?${mainQueryParams}`),
+        api.get(`/marathon/registrations?${rejectedQueryParams}`),
+      ]);
+
+      if (mainResponse.data.success) {
+        setRegistrations(mainResponse.data.data);
+        setStats(mainResponse.data.stats);
+        setPagination(mainResponse.data.pagination || {});
+      }
+      if (rejectedResponse.data.success) {
+        setRejectedRegistrations(rejectedResponse.data.data || []);
       }
     } catch (error) {
       toast.error("Failed to fetch registrations");
@@ -554,24 +572,15 @@ const AdminMarathon = () => {
   // Server returns only the items for current page, so no need to slice
   // Client-side: slice the full array based on page/limit
   const currentItems = pagination.totalPages
-    ? registrations.filter((reg) => reg.status !== "cancelled") // Server already paginated
-    : registrations
-        .filter((reg) => reg.status !== "cancelled")
-        .slice(
-          (filters.page - 1) * filters.limit,
-          filters.page * filters.limit,
-        );
+    ? registrations
+    : registrations.slice(
+        (filters.page - 1) * filters.limit,
+        filters.page * filters.limit,
+      );
 
   const totalPages =
     pagination.totalPages ||
-    Math.ceil(
-      registrations.filter((reg) => reg.status !== "cancelled").length /
-        filters.limit,
-    );
-
-  const rejectedRegistrations = registrations.filter(
-    (reg) => reg.status === "cancelled",
-  );
+    Math.ceil(registrations.length / filters.limit);
 
   // Only show full-page spinner on initial load, not during filtering
   if (initialLoading) {
@@ -806,7 +815,6 @@ const AdminMarathon = () => {
             <option value="">All Status</option>
             <option value="pending">Pending</option>
             <option value="confirmed">Confirmed</option>
-            <option value="cancelled">Cancelled</option>
           </select>
 
           {/* T-shirt Size Filter */}
