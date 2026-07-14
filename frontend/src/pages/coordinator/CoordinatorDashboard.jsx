@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -103,6 +103,26 @@ const SPORTS_CARDS = [
   },
 
   {
+    name: "Handball",
+    tagline: "Fast-Paced Team Sport",
+    date: "February 20-22, 2026",
+    requirements: "Both (Boys & Girls) - 9-16 players per team",
+    fee: "Boys: ₹1500 | Girls: ₹1500 per team",
+    image: "🤾",
+    gradient: "from-teal-900/40 via-teal-800/30 to-black/40",
+  },
+
+  {
+    name: "Tug of War",
+    tagline: "Strength & Teamwork",
+    date: "February 20-22, 2026",
+    requirements: "Both (Men & Women) - Exactly 8 players per team",
+    fee: "Men: ₹1000 | Women: ₹1000 per team",
+    image: "🪢",
+    gradient: "from-amber-900/40 via-amber-800/30 to-black/40",
+  },
+
+  {
     name: "Power Lifting",
     tagline: "Strength Supreme",
     date: "February 20-22, 2026",
@@ -174,6 +194,18 @@ const getCategoryBadgeInfo = (eventName, formData) => {
       shortLabel: "👩 Women's",
       className: "bg-pink-500/20 text-pink-300",
     };
+  } else if (genderCategory === "boys") {
+    return {
+      label: "👦 Boys Team",
+      shortLabel: "👦 Boys",
+      className: "bg-blue-500/20 text-blue-300",
+    };
+  } else if (genderCategory === "girls") {
+    return {
+      label: "👧 Girls Team",
+      shortLabel: "👧 Girls",
+      className: "bg-pink-500/20 text-pink-300",
+    };
   }
 
   return null;
@@ -181,11 +213,13 @@ const getCategoryBadgeInfo = (eventName, formData) => {
 
 const CoordinatorDashboard = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [coordinator, setCoordinator] = useState(null);
   const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({});
-  const [selectedSport, setSelectedSport] = useState(null); // null = show all cards
+  // Get selected sport from URL params for proper back navigation
+  const selectedSport = searchParams.get("sport") || null;
   const [sportStats, setSportStats] = useState({});
   const [filters, setFilters] = useState({
     sport: "",
@@ -201,7 +235,7 @@ const CoordinatorDashboard = () => {
   // Fetch sport-wise statistics
   const fetchSportsStats = useCallback(async () => {
     try {
-      const response = await api.get("/registrations?limit=9999");
+      const response = await api.get("/game-coordinator/registrations?limit=9999");
       if (response.data.success) {
         const allRegistrations = response.data.data || [];
         const stats = {};
@@ -221,9 +255,9 @@ const CoordinatorDashboard = () => {
     }
   }, []);
 
-  // Handle sport card click
+  // Handle sport card click - update URL for proper back navigation
   const handleSportCardClick = (sportName) => {
-    setSelectedSport(sportName);
+    setSearchParams({ sport: sportName });
     // Reset all filters when selecting a new sport
     setFilters({
       sport: sportName,
@@ -235,9 +269,9 @@ const CoordinatorDashboard = () => {
     });
   };
 
-  // Handle back to cards view
+  // Handle back to cards view - update URL for proper navigation
   const handleBackToCards = () => {
-    setSelectedSport(null);
+    setSearchParams({});
     setFilters({
       sport: "",
       status: "",
@@ -249,8 +283,11 @@ const CoordinatorDashboard = () => {
   };
 
   const fetchRegistrations = useCallback(async () => {
+    // Get sport from URL params
+    const sportFromUrl = searchParams.get("sport");
+    
     // Only fetch if a sport is selected
-    if (!selectedSport) {
+    if (!sportFromUrl) {
       setLoading(false);
       return;
     }
@@ -260,21 +297,21 @@ const CoordinatorDashboard = () => {
       const queryParams = new URLSearchParams();
 
       // Always filter by the selected sport
-      queryParams.append("eventName", selectedSport);
+      queryParams.append("eventName", sportFromUrl);
 
       if (filters.status) queryParams.append("status", filters.status);
       if (filters.search) queryParams.append("search", filters.search);
       queryParams.append("page", filters.page);
       queryParams.append("limit", filters.limit);
 
-      const response = await api.get(`/registrations?${queryParams}`);
+      const response = await api.get(`/game-coordinator/registrations?${queryParams}`);
 
       if (response.data.success) {
         let allRegistrations = response.data.data || [];
 
         // Additional client-side filter to ensure only selected sport
         allRegistrations = allRegistrations.filter(
-          (reg) => reg.eventName === selectedSport,
+          (reg) => reg.eventName === sportFromUrl,
         );
 
         // Additional filter for accommodation if set
@@ -307,7 +344,7 @@ const CoordinatorDashboard = () => {
     } finally {
       setLoading(false);
     }
-  }, [selectedSport, filters, navigate]);
+  }, [searchParams, filters, navigate]);
 
   useEffect(() => {
     const coordinatorData = localStorage.getItem("coordinatorData");
@@ -318,6 +355,14 @@ const CoordinatorDashboard = () => {
 
     setCoordinator(JSON.parse(coordinatorData));
   }, [navigate]);
+
+  // Sync filters when URL sport param changes (for browser back navigation)
+  useEffect(() => {
+    setFilters((prev) => ({
+      ...prev,
+      sport: selectedSport || "",
+    }));
+  }, [selectedSport]);
 
   useEffect(() => {
     fetchRegistrations();

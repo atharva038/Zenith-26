@@ -21,6 +21,12 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen, admin }) => {
     // },
     { id: "marathon", label: "Marathon", icon: "🏃", path: "/admin/marathon" },
     {
+      id: "marathon-refund",
+      label: "Marathon Refund",
+      icon: "💸",
+      path: "/admin/marathon/refund",
+    },
+    {
       id: "women-tournament",
       label: "Women's Tournament",
       icon: "👩‍🎓",
@@ -31,6 +37,12 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen, admin }) => {
       label: "Main Zenith",
       icon: "🏆",
       path: "/admin/sports-registrations",
+    },
+    {
+      id: "accommodation",
+      label: "Accommodation",
+      icon: "🏨",
+      path: "/admin/accommodation",
     },
     // 🔒 HIDDEN: On-Spot Registration (Tournament Closed)
     // {

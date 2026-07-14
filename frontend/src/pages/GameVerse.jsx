@@ -434,38 +434,36 @@ const sportsData = [
     ],
     registrationStatus: "open",
   },
-  // {
-  //   id: 6,
-  //   name: "HANDBALL",
-  //   icon: "🤾",
-  //   color: "#DC2626",
-  //   position: [14.14, 0, 14.14], // Southeast
-  //   orbit: 2,
-  //   tier: 2,
-  //   tagline: "Fast & Furious",
-  //   description:
-  //     "High-speed action with quick passes and powerful shots! Showcase your agility and teamwork in this exciting handball tournament.",
-  //   date: "February 20-22, 2026",
-  //   venue: "Indoor Sports Arena",
-  //   teamSize: "Boys only - Minimum 9, Maximum 16 players",
-  //   registrationFee: "₹1500 per team",
-  //   rules: [
-  //     "25-minute match (10+10 minutes halves, 5-minute break)",
-  //     "Rolling substitutions allowed",
-  //     "20 minutes early reporting",
-  //     "Disqualification if absent",
-  //     "Age limit: 25 years",
-  //   ],
-  //   coordinators: [
-  //     { name: "Aditya Joshi", contact: "7820939780" },
-  //     { name: "Amarja Dhepe", contact: "9552110021" },
-  //   ],
-  //   coordinators: [
-  //     { name: "Aditya Joshi", phone: "7820939780" },
-  //     { name: "Amarja Dhepe", phone: "9552110021" },
-  //   ],
-  //   registrationStatus: "open",
-  // },
+  {
+    id: 6,
+    name: "HANDBALL",
+    icon: "🤾",
+    color: "#DC2626",
+    position: [14.14, 0, 14.14], // Southeast
+    orbit: 2,
+    tier: 2,
+    tagline: "Fast & Furious",
+    description:
+      "High-speed action with quick passes and powerful shots! Showcase your agility and teamwork in this exciting handball tournament.",
+    date: "February 20-22, 2026",
+    venue: "Indoor Sports Arena",
+    teamSize: "Separate teams for Boys and Girls - Minimum 9, Maximum 16 players per team",
+    registrationFee: "₹1500 per team",
+    rules: [
+      "Boys Team: 9-16 players - ₹1500",
+      "Girls Team: 9-16 players - ₹1500",
+      "25-minute match (10+10 minutes halves, 5-minute break)",
+      "Rolling substitutions allowed",
+      "20 minutes early reporting",
+      "Disqualification if absent",
+      "Age limit: 25 years",
+    ],
+    coordinators: [
+      { name: "Aditya Joshi", phone: "7820939780" },
+      { name: "Amarja Dhepe", phone: "9552110021" },
+    ],
+    registrationStatus: "open",
+  },
   {
     id: 7,
     name: "KABADDI",
@@ -532,7 +530,7 @@ const sportsData = [
     registrationStatus: "open",
   },
 
-  // ===== OUTER RING (Radius 26) - 4 Sports =====
+  // ===== OUTER RING (Radius 26) - 5 Sports =====
   {
     id: 11,
     name: "ATHLETICS",
@@ -645,8 +643,38 @@ const sportsData = [
     ],
     registrationStatus: "open",
   },
+  {
+    id: 16,
+    name: "TUG OF WAR",
+    icon: "🪢",
+    color: "#D97706",
+    position: [18.38, 0, -18.38], // Northeast diagonal on orbit 3
+    orbit: 3,
+    tier: 3,
+    tagline: "Pull Together",
+    description:
+      "The ultimate test of team strength and coordination! Compete in this classic battle of power as teams pull against each other in an epic tug of war showdown.",
+    date: "February 20-22, 2026",
+    venue: "Outdoor Sports Ground",
+    teamSize: "Both (Men & Women) - 8 players per team",
+    registrationFee: "Men: ₹1000 | Women: ₹1000 per team",
+    rules: [
+      "Men's Team: 8 players - ₹1000",
+      "Women's Team: 8 players - ₹1000",
+      "8 players per team required",
+      "Best of 3 pulls format",
+      "TWIF (Tug of War International Federation) rules apply",
+      "Team weight regulations enforced",
+      "20 minutes early reporting",
+      "Age limit: 25 years",
+    ],
+    coordinators: [
+      { name: "Swayam Baheti", contact: "7276218795" },
+    ],
+    registrationStatus: "open",
+  },
   // {
-  //   id: 16,
+  //   id: 17,
   //   name: "BOX CRICKET",
   //   icon: "📦",
   //   color: "#7C3AED",
@@ -905,7 +933,7 @@ function Scene({ onIslandClick, lockedPlanet, onRegisterPlanetRef, availableSpor
             }
           />
         ))}
-      {/* Orbiting Planets - Outer Ring (Orbit 3) */}
+      {/* Orbiting Planets - Outer Ring (Orbit 3) - 5 Sports */}
       {availableSports
         .filter((s) => s.orbit === 3)
         .map((sport, index) => (
@@ -914,7 +942,7 @@ function Scene({ onIslandClick, lockedPlanet, onRegisterPlanetRef, availableSpor
             sport={sport}
             orbitRadius={26}
             orbitSpeed={0.06}
-            initialAngle={(index / 4) * Math.PI * 2}
+            initialAngle={(index / 5) * Math.PI * 2}
             onIslandClick={onIslandClick}
             isLocked={lockedPlanet?.id === sport.id}
             onRegisterRef={
@@ -1153,7 +1181,7 @@ export default function GameVerse() {
 
   // Split sports into left and right lists - use availableSports instead of all sports
   const leftSports = availableSports.slice(0, 6);
-  const rightSports = availableSports.slice(6, 12);
+  const rightSports = availableSports.slice(6); // Get all remaining sports (now includes Tug of War)
 
   // Check if both toggles are off (show coming soon)
   const showComingSoon = !isCricketOpen && !isOtherSportsOpen;

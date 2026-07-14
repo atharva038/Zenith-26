@@ -182,7 +182,7 @@ const AdminMediaUpload = () => {
             className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-gray-900/95 to-black/95 backdrop-blur-xl border-r border-neon-blue/20 z-50"
           >
             <div className="p-6 border-b border-gray-700/50">
-              <Link to="/admin/dashboard">
+              <Link to="/admin/sports-registrations">
                 <h2 className="text-2xl font-bold font-orbitron bg-gradient-to-r from-neon-blue to-electric-cyan bg-clip-text text-transparent">
                   ZENITH 2026
                 </h2>
@@ -192,7 +192,7 @@ const AdminMediaUpload = () => {
 
             <nav className="p-4 space-y-2">
               <motion.button
-                onClick={() => navigate("/admin/dashboard")}
+                onClick={() => navigate("/admin/sports-registrations")}
                 whileHover={{x: 5}}
                 className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all font-rajdhani text-gray-400 hover:text-white hover:bg-white/5"
               >

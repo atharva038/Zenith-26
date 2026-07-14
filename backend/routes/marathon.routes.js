@@ -9,6 +9,9 @@ import {
   markTshirtDistributed,
   undoTshirtDistribution,
   getTshirtDistributionStats,
+  getMarathonRefundList,
+  syncMarathonRefundData,
+  updateMarathonRefundStatus,
 } from "../controllers/marathon.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 import { uploadPaymentScreenshot } from "../middleware/cloudinaryUpload.middleware.js";
@@ -53,6 +56,9 @@ router.post(
 );
 
 // Admin routes - Protected
+router.get("/refund", authMiddleware, getMarathonRefundList);
+router.post("/refund/sync", authMiddleware, syncMarathonRefundData);
+router.patch("/refund/:id", authMiddleware, updateMarathonRefundStatus);
 router.get("/registrations", authMiddleware, getAllRegistrations);
 router.get("/registrations/:id", authMiddleware, getRegistrationById);
 router.put("/registrations/:id", authMiddleware, updateRegistrationStatus);

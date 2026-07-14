@@ -33,14 +33,31 @@ const api = axios.create({
   timeout: 60000, // 60 second timeout for large media uploads
 });
 
-// Add auth token to requests
+// Add auth token to requests - use appropriate token based on API endpoint
 api.interceptors.request.use(
   (config) => {
-    // Check for admin token first, then coordinator token
     const adminToken = localStorage.getItem("adminToken");
     const coordinatorToken = localStorage.getItem("coordinatorToken");
+    const mediaTeamToken = localStorage.getItem("mediaTeamToken");
 
-    const token = adminToken || coordinatorToken;
+    // Determine which token to use based on the URL path
+    const url = config.url || "";
+    let token = null;
+
+    if (url.includes("/game-coordinator") || url.includes("/coordinator")) {
+      // Coordinator API calls should use coordinator token
+      token = coordinatorToken;
+    } else if (url.includes("/media-team")) {
+      // Media team API calls should use media team token
+      token = mediaTeamToken;
+    } else if (url.includes("/admin")) {
+      // Admin API calls should use admin token
+      token = adminToken;
+    } else {
+      // For other endpoints, prefer the most specific token available
+      // based on which user type is likely making the request
+      token = adminToken || coordinatorToken || mediaTeamToken;
+    }
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -56,11 +73,47 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Token expired or invalid
-      localStorage.removeItem("adminToken");
-      localStorage.removeItem("adminData");
-      window.location.href = "/admin/login";
+    const status = error.response?.status;
+    const url = error.config?.url || "";
+
+    // Handle authentication errors (401) and authorization errors (403)
+    if (status === 401 || status === 403) {
+      // Get current tokens to determine who is actually logged in
+      const adminToken = localStorage.getItem("adminToken");
+      const coordinatorToken = localStorage.getItem("coordinatorToken");
+      const mediaTeamToken = localStorage.getItem("mediaTeamToken");
+
+      // Determine which user type based on the failed request URL and which token is present
+      if (url.includes("/game-coordinator") || url.includes("/coordinator")) {
+        // Only clear/redirect if coordinator was actually trying to use this endpoint
+        if (coordinatorToken) {
+          localStorage.removeItem("coordinatorToken");
+          localStorage.removeItem("coordinatorData");
+          if (!window.location.pathname.includes("/coordinator/login")) {
+            window.location.href = "/coordinator/login";
+          }
+        }
+        // If no coordinator token but admin/media token exists, don't redirect
+        // (admin/media might be on wrong page, let them handle it)
+      } else if (url.includes("/media-team")) {
+        // Only clear/redirect if media team was actually trying to use this endpoint
+        if (mediaTeamToken) {
+          localStorage.removeItem("mediaTeamToken");
+          localStorage.removeItem("mediaTeamData");
+          if (!window.location.pathname.includes("/media-team/login")) {
+            window.location.href = "/media-team/login";
+          }
+        }
+      } else if (url.includes("/admin")) {
+        // Only clear/redirect if admin was actually trying to use this endpoint
+        if (adminToken) {
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("adminData");
+          if (!window.location.pathname.includes("/admin/login")) {
+            window.location.href = "/admin/login";
+          }
+        }
+      }
     }
     return Promise.reject(error);
   },

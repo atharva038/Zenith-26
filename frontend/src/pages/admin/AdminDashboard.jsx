@@ -99,7 +99,7 @@ const AdminDashboard = () => {
               animate={{opacity: 1, y: 0}}
               className="space-y-6"
             >
-              {/* Stats Cards */}
+              {/* Admin Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
                   {
@@ -143,6 +143,74 @@ const AdminDashboard = () => {
                   </motion.div>
                 ))}
               </div>
+
+              {/* Registration & Fee Collection Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                {[
+                  {
+                    label: "Total Registrations",
+                    value: stats?.totalRegistrations || 0,
+                    icon: "📝",
+                    color: "purple-500",
+                    subtitle: "(All statuses)",
+                  },
+                  {
+                    label: "Confirmed",
+                    value: stats?.confirmedRegistrations || 0,
+                    icon: "✓",
+                    color: "green-500",
+                  },
+                  {
+                    label: "Pending",
+                    value: stats?.pendingRegistrations || 0,
+                    icon: "⏳",
+                    color: "yellow-500",
+                  },
+                  {
+                    label: "Cancelled",
+                    value: stats?.cancelledRegistrations || 0,
+                    icon: "❌",
+                    color: "red-500",
+                  },
+                  {
+                    label: "Total Fee Collected",
+                    value: `₹${(stats?.totalRegistrationFee || 0).toLocaleString(
+                      "en-IN"
+                    )}`,
+                    icon: "💰",
+                    color: "neon-orange",
+                    subtitle: `(${stats?.confirmedRegistrations || 0} confirmed only)`,
+                  },
+                ].map((stat, index) => (
+                  <motion.div
+                    key={`reg-${index}`}
+                    initial={{opacity: 0, y: 20}}
+                    animate={{opacity: 1, y: 0}}
+                    transition={{delay: 0.3 + index * 0.1}}
+                    whileHover={{y: -5}}
+                    className={`bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-xl rounded-xl p-6 border border-${stat.color}/20 shadow-xl`}
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-3xl">{stat.icon}</span>
+                      <div
+                        className={`text-2xl md:text-3xl font-bold bg-gradient-to-r from-${stat.color} to-${stat.color}/50 bg-clip-text text-transparent`}
+                      >
+                        {stat.value}
+                      </div>
+                    </div>
+                    <h3 className="text-gray-400 font-rajdhani text-sm">
+                      {stat.label}
+                    </h3>
+                    {stat.subtitle && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        {stat.subtitle}
+                      </p>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+
+
 
               {/* Welcome Message */}
               <motion.div
