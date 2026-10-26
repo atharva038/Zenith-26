@@ -172,10 +172,10 @@ const Schedule = () => {
             className="mt-12 p-6 bg-gradient-to-r from-purple-900/30 to-blue-900/30 rounded-xl border border-purple-500/30"
           >
             <p className="text-gray-300 text-lg">
-              <span className="font-bold text-[#ffb36a]">ZENITH 2026</span> - The biggest sports fest of the year
+              <span className="font-bold text-[#ffb36a]">ZENITH 2026-27</span> - The biggest sports fest of the year
             </p>
             <p className="text-gray-400 mt-2">
-              📅 <span className="font-semibold text-white">20th - 22nd February 2026</span>
+              📅 <span className="font-semibold text-white">26th December 2026</span>
             </p>
             <p className="text-gray-400 mt-1">
               Multiple sports • Exciting prizes • Unforgettable experience

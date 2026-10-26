@@ -89,7 +89,7 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen, admin }) => {
             <div className="flex items-center justify-between mb-2">
               <Link to="/home">
                 <h2 className="text-2xl font-bold font-orbitron bg-gradient-to-r from-neon-blue to-electric-cyan bg-clip-text text-transparent">
-                  ZENITH 2026
+                  ZENITH 2026-27
                 </h2>
               </Link>
               {/* Close button - only on mobile */}

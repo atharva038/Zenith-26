@@ -641,7 +641,7 @@ const SportsGrid = () => {
             transition={{ duration: 1, delay: 0.2 }}
             className="text-6xl md:text-8xl font-black mb-6 bg-gradient-to-r from-orange-500 via-orange-400 to-yellow-500 bg-clip-text text-transparent tracking-tight"
           >
-            ZENITH 2026
+            ZENITH 2026-27
           </motion.h1>
 
           <motion.p

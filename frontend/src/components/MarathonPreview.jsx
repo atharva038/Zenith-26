@@ -1,22 +1,20 @@
-import {useRef} from "react";
-import {Link} from "react-router-dom";
-import {motion, useInView} from "framer-motion";
+import { useRef } from "react";
+import { Link } from "react-router-dom";
+import { motion, useInView } from "framer-motion";
 
 /**
  * MarathonPreview - Eye-catching marathon teaser section for homepage
- * Displays highlights and CTA to full marathon page (Postponed to March)
+ * Displays highlights and CTA to full marathon registration (01 Nov 2026)
  */
 const MarathonPreview = () => {
   const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, {once: true, margin: "-100px"});
-
-  // Marathon postponed to March - no specific date yet
+  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
   const highlights = [
-    {icon: "🏃", text: "5K Run"},
-    {icon: "👕", text: "Free T-Shirt"},
-    {icon: "�", text: "Medals for Winners"},
-    {icon: "�", text: "Cash Prizes"},
+    { icon: "🏃", text: "5K Run" },
+    { icon: "👕", text: "Free T-Shirt" },
+    { icon: "🏅", text: "Medals for Winners" },
+    { icon: "💵", text: "Cash Prizes" },
   ];
 
   return (
@@ -28,14 +26,15 @@ const MarathonPreview = () => {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('https://res.cloudinary.com/dvmsho3pj/image/upload/v1768496483/zenith-26/marathon/marathon-bg.png')",
+          backgroundImage:
+            "url('https://res.cloudinary.com/dvmsho3pj/image/upload/v1768496483/zenith-26/marathon/marathon-bg.png')",
         }}
       />
-      
+
       {/* Dark Overlays for Text Visibility */}
       <div className="absolute inset-0 bg-black/65" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/70" />
-      
+
       {/* Animated background pattern */}
       <div className="absolute inset-0 opacity-20">
         <div
@@ -74,16 +73,14 @@ const MarathonPreview = () => {
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
-        {/* Section header removed */}
-
         {/* Main content grid */}
         <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
           {/* Left side - Visual/Runner illustration */}
           <motion.div
             className="relative"
-            initial={{opacity: 0, x: -50}}
-            animate={isInView ? {opacity: 1, x: 0} : {}}
-            transition={{duration: 0.6, delay: 0.2}}
+            initial={{ opacity: 0, x: -50 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
           >
             <div
               className="relative aspect-square max-w-md mx-auto rounded-2xl overflow-hidden backdrop-blur-md"
@@ -145,15 +142,15 @@ const MarathonPreview = () => {
                 <div
                   className="backdrop-blur-md rounded-xl p-4 text-center"
                   style={{
-                    background: "rgba(127, 29, 29, 0.7)",
-                    border: "1px solid rgba(239, 68, 68, 0.3)",
+                    background: "rgba(234, 88, 12, 0.25)",
+                    border: "1px solid rgba(249, 115, 22, 0.4)",
                   }}
                 >
-                  <p className="text-red-300 font-bold text-lg">
-                    🚫 CANCELLED
+                  <p className="text-orange-300 font-bold text-lg">
+                    📅 01 NOV 2026
                   </p>
-                  <p className="text-white/60 text-sm">
-                    Not happening this year
+                  <p className="text-white/80 text-sm">
+                    Registrations Open • 5 KM Run
                   </p>
                 </div>
               </div>
@@ -162,12 +159,12 @@ const MarathonPreview = () => {
 
           {/* Right side - Info and CTA */}
           <motion.div
-            initial={{opacity: 0, x: 50}}
-            animate={isInView ? {opacity: 1, x: 0} : {}}
-            transition={{duration: 0.6, delay: 0.3}}
+            initial={{ opacity: 0, x: 50 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.3 }}
           >
             {/* Highlights grid */}
-            <div className="grid grid-cols-2 gap-3 mb-8">
+            <div className="grid grid-cols-2 gap-3 mb-6">
               {highlights.map((item, i) => (
                 <motion.div
                   key={i}
@@ -176,9 +173,9 @@ const MarathonPreview = () => {
                     background: "rgba(0,0,0,0.4)",
                     border: "1px solid rgba(255,255,255,0.1)",
                   }}
-                  initial={{opacity: 0, y: 20}}
-                  animate={isInView ? {opacity: 1, y: 0} : {}}
-                  transition={{duration: 0.4, delay: 0.4 + i * 0.1}}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.4, delay: 0.4 + i * 0.1 }}
                   whileHover={{ background: "rgba(255,140,50,0.15)" }}
                 >
                   <span className="text-2xl">{item.icon}</span>
@@ -187,37 +184,58 @@ const MarathonPreview = () => {
               ))}
             </div>
 
-            {/* Registration fee */}
+            {/* Registration status & fee */}
             <div
               className="mb-6 p-5 rounded-xl backdrop-blur-md"
               style={{
                 background:
-                  "linear-gradient(135deg, rgba(239,68,68,0.1) 0%, rgba(220,38,38,0.1) 100%)",
-                border: "1px solid rgba(239,68,68,0.3)",
-                boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+                  "linear-gradient(135deg, rgba(255,140,50,0.15) 0%, rgba(234,88,12,0.1) 100%)",
+                border: "1px solid rgba(249,115,22,0.4)",
+                boxShadow: "0 10px 30px rgba(255,140,50,0.1)",
               }}
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-white/70 text-sm font-medium">Event Status</p>
-                  <p className="text-3xl font-black text-red-400">
-                    CANCELLED
+                  <p className="text-white/70 text-sm font-medium">Registration Fee</p>
+                  <p className="text-3xl font-black text-white">
+                    ₹99 <span className="text-sm font-normal text-white/50">/ person</span>
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-red-400 text-sm font-bold">
-                    🚫 Closed
+                  <p className="inline-flex items-center gap-1.5 text-emerald-400 text-sm font-bold">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    Registration Open
                   </p>
-                  <p className="text-white/60 text-xs">
-                    Not happening this year
+                  <p className="text-orange-300 font-semibold text-xs mt-0.5">
+                    📅 01 Nov 2026
                   </p>
                 </div>
               </div>
+
+              {/* Route snippet */}
+              <div className="mt-3 pt-3 border-t border-white/10 text-xs text-white/80 leading-relaxed">
+                <span className="text-orange-400 font-semibold">Route: </span>
+                SP Office → Shivajinagar → ITI Corner → Workshop Corner → Bhagyanagar → Anandnagar → Nagarjuna Hotel
+              </div>
             </div>
 
-            {/* CTA Buttons - Registration button removed */}
+            {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              {/* Registration button removed */}
+              <Link to="/marathon" className="flex-1">
+                <motion.button
+                  className="w-full py-4 px-6 rounded-xl font-bold text-lg text-black transition-all shadow-lg shadow-orange-500/30"
+                  style={{
+                    background: "linear-gradient(90deg, #ffb36a, #ff8b1f, #ea580c)",
+                  }}
+                  whileHover={{
+                    scale: 1.03,
+                    boxShadow: "0 12px 30px rgba(255,140,50,0.5)",
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  Register Now →
+                </motion.button>
+              </Link>
 
               <Link to="/marathon-event" className="flex-1">
                 <motion.button
@@ -230,7 +248,7 @@ const MarathonPreview = () => {
                     borderColor: "rgba(255,140,50,0.6)",
                     scale: 1.03,
                   }}
-                  whileTap={{scale: 0.98}}
+                  whileTap={{ scale: 0.98 }}
                 >
                   Learn More →
                 </motion.button>

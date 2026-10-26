@@ -67,7 +67,7 @@ const translations = {
     heroLine1: "Before the run,",
     heroLine2: "there is a moment.",
     heroSubtext: "This is that moment.",
-    dateBadge: "📅 POSTPONED TO MARCH · SGGSIE&T Campus",
+    dateBadge: "📅 01 NOV 2026 · SGGSIE&T Campus",
     ctaButton: "Begin the Journey",
     scroll: "Scroll",
     
@@ -96,21 +96,27 @@ const translations = {
     // Route Checkpoints
     start: "Start",
     finish: "Finish",
-    checkpoint1Title: "Zudio",
-    checkpoint1Desc: "The beginning is always quiet.",
-    checkpoint1Subtext: "This is where intention becomes movement.",
-    checkpoint2Title: "Ram Setu Pool",
-    checkpoint2Desc: "You cross not just a bridge, but a belief.",
-    checkpoint2Subtext: "The city opens up. The run begins to breathe.",
-    checkpoint3Title: "Ravi Nagar",
-    checkpoint3Desc: "Streets that have seen everyday strength.",
-    checkpoint3Subtext: "You run with the city, not through it.",
-    checkpoint4Title: "Mama Chowk",
-    checkpoint4Desc: "Noise, life, and rhythm.",
-    checkpoint4Subtext: "This is where focus matters.",
-    checkpoint5Title: "Modi Ground",
-    checkpoint5Desc: "Not an ending.",
-    checkpoint5Highlight: "A becoming.",
+    checkpoint1Title: "SP Office",
+    checkpoint1Desc: "The beginning is full of energy and purpose.",
+    checkpoint1Subtext: "Start Point: SP Office, Nanded",
+    checkpoint2Title: "Shivajinagar",
+    checkpoint2Desc: "You cross into the avenue with steady determination.",
+    checkpoint2Subtext: "Checkpoint 1: The pace sets in.",
+    checkpoint3Title: "ITI Corner",
+    checkpoint3Desc: "Streets that have seen everyday strength and grit.",
+    checkpoint3Subtext: "Checkpoint 2: You run with the city.",
+    checkpoint4Title: "Workshop Corner",
+    checkpoint4Desc: "Noise, life, and the crowd's energy urge you forward.",
+    checkpoint4Subtext: "Checkpoint 3: Keep the focus sharp.",
+    checkpoint5Title: "Bhagyanagar",
+    checkpoint5Desc: "Pushing through the heart of the course with pure endurance.",
+    checkpoint5Subtext: "Checkpoint 4: Building the momentum.",
+    checkpoint6Title: "Anandnagar",
+    checkpoint6Desc: "The penultimate stretch where champions push past limits.",
+    checkpoint6Subtext: "Checkpoint 5: The finish line is near.",
+    checkpoint7Title: "Nagarjuna Hotel",
+    checkpoint7Desc: "The triumphant final sprint. Every step brought you here.",
+    checkpoint7Highlight: "Finish Line: Victory and Pride.",
     
     // Route Summary
     totalDistance: "Total Distance",
@@ -140,7 +146,7 @@ const translations = {
     
     // Schedule
     scheduleTitle: "Race Day Schedule",
-    scheduleSubtitle: "Postponed to March 2026",
+    scheduleSubtitle: "01 Nov 2026",
     
     // FAQ
     faqLabel: "Before You Ask",
@@ -165,7 +171,7 @@ const translations = {
     heroLine1: "धावण्यापूर्वी,",
     heroLine2: "एक क्षण असतो.",
     heroSubtext: "हाच तो क्षण आहे.",
-    dateBadge: "📅 मार्च मध्ये पुढे ढकलले · SGGSIE&T कॅम्पस",
+    dateBadge: "📅 ०१ नोव्हेंबर २०२६ · SGGSIE&T कॅम्पस",
     ctaButton: "प्रवास सुरू करा",
     scroll: "खाली स्क्रोल करा",
     
@@ -194,21 +200,27 @@ const translations = {
     // Route Checkpoints
     start: "सुरुवात",
     finish: "समाप्ती",
-    checkpoint1Title: "झुडिओ",
-    checkpoint1Desc: "सुरुवात नेहमीच शांत असते.",
-    checkpoint1Subtext: "इथेच इच्छाशक्ती हालचालीत बदलते.",
-    checkpoint2Title: "राम सेतू तलाव",
-    checkpoint2Desc: "तुम्ही फक्त पूल नाही, विश्वास ओलांडता.",
-    checkpoint2Subtext: "शहर उघडतं. धावणं श्वास घेऊ लागतं.",
-    checkpoint3Title: "रवी नगर",
-    checkpoint3Desc: "रोजच्या ताकदीचे साक्षीदार रस्ते.",
-    checkpoint3Subtext: "तुम्ही शहरासोबत धावता, त्यातून नाही.",
-    checkpoint4Title: "मामा चौक",
-    checkpoint4Desc: "गोंगाट, जीवन आणि लय.",
-    checkpoint4Subtext: "इथेच एकाग्रता महत्त्वाची.",
-    checkpoint5Title: "मोदी ग्राउंड",
-    checkpoint5Desc: "हा शेवट नाही.",
-    checkpoint5Highlight: "हे होणं आहे.",
+    checkpoint1Title: "एसपी ऑफिस",
+    checkpoint1Desc: "सुरुवात नेहमीच उत्साही आणि उद्दिष्टाने भरलेली असते.",
+    checkpoint1Subtext: "सुरुवातीचा बिंदू: एसपी ऑफिस, नांदेड",
+    checkpoint2Title: "शिवाजीनगर",
+    checkpoint2Desc: "स्थिर गतीने तुम्ही शहराच्या मुख्य रस्त्यावरून पुढे सरकता.",
+    checkpoint2Subtext: "चेकपॉइंट १: वेग आणि एकाग्रता.",
+    checkpoint3Title: "आयटीआय कॉर्नर",
+    checkpoint3Desc: "रोजच्या ताकदीचे आणि परिश्रमाचे साक्षीदार रस्ते.",
+    checkpoint3Subtext: "चेकपॉइंट २: तुम्ही शहरासोबत धावता.",
+    checkpoint4Title: "वर्कशॉप कॉर्नर",
+    checkpoint4Desc: "उत्साह, जीवन आणि लय तुम्हाला पुढे नेतात.",
+    checkpoint4Subtext: "चेकपॉइंट ३: इथेच एकाग्रता महत्त्वाची.",
+    checkpoint5Title: "भाग्यनगर",
+    checkpoint5Desc: "शर्यतीच्या मध्यभागी आत्मविश्वास अधिक बळावतो.",
+    checkpoint5Subtext: "चेकपॉइंट ४: वेग कायम ठेवा.",
+    checkpoint6Title: "आनंदनगर",
+    checkpoint6Desc: "शेवटच्या टप्प्यात पोहोचताना खरी परीक्षा सुरू होते.",
+    checkpoint6Subtext: "चेकपॉइंट ५: अंतिम रेषा अगदी जवळ.",
+    checkpoint7Title: "नागार्जुन हॉटेल",
+    checkpoint7Desc: "हा विजय आणि स्वाभिमानाचा अंतिम क्षण.",
+    checkpoint7Highlight: "समाप्तीचा बिंदू: नागार्जुन हॉटेल.",
     
     // Route Summary
     totalDistance: "एकूण अंतर",
@@ -238,7 +250,7 @@ const translations = {
     
     // Schedule
     scheduleTitle: "शर्यतीच्या दिवसाचे वेळापत्रक",
-    scheduleSubtitle: "मार्च २०२६ मध्ये पुढे ढकलले",
+    scheduleSubtitle: "०१ नोव्हेंबर २०२६",
     
     // FAQ
     faqLabel: "विचारण्यापूर्वी",
@@ -1211,6 +1223,22 @@ const MarathonPage = () => {
             </p>
           </motion.div>
 
+          {/* Official Route Banner */}
+          <motion.div
+            initial={{opacity: 0, y: 15}}
+            whileInView={{opacity: 1, y: 0}}
+            viewport={{once: true}}
+            transition={{duration: 0.6}}
+            className="max-w-3xl mx-auto my-8 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-orange-500/15 via-amber-500/10 to-orange-500/15 border border-orange-500/30 text-center shadow-lg shadow-orange-500/5"
+          >
+            <span className="text-orange-400 font-bold text-xs uppercase tracking-widest block mb-1.5">
+              Official 5 KM Marathon Route
+            </span>
+            <p className="text-white font-bold text-sm sm:text-base tracking-wide leading-relaxed">
+              Route: SP Office → Shivajinagar → ITI Corner → Workshop Corner → Bhagyanagar → Anandnagar → Nagarjuna Hotel
+            </p>
+          </motion.div>
+
           {/* Route Journey - Vertical Timeline */}
           <div className="relative">
             {/* Glowing Route Line - Vertical */}
@@ -1393,7 +1421,75 @@ const MarathonPage = () => {
                 </div>
               </motion.div>
 
-              {/* FINISH - Modi Ground */}
+              {/* Bhagyanagar */}
+              <motion.div
+                initial={{opacity: 0, x: -25}}
+                whileInView={{opacity: 1, x: 0}}
+                viewport={{once: true, margin: "-50px"}}
+                transition={{duration: 0.7, delay: 0.1, ease: easing.easeOutQuart}}
+                className="relative pl-12 md:pl-24"
+              >
+                <div className="absolute left-1/2 md:left-8 -translate-x-1/2 md:translate-x-0 top-2">
+                  <div className="w-3 h-3 rounded-full bg-orange-400/50 border-2 border-black" />
+                </div>
+                
+                <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-6 md:p-8 hover:bg-white/[0.04] transition-colors duration-500 group">
+                  <h3 
+                    className="text-2xl md:text-3xl font-bold text-white mb-3"
+                    style={{ fontFamily: language === 'mr' ? marathiFonts.headline : "'Oswald', sans-serif" }}
+                  >
+                    {t.checkpoint5Title}
+                  </h3>
+                  <p 
+                    className="text-white/50 leading-relaxed mb-4"
+                    style={{ fontFamily: language === 'mr' ? marathiFonts.literary : "'Playfair Display', Georgia, serif" }}
+                  >
+                    {t.checkpoint5Desc}
+                  </p>
+                  <p 
+                    className="text-white/30 text-sm italic group-hover:text-orange-400/60 transition-colors duration-500"
+                    style={{ fontFamily: language === 'mr' ? marathiFonts.body : undefined }}
+                  >
+                    {t.checkpoint5Subtext}
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* Anandnagar */}
+              <motion.div
+                initial={{opacity: 0, x: 25}}
+                whileInView={{opacity: 1, x: 0}}
+                viewport={{once: true, margin: "-50px"}}
+                transition={{duration: 0.7, delay: 0.1, ease: easing.easeOutQuart}}
+                className="relative pl-12 md:pl-24"
+              >
+                <div className="absolute left-1/2 md:left-8 -translate-x-1/2 md:translate-x-0 top-2">
+                  <div className="w-3 h-3 rounded-full bg-orange-400/50 border-2 border-black" />
+                </div>
+                
+                <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-6 md:p-8 hover:bg-white/[0.04] transition-colors duration-500 group">
+                  <h3 
+                    className="text-2xl md:text-3xl font-bold text-white mb-3"
+                    style={{ fontFamily: language === 'mr' ? marathiFonts.headline : "'Oswald', sans-serif" }}
+                  >
+                    {t.checkpoint6Title}
+                  </h3>
+                  <p 
+                    className="text-white/50 leading-relaxed mb-4"
+                    style={{ fontFamily: language === 'mr' ? marathiFonts.literary : "'Playfair Display', Georgia, serif" }}
+                  >
+                    {t.checkpoint6Desc}
+                  </p>
+                  <p 
+                    className="text-white/30 text-sm italic group-hover:text-orange-400/60 transition-colors duration-500"
+                    style={{ fontFamily: language === 'mr' ? marathiFonts.body : undefined }}
+                  >
+                    {t.checkpoint6Subtext}
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* FINISH - Nagarjuna Hotel */}
               <motion.div
                 initial={{opacity: 0, y: 25}}
                 whileInView={{opacity: 1, y: 0}}
@@ -1441,13 +1537,13 @@ const MarathonPage = () => {
                       className="text-2xl md:text-3xl font-bold text-white mb-3"
                       style={{ fontFamily: language === 'mr' ? marathiFonts.headline : "'Oswald', sans-serif" }}
                     >
-                      {t.checkpoint5Title}
+                      {t.checkpoint7Title}
                     </h3>
                     <p 
                       className="text-xl text-white/70 leading-relaxed mb-4"
                       style={{ fontFamily: language === 'mr' ? marathiFonts.literary : "'Playfair Display', Georgia, serif" }}
                     >
-                      {t.checkpoint5Desc}
+                      {t.checkpoint7Desc}
                     </p>
                     <p 
                       className="text-2xl font-medium"
@@ -1458,7 +1554,7 @@ const MarathonPage = () => {
                         WebkitTextFillColor: "transparent",
                       }}
                     >
-                      {t.checkpoint5Highlight}
+                      {t.checkpoint7Highlight}
                     </p>
                   </div>
                 </div>
@@ -1555,7 +1651,7 @@ const MarathonPage = () => {
               <div className="flex items-center gap-4 sm:gap-6">
                 <div className="flex items-center gap-2">
                   <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
-                  <span className="text-white/60 text-sm">Zudio</span>
+                  <span className="text-white/80 text-sm font-medium">SP Office (Start)</span>
                 </div>
                 <div className="hidden sm:flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
@@ -1564,12 +1660,12 @@ const MarathonPage = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2.5 h-2.5 rounded-full bg-orange-400" />
-                  <span className="text-white/60 text-sm">Modi Ground</span>
+                  <span className="text-white/80 text-sm font-medium">Nagarjuna Hotel (Finish)</span>
                 </div>
               </div>
               
               <a 
-                href="https://maps.google.com/?q=Zudio,Nanded,Maharashtra" 
+                href="https://maps.google.com/?q=SP+Office,Nanded,Maharashtra" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="px-4 py-2 rounded-full text-xs font-medium bg-white/5 text-white/50 hover:bg-orange-500/20 hover:text-orange-400 transition-all duration-300"
@@ -1658,7 +1754,7 @@ const MarathonPage = () => {
                   >
                     {t.date}
                   </p>
-                  <p className="text-white font-bold">{language === 'mr' ? 'Postponed To March' : 'Postponed To March'}</p>
+                  <p className="text-white font-bold">{language === 'mr' ? '०१ नोव्हेंबर २०२६' : '01 Nov 2026'}</p>
                 </div>
                 <div className="bg-black/40 rounded-xl p-4 text-center border border-white/5">
                   <span className="text-2xl mb-2 block">⏰</span>
@@ -1678,7 +1774,7 @@ const MarathonPage = () => {
                   >
                     {t.startPoint}
                   </p>
-                  <p className="text-white font-bold">{language === 'mr' ? 'झुडिओ, नांदेड' : 'Zudio, Nanded'}</p>
+                  <p className="text-white font-bold">{language === 'mr' ? 'एसपी ऑफिस, नांदेड' : 'SP Office, Nanded'}</p>
                 </div>
                 <div className="bg-black/40 rounded-xl p-4 text-center border border-white/5">
                   <span className="text-2xl mb-2 block">🏁</span>
@@ -1688,7 +1784,7 @@ const MarathonPage = () => {
                   >
                     {t.finishPoint}
                   </p>
-                  <p className="text-white font-bold">{language === 'mr' ? 'मोदी ग्राउंड' : 'Modi Ground'}</p>
+                  <p className="text-white font-bold">{language === 'mr' ? 'नागार्जुन हॉटेल, नांदेड' : 'Nagarjuna Hotel, Nanded'}</p>
                 </div>
               </div>
 
@@ -1765,16 +1861,20 @@ const MarathonPage = () => {
             >
               {t.route}
             </h4>
-            <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 text-sm md:text-base">
-              <span className="text-green-400 font-medium">{language === 'mr' ? 'झुडिओ' : 'Zudio'}</span>
+            <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3 text-sm md:text-base">
+              <span className="text-green-400 font-medium">{language === 'mr' ? 'एसपी ऑफिस' : 'SP Office'}</span>
               <span className="text-white/30">→</span>
-              <span className="text-blue-400 font-medium">{language === 'mr' ? 'राम सेतू तलाव' : 'Ram Setu Pool'}</span>
+              <span className="text-blue-400 font-medium">{language === 'mr' ? 'शिवाजीनगर' : 'Shivajinagar'}</span>
               <span className="text-white/30">→</span>
-              <span className="text-purple-400 font-medium">{language === 'mr' ? 'रवी नगर' : 'Ravi Nagar'}</span>
+              <span className="text-purple-400 font-medium">{language === 'mr' ? 'आयटीआय कॉर्नर' : 'ITI Corner'}</span>
               <span className="text-white/30">→</span>
-              <span className="text-amber-400 font-medium">{language === 'mr' ? 'मामा चौक' : 'Mama Chowk'}</span>
+              <span className="text-amber-400 font-medium">{language === 'mr' ? 'वर्कशॉप कॉर्नर' : 'Workshop Corner'}</span>
               <span className="text-white/30">→</span>
-              <span className="text-orange-400 font-medium">{language === 'mr' ? 'मोदी ग्राउंड' : 'Modi Ground'}</span>
+              <span className="text-orange-400 font-medium">{language === 'mr' ? 'भाग्यनगर' : 'Bhagyanagar'}</span>
+              <span className="text-white/30">→</span>
+              <span className="text-yellow-400 font-medium">{language === 'mr' ? 'आनंदनगर' : 'Anandnagar'}</span>
+              <span className="text-white/30">→</span>
+              <span className="text-red-400 font-medium">{language === 'mr' ? 'नागार्जुन हॉटेल' : 'Nagarjuna Hotel'}</span>
             </div>
           </motion.div>
         </div>
