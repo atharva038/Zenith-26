@@ -23,8 +23,8 @@ const MarathonRegistration = () => {
 
   const contacts = [
     {
-      name: "1. Kawalpreet Singh",
-      role: "Marathon Coordinator",
+      name: "1. Kanwalpreet Singh",
+      role: "Marathon Head",
       phone: "9561922066",
       displayPhone: "+91 9561922066",
     },

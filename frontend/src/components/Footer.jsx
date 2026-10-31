@@ -139,7 +139,7 @@ const Footer = () => {
               </motion.a>
 
               <motion.a
-                href="tel:+919356463943"
+                href="tel:+918956836055"
                 className="group relative"
                 whileHover={{scale: 1.1}}
                 whileTap={{scale: 0.95}}
@@ -179,7 +179,7 @@ const Footer = () => {
               </p>
               <p className="flex items-center justify-center gap-2">
                 <Phone size={14} className="text-[#ffb36a]" />
-                +91 93564 63943
+                +91 89568 36055
               </p>
             </motion.div>
 
