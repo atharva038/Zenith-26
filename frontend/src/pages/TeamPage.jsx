@@ -753,8 +753,8 @@ const TeamPage = () => {
               {/* Photo container */}
               <div className="relative w-64 h-72 md:w-72 md:h-80 rounded-xl overflow-hidden border-2 border-orange-500/30">
                 <img
-                  src="/img/sportsSecretory.png"
-                  alt="Sagar Ubale - Sports Secretary"
+                  src="/img/amarja-dhepe.webp"
+                  alt="Amarja Dhepe - Sports Secretary"
                   className="w-full h-full object-cover object-top filter saturate-[0.85] group-hover:saturate-100 group-hover:scale-105 transition-all duration-500"
                 />
                 {/* Subtle vignette */}
@@ -771,16 +771,16 @@ const TeamPage = () => {
               className="mt-8 text-center"
             >
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                Sagar Ubale
+                Amarja Dhepe
               </h2>
               <p className="text-xl md:text-2xl bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent font-semibold">
                 Sports Secretary
               </p>
               <a 
-                href="tel:9545956689"
+                href="tel:9552110021"
                 className="inline-flex items-center gap-2 text-gray-400 mt-3 text-sm tracking-wide hover:text-orange-400 transition-colors"
               >
-                <span>📞</span> 9545956689
+                <span>📞</span> 9552110021
               </a>
               <p className="text-gray-500 mt-1 text-xs tracking-wide">
                 SGGSIE&T, Nanded
@@ -839,9 +839,9 @@ const TeamPage = () => {
               {/* Photo container */}
               <div className="relative w-64 h-72 md:w-72 md:h-80 rounded-xl overflow-hidden border-2 border-purple-500/30">
                 <img
-                  src="https://res.cloudinary.com/dvmsho3pj/image/upload/v1770021817/zenith-2026/team/sports-club-president-vedant-dahat.jpg"
-                  alt="Vedant Dahat - Sports Club President"
-                  className="w-full h-full object-cover object-top filter saturate-[0.85] group-hover:saturate-100 group-hover:scale-105 transition-all duration-500"
+                  src="/img/kanwalpreet-singh.png"
+                  alt="Kanwalpreet Singh - Marathon Head"
+                  className="w-full h-full object-cover object-center filter saturate-[0.85] group-hover:saturate-100 group-hover:scale-105 transition-all duration-500"
                 />
                 {/* Subtle vignette */}
                 <div className="absolute inset-0 shadow-[inset_0_0_50px_rgba(0,0,0,0.4)]" />
@@ -857,16 +857,16 @@ const TeamPage = () => {
               className="mt-8 text-center"
             >
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                Vedant Dahat
+                Kanwalpreet Singh
               </h2>
               <p className="text-xl md:text-2xl bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent font-semibold">
-                Sports Club President
+                Marathon Head
               </p>
               <a 
-                href="tel:9307757932"
+                href="tel:9561922066"
                 className="inline-flex items-center gap-2 text-gray-400 mt-3 text-sm tracking-wide hover:text-purple-400 transition-colors"
               >
-                <span>📞</span> 9307757932
+                <span>📞</span> 9561922066
               </a>
               <p className="text-gray-500 mt-1 text-xs tracking-wide">
                 SGGSIE&T, Nanded

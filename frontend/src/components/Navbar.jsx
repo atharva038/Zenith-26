@@ -13,7 +13,7 @@ const Navbar = () => {
         className="text-[#ffb77a] font-bold text-xl tracking-wide"
         style={{textShadow: "0 2px 12px rgba(255,140,40,0.18)"}}
       >
-        Zenith 2026
+        Zenith 2026-27
       </Link>
 
       {/* Desktop Menu */}

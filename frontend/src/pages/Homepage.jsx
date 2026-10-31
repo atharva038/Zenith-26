@@ -237,7 +237,7 @@ export default function Homepage() {
             animate={{opacity: 1, y: 0, filter: "blur(0px)"}}
             transition={{duration: 1, ease: "easeOut"}}
           >
-            ZENITH 2026
+            ZENITH 2026-27
           </motion.h1>
           <motion.p
             className="mt-3 mb-0 font-bold"
@@ -442,8 +442,8 @@ export default function Homepage() {
           {/* Next Level Countdown Timer */}
           <div className="mt-6 sm:mt-8">
             <NextLevelCountdown
-              targetDate="2026-02-20T09:00:00"
-              eventName="ZENITH 2026"
+              targetDate="2026-12-26T00:00:00"
+              eventName="ZENITH 2026-27"
             />
           </div>
         </div>

@@ -139,9 +139,14 @@ const MarathonTermsAndConditions = () => {
 
   const contacts = [
     {
-      name: "Sagar Ubale",
+      name: "Amarja Dhepe",
       role: "Sports Secretary",
-      phone: "9545956689",
+      phone: "9552110021",
+    },
+    {
+      name: "Kanwalpreet Singh",
+      role: "Marathon Head",
+      phone: "9561922066",
     },
     {
       name: "Swayam Baheti",

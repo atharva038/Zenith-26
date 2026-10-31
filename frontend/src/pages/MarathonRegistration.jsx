@@ -1,629 +1,90 @@
-import React, {useState, useEffect} from "react";
-import {useNavigate, Link} from "react-router-dom";
-import {toast} from "react-toastify";
-import api from "../config/api";
-import {motion, AnimatePresence} from "framer-motion";
-
-// Payment QR Code - Sagar Ubale (sagarubale2004@oksbi)
-const PAYMENT_QR_URL =
-  "https://res.cloudinary.com/dvmsho3pj/image/upload/f_auto,q_auto:best/v1767592627/zenith-26/img/payment/payment-qr-sagar-ubale";
-
-// Backup QR Codes
-const BACKUP_QR_URLS = [
-  {
-    name: "Balaji Anil Kalyankar (PhonePe)",
-    upiId: "balajianil.kalyankar@ybl",
-    url: "/img/balajiQR.png", // Local image from public/img folder
-  },
-  {
-    name: "Atharva Joshi (Bank of Baroda)",
-    upiId: "atharvsjoshi2005-1@okicici",
-    url: "https://res.cloudinary.com/dvmsho3pj/image/upload/v1768722815/zenith-26/img/payment/backup-qr-atharva-bob.png",
-  },
-];
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { toast } from "react-toastify";
 
 const MarathonRegistration = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [showBackupQR, setShowBackupQR] = useState(false);
-  const [paymentScreenshot, setPaymentScreenshot] = useState(null);
-  const [screenshotPreview, setScreenshotPreview] = useState(null);
-  const [isUploadingScreenshot, setIsUploadingScreenshot] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [registrationDetails, setRegistrationDetails] = useState(null);
-  const [termsAccepted, setTermsAccepted] = useState(false);
-  const [uploadAbortController, setUploadAbortController] = useState(null);
+  const [copiedLink, setCopiedLink] = useState(false);
 
-  // Add custom scrollbar styles
-  useEffect(() => {
-    const style = document.createElement('style');
-    style.innerHTML = `
-      .confirmation-modal-scroll::-webkit-scrollbar {
-        width: 8px;
-      }
-      .confirmation-modal-scroll::-webkit-scrollbar-track {
-        background: rgba(255, 139, 31, 0.1);
-        border-radius: 10px;
-      }
-      .confirmation-modal-scroll::-webkit-scrollbar-thumb {
-        background: linear-gradient(180deg, #ff8b1f, #ea580c);
-        border-radius: 10px;
-      }
-      .confirmation-modal-scroll::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(180deg, #ea580c, #ff8b1f);
-      }
-    `;
-    document.head.appendChild(style);
-    return () => document.head.removeChild(style);
-  }, []);
+  const GOOGLE_FORM_URL = "https://forms.gle/DeT25fzZWWyKHZ317";
+  const MARATHON_DATE = "01 Nov 2026";
+  const ROUTE_FULL = "SP Office → Shivajinagar → ITI Corner → Workshop Corner → Bhagyanagar → Anandnagar → Nagarjuna Hotel";
 
-  // Scroll to top on component mount
-  useEffect(() => {
-    window.scrollTo({top: 0, behavior: "smooth"});
-  }, []);
+  const routeCheckpoints = [
+    { title: "SP Office", tag: "Start Point", isStart: true },
+    { title: "Shivajinagar", tag: "Checkpoint 1" },
+    { title: "ITI Corner", tag: "Checkpoint 2" },
+    { title: "Workshop Corner", tag: "Checkpoint 3" },
+    { title: "Bhagyanagar", tag: "Checkpoint 4" },
+    { title: "Anandnagar", tag: "Checkpoint 5" },
+    { title: "Nagarjuna Hotel", tag: "Finish Line", isFinish: true },
+  ];
 
-  // Cleanup: Cancel any ongoing uploads when component unmounts
-  useEffect(() => {
-    return () => {
-      if (uploadAbortController) {
-        uploadAbortController.abort();
-      }
-    };
-  }, [uploadAbortController]);
-
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    age: "",
-    gender: "",
-    tshirtSize: "",
-    college: "",
-    emergencyContact: {
-      name: "",
-      phone: "",
+  const contacts = [
+    {
+      name: "1. Kanwalpreet Singh",
+      role: "Marathon Head",
+      phone: "9561922066",
+      displayPhone: "+91 9561922066",
     },
-    medicalConditions: "",
-    paymentScreenshotUrl: "",
-  });
+    {
+      name: "Amarja Dhepe",
+      role: "Sports Secretary",
+      phone: "9552110021",
+      displayPhone: "+91 9552110021",
+    },
+  ];
 
-  // Fill test data function
-  const fillTestData = () => {
-    setFormData({
-      fullName: "Test Runner",
-      email: "testrunner@gmail.com",
-      phone: "9876543210",
-      age: "22",
-      gender: "Male",
-      tshirtSize: "L",
-      college: "Test Engineering College",
-      emergencyContact: {
-        name: "Test Emergency Contact",
-        phone: "9123456780",
-      },
-      medicalConditions: "None",
-      paymentScreenshotUrl: formData.paymentScreenshotUrl, // Keep existing screenshot if any
-    });
-    toast.success("Test data filled!");
-  };
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
-  const handleChange = (e) => {
-    const {name, value} = e.target;
-    if (name.startsWith("emergency_")) {
-      const field = name.split("_")[1];
-      setFormData({
-        ...formData,
-        emergencyContact: {
-          ...formData.emergencyContact,
-          [field]: value,
-        },
-      });
-    } else {
-      setFormData({...formData, [name]: value});
-    }
-  };
-
-  const handleScreenshotChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    // Validate file type
-    const validTypes = [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "application/pdf",
-    ];
-    if (!validTypes.includes(file.type)) {
-      toast.error("Please upload a valid image (JPG, PNG) or PDF file");
-      return;
-    }
-
-    // Validate file size (10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("File size must be less than 10MB");
-      return;
-    }
-
-    setPaymentScreenshot(file);
-
-    // Create preview for images
-    if (file.type.startsWith("image/")) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setScreenshotPreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      setScreenshotPreview("PDF");
-    }
-
-    // Upload the file immediately
-    try {
-      setIsUploadingScreenshot(true);
-      const uploadToast = toast.loading("Uploading payment screenshot...");
-
-      // Create abort controller for this upload
-      const abortController = new AbortController();
-      setUploadAbortController(abortController);
-
-      const formDataToUpload = new FormData();
-      formDataToUpload.append("screenshot", file);
-
-      const response = await api.post(
-        "/marathon/upload-payment-screenshot",
-        formDataToUpload,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          signal: abortController.signal,
-        },
-      );
-
-      toast.dismiss(uploadToast);
-
-      if (response.data.success) {
-        setFormData((prev) => ({
-          ...prev,
-          paymentScreenshotUrl: response.data.url,
-        }));
-        toast.success("Payment screenshot uploaded successfully!");
-      }
-    } catch (error) {
-      // Don't show error if upload was cancelled
-      if (error.name === "CanceledError" || error.code === "ERR_CANCELED") {
-        console.log("Upload cancelled by user");
-        return;
-      }
-
-      console.error("Screenshot upload error:", error);
-      toast.error(
-        error.response?.data?.message || "Failed to upload screenshot",
-      );
-
-      // Only clear states if upload failed (not if cancelled)
-      setPaymentScreenshot(null);
-      setScreenshotPreview(null);
-    } finally {
-      setIsUploadingScreenshot(false);
-      setUploadAbortController(null);
-    }
-  };
-
-  const handleRemoveScreenshot = () => {
-    // Cancel ongoing upload if any
-    if (uploadAbortController) {
-      uploadAbortController.abort();
-      setUploadAbortController(null);
-      toast.dismiss(); // Dismiss any upload toast
-      toast.info("Upload cancelled");
-    }
-
-    // Clear all screenshot-related states
-    setPaymentScreenshot(null);
-    setScreenshotPreview(null);
-    setIsUploadingScreenshot(false);
-    setFormData((prev) => ({
-      ...prev,
-      paymentScreenshotUrl: "",
-    }));
-
-    // Reset file input
-    const fileInput = document.getElementById("payment-screenshot");
-    if (fileInput) {
-      fileInput.value = "";
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Validate payment screenshot is uploaded
-    if (!formData.paymentScreenshotUrl) {
-      toast.error("Please upload payment screenshot!");
-      return;
-    }
-
-    // Validate terms acceptance
-    if (!termsAccepted) {
-      toast.error("Please accept the terms and conditions to proceed!");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      // Prepare data with payment details
-      const registrationData = {
-        ...formData,
-        paymentDetails: {
-          amount: 99,
-          paymentDate: new Date().toISOString(),
-          paymentScreenshot: formData.paymentScreenshotUrl,
-        },
-      };
-
-      const response = await api.post("/marathon/register", registrationData);
-
-      if (response.data.success) {
-        // Store registration details for confirmation screen
-        setRegistrationDetails({
-          registrationNumber: response.data.data.registrationNumber,
-          fullName: formData.fullName,
-          email: formData.email,
-          phone: formData.phone,
-        });
-
-        // Show confirmation screen
-        setShowConfirmation(true);
-
-        // Reset form
-        setFormData({
-          fullName: "",
-          email: "",
-          phone: "",
-          age: "",
-          gender: "",
-          tshirtSize: "",
-          college: "",
-          emergencyContact: {
-            name: "",
-            phone: "",
-          },
-          medicalConditions: "",
-          paymentScreenshotUrl: "",
-        });
-        setPaymentScreenshot(null);
-        setScreenshotPreview(null);
-        setTermsAccepted(false);
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Registration failed");
-    } finally {
-      setLoading(false);
+  const copyToClipboard = (text) => {
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(text);
+      setCopiedLink(true);
+      toast.success("Google Form link copied to clipboard!");
+      setTimeout(() => setCopiedLink(false), 2500);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-[#0a0604] to-black">
-      {/* Registration Confirmation Screen */}
-      <AnimatePresence>
-        {showConfirmation && registrationDetails && (
-          <motion.div
-            initial={{opacity: 0}}
-            animate={{opacity: 1}}
-            exit={{opacity: 0}}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-hidden"
-            style={{
-              backgroundColor: "rgba(0, 0, 0, 0.75)",
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
-            }}
-            onClick={() => setShowConfirmation(false)}
-            onWheel={(e) => e.stopPropagation()}
-            onTouchMove={(e) => e.stopPropagation()}
-          >
-            <motion.div
-              initial={{scale: 0.9, opacity: 0, y: 30}}
-              animate={{scale: 1, opacity: 1, y: 0}}
-              exit={{scale: 0.9, opacity: 0, y: 30}}
-              transition={{type: "spring", damping: 25, stiffness: 300}}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg mx-auto max-h-[90vh] overflow-y-auto confirmation-modal-scroll"
-              style={{
-                background:
-                  "linear-gradient(145deg, #1a0f08 0%, #0d0705 50%, #0a0604 100%)",
-                border: "1px solid rgba(255, 139, 31, 0.3)",
-                borderRadius: "24px",
-                padding: "24px",
-                boxShadow:
-                  "0 25px 80px rgba(255, 139, 31, 0.15), 0 0 40px rgba(0, 0, 0, 0.5)",
-              }}
-            >
-                {/* Success Icon */}
-                <motion.div
-                  initial={{scale: 0}}
-                  animate={{scale: 1}}
-                  transition={{delay: 0.2, type: "spring", stiffness: 200}}
-                  className="flex justify-center mb-5"
-                >
-                  <div
-                    className="w-20 h-20 rounded-full flex items-center justify-center"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, #22c55e 0%, #10b981 100%)",
-                      boxShadow: "0 8px 32px rgba(34, 197, 94, 0.4)",
-                    }}
-                  >
-                    <motion.span
-                      initial={{scale: 0}}
-                      animate={{scale: 1}}
-                      transition={{delay: 0.4}}
-                      className="text-4xl text-white"
-                    >
-                      ✓
-                    </motion.span>
-                  </div>
-                </motion.div>
-
-                {/* Success Message */}
-                <motion.div
-                  initial={{opacity: 0, y: 20}}
-                  animate={{opacity: 1, y: 0}}
-                  transition={{delay: 0.3}}
-                  className="text-center mb-5"
-                >
-                  <h2 className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-500 mb-2">
-                    Registration Successful! 🎉
-                  </h2>
-                  <p className="text-gray-400 text-sm sm:text-base">
-                    Thank you for registering for ZENITH Marathon 2026
-                  </p>
-                </motion.div>
-
-                {/* Registration Details Card */}
-                <motion.div
-                  initial={{opacity: 0, y: 20}}
-                  animate={{opacity: 1, y: 0}}
-                  transition={{delay: 0.4}}
-                  className="rounded-xl p-4 mb-4"
-                  style={{
-                    backgroundColor: "rgba(0, 0, 0, 0.4)",
-                    border: "1px solid rgba(255, 139, 31, 0.2)",
-                  }}
-                >
-                  <h3 className="text-base font-semibold text-[#ffb36a] mb-3 flex items-center gap-2">
-                    <span>📋</span> Your Registration Details
-                  </h3>
-                  <div className="space-y-2.5 text-sm">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-400">Registration No:</span>
-                      <span className="text-[#ff8b1f] font-mono font-bold">
-                        {registrationDetails.registrationNumber}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-400">Name:</span>
-                      <span className="text-white font-semibold">
-                        {registrationDetails.fullName}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-400">Event:</span>
-                      <span className="text-orange-400 font-semibold">
-                        5K Marathon
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-400">Amount Paid:</span>
-                      <span className="text-green-400 font-bold">₹99</span>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Important Information */}
-                <motion.div
-                  initial={{opacity: 0, y: 20}}
-                  animate={{opacity: 1, y: 0}}
-                  transition={{delay: 0.5}}
-                  className="rounded-xl p-4 mb-4"
-                  style={{
-                    backgroundColor: "rgba(59, 130, 246, 0.1)",
-                    border: "1px solid rgba(59, 130, 246, 0.3)",
-                  }}
-                >
-                  <h3 className="text-blue-400 font-semibold mb-2.5 flex items-center gap-2 text-sm sm:text-base">
-                    <span>📧</span> What's Next?
-                  </h3>
-                  <ul className="space-y-1.5 text-sm text-gray-300">
-                    <li className="flex items-start gap-2">
-                      <span className="text-blue-400 mt-0.5">•</span>
-                      <span>Payment screenshot under verification.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-blue-400 mt-0.5">•</span>
-                      <span>
-                        Confirmation email will be sent to{" "}
-                        <strong className="text-[#ff8b1f]">
-                          {registrationDetails.email}
-                        </strong>
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-blue-400 mt-0.5">•</span>
-                      <span>
-                        Save your registration number & bring valid ID.
-                      </span>
-                    </li>
-                  </ul>
-                </motion.div>
-
-                {/* Contact Information */}
-                <motion.div
-                  initial={{opacity: 0, y: 20}}
-                  animate={{opacity: 1, y: 0}}
-                  transition={{delay: 0.6}}
-                  className="rounded-xl p-4 mb-4"
-                  style={{
-                    backgroundColor: "rgba(168, 85, 247, 0.1)",
-                    border: "1px solid rgba(168, 85, 247, 0.3)",
-                  }}
-                >
-                  <h3 className="text-purple-400 font-semibold mb-2.5 flex items-center gap-2 text-sm sm:text-base">
-                    <span>📞</span> For Queries, Contact:
-                  </h3>
-                  <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm">
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-300">Sagar:</span>
-                      <a
-                        href="tel:+919545956689"
-                        className="text-purple-300 hover:text-purple-200"
-                      >
-                        +91 9545956689
-                      </a>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-300">Atharva:</span>
-                      <a
-                        href="tel:+919123456789"
-                        className="text-purple-300 hover:text-purple-200"
-                      >
-                        +91 9156906881
-                      </a>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* WhatsApp Group Section */}
-                <motion.div
-                  initial={{opacity: 0, y: 20}}
-                  animate={{opacity: 1, y: 0}}
-                  transition={{delay: 0.65}}
-                  className="rounded-xl p-4 mb-4"
-                  style={{
-                    background: "linear-gradient(135deg, #25D366 0%, #128C7E 100%)",
-                    boxShadow: "0 8px 24px rgba(37, 211, 102, 0.3)",
-                  }}
-                >
-                  <h3 className="text-white font-semibold mb-2 flex items-center gap-2 text-base">
-                    <span>💬</span> Join Our WhatsApp Group!
-                  </h3>
-                  <p className="text-white/90 text-sm mb-3 leading-relaxed">
-                    Stay connected with fellow runners! Get important updates, event details, and last-minute information.
-                  </p>
-                  <motion.a
-                    whileHover={{scale: 1.02}}
-                    whileTap={{scale: 0.98}}
-                    href="https://chat.whatsapp.com/GE7U4KE8M6o8yAfRaw7L8F"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block w-full py-3 text-center font-semibold rounded-lg transition-all text-sm"
-                    style={{
-                      backgroundColor: "#ffffff",
-                      color: "#128C7E",
-                      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
-                    }}
-                  >
-                    📱 Join WhatsApp Group
-                  </motion.a>
-                </motion.div>
-
-                {/* Team Page Link */}
-                <motion.div
-                  initial={{opacity: 0, y: 20}}
-                  animate={{opacity: 1, y: 0}}
-                  transition={{delay: 0.7}}
-                  className="rounded-xl p-3 mb-4 text-center"
-                  style={{
-                    background:
-                      "linear-gradient(90deg, rgba(255, 139, 31, 0.1), rgba(249, 115, 22, 0.1))",
-                    border: "1px solid rgba(255, 139, 31, 0.3)",
-                  }}
-                >
-                  <Link
-                    to="/team"
-                    className="inline-flex items-center gap-2 text-[#ff8b1f] hover:text-orange-400 transition-colors font-semibold text-sm"
-                  >
-                    <span>👥</span> Meet Our Team <span>→</span>
-                  </Link>
-                </motion.div>
-
-                {/* Action Buttons */}
-                <motion.div
-                  initial={{opacity: 0, y: 20}}
-                  animate={{opacity: 1, y: 0}}
-                  transition={{delay: 0.8}}
-                  className="flex gap-3"
-                >
-                  <motion.button
-                    whileHover={{scale: 1.02}}
-                    whileTap={{scale: 0.98}}
-                    onClick={() => navigate("/marathon-event")}
-                    className="flex-1 py-3 text-white font-semibold rounded-xl transition-all text-sm"
-                    style={{
-                      background: "linear-gradient(90deg, #ff8b1f, #ea580c)",
-                      boxShadow: "0 8px 24px rgba(255, 139, 31, 0.3)",
-                    }}
-                  >
-                    🏃 Marathon Page
-                  </motion.button>
-                  <motion.button
-                    whileHover={{scale: 1.02}}
-                    whileTap={{scale: 0.98}}
-                    onClick={() => navigate("/home")}
-                    className="flex-1 py-3 font-semibold rounded-xl transition-all text-sm text-white"
-                    style={{
-                      backgroundColor: "rgba(255, 255, 255, 0.1)",
-                      border: "1px solid rgba(255, 255, 255, 0.2)",
-                    }}
-                  >
-                    🏠 Home
-                  </motion.button>
-                </motion.div>
-
-                {/* Footer */}
-                <motion.div
-                  initial={{opacity: 0}}
-                  animate={{opacity: 1}}
-                  transition={{delay: 0.9}}
-                  className="text-center mt-4 pt-4 border-t border-white/10"
-                >
-                  <p className="text-gray-500 text-xs">
-                    Share your registration! 🎊 🏃‍♂️ 🏆
-                  </p>
-                </motion.div>
-              </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+    <div className="min-h-screen bg-black text-white relative overflow-hidden selection:bg-orange-500 selection:text-white">
+      {/* Background Ambient Glows */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-orange-600/15 rounded-full blur-[140px]" />
+        <div className="absolute top-1/3 -right-40 w-96 h-96 bg-amber-500/10 rounded-full blur-[140px]" />
+        <div className="absolute bottom-10 left-1/3 w-[500px] h-[500px] bg-red-600/10 rounded-full blur-[160px]" />
+      </div>
 
       {/* Navigation Bar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-orange-500/20">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/home" className="flex items-center gap-2">
-            <span className="text-2xl">🏃</span>
-            <span className="font-bold text-xl text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
-              ZENITH MARATHON
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/85 backdrop-blur-xl border-b border-orange-500/20 shadow-lg shadow-black/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+          <Link to="/home" className="flex items-center gap-2 group">
+            <span className="text-2xl transform group-hover:scale-110 transition-transform">🏃</span>
+            <span className="font-extrabold text-xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-amber-500">
+              ZENITH MARATHON 2026-27
             </span>
           </Link>
 
           <div className="hidden md:flex items-center gap-6">
             <Link
               to="/home"
-              className="text-gray-300 hover:text-orange-400 transition-colors"
+              className="text-gray-300 hover:text-orange-400 text-sm font-medium transition-colors"
             >
               Home
             </Link>
             <Link
               to="/marathon-event"
-              className="text-gray-300 hover:text-orange-400 transition-colors"
+              className="text-gray-300 hover:text-orange-400 text-sm font-medium transition-colors"
             >
               Event Details
             </Link>
             <Link
               to="/register"
-              className="text-gray-300 hover:text-orange-400 transition-colors"
+              className="text-gray-300 hover:text-orange-400 text-sm font-medium transition-colors"
             >
               Sports Registration
             </Link>
@@ -632,13 +93,13 @@ const MarathonRegistration = () => {
           <div className="flex items-center gap-3">
             <Link
               to="/marathon-event"
-              className="hidden sm:inline-block px-4 py-2 rounded-full font-semibold text-orange-300 border border-orange-500/30 hover:bg-orange-500/10 transition-all"
+              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full font-semibold text-orange-300 text-sm border border-orange-500/30 hover:bg-orange-500/15 hover:border-orange-500/60 transition-all"
             >
-              ← Back to Event
+              <span>←</span> Back to Event
             </Link>
             <Link
               to="/home"
-              className="px-4 py-2 rounded-full font-semibold text-black bg-gradient-to-r from-yellow-400 to-orange-500 hover:shadow-lg hover:shadow-orange-500/30 transition-all"
+              className="px-4 py-2 rounded-full font-bold text-sm text-black bg-gradient-to-r from-yellow-400 via-orange-400 to-orange-500 hover:shadow-lg hover:shadow-orange-500/30 transition-all"
             >
               Home
             </Link>
@@ -646,692 +107,277 @@ const MarathonRegistration = () => {
         </div>
       </nav>
 
-      {/* Main Content with padding for fixed nav */}
-      <div className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+      {/* Main Content */}
+      <div className="relative z-10 pt-28 pb-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
         <motion.div
-          initial={{opacity: 0, y: 20}}
-          animate={{opacity: 1, y: 0}}
-          className="max-w-4xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="space-y-8"
         >
           {/* Header */}
-          <div className="text-center mb-10">
+          <div className="text-center space-y-4">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs sm:text-sm font-semibold mb-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              <span>REGISTRATIONS NOW LIVE</span>
+            </div>
+
             <motion.h1
-              initial={{opacity: 0, y: -20}}
-              animate={{opacity: 1, y: 0}}
-              className="text-5xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] mb-4"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-4xl sm:text-5xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r from-[#ffcf87] via-[#ff8b1f] to-[#ff5722] tracking-tight"
             >
-              🏃 Zenith Marathon 2026
+              🏃 Zenith Marathon 2026-27
             </motion.h1>
-            <p className="text-[#ffdcb3] text-lg">
-              Join us for an unforgettable running experience! • February 14,
-              2026
+
+            <p className="text-orange-200/90 text-base sm:text-lg max-w-2xl mx-auto">
+              Join us for an unforgettable running experience through the heart of Nanded!
             </p>
-            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-orange-500/10 border border-orange-500/30 rounded-full">
-              <span className="text-orange-400 font-semibold">5 KM Run</span>
-              <span className="text-white/50">•</span>
-              <span className="text-orange-400 font-bold text-lg">₹99</span>
+
+            {/* Quick Metrics Bar */}
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 pt-2">
+              <div className="px-4 py-2 bg-zinc-900/80 border border-orange-500/30 rounded-xl shadow-md">
+                <span className="text-white/60 text-xs uppercase block">Date</span>
+                <span className="text-orange-400 font-bold text-base sm:text-lg">01 Nov 2026</span>
+              </div>
+              <div className="px-4 py-2 bg-zinc-900/80 border border-orange-500/30 rounded-xl shadow-md">
+                <span className="text-white/60 text-xs uppercase block">Distance</span>
+                <span className="text-white font-bold text-base sm:text-lg">5 KM Run</span>
+              </div>
+              <div className="px-4 py-2 bg-zinc-900/80 border border-orange-500/30 rounded-xl shadow-md">
+                <span className="text-white/60 text-xs uppercase block">Entry Fee</span>
+                <span className="text-amber-400 font-bold text-base sm:text-lg">₹99</span>
+              </div>
+              <div className="px-4 py-2 bg-zinc-900/80 border border-orange-500/30 rounded-xl shadow-md">
+                <span className="text-white/60 text-xs uppercase block">Start Point</span>
+                <span className="text-white font-bold text-base sm:text-lg">SP Office</span>
+              </div>
             </div>
           </div>
 
-          {/* Registration Form */}
+          {/* Registration Card */}
           <motion.div
-            initial={{opacity: 0, scale: 0.95}}
-            animate={{opacity: 1, scale: 1}}
-            className="bg-gradient-to-br from-[#1a0f08] to-[#0a0604] backdrop-blur-md rounded-2xl shadow-2xl p-8 border-2 border-[#ff8b1f]/20"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="bg-gradient-to-b from-zinc-900/90 via-black/95 to-zinc-950/95 backdrop-blur-2xl rounded-3xl p-6 sm:p-10 border border-orange-500/30 shadow-2xl shadow-orange-500/10 space-y-8"
           >
-            {/* Test Data Button - For Development */}
-            {/* <div className="flex justify-end mb-4">
-              <motion.button
-                type="button"
-                onClick={fillTestData}
-                whileHover={{scale: 1.05}}
-                whileTap={{scale: 0.95}}
-                className="px-4 py-2 bg-purple-600/30 border border-purple-500/50 rounded-lg text-purple-300 hover:bg-purple-600/50 transition-all text-sm font-semibold"
-              >
-                🧪 Fill Test Data
-              </motion.button>
-            </div> */}
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Personal Information */}
-              <div className="space-y-4">
-                <h2 className="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] border-b border-[#ff8b1f]/30 pb-2">
-                  Personal Information
-                </h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-[#ffdcb3] mb-2">
-                      Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
-                      placeholder="Enter your full name"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#ffdcb3] mb-2">
-                      Email *
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
-                      placeholder="your.email@example.com"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#ffdcb3] mb-2">
-                      Phone Number *
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      required
-                      pattern="[0-9]{10}"
-                      className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
-                      placeholder="10-digit number"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#ffdcb3] mb-2">
-                      Age *
-                    </label>
-                    <input
-                      type="number"
-                      name="age"
-                      value={formData.age}
-                      onChange={handleChange}
-                      required
-                      min="1"
-                      max="100"
-                      className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
-                      placeholder="Enter your age"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#ffdcb3] mb-2">
-                      Gender *
-                    </label>
-                    <select
-                      name="gender"
-                      value={formData.gender}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
-                    >
-                      <option value="" className="bg-[#1a0f08]">
-                        Select Gender
-                      </option>
-                      <option value="Male" className="bg-[#1a0f08]">
-                        Male
-                      </option>
-                      <option value="Female" className="bg-[#1a0f08]">
-                        Female
-                      </option>
-                      <option value="Other" className="bg-[#1a0f08]">
-                        Other
-                      </option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#ffdcb3] mb-2">
-                      T-Shirt Size *
-                    </label>
-                    <select
-                      name="tshirtSize"
-                      value={formData.tshirtSize}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
-                    >
-                      <option value="" className="bg-[#1a0f08]">
-                        Select T-Shirt Size
-                      </option>
-                      <option value="XS" className="bg-[#1a0f08]">
-                        XS (Extra Small)
-                      </option>
-                      <option value="S" className="bg-[#1a0f08]">
-                        S (Small)
-                      </option>
-                      <option value="M" className="bg-[#1a0f08]">
-                        M (Medium)
-                      </option>
-                      <option value="L" className="bg-[#1a0f08]">
-                        L (Large)
-                      </option>
-                      <option value="XL" className="bg-[#1a0f08]">
-                        XL (Extra Large)
-                      </option>
-                      <option value="XXL" className="bg-[#1a0f08]">
-                        XXL (2XL)
-                      </option>
-                      <option value="XXXL" className="bg-[#1a0f08]">
-                        XXXL (3XL)
-                      </option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#ffdcb3] mb-2">
-                      College/Organization *
-                    </label>
-                    <input
-                      type="text"
-                      name="college"
-                      value={formData.college}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
-                      placeholder="Your institution"
-                    />
-                  </div>
-                </div>
+            {/* Primary Google Form Registration Banner */}
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-950/40 via-amber-950/30 to-orange-950/40 border-2 border-orange-500/40 p-6 sm:p-8 text-center space-y-5">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-400 text-black shadow-lg shadow-orange-500/30 mb-1">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
               </div>
 
-              {/* Emergency Contact */}
-              <div className="space-y-4">
-                <h2 className="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] border-b border-[#ff8b1f]/30 pb-2">
-                  Emergency Contact
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-2">
+                  Official Registration via Google Form
                 </h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-[#ffdcb3] mb-2">
-                      Contact Name *
-                    </label>
-                    <input
-                      type="text"
-                      name="emergency_name"
-                      value={formData.emergencyContact.name}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
-                      placeholder="Emergency contact name"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#ffdcb3] mb-2">
-                      Contact Phone *
-                    </label>
-                    <input
-                      type="tel"
-                      name="emergency_phone"
-                      value={formData.emergencyContact.phone}
-                      onChange={handleChange}
-                      required
-                      pattern="[0-9]{10}"
-                      className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
-                      placeholder="10-digit number"
-                    />
-                  </div>
-                </div>
+                <p className="text-gray-300 text-sm sm:text-base max-w-xl mx-auto">
+                  Click the button below to register online for the Zenith 2026-27 Marathon. Submit your runner details and payment confirmation through the Google Form.
+                </p>
               </div>
 
-              {/* Medical Information */}
-              <div className="space-y-4">
-                <h2 className="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] border-b border-[#ff8b1f]/30 pb-2">
-                  Medical Information (Optional)
-                </h2>
-
-                <div>
-                  <label className="block text-sm font-medium text-[#ffdcb3] mb-2">
-                    Any Medical Conditions?
-                  </label>
-                  <textarea
-                    name="medicalConditions"
-                    value={formData.medicalConditions}
-                    onChange={handleChange}
-                    rows="3"
-                    className="w-full px-4 py-3 bg-black/40 border border-[#ff8b1f]/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff8b1f] focus:border-transparent transition-all"
-                    placeholder="Please mention any medical conditions, allergies, or health concerns (Optional)"
-                  />
-                </div>
-              </div>
-
-              {/* Payment Section with QR Code */}
-              <div className="space-y-4">
-                <h2 className="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#ffb36a] to-[#ff8b1f] border-b border-[#ff8b1f]/30 pb-2">
-                  Payment Details
-                </h2>
-
-                <div className="bg-gradient-to-br from-[#ff8b1f]/10 to-[#ffb36a]/10 border-2 border-[#ff8b1f]/30 rounded-xl p-6">
-                  <div className="text-center mb-4">
-                    <p className="text-[#ffdcb3] text-lg font-semibold mb-2">
-                      Registration Fee: ₹99
-                    </p>
-                    <p className="text-gray-400 text-sm">
-                      Scan the QR code below to make payment
-                    </p>
-                  </div>
-
-                  {/* Payment QR Code */}
-                  <div className="flex justify-center mb-6">
-                    <div className="bg-white p-4 rounded-lg shadow-xl">
-                      <img
-                        src={PAYMENT_QR_URL}
-                        alt="Payment QR Code - Scan to pay"
-                        className="w-64 h-auto object-contain"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="bg-black/40 rounded-lg p-4 border border-[#ff8b1f]/20 text-center mb-4">
-                    <p className="text-[#ffdcb3] text-sm font-semibold">
-                      UPI ID:{" "}
-                      <span className="text-white font-mono">
-                        sagarubale2004@oksbi
-                      </span>
-                    </p>
-                  </div>
-
-                  {/* Backup QR Codes Dropdown */}
-                  <div className="mt-4">
-                    <button
-                      type="button"
-                      onClick={() => setShowBackupQR(!showBackupQR)}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/40 rounded-lg text-orange-300 font-medium transition-all"
-                    >
-                      <span>🔄</span>
-                      <span>
-                        {showBackupQR
-                          ? "Hide Backup Payment Options"
-                          : "Show Backup Payment Options"}
-                      </span>
-                      <svg
-                        className={`w-5 h-5 transition-transform ${
-                          showBackupQR ? "rotate-180" : ""
-                        }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </button>
-
-                    <AnimatePresence>
-                      {showBackupQR && (
-                        <motion.div
-                          initial={{height: 0, opacity: 0}}
-                          animate={{height: "auto", opacity: 1}}
-                          exit={{height: 0, opacity: 0}}
-                          transition={{duration: 0.3}}
-                          className="overflow-hidden"
-                        >
-                          <div className="mt-4 space-y-6 pt-4 border-t border-orange-500/20">
-                            {BACKUP_QR_URLS.map((qr, index) => (
-                              <div
-                                key={index}
-                                className="bg-orange-500/5 p-6 rounded-lg border border-orange-500/20"
-                              >
-                                <p className="text-sm text-orange-300 mb-3 font-medium text-center">
-                                  {qr.name}
-                                </p>
-                                <div className="bg-white p-2 rounded-lg shadow-lg w-fit mx-auto">
-                                  <img
-                                    src={qr.url}
-                                    alt={`Backup QR ${index + 1}`}
-                                    className="w-64 h-auto"
-                                  />
-                                </div>
-                                <p className="text-xs text-gray-400 mt-3 text-center break-all">
-                                  UPI ID: {qr.upiId}
-                                </p>
-                              </div>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </div>
-
-                {/* Payment Screenshot Upload */}
-                <div className="mt-6">
-                  <label className="block text-[#ffdcb3] font-medium mb-4 text-lg">
-                    Upload Payment Screenshot{" "}
-                    <span className="text-red-500">*</span>
-                  </label>
-                  <p className="text-sm text-gray-400 mb-4">
-                    Please upload a screenshot of your payment transaction.
-                    Accepted formats: JPG, PNG, PDF (Max 10MB)
-                  </p>
-
-                  {/* Important Notice */}
-                  <div className="mb-4 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-l-4 border-yellow-500 rounded-lg p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 mt-0.5">
-                        <svg
-                          className="w-5 h-5 text-yellow-500"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-yellow-500 font-semibold text-sm mb-1">
-                          📌 Important: Transaction ID Required
-                        </p>
-                        <p className="text-yellow-200/90 text-xs leading-relaxed">
-                          Please ensure your screenshot clearly shows the{" "}
-                          <span className="font-bold text-yellow-400">
-                            Transaction ID / UTR Number
-                          </span>
-                          . Upload the complete payment receipt from your
-                          banking app or UPI app.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {!screenshotPreview ? (
-                    <div className="relative">
-                      <input
-                        type="file"
-                        id="payment-screenshot"
-                        accept="image/jpeg,image/jpg,image/png,application/pdf"
-                        onChange={handleScreenshotChange}
-                        disabled={isUploadingScreenshot}
-                        className="hidden"
-                      />
-                      <label
-                        htmlFor="payment-screenshot"
-                        className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-[#ff8b1f]/30 rounded-lg cursor-pointer hover:border-[#ff8b1f] transition-colors ${
-                          isUploadingScreenshot
-                            ? "opacity-50 cursor-not-allowed"
-                            : ""
-                        }`}
-                      >
-                        <svg
-                          className="w-12 h-12 text-gray-400 mb-3"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                          />
-                        </svg>
-                        <p className="text-gray-300 text-sm">
-                          {isUploadingScreenshot
-                            ? "Uploading..."
-                            : "Click to upload payment screenshot"}
-                        </p>
-                        <p className="text-gray-500 text-xs mt-1">
-                          JPG, PNG or PDF (MAX. 10MB)
-                        </p>
-                      </label>
-                    </div>
-                  ) : (
-                    <div className="bg-black/40 border border-[#ff8b1f]/20 rounded-lg p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          {screenshotPreview === "PDF" ? (
-                            <div className="w-16 h-16 bg-red-500/20 rounded-lg flex items-center justify-center">
-                              <svg
-                                className="w-8 h-8 text-red-500"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                                />
-                              </svg>
-                            </div>
-                          ) : (
-                            <img
-                              src={screenshotPreview}
-                              alt="Payment Screenshot"
-                              className="w-16 h-16 object-cover rounded-lg"
-                            />
-                          )}
-                          <div>
-                            <p className="text-white font-medium">
-                              {paymentScreenshot?.name}
-                            </p>
-                            <p className="text-gray-400 text-sm">
-                              {(paymentScreenshot?.size / 1024 / 1024).toFixed(
-                                2,
-                              )}{" "}
-                              MB
-                            </p>
-                            {isUploadingScreenshot ? (
-                              <p className="text-yellow-400 text-xs mt-1 flex items-center">
-                                <svg
-                                  className="animate-spin h-3 w-3 mr-1"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <circle
-                                    className="opacity-25"
-                                    cx="12"
-                                    cy="12"
-                                    r="10"
-                                    stroke="currentColor"
-                                    strokeWidth="4"
-                                  ></circle>
-                                  <path
-                                    className="opacity-75"
-                                    fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                  ></path>
-                                </svg>
-                                Uploading...
-                              </p>
-                            ) : formData.paymentScreenshotUrl ? (
-                              <p className="text-green-400 text-xs mt-1">
-                                ✓ Uploaded successfully
-                              </p>
-                            ) : null}
-                          </div>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={handleRemoveScreenshot}
-                          className="text-red-500 hover:text-red-400 transition-colors"
-                          title={
-                            isUploadingScreenshot
-                              ? "Cancel upload"
-                              : "Remove screenshot"
-                          }
-                        >
-                          <svg
-                            className="w-6 h-6"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div className="mt-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
-                  <p className="text-yellow-300 text-xs">
-                    ⚠️ <strong>Important:</strong> Registration will be
-                    confirmed only after payment verification. Admin will review
-                    your payment screenshot and approve your registration.
-                  </p>
-                </div>
-              </div>
-
-              {/* Terms and Conditions Checkbox */}
-              <motion.div
-                initial={{opacity: 0, y: 20}}
-                animate={{opacity: 1, y: 0}}
-                transition={{delay: 0.6}}
-                className="bg-white/5 border border-orange-500/30 rounded-lg p-4"
-              >
-                <label className="flex items-start gap-3 cursor-pointer group">
-                  <div className="relative flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={termsAccepted}
-                      onChange={(e) => setTermsAccepted(e.target.checked)}
-                      className="w-5 h-5 rounded border-2 border-orange-500/50 bg-black/50 checked:bg-orange-500 checked:border-orange-500 cursor-pointer appearance-none flex items-center justify-center"
-                      style={{
-                        accentColor: "#ff8b1f",
-                      }}
-                    />
-                    {termsAccepted && (
-                      <svg
-                        className="w-5 h-5 absolute pointer-events-none text-white"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={3}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-gray-300 text-sm leading-relaxed">
-                      I hereby declare that I am physically fit to participate
-                      in the ZENITH Marathon 2026. I understand that
-                      participation is at my own risk and I release the
-                      organizers from any liability. I agree to follow all event
-                      rules and safety guidelines. The information provided
-                      above is accurate and complete.
-                    </p>
-                    <a
-                      href="/marathon/terms-and-conditions"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block mt-2 text-orange-400 hover:text-orange-300 text-sm font-semibold underline transition-colors"
-                    >
-                      📋 Read Full Terms & Conditions →
-                    </a>
-                  </div>
-                </label>
-              </motion.div>
-
-              {/* Submit Button */}
-              <div className="flex gap-4">
-                <motion.button
-                  whileHover={{
-                    scale: loading || isUploadingScreenshot ? 1 : 1.02,
-                  }}
-                  whileTap={{
-                    scale: loading || isUploadingScreenshot ? 1 : 0.98,
-                  }}
-                  type="submit"
-                  disabled={
-                    loading ||
-                    isUploadingScreenshot ||
-                    !formData.paymentScreenshotUrl ||
-                    !termsAccepted
-                  }
-                  className="flex-1 font-semibold py-4 px-6 rounded-lg transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-[#2c1506]"
+              {/* Big CTA Button */}
+              <div className="pt-2">
+                <a
+                  href={GOOGLE_FORM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 text-base sm:text-lg font-bold text-black rounded-xl transition-all duration-300 shadow-xl shadow-orange-500/40 hover:shadow-orange-500/70 hover:scale-[1.03] active:scale-[0.98] group"
                   style={{
-                    background: "linear-gradient(90deg, #ffb36a, #ff8b1f)",
-                    boxShadow:
-                      "0 12px 28px rgba(255,140,40,0.3), inset 0 -2px 6px rgba(0,0,0,0.12)",
+                    background: "linear-gradient(90deg, #ffb36a 0%, #ff8b1f 50%, #ea580c 100%)",
                   }}
                 >
-                  {isUploadingScreenshot ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                          fill="none"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        />
-                      </svg>
-                      Uploading Screenshot...
-                    </span>
-                  ) : loading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                          fill="none"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        />
-                      </svg>
-                      Registering...
-                    </span>
-                  ) : (
-                    "Submit🏃"
-                  )}
-                </motion.button>
-
-                <motion.button
-                  whileHover={{scale: 1.02}}
-                  whileTap={{scale: 0.98}}
-                  type="button"
-                  onClick={() => navigate("/marathon-event")}
-                  className="px-6 py-4 bg-black/40 text-[#ffdcb3] font-semibold rounded-lg border border-[#ff8b1f]/30 hover:bg-black/60 transition-all"
-                >
-                  ← Back
-                </motion.button>
+                  <span>Register Now (Google Form)</span>
+                  <span className="text-xl transform group-hover:translate-x-1 group-hover:-translate-y-0.5 transition-transform">↗</span>
+                </a>
               </div>
-            </form>
+
+              {/* URL Display Box */}
+              <div className="pt-3 max-w-lg mx-auto">
+                <div className="flex items-center justify-between gap-2 bg-black/60 border border-orange-500/25 rounded-xl px-4 py-2.5">
+                  <span className="text-xs sm:text-sm text-orange-300/90 font-mono truncate select-all">
+                    {GOOGLE_FORM_URL}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(GOOGLE_FORM_URL)}
+                    className="shrink-0 px-3 py-1 bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 border border-orange-500/30 rounded-lg text-xs font-semibold transition-colors"
+                  >
+                    {copiedLink ? "✓ Copied" : "Copy"}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Official Route Section */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">🗺️</span>
+                  <div>
+                    <h3 className="text-lg sm:text-xl font-bold text-white">Official Marathon Route</h3>
+                    <p className="text-xs text-orange-400 font-medium">5 KM Course through Nanded</p>
+                  </div>
+                </div>
+                <span className="px-3 py-1 bg-orange-500/10 border border-orange-500/30 rounded-full text-xs text-orange-300 font-semibold">
+                  7 Checkpoints
+                </span>
+              </div>
+
+              {/* Full Route Banner */}
+              <div className="bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-transparent border border-orange-500/30 rounded-xl p-4">
+                <div className="text-xs uppercase tracking-wider text-orange-400 font-semibold mb-1">
+                  Full Route Path:
+                </div>
+                <div className="text-sm sm:text-base font-semibold text-white tracking-wide leading-relaxed">
+                  {ROUTE_FULL}
+                </div>
+              </div>
+
+              {/* Route checkpoints progression */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-2">
+                {routeCheckpoints.map((cp, idx) => (
+                  <div
+                    key={idx}
+                    className={`relative rounded-xl p-3.5 border transition-all ${
+                      cp.isStart
+                        ? "bg-emerald-950/30 border-emerald-500/40 shadow-sm shadow-emerald-500/10"
+                        : cp.isFinish
+                        ? "bg-red-950/30 border-red-500/40 shadow-sm shadow-red-500/10"
+                        : "bg-white/[0.03] border-white/10 hover:border-orange-500/30"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="w-6 h-6 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 flex items-center justify-center text-xs font-bold font-mono">
+                        {idx + 1}
+                      </span>
+                      <span
+                        className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                          cp.isStart
+                            ? "bg-emerald-500/20 text-emerald-300"
+                            : cp.isFinish
+                            ? "bg-red-500/20 text-red-300"
+                            : "bg-white/10 text-white/60"
+                        }`}
+                      >
+                        {cp.tag}
+                      </span>
+                    </div>
+                    <div className="font-bold text-white text-sm sm:text-base">
+                      {cp.title}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Contact Coordinators Section */}
+            <div className="space-y-4 pt-2">
+              <div className="flex items-center gap-2 border-b border-white/10 pb-3">
+                <span className="text-2xl">📞</span>
+                <div>
+                  <h3 className="text-lg sm:text-xl font-bold text-white">Event Contacts & Support</h3>
+                  <p className="text-xs text-gray-400">Reach out to the coordinators for any help or queries</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {contacts.map((contact, idx) => (
+                  <div
+                    key={idx}
+                    className="bg-black/50 border border-orange-500/25 rounded-2xl p-5 hover:border-orange-500/50 transition-all flex flex-col justify-between space-y-4"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded bg-orange-500/15 text-orange-400 border border-orange-500/30">
+                          {contact.role}
+                        </span>
+                      </div>
+                      <h4 className="text-lg font-bold text-white mt-1">
+                        {contact.name}
+                      </h4>
+                      <p className="text-orange-300 font-mono text-base font-semibold mt-0.5">
+                        {contact.displayPhone}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-2 border-t border-white/10">
+                      <a
+                        href={`tel:${contact.phone}`}
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/40 text-orange-300 font-semibold text-xs sm:text-sm transition-all"
+                      >
+                        <span>📞 Call</span>
+                      </a>
+                      <a
+                        href={`https://wa.me/91${contact.phone}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 font-semibold text-xs sm:text-sm transition-all"
+                      >
+                        <span>💬 WhatsApp</span>
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Perks / Inclusions */}
+            <div className="bg-black/40 border border-white/5 rounded-2xl p-5 space-y-3">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-white/50">
+                Runner Inclusions & Highlights
+              </h4>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl">
+                  <div className="text-xl mb-1">🏅</div>
+                  <div className="text-xs font-semibold text-white">Medals for Winners</div>
+                </div>
+                <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl">
+                  <div className="text-xl mb-1">👕</div>
+                  <div className="text-xs font-semibold text-white">Official T-Shirt</div>
+                </div>
+                <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl">
+                  <div className="text-xl mb-1">📜</div>
+                  <div className="text-xs font-semibold text-white">E-Certificate</div>
+                </div>
+                <div className="p-3 bg-white/[0.02] border border-white/5 rounded-xl">
+                  <div className="text-xl mb-1">💵</div>
+                  <div className="text-xs font-semibold text-white">Cash Prizes (Top 3)</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Navigation Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-white/10">
+              <a
+                href={GOOGLE_FORM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 py-3.5 px-4 text-center font-bold text-white rounded-xl transition-all text-sm sm:text-base shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40"
+                style={{
+                  background: "linear-gradient(90deg, #ff8b1f, #ea580c)",
+                }}
+              >
+                Register via Google Form ↗
+              </a>
+              <button
+                type="button"
+                onClick={() => navigate("/marathon-event")}
+                className="flex-1 py-3.5 px-4 font-semibold rounded-xl transition-all text-sm sm:text-base text-orange-300 bg-orange-500/10 border border-orange-500/30 hover:bg-orange-500/20"
+              >
+                View Event Details
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate("/home")}
+                className="flex-1 py-3.5 px-4 font-semibold rounded-xl transition-all text-sm sm:text-base text-white bg-white/5 border border-white/15 hover:bg-white/10"
+              >
+                Back to Home
+              </button>
+            </div>
           </motion.div>
         </motion.div>
       </div>

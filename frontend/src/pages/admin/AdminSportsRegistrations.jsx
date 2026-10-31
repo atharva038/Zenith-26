@@ -38,7 +38,7 @@ const SPORTS_FEES = {
   Football: { amount: 3000, note: "per team" },
   Basketball: { men: 2500, women: 1500, note: "per team" },
   Volleyball: { men: 2200, women: 1500, note: "per team" },
-  Badminton: { boys: 1000, girls: 800, mixed: 600, note: "per team" },
+  Badminton: { boys: 1000, soloWomen: 250, mixed: 600, note: "per team" },
   "Table Tennis": { amount: 400, note: "per player" },
   Chess: {
     team: 500,
@@ -53,13 +53,13 @@ const SPORTS_FEES = {
   },
   Swimming: { amount: 300, note: "per athlete" },
   Kabaddi: { men: 2200, women: 1500, note: "per team" },
-  "Kho-Kho": { amount: 1500, note: "per team" },
+  "Kho-Kho": { men: 1500, women: 1200, note: "per team" },
   Hockey: { amount: 2500, note: "per team" },
   "Lawn Tennis": { amount: 500, note: "per player" },
   Squash: { amount: 400, note: "per player" },
-  Handball: { amount: 1500, note: "per team" },
+  Handball: { boys: 1500, girls: 1500, note: "per team" },
   "Rink Football": { men: 2200, women: 1500, note: "per team" },
-  "Tug of War": { amount: 1000, note: "per team" },
+  "Tug of War": { men: 1000, women: 1000, note: "per team" },
   "Power Lifting": { amount: 300, note: "per player" },
 };
 
@@ -139,14 +139,14 @@ const getCategoryBadgeInfo = (eventName, formData) => {
           "bg-blue-500/10 text-blue-400 border border-blue-500/20",
         isTeam: true,
       };
-    } else if (genderCategory === "girls") {
+    } else if (genderCategory === "soloWomen") {
       return {
-        label: "👩 Girls Team (5 Players)",
-        shortLabel: "👩 Girls",
+        label: "👩 Solo Women (1 Player)",
+        shortLabel: "👩 Solo Women",
         className: "bg-pink-500/20 text-pink-300 border-pink-500/20",
         detailClassName:
           "bg-pink-500/10 text-pink-400 border border-pink-500/20",
-        isTeam: true,
+        isTeam: false,
       };
     } else if (genderCategory === "mixed") {
       return {
@@ -219,6 +219,7 @@ const AdminSportsRegistrations = () => {
   const navigate = useNavigate();
   const [registrations, setRegistrations] = useState([]);
   const [stats, setStats] = useState(null);
+  const [filteredSportAmount, setFilteredSportAmount] = useState(null);
   const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [selectedRegistration, setSelectedRegistration] = useState(null);
@@ -297,6 +298,53 @@ const AdminSportsRegistrations = () => {
     }
   }, []);
 
+  // Calculate filtered sport total amount
+  const calculateFilteredSportAmount = useCallback(async () => {
+    if (!filters.sport || filters.sport === "All Sports") {
+      setFilteredSportAmount(null);
+      return;
+    }
+
+    try {
+      const queryParams = new URLSearchParams();
+      queryParams.append("eventName", filters.sport);
+      queryParams.append("limit", "9999"); // Get all for calculation
+
+      const response = await api.get(`/registrations?${queryParams}`);
+
+      if (response.data.success) {
+        let sportRegistrations = response.data.data || [];
+        
+        // Calculate total for confirmed registrations only
+        const confirmedTotal = sportRegistrations
+          .filter((reg) => reg.status === "confirmed")
+          .reduce((sum, reg) => sum + (reg.amount || 0), 0);
+        
+        const confirmedCount = sportRegistrations.filter(
+          (reg) => reg.status === "confirmed"
+        ).length;
+        
+        const pendingCount = sportRegistrations.filter(
+          (reg) => reg.status === "pending"
+        ).length;
+        
+        const cancelledCount = sportRegistrations.filter(
+          (reg) => reg.status === "cancelled"
+        ).length;
+
+        setFilteredSportAmount({
+          total: confirmedTotal,
+          confirmedCount,
+          pendingCount,
+          cancelledCount,
+          sportName: filters.sport,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to calculate filtered sport amount:", error);
+    }
+  }, [filters.sport]);
+
   // Fetch registrations for current page
   const fetchRegistrations = useCallback(async () => {
     try {
@@ -358,6 +406,11 @@ const AdminSportsRegistrations = () => {
     fetchAllRegistrationsForStats();
   }, [fetchAllRegistrationsForStats]);
 
+  // Calculate filtered sport amount when sport filter changes
+  useEffect(() => {
+    calculateFilteredSportAmount();
+  }, [calculateFilteredSportAmount]);
+
   // Calculate statistics
   const calculateStats = (data) => {
     const sportCounts = {};
@@ -367,11 +420,18 @@ const AdminSportsRegistrations = () => {
     let pendingStatus = 0;
     let confirmed = 0;
     let cancelled = 0;
+    let totalRegistrationFee = 0;
+    let totalAccommodationFee = 0;
 
     data.forEach((reg) => {
       // Count status for all registrations
       if (reg.status === "pending") pendingStatus++;
-      if (reg.status === "confirmed") confirmed++;
+      if (reg.status === "confirmed") {
+        confirmed++;
+        // Calculate fee only for confirmed registrations
+        totalRegistrationFee += reg.amount || 0;
+        totalAccommodationFee += reg.accommodation?.totalFee || 0;
+      }
       if (reg.status === "cancelled") {
         cancelled++;
         return; // Skip cancelled registrations from other counts
@@ -409,6 +469,9 @@ const AdminSportsRegistrations = () => {
       pendingStatus,
       confirmed,
       cancelled,
+      totalRegistrationFee,
+      totalAccommodationFee,
+      totalFeeCollected: totalRegistrationFee + totalAccommodationFee,
     });
   };
 
@@ -425,6 +488,250 @@ const AdminSportsRegistrations = () => {
   ) => {
     setSelectedScreenshot({ url: screenshotUrl, type });
     setShowScreenshotModal(true);
+  };
+
+  // Download individual registration receipt
+  const downloadReceipt = (registration) => {
+    const doc = new jsPDF();
+    const formData = registration.formData || {};
+    const isSolo = isSoloRegistration(registration.eventName, formData);
+    
+    // Get category info and clean label (remove emojis for PDF)
+    const badgeInfo = getCategoryBadgeInfo(registration.eventName, formData);
+    let categoryText = '';
+    if (badgeInfo) {
+      // Remove emojis and clean up the label
+      categoryText = badgeInfo.label
+        .replace(/👨|👩|👥|🎯/g, '')
+        .trim();
+    }
+    
+    // Header with official look
+    doc.setFillColor(75, 0, 130); // Indigo
+    doc.rect(0, 0, 210, 50, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(28);
+    doc.setFont('helvetica', 'bold');
+    doc.text('ZENITH 2026', 105, 20, { align: 'center' });
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'normal');
+    doc.text('OFFICIAL REGISTRATION RECEIPT', 105, 30, { align: 'center' });
+    
+    doc.setFontSize(11);
+    doc.text('Sports Festival', 105, 38, { align: 'center' });
+    doc.text(registration.registrationNumber || 'N/A', 105, 45, { align: 'center' });
+    
+    // Reset text color
+    doc.setTextColor(0, 0, 0);
+    
+    let yPos = 60;
+    
+    // Sport Information
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('SPORT INFORMATION', 14, yPos);
+    yPos += 1;
+    doc.setLineWidth(0.5);
+    doc.setDrawColor(75, 0, 130);
+    doc.line(14, yPos, 196, yPos);
+    yPos += 7;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    
+    const sportDisplay = registration.eventName === "Athletics" && formData.athleticsEvent
+      ? `${registration.eventName} - ${formData.athleticsEvent}`
+      : registration.eventName || "N/A";
+    
+    doc.text(`Sport: ${sportDisplay}`, 14, yPos);
+    yPos += 6;
+    
+    // Show if Solo or Team
+    if (isSolo || (badgeInfo && !badgeInfo.isTeam)) {
+      doc.setFont('helvetica', 'bold');
+      doc.text('Type: SOLO REGISTRATION', 14, yPos);
+      doc.setFont('helvetica', 'normal');
+      yPos += 6;
+    } else {
+      doc.text(`Type: TEAM REGISTRATION${categoryText ? ` (${categoryText})` : ''}`, 14, yPos);
+      yPos += 6;
+    }
+    
+    doc.text(`Registration Date: ${new Date(registration.createdAt).toLocaleDateString('en-IN', {day: '2-digit', month: 'short', year: 'numeric'})}`, 14, yPos);
+    yPos += 10;
+    
+    // Team Information (if applicable)
+    if (!isSolo && badgeInfo?.isTeam !== false) {
+      doc.setFontSize(13);
+      doc.setFont('helvetica', 'bold');
+      doc.text('TEAM INFORMATION', 14, yPos);
+      yPos += 1;
+      doc.line(14, yPos, 196, yPos);
+      yPos += 7;
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Team Name: ${formData.team_name || formData.get?.('team_name') || 'N/A'}`, 14, yPos);
+      yPos += 6;
+      doc.text(`Number of Players: ${formData.num_players || formData.get?.('num_players') || 'N/A'}`, 14, yPos);
+      yPos += 10;
+    }
+    
+    // Captain/Primary Contact Information
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text(isSolo ? 'PARTICIPANT INFORMATION' : 'CAPTAIN INFORMATION', 14, yPos);
+    yPos += 1;
+    doc.line(14, yPos, 196, yPos);
+    yPos += 7;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Name: ${formData.captain_name || formData.get?.('captain_name') || 'N/A'}`, 14, yPos);
+    yPos += 6;
+    doc.text(`Contact: ${formData.captain_contact || formData.get?.('captain_contact') || 'N/A'}`, 14, yPos);
+    yPos += 6;
+    doc.text(`Email: ${registration.email || 'N/A'}`, 14, yPos);
+    yPos += 6;
+    doc.text(`Alternate Contact: ${formData.alternate_contact || formData.get?.('alternate_contact') || 'N/A'}`, 14, yPos);
+    yPos += 10;
+    
+    // Team Members List (if available and not solo)
+    if (!isSolo && badgeInfo?.isTeam !== false) {
+      let teamMembers = formData.teamMembers || formData.team_members || 
+                       formData.get?.('teamMembers') || formData.get?.('team_members');
+      
+      if (typeof teamMembers === 'string') {
+        try {
+          teamMembers = JSON.parse(teamMembers);
+        } catch {
+          teamMembers = [];
+        }
+      }
+      
+      if (!Array.isArray(teamMembers)) {
+        teamMembers = [];
+      }
+      
+      if (teamMembers.length > 0) {
+        doc.setFontSize(13);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`ALL TEAM MEMBERS (${teamMembers.length})`, 14, yPos);
+        yPos += 1;
+        doc.line(14, yPos, 196, yPos);
+        yPos += 7;
+        
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        
+        teamMembers.forEach((member, index) => {
+          // Check if we need a new page
+          if (yPos > 270) {
+            doc.addPage();
+            yPos = 20;
+          }
+          
+          const memberName = member.name || 'N/A';
+          const memberContact = member.contact || member.phone || 'N/A';
+          const memberEmail = member.email || '';
+          
+          doc.text(`${index + 1}. ${memberName}`, 20, yPos);
+          yPos += 5;
+          doc.text(`   Contact: ${memberContact}`, 20, yPos);
+          if (memberEmail) {
+            yPos += 5;
+            doc.text(`   Email: ${memberEmail}`, 20, yPos);
+          }
+          yPos += 6;
+        });
+        yPos += 4;
+      }
+    }
+    
+    // Check if we need a new page
+    if (yPos > 240) {
+      doc.addPage();
+      yPos = 20;
+    }
+    
+    // Institution Information
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('INSTITUTION INFORMATION', 14, yPos);
+    yPos += 1;
+    doc.line(14, yPos, 196, yPos);
+    yPos += 7;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Institution: ${registration.institution || 'N/A'}`, 14, yPos);
+    yPos += 6;
+    doc.text(`City: ${registration.city || 'N/A'}`, 14, yPos);
+    yPos += 6;
+    const address = formData.college_address || formData.get?.('college_address') || 'N/A';
+    const addressLines = doc.splitTextToSize(`Address: ${address}`, 180);
+    doc.text(addressLines, 14, yPos);
+    yPos += (addressLines.length * 6) + 4;
+    
+    // Payment Information
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('PAYMENT INFORMATION', 14, yPos);
+    yPos += 1;
+    doc.line(14, yPos, 196, yPos);
+    yPos += 7;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    
+    // Show actual amount paid
+    const registrationFee = registration.amount || 0;
+    const accommodationFee = registration.accommodation?.totalFee || 0;
+    const totalAmount = registrationFee + accommodationFee;
+    
+    doc.text(`Registration Fee Paid: Rs. ${registrationFee}/-`, 14, yPos);
+    yPos += 6;
+    
+    if (accommodationFee > 0) {
+      doc.text(`Accommodation Fee: Rs. ${accommodationFee}/-`, 14, yPos);
+      yPos += 6;
+    }
+    
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.text(`Total Amount Paid: Rs. ${totalAmount}/-`, 14, yPos);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    yPos += 8;
+    
+    // Accommodation
+    const needsAccommodation = formData.need_accommodation || formData.get?.('need_accommodation');
+    doc.text(`Accommodation: ${needsAccommodation ? 'Required' : 'Not Required'}`, 14, yPos);
+    yPos += 8;
+    
+    // Status
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Registration Status: ${registration.status?.toUpperCase() || 'PENDING'}`, 14, yPos);
+    
+    // Footer on last page
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'italic');
+      doc.setTextColor(100, 100, 100);
+      doc.text('This is an official digitally generated receipt from Zenith 2026 Sports Festival', 105, 285, { align: 'center' });
+      doc.text(`Generated on: ${new Date().toLocaleString('en-IN')}`, 105, 290, { align: 'center' });
+      doc.text(`Page ${i} of ${pageCount}`, 195, 290, { align: 'right' });
+    }
+    
+    // Save the PDF
+    const fileName = `Zenith_${registration.registrationNumber || registration._id}.pdf`;
+    doc.save(fileName);
+    toast.success('Receipt downloaded successfully!');
   };
 
   // Update registration status
@@ -448,150 +755,788 @@ const AdminSportsRegistrations = () => {
     }
   };
 
+  // Fetch ALL registrations for export (not paginated)
+  const fetchAllRegistrationsForExport = async () => {
+    try {
+      const queryParams = new URLSearchParams();
+
+      // Apply same filters as current view
+      if (filters.sport && filters.sport !== "All Sports") {
+        queryParams.append("eventName", filters.sport);
+      }
+      if (filters.status) queryParams.append("status", filters.status);
+      if (filters.search) queryParams.append("search", filters.search);
+      
+      // Fetch all data
+      queryParams.append("limit", "9999");
+
+      const response = await api.get(`/registrations?${queryParams}`);
+
+      if (response.data.success) {
+        let allRegistrations = response.data.data || [];
+
+        // Filter by sports only (exclude Marathon, Women's Tournament, etc.)
+        allRegistrations = allRegistrations.filter((reg) =>
+          SPORTS_LIST.includes(reg.eventName),
+        );
+
+        // Additional filter for accommodation if set
+        if (filters.needAccommodation) {
+          allRegistrations = allRegistrations.filter((reg) => {
+            const needAccom =
+              reg.accommodation?.needed ||
+              reg.formData?.needs_accommodation ||
+              reg.formData?.need_accommodation ||
+              reg.formData?.get?.("need_accommodation");
+            return filters.needAccommodation === "yes"
+              ? needAccom === true
+              : needAccom === false;
+          });
+        }
+
+        // Only include confirmed registrations (exclude cancelled and pending)
+        allRegistrations = allRegistrations.filter((reg) => reg.status === "confirmed");
+
+        // Sort by sport name first, then by gender category within each sport
+        allRegistrations.sort((a, b) => {
+          // First sort by sport name
+          if (a.eventName !== b.eventName) {
+            return (a.eventName || "").localeCompare(b.eventName || "");
+          }
+          
+          // Within same sport, sort by gender category
+          const getGender = (reg) => {
+            const formData = reg.formData || {};
+            const genderCategory = formData?.gender_category || 
+                                 formData?.get?.("gender_category") || 
+                                 formData?.sportDetails?.selectedGender || "";
+            
+            // Normalize gender categories for consistent sorting
+            // Men/Boys first, then Women/Girls, then Mixed
+            if (genderCategory.toLowerCase().includes("men") || 
+                genderCategory.toLowerCase().includes("boys")) {
+              return "1-men";
+            } else if (genderCategory.toLowerCase().includes("women") || 
+                       genderCategory.toLowerCase().includes("girls") ||
+                       genderCategory.toLowerCase().includes("solowomen")) {
+              return "2-women";
+            } else if (genderCategory.toLowerCase().includes("mixed")) {
+              return "3-mixed";
+            } else if (genderCategory.toLowerCase().includes("individual") ||
+                       genderCategory.toLowerCase().includes("solo")) {
+              return "4-individual";
+            }
+            return "5-other";
+          };
+          
+          return getGender(a).localeCompare(getGender(b));
+        });
+
+        return allRegistrations;
+      }
+      return [];
+    } catch (error) {
+      console.error("Failed to fetch all registrations:", error);
+      toast.error("Failed to fetch data for export");
+      return [];
+    }
+  };
+
   // Export to PDF
-  const exportToPDF = () => {
-    const doc = new jsPDF();
-    const sportFilter =
-      filters.sport && filters.sport !== "All Sports"
-        ? filters.sport
-        : "All Sports";
+  const exportToPDF = async () => {
+    try {
+      toast.info("Fetching all registrations for export...");
+      
+      // Fetch ALL registrations (not just current page)
+      const allRegistrations = await fetchAllRegistrationsForExport();
+      
+      if (allRegistrations.length === 0) {
+        toast.warning("No registrations to export");
+        return;
+      }
 
-    // Add title
-    doc.setFontSize(18);
-    doc.text(`Sports Registrations - ${sportFilter}`, 14, 20);
+      const doc = new jsPDF();
+      const sportFilter =
+        filters.sport && filters.sport !== "All Sports"
+          ? filters.sport
+          : "All Sports";
 
-    // Add date
-    doc.setFontSize(10);
-    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
-
-    // Prepare table data (exclude cancelled registrations)
-    const tableData = registrations
-      .filter((reg) => reg.status !== "cancelled")
-      .map((reg, index) => {
-        const formData = reg.formData || {};
-        const isSolo = isSoloRegistration(reg.eventName, formData);
-        // For Athletics, include the event name (100m, Long Jump, etc.)
-        const sportDisplay =
-          reg.eventName === "Athletics" && formData.athleticsEvent
-            ? `${reg.eventName} - ${formData.athleticsEvent}`
-            : reg.eventName || "N/A";
-        return [
-          index + 1,
-          reg.registrationNumber || "N/A",
-          sportDisplay,
-          isSolo
-            ? "-"
-            : formData.team_name || formData.get?.("team_name") || "N/A",
-          isSolo
-            ? "-"
-            : formData.captain_name || formData.get?.("captain_name") || "N/A",
-          formData.captain_contact ||
-            formData.get?.("captain_contact") ||
-            "N/A",
-          reg.institution || "N/A",
-          isSolo
-            ? "1"
-            : formData.num_players || formData.get?.("num_players") || "N/A",
-          reg.status || "N/A",
-        ];
+      // Group registrations by sport
+      const groupedBySport = {};
+      allRegistrations.forEach((reg) => {
+        const sportName = reg.eventName || "Unknown";
+        if (!groupedBySport[sportName]) {
+          groupedBySport[sportName] = [];
+        }
+        groupedBySport[sportName].push(reg);
       });
 
-    // Add table
-    autoTable(doc, {
-      startY: 35,
-      head: [
-        [
-          "#",
-          "Reg No.",
-          "Sport",
-          "Team Name",
-          "Captain",
-          "Contact",
-          "Institution",
-          "Players",
-          "Status",
-        ],
-      ],
-      body: tableData,
-      styles: { fontSize: 8 },
-      headStyles: { fillColor: [147, 51, 234] },
-    });
+      // Calculate totals
+      let grandTotal = 0;
+      let totalRegistrations = 0;
+      const sportSummaries = [];
 
-    // Save PDF
-    doc.save(
-      `sports-registrations-${sportFilter.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.pdf`,
-    );
-    toast.success("PDF exported successfully");
+      // Add cover page
+      doc.setFontSize(24);
+      doc.setTextColor(147, 51, 234);
+      doc.text("ZENITH 2026", 105, 40, { align: "center" });
+      
+      doc.setFontSize(18);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Sports Registrations Report`, 105, 55, { align: "center" });
+      
+      doc.setFontSize(12);
+      doc.text(`Filter: ${sportFilter}`, 105, 70, { align: "center" });
+      doc.text(`Generated on: ${new Date().toLocaleString()}`, 105, 80, { align: "center" });
+      doc.text(`Total Sports: ${Object.keys(groupedBySport).length}`, 105, 90, { align: "center" });
+      doc.text(`Total Registrations: ${allRegistrations.length}`, 105, 100, { align: "center" });
+
+      // Process each sport on separate pages
+      let serialNumber = 1;
+      Object.keys(groupedBySport).sort().forEach((sportName, sportIndex) => {
+        const sportRegs = groupedBySport[sportName];
+        
+        // Calculate sport totals
+        const sportTotal = sportRegs.reduce((sum, reg) => sum + (reg.amount || 0), 0);
+        grandTotal += sportTotal;
+        totalRegistrations += sportRegs.length;
+
+        // Add new page for each sport (except first one already on cover page)
+        doc.addPage();
+
+        // Sport header
+        doc.setFontSize(16);
+        doc.setTextColor(147, 51, 234);
+        doc.text(`${sportName}`, 14, 20);
+        
+        doc.setFontSize(10);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Registrations: ${sportRegs.length} | Total Amount: Rs.${sportTotal.toLocaleString()}`, 14, 28);
+
+        // Group by gender within sport
+        const genderGroups = {};
+        sportRegs.forEach((reg) => {
+          const formData = reg.formData || {};
+          const genderCategory = formData?.gender_category || 
+                               formData?.get?.("gender_category") || 
+                               formData?.sportDetails?.selectedGender || "General";
+          if (!genderGroups[genderCategory]) {
+            genderGroups[genderCategory] = [];
+          }
+          genderGroups[genderCategory].push(reg);
+        });
+
+        // Prepare table data for this sport
+        const tableData = [];
+        Object.keys(genderGroups).sort().forEach((gender) => {
+          genderGroups[gender].forEach((reg) => {
+            const formData = reg.formData || {};
+            const isSolo = isSoloRegistration(reg.eventName, formData);
+            
+            tableData.push([
+              serialNumber++,
+              reg.createdAt ? new Date(reg.createdAt).toLocaleDateString() : "N/A",
+              gender,
+              isSolo ? "-" : formData.team_name || formData.get?.("team_name") || "N/A",
+              isSolo ? "-" : formData.captain_name || formData.get?.("captain_name") || "N/A",
+              formData.captain_contact || formData.get?.("captain_contact") || "N/A",
+              reg.institution || "N/A",
+              isSolo ? "1" : formData.num_players || formData.get?.("num_players") || "N/A",
+              `Rs.${reg.amount || 0}`,
+            ]);
+          });
+        });
+
+        // Add table for this sport
+        autoTable(doc, {
+          startY: 35,
+          head: [
+            [
+              "#",
+              "Date",
+              "Category",
+              "Team Name",
+              "Captain",
+              "Contact",
+              "Institution",
+              "Players",
+              "Amount",
+            ],
+          ],
+          body: tableData,
+          styles: { fontSize: 8 },
+          headStyles: { fillColor: [147, 51, 234] },
+          columnStyles: {
+            0: { cellWidth: 8 },
+            1: { cellWidth: 22 },
+            2: { cellWidth: 18 },
+            3: { cellWidth: 27 },
+            4: { cellWidth: 27 },
+            5: { cellWidth: 20 },
+            6: { cellWidth: 27 },
+            7: { cellWidth: 12 },
+            8: { cellWidth: 22 },
+          },
+          foot: [[
+            { content: `${sportName} Total:`, colSpan: 8, styles: { halign: 'right', fontStyle: 'bold' } },
+            { content: `Rs.${sportTotal.toLocaleString()}`, styles: { fontStyle: 'bold', fillColor: [230, 230, 250], cellWidth: 22 } },
+          ]],
+          footStyles: { fillColor: [240, 240, 255], textColor: [0, 0, 0] },
+        });
+
+        sportSummaries.push({
+          sport: sportName,
+          count: sportRegs.length,
+          total: sportTotal
+        });
+      });
+
+      // Add summary page
+      doc.addPage();
+      doc.setFontSize(18);
+      doc.setTextColor(147, 51, 234);
+      doc.text("Summary Report", 14, 20);
+
+      // Summary table
+      const summaryData = sportSummaries.map((summary, index) => [
+        index + 1,
+        summary.sport,
+        summary.count,
+        `Rs.${summary.total.toLocaleString()}`,
+      ]);
+
+      autoTable(doc, {
+        startY: 30,
+        head: [["#", "Sport", "Registrations", "Total Amount"]],
+        body: summaryData,
+        styles: { fontSize: 10 },
+        headStyles: { fillColor: [147, 51, 234] },
+        columnStyles: {
+          0: { cellWidth: 15 },
+          1: { cellWidth: 60 },
+          2: { cellWidth: 35 },
+          3: { cellWidth: 50 }
+        },
+        foot: [[
+          { content: 'GRAND TOTAL:', colSpan: 2, styles: { halign: 'right', fontStyle: 'bold', fontSize: 12 } },
+          { content: totalRegistrations.toString(), styles: { fontStyle: 'bold', fontSize: 12, fillColor: [147, 51, 234], textColor: [255, 255, 255] } },
+          { content: `Rs.${grandTotal.toLocaleString()}`, styles: { fontStyle: 'bold', fontSize: 12, fillColor: [147, 51, 234], textColor: [255, 255, 255], cellWidth: 50 } }
+        ]],
+        footStyles: { fillColor: [147, 51, 234], textColor: [255, 255, 255] },
+      });
+
+      // Save PDF
+      doc.save(
+        `sports-registrations-${sportFilter.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.pdf`,
+      );
+      toast.success(`PDF exported: ${totalRegistrations} registrations, Total: Rs.${grandTotal.toLocaleString()}`);
+    } catch (error) {
+      console.error("PDF Export Error:", error);
+      toast.error("Failed to export PDF");
+    }
   };
 
   // Export to CSV
-  const exportToCSV = () => {
-    const sportFilter =
-      filters.sport && filters.sport !== "All Sports"
-        ? filters.sport
-        : "All Sports";
+  const exportToCSV = async () => {
+    try {
+      toast.info("Fetching all registrations for export...");
+      
+      // Helper function to escape CSV values
+      const escapeCSV = (value) => {
+        if (value === null || value === undefined) return "N/A";
+        const str = String(value);
+        // If the value contains comma, quote, or newline, wrap it in quotes and escape quotes
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+          return `"${str.replace(/"/g, '""')}"`;
+        }
+        return str;
+      };
+      
+      // Fetch ALL registrations (not just current page)
+      const allRegistrations = await fetchAllRegistrationsForExport();
+      
+      if (allRegistrations.length === 0) {
+        toast.warning("No registrations to export");
+        return;
+      }
 
-    // Exclude cancelled registrations from export
-    const csvData = registrations
-      .filter((reg) => reg.status !== "cancelled")
-      .map((reg, index) => {
-        const formData = reg.formData || {};
-        const isSolo = isSoloRegistration(reg.eventName, formData);
-        // For Athletics, include the event name (100m, Long Jump, etc.)
-        const sportDisplay =
-          reg.eventName === "Athletics" && formData.athleticsEvent
-            ? `${reg.eventName} - ${formData.athleticsEvent}`
-            : reg.eventName || "N/A";
-        return {
-          "#": index + 1,
-          "Registration Number": reg.registrationNumber || "N/A",
-          Sport: sportDisplay,
-          "Team Name": isSolo
-            ? "-"
-            : formData.team_name || formData.get?.("team_name") || "N/A",
-          "Captain Name": isSolo
-            ? "-"
-            : formData.captain_name || formData.get?.("captain_name") || "N/A",
-          Contact:
-            formData.captain_contact ||
-            formData.get?.("captain_contact") ||
-            "N/A",
-          Email: reg.email || "N/A",
-          Institution: reg.institution || "N/A",
-          City: reg.city || "N/A",
-          "College Address":
-            formData.college_address ||
-            formData.get?.("college_address") ||
-            "N/A",
-          "Number of Players": isSolo
-            ? "1"
-            : formData.num_players || formData.get?.("num_players") || "N/A",
-          "Alternate Contact":
-            formData.alternate_contact ||
-            formData.get?.("alternate_contact") ||
-            "N/A",
-          "Need Accommodation":
-            formData.need_accommodation || formData.get?.("need_accommodation")
-              ? "Yes"
-              : "No",
-          Status: reg.status || "N/A",
-          Amount: reg.amount || "N/A",
-          "Registered On": new Date(reg.createdAt).toLocaleDateString(),
-        };
+      const sportFilter =
+        filters.sport && filters.sport !== "All Sports"
+          ? filters.sport
+          : "All Sports";
+
+      // Group registrations by sport
+      const groupedBySport = {};
+      allRegistrations.forEach((reg) => {
+        const sportName = reg.eventName || "Unknown";
+        if (!groupedBySport[sportName]) {
+          groupedBySport[sportName] = [];
+        }
+        groupedBySport[sportName].push(reg);
       });
 
-    const csv = [
-      Object.keys(csvData[0]).join(","),
-      ...csvData.map((row) => Object.values(row).join(",")),
-    ].join("\n");
+      // Prepare CSV data with sport sections
+      const csvRows = [];
+      
+      // Add header
+      const headers = [
+        "#",
+        "Registration Number",
+        "Sport",
+        "Gender Category",
+        "Team Name",
+        "Captain Name",
+        "Contact",
+        "Email",
+        "Institution",
+        "City",
+        "College Address",
+        "Number of Players",
+        "Alternate Contact",
+        "Need Accommodation",
+        "Status",
+        "Amount",
+        "Registered On"
+      ];
+      csvRows.push(headers.join(","));
 
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `sports-registrations-${sportFilter.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.csv`;
-    a.click();
-    toast.success("CSV exported successfully");
+      let serialNumber = 1;
+      let grandTotal = 0;
+      const sportSummaries = [];
+
+      // Process each sport
+      Object.keys(groupedBySport).sort().forEach((sportName) => {
+        const sportRegs = groupedBySport[sportName];
+        let sportTotal = 0;
+
+        sportRegs.forEach((reg) => {
+          const formData = reg.formData || {};
+          const isSolo = isSoloRegistration(reg.eventName, formData);
+          const sportDisplay =
+            reg.eventName === "Athletics" && formData.athleticsEvent
+              ? `${reg.eventName} - ${formData.athleticsEvent}`
+              : reg.eventName || "N/A";
+          
+          const genderCategory = formData?.gender_category || 
+                               formData?.get?.("gender_category") || 
+                               formData?.sportDetails?.selectedGender || "N/A";
+          
+          const amount = reg.amount || 0;
+          sportTotal += amount;
+
+          const row = [
+            serialNumber++,
+            escapeCSV(reg.registrationNumber),
+            escapeCSV(sportDisplay),
+            escapeCSV(genderCategory),
+            isSolo ? "-" : escapeCSV(formData.team_name || formData.get?.("team_name")),
+            isSolo ? "-" : escapeCSV(formData.captain_name || formData.get?.("captain_name")),
+            escapeCSV(formData.captain_contact || formData.get?.("captain_contact")),
+            escapeCSV(reg.email),
+            escapeCSV(reg.institution),
+            escapeCSV(reg.city),
+            escapeCSV(formData.college_address || formData.get?.("college_address")),
+            isSolo ? "1" : escapeCSV(formData.num_players || formData.get?.("num_players")),
+            escapeCSV(formData.alternate_contact || formData.get?.("alternate_contact")),
+            formData.need_accommodation || formData.get?.("need_accommodation") ? "Yes" : "No",
+            escapeCSV(reg.status),
+            amount,
+            escapeCSV(new Date(reg.createdAt).toLocaleDateString())
+          ];
+          
+          csvRows.push(row.join(","));
+        });
+
+        // Add sport subtotal
+        csvRows.push(`,,,,,,,,,,,,,,${escapeCSV(sportName + " SUBTOTAL")},Rs.${sportTotal},`);
+        csvRows.push(""); // Empty line for spacing
+        
+        grandTotal += sportTotal;
+        sportSummaries.push({ sport: sportName, count: sportRegs.length, total: sportTotal });
+      });
+
+      // Add summary section
+      csvRows.push(""); // Empty line
+      csvRows.push("=== SUMMARY REPORT ===");
+      csvRows.push("Sport,Registrations,Total Amount");
+      
+      sportSummaries.forEach((summary) => {
+        csvRows.push(`${escapeCSV(summary.sport)},${summary.count},Rs.${summary.total}`);
+      });
+      
+      csvRows.push(""); // Empty line
+      csvRows.push(`GRAND TOTAL,${allRegistrations.length},Rs.${grandTotal}`);
+
+      const csv = csvRows.join("\n");
+
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `sports-registrations-${sportFilter.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.success(`CSV exported: ${allRegistrations.length} registrations, Total: Rs.${grandTotal.toLocaleString()}`);
+    } catch (error) {
+      console.error("CSV Export Error:", error);
+      toast.error("Failed to export CSV");
+    }
+  };
+
+  // Export Boys/Girls Summary PDF
+  const exportGenderSummaryPDF = async () => {
+    try {
+      toast.info("Generating city-wise gender summary report...");
+      
+      // Fetch ALL registrations for summary
+      const allRegistrations = await fetchAllRegistrationsForExport();
+      
+      if (allRegistrations.length === 0) {
+        toast.warning("No registrations to export");
+        return;
+      }
+
+      const doc = new jsPDF();
+
+      // Add cover page
+      doc.setFontSize(24);
+      doc.setTextColor(147, 51, 234);
+      doc.text("ZENITH 2026", 105, 40, { align: "center" });
+      
+      doc.setFontSize(18);
+      doc.setTextColor(0, 0, 0);
+      doc.text("City-wise Boys/Girls Report", 105, 55, { align: "center" });
+      
+      doc.setFontSize(12);
+      doc.text(`Generated on: ${new Date().toLocaleString()}`, 105, 70, { align: "center" });
+      doc.text(`Total Registrations: ${allRegistrations.length}`, 105, 80, { align: "center" });
+      doc.text(`Total Amount: Rs.${allRegistrations.reduce((sum, r) => sum + (r.amount || 0), 0).toLocaleString()}`, 105, 90, { align: "center" });
+      
+      // Function to normalize city names (handle variations like Aurangabad/Sambhajinagar)
+      const normalizeCityName = (cityName) => {
+        if (!cityName) return "unknown city";
+        
+        const normalized = cityName.toLowerCase().trim();
+        
+        // Aurangabad and Sambhajinagar are the same city
+        if (normalized.includes("aurangabad") || normalized.includes("sambhajinagar")) {
+          return "sambhajinagar";
+        }
+        
+        // Add other city normalizations if needed
+        return normalized;
+      };
+      
+      // Get display name for normalized city
+      const getDisplayCityName = (normalizedKey, originalName) => {
+        // For Sambhajinagar, use consistent display name
+        if (normalizedKey === "sambhajinagar") {
+          return "Sambhajinagar (Aurangabad)";
+        }
+        // For others, capitalize each word
+        return originalName
+          .split(' ')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+          .join(' ');
+      };
+
+      // Group by city (normalized), then by gender and sport
+      const cityData = {};
+      const cityDisplayNames = {}; // Keep display names
+      
+      allRegistrations.forEach((reg) => {
+        const cityOriginal = reg.city || "Unknown City";
+        const cityKey = normalizeCityName(cityOriginal); // Normalize for grouping
+        const sportName = reg.eventName || "Unknown";
+        const formData = reg.formData || {};
+        const genderCategory = formData?.gender_category || 
+                             formData?.get?.("gender_category") || 
+                             formData?.sportDetails?.selectedGender || "General";
+        
+        // Store display city name
+        if (!cityDisplayNames[cityKey]) {
+          cityDisplayNames[cityKey] = getDisplayCityName(cityKey, cityOriginal);
+        }
+        
+        if (!cityData[cityKey]) {
+          cityData[cityKey] = {
+            boys: {},
+            girls: {}
+          };
+        }
+
+        const teamName = formData.team_name || formData.get?.("team_name") || 
+                        formData.captain_name || formData.get?.("captain_name") || 
+                        reg.registrationNumber || "Team";
+        
+        // Categorize as boys or girls (treating men=boys, women=girls)
+        const isBoys = genderCategory.toLowerCase().includes("men") || 
+                      genderCategory.toLowerCase().includes("boys");
+        const isGirls = genderCategory.toLowerCase().includes("women") || 
+                       genderCategory.toLowerCase().includes("girls") ||
+                       genderCategory.toLowerCase().includes("solowomen");
+        
+        if (isBoys) {
+          if (!cityData[cityKey].boys[sportName]) {
+            cityData[cityKey].boys[sportName] = [];
+          }
+          cityData[cityKey].boys[sportName].push({
+            team: teamName,
+            regNo: reg.registrationNumber,
+            amount: reg.amount || 0
+          });
+        } else if (isGirls) {
+          if (!cityData[cityKey].girls[sportName]) {
+            cityData[cityKey].girls[sportName] = [];
+          }
+          cityData[cityKey].girls[sportName].push({
+            team: teamName,
+            regNo: reg.registrationNumber,
+            amount: reg.amount || 0
+          });
+        }
+      });
+
+      // Create city-wise pages (sorted alphabetically by lowercase city name)
+      Object.keys(cityData).sort().forEach((cityKey, cityIndex) => {
+        const cityName = cityDisplayNames[cityKey]; // Use original capitalization
+        doc.addPage();
+        
+        // City header
+        doc.setFontSize(18);
+        doc.setTextColor(147, 51, 234);
+        doc.text(`City: ${cityName}`, 14, 20);
+        
+        let currentY = 35;
+        const pageHeight = doc.internal.pageSize.height;
+        
+        // Boys/Men Section
+        doc.setFontSize(14);
+        doc.setTextColor(30, 144, 255); // Blue for boys
+        doc.text("BOYS / MEN", 14, currentY);
+        currentY += 8;
+        
+        const boysData = cityData[cityKey].boys;
+        let boysTotal = 0;
+        let boysAmount = 0;
+        
+        if (Object.keys(boysData).length > 0) {
+          Object.keys(boysData).sort().forEach((sport) => {
+            const teams = boysData[sport];
+            boysTotal += teams.length;
+            boysAmount += teams.reduce((sum, t) => sum + t.amount, 0);
+            
+            // Check if we need a new page
+            if (currentY > pageHeight - 40) {
+              doc.addPage();
+              currentY = 20;
+              doc.setFontSize(14);
+              doc.setTextColor(30, 144, 255);
+              doc.text(`${cityName} - BOYS/MEN (continued)`, 14, currentY);
+              currentY += 8;
+            }
+            
+            doc.setFontSize(11);
+            doc.setTextColor(0, 0, 0);
+            doc.setFont(undefined, 'bold');
+            doc.text(`${sport} (${teams.length} ${teams.length === 1 ? 'team' : 'teams'})`, 20, currentY);
+            doc.setFont(undefined, 'normal');
+            currentY += 6;
+            
+            teams.forEach((team, idx) => {
+              if (currentY > pageHeight - 40) {
+                doc.addPage();
+                currentY = 20;
+                doc.setFontSize(14);
+                doc.setTextColor(30, 144, 255);
+                doc.text(`${cityName} - BOYS/MEN (continued)`, 14, currentY);
+                currentY += 8;
+              }
+              
+              doc.setFontSize(9);
+              doc.setTextColor(80, 80, 80);
+              doc.text(`${idx + 1}. ${team.team} (${team.regNo}) - Rs.${team.amount}`, 26, currentY);
+              currentY += 5;
+            });
+            
+            currentY += 3;
+          });
+          
+          // Boys subtotal
+          doc.setFontSize(10);
+          doc.setTextColor(30, 144, 255);
+          doc.setFont(undefined, 'bold');
+          doc.text(`Boys/Men Total: ${boysTotal} teams | Rs.${boysAmount.toLocaleString()}`, 20, currentY);
+          doc.setFont(undefined, 'normal');
+          currentY += 10;
+        } else {
+          doc.setFontSize(10);
+          doc.setTextColor(120, 120, 120);
+          doc.text("No boys/men registrations", 20, currentY);
+          currentY += 10;
+        }
+        
+        // Girls/Women Section
+        if (currentY > pageHeight - 60) {
+          doc.addPage();
+          currentY = 20;
+        }
+        
+        doc.setFontSize(14);
+        doc.setTextColor(255, 20, 147); // Pink for girls
+        doc.text("GIRLS / WOMEN", 14, currentY);
+        currentY += 8;
+        
+        const girlsData = cityData[cityKey].girls;
+        let girlsTotal = 0;
+        let girlsAmount = 0;
+        
+        if (Object.keys(girlsData).length > 0) {
+          Object.keys(girlsData).sort().forEach((sport) => {
+            const teams = girlsData[sport];
+            girlsTotal += teams.length;
+            girlsAmount += teams.reduce((sum, t) => sum + t.amount, 0);
+            
+            // Check if we need a new page
+            if (currentY > pageHeight - 40) {
+              doc.addPage();
+              currentY = 20;
+              doc.setFontSize(14);
+              doc.setTextColor(255, 20, 147);
+              doc.text(`${cityName} - GIRLS/WOMEN (continued)`, 14, currentY);
+              currentY += 8;
+            }
+            
+            doc.setFontSize(11);
+            doc.setTextColor(0, 0, 0);
+            doc.setFont(undefined, 'bold');
+            doc.text(`${sport} (${teams.length} ${teams.length === 1 ? 'team' : 'teams'})`, 20, currentY);
+            doc.setFont(undefined, 'normal');
+            currentY += 6;
+            
+            teams.forEach((team, idx) => {
+              if (currentY > pageHeight - 40) {
+                doc.addPage();
+                currentY = 20;
+                doc.setFontSize(14);
+                doc.setTextColor(255, 20, 147);
+                doc.text(`${cityName} - GIRLS/WOMEN (continued)`, 14, currentY);
+                currentY += 8;
+              }
+              
+              doc.setFontSize(9);
+              doc.setTextColor(80, 80, 80);
+              doc.text(`${idx + 1}. ${team.team} (${team.regNo}) - Rs.${team.amount}`, 26, currentY);
+              currentY += 5;
+            });
+            
+            currentY += 3;
+          });
+          
+          // Girls subtotal
+          doc.setFontSize(10);
+          doc.setTextColor(255, 20, 147);
+          doc.setFont(undefined, 'bold');
+          doc.text(`Girls/Women Total: ${girlsTotal} teams | Rs.${girlsAmount.toLocaleString()}`, 20, currentY);
+          doc.setFont(undefined, 'normal');
+          currentY += 10;
+        } else {
+          doc.setFontSize(10);
+          doc.setTextColor(120, 120, 120);
+          doc.text("No girls/women registrations", 20, currentY);
+          currentY += 10;
+        }
+        
+        // City total
+        if (currentY > pageHeight - 30) {
+          doc.addPage();
+          currentY = 20;
+        }
+        
+        doc.setFontSize(12);
+        doc.setTextColor(147, 51, 234);
+        doc.setFont(undefined, 'bold');
+        doc.text(`${cityName} Total: ${boysTotal + girlsTotal} teams | Rs.${(boysAmount + girlsAmount).toLocaleString()}`, 14, currentY);
+        doc.setFont(undefined, 'normal');
+      });
+
+      // Add final summary page
+      doc.addPage();
+      doc.setFontSize(16);
+      doc.setTextColor(147, 51, 234);
+      doc.text("Overall Summary", 14, 20);
+      
+      doc.setFontSize(11);
+      doc.setTextColor(80, 80, 80);
+      doc.text(`Total Cities: ${Object.keys(cityData).length}`, 14, 28);
+
+      const summaryData = [];
+      let grandTotalBoys = 0;
+      let grandTotalGirls = 0;
+      let grandAmountBoys = 0;
+      let grandAmountGirls = 0;
+
+      Object.keys(cityData).sort().forEach((cityKey) => {
+        const cityName = cityDisplayNames[cityKey]; // Use original capitalization for display
+        const boysCount = Object.values(cityData[cityKey].boys).reduce((sum, teams) => sum + teams.length, 0);
+        const girlsCount = Object.values(cityData[cityKey].girls).reduce((sum, teams) => sum + teams.length, 0);
+        const boysAmt = Object.values(cityData[cityKey].boys).reduce((sum, teams) => 
+          sum + teams.reduce((s, t) => s + t.amount, 0), 0);
+        const girlsAmt = Object.values(cityData[cityKey].girls).reduce((sum, teams) => 
+          sum + teams.reduce((s, t) => s + t.amount, 0), 0);
+        
+        grandTotalBoys += boysCount;
+        grandTotalGirls += girlsCount;
+        grandAmountBoys += boysAmt;
+        grandAmountGirls += girlsAmt;
+        
+        summaryData.push([
+          cityName,
+          boysCount,
+          `Rs.${boysAmt.toLocaleString()}`,
+          girlsCount,
+          `Rs.${girlsAmt.toLocaleString()}`,
+          boysCount + girlsCount,
+          `Rs.${(boysAmt + girlsAmt).toLocaleString()}`
+        ]);
+      });
+
+      autoTable(doc, {
+        startY: 35,
+        head: [["City", "Boys", "Boys Amt", "Girls", "Girls Amt", "Total", "Total Amt"]],
+        body: summaryData,
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [147, 51, 234] },
+        columnStyles: {
+          0: { cellWidth: 40 },
+          1: { cellWidth: 20 },
+          2: { cellWidth: 25 },
+          3: { cellWidth: 20 },
+          4: { cellWidth: 25 },
+          5: { cellWidth: 20 },
+          6: { cellWidth: 30 }
+        },
+        foot: [[
+          { content: 'GRAND TOTAL:', styles: { halign: 'right', fontStyle: 'bold' } },
+          { content: grandTotalBoys.toString(), styles: { fontStyle: 'bold', fillColor: [30, 144, 255], textColor: [255, 255, 255] } },
+          { content: `Rs.${grandAmountBoys.toLocaleString()}`, styles: { fontStyle: 'bold', fillColor: [30, 144, 255], textColor: [255, 255, 255] } },
+          { content: grandTotalGirls.toString(), styles: { fontStyle: 'bold', fillColor: [255, 20, 147], textColor: [255, 255, 255] } },
+          { content: `Rs.${grandAmountGirls.toLocaleString()}`, styles: { fontStyle: 'bold', fillColor: [255, 20, 147], textColor: [255, 255, 255] } },
+          { content: (grandTotalBoys + grandTotalGirls).toString(), styles: { fontStyle: 'bold', fillColor: [147, 51, 234], textColor: [255, 255, 255] } },
+          { content: `Rs.${(grandAmountBoys + grandAmountGirls).toLocaleString()}`, styles: { fontStyle: 'bold', fillColor: [147, 51, 234], textColor: [255, 255, 255] } }
+        ]],
+        footStyles: { fillColor: [147, 51, 234], textColor: [255, 255, 255] },
+      });
+
+      // Save PDF
+      doc.save(`zenith-2026-city-gender-summary-${Date.now()}.pdf`);
+      toast.success(`City-wise gender summary exported successfully`);
+    } catch (error) {
+      console.error("Gender Summary Export Error:", error);
+      toast.error("Failed to export gender summary");
+    }
   };
 
   return (
@@ -691,6 +1636,56 @@ const AdminSportsRegistrations = () => {
           </div>
         )}
 
+        {/* Fee Collection Section - Confirmed Payments Only */}
+        {stats && (
+          <div className="bg-gradient-to-br from-[#1a1a1a] to-[#252525] rounded-2xl p-6 border border-gray-800 mb-8 shadow-lg">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <span className="w-1 h-6 bg-gradient-to-b from-green-500 to-emerald-500 rounded-full"></span>
+              Fee Collection
+              <span className="text-sm font-normal text-gray-400 ml-2">
+                ({stats.confirmed || 0} Confirmed Payments)
+              </span>
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="bg-[#0a0a0a] rounded-xl p-5 border border-green-500/20"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-2xl">📝</span>
+                  <span className="text-gray-400 text-sm">Registration Fees</span>
+                </div>
+                <p className="text-3xl font-bold text-green-400">
+                  ₹{(stats.totalRegistrationFee || 0).toLocaleString("en-IN")}
+                </p>
+                <p className="text-xs text-gray-500 mt-2">
+                  From {stats.confirmed || 0} confirmed registrations
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="bg-[#0a0a0a] rounded-xl p-5 border border-orange-500/20"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-2xl">💰</span>
+                  <span className="text-gray-400 text-sm">Total Collected</span>
+                </div>
+                <p className="text-3xl font-bold text-orange-400">
+                  ₹{(stats.totalRegistrationFee || 0).toLocaleString("en-IN")}
+                </p>
+                <p className="text-xs text-gray-500 mt-2">
+                  Excluding {stats.pendingStatus || 0} pending
+                </p>
+              </motion.div>
+            </div>
+          </div>
+        )}
+
         {/* Filters */}
         <div className="bg-gradient-to-br from-[#1a1a1a] to-[#252525] rounded-2xl p-6 border border-gray-800 mb-6 shadow-lg">
           <div className="flex justify-between items-center mb-6">
@@ -772,6 +1767,59 @@ const AdminSportsRegistrations = () => {
           </div>
         </div>
 
+        {/* Filtered Sport Amount Display */}
+        {filteredSportAmount && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="bg-gradient-to-br from-emerald-500/10 to-green-600/10 rounded-2xl p-6 border-2 border-emerald-500/30 mb-6 shadow-lg shadow-emerald-500/10"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-emerald-400 mb-2 flex items-center gap-2">
+                  <span className="text-2xl">💰</span>
+                  {filteredSportAmount.sportName} - Total Collection
+                </h3>
+                <p className="text-4xl font-bold text-white mb-3">
+                  ₹{filteredSportAmount.total.toLocaleString("en-IN")}
+                </p>
+                <div className="flex gap-6 text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                    <span className="text-gray-400">Confirmed:</span>
+                    <span className="text-white font-semibold">
+                      {filteredSportAmount.confirmedCount}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                    <span className="text-gray-400">Pending:</span>
+                    <span className="text-white font-semibold">
+                      {filteredSportAmount.pendingCount}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                    <span className="text-gray-400">Cancelled:</span>
+                    <span className="text-white font-semibold">
+                      {filteredSportAmount.cancelledCount}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="w-24 h-24 bg-emerald-500/20 rounded-2xl flex items-center justify-center">
+                <span className="text-5xl">🏆</span>
+              </div>
+            </div>
+            <div className="mt-4 pt-4 border-t border-emerald-500/20">
+              <p className="text-xs text-gray-400">
+                💡 This shows only confirmed payments for {filteredSportAmount.sportName}. Pending and cancelled registrations are excluded from the total.
+              </p>
+            </div>
+          </motion.div>
+        )}
+
         {/* Export Buttons */}
         <div className="flex gap-4 mb-6">
           <button
@@ -789,6 +1837,14 @@ const AdminSportsRegistrations = () => {
           >
             <span>📊</span>
             Export to CSV
+          </button>
+          <button
+            onClick={exportGenderSummaryPDF}
+            disabled={registrations.length === 0}
+            className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-green-500/50 flex items-center gap-2"
+          >
+            <span>👫</span>
+            Boys/Girls Summary
           </button>
         </div>
 
@@ -861,7 +1917,6 @@ const AdminSportsRegistrations = () => {
                     </thead>
                     <tbody className="divide-y divide-gray-800">
                       {registrations
-                        .filter((reg) => reg.status !== "cancelled")
                         .map((reg, index) => {
                           const formData = reg.formData || {};
                           return (
@@ -1065,14 +2120,12 @@ const AdminSportsRegistrations = () => {
                               <span className="px-2 py-1 bg-red-500/10 text-red-400 rounded-lg text-xs">
                                 {reg.eventName}
                               </span>
-                              {/* Athletics Event Display */}
                               {reg.eventName === "Athletics" &&
                                 formData.athleticsEvent && (
                                   <span className="text-xs px-2 py-0.5 rounded-md font-semibold w-fit bg-orange-500/10 text-orange-400">
                                     {formData.athleticsEvent}
                                   </span>
                                 )}
-                              {/* Category Badge (Team/Solo for Chess, Men's/Women's for others) */}
                               {(() => {
                                 const badgeInfo = getCategoryBadgeInfo(
                                   reg.eventName,
@@ -1142,6 +2195,7 @@ const AdminSportsRegistrations = () => {
           </motion.div>
         )}
 
+
         {/* Details Modal */}
         <AnimatePresence>
           {showDetailsModal && selectedRegistration && (
@@ -1177,12 +2231,22 @@ const AdminSportsRegistrations = () => {
                       {selectedRegistration.registrationNumber}
                     </p>
                   </div>
-                  <button
-                    onClick={() => setShowDetailsModal(false)}
-                    className="w-10 h-10 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-xl transition-colors text-gray-400 hover:text-white"
-                  >
-                    <span className="text-2xl">×</span>
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => downloadReceipt(selectedRegistration)}
+                      className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-xl transition-all text-white text-sm font-medium flex items-center gap-2 shadow-lg hover:shadow-purple-500/50"
+                      title="Download Receipt"
+                    >
+                      <span className="text-lg">📄</span>
+                      Download Receipt
+                    </button>
+                    <button
+                      onClick={() => setShowDetailsModal(false)}
+                      className="w-10 h-10 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-xl transition-colors text-gray-400 hover:text-white"
+                    >
+                      <span className="text-2xl">×</span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Scrollable Content */}

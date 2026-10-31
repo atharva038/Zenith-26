@@ -95,6 +95,43 @@ const marathonSchema = new mongoose.Schema(
         trim: true,
       },
     },
+
+    // Refund tracking for marathon cancellation
+    refund: {
+      accountKey: {
+        type: String,
+        enum: ["sagar", "balaji", "atharva", "unknown"],
+        default: "unknown",
+      },
+      accountLabel: {
+        type: String,
+        trim: true,
+        default: "Unknown",
+      },
+      confidence: {
+        type: String,
+        enum: ["high", "medium", "low"],
+        default: "low",
+      },
+      transactionId: {
+        type: String,
+        trim: true,
+        default: "",
+      },
+      isCompleted: {
+        type: Boolean,
+        default: false,
+      },
+      completedAt: {
+        type: Date,
+        default: null,
+      },
+      completedBy: {
+        type: String,
+        trim: true,
+        default: null,
+      },
+    },
     
     // Registration Number (auto-generated)
     registrationNumber: {

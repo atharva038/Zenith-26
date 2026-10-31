@@ -56,17 +56,18 @@ export const useRegistrationStatus = () => {
         });
       }
     } catch (error) {
-      console.error("❌ Error fetching registration status:", error);
+      // Backend is offline — use static fallback so 3D pages remain fully visible
+      console.warn("⚠️ Backend offline — using static fallback for registration status:", error.message);
       setStatus({
-        isCricketOpen: false,
-        isOtherSportsOpen: false,
-        isOpen: false,
+        isCricketOpen: true,
+        isOtherSportsOpen: true,
+        isOpen: true,
         loading: false,
-        message: "Unable to check registration status",
+        message: "Registration closed",
         startDate: null,
         endDate: null,
         paymentQrUrl: "",
-        error: error.message,
+        error: null, // Don't surface the error to UI — degrade gracefully
       });
     }
   };

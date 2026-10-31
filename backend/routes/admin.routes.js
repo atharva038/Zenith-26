@@ -6,6 +6,7 @@ import {
   getDashboardStats,
   getAllAdmins,
   deleteAdmin,
+  getAccommodationList,
 } from "../controllers/admin.controller.js";
 import * as adminMediaTeamController from "../controllers/adminMediaTeam.controller.js";
 
@@ -17,6 +18,7 @@ router.use(isAdmin);
 
 // Admin dashboard routes
 router.get("/dashboard/stats", getDashboardStats);
+router.get("/accommodation-list", getAccommodationList);
 router.get("/admins", getAllAdmins);
 router.delete("/admins/:id", deleteAdmin);
 

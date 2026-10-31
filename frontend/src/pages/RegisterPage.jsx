@@ -83,7 +83,7 @@ const RegisterPage = () => {
           {/* Main Heading */}
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
             <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
-              ZENITH 2026
+              ZENITH 2026-27
             </span>
             <br />
             <span className="text-white/90">Registrations Are Live!</span>
@@ -110,7 +110,7 @@ const RegisterPage = () => {
               />
             </svg>
             <span className="text-purple-300 font-semibold">
-              February 20 - 22, 2026
+              26 December 2026
             </span>
           </div>
 
@@ -180,12 +180,12 @@ const RegisterPage = () => {
 
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
               <span className="bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
-                Zenith Marathon 2026
+                Zenith Marathon 2026-27
               </span>
             </h2>
 
             <p className="text-gray-300 text-lg mb-6 max-w-xl mx-auto leading-relaxed">
-              Join our exciting 5K Marathon alongside all the sports events at ZENITH 2026!
+              Join our exciting 5K Marathon alongside all the sports events at ZENITH 2026-27!
             </p>
 
             {/* Marathon Details Grid */}
@@ -193,7 +193,7 @@ const RegisterPage = () => {
               <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-orange-500/20">
                 <div className="text-3xl mb-2">📅</div>
                 <div className="text-orange-400 font-bold text-sm mb-1">Date</div>
-                <div className="text-white text-sm">Postponed To March</div>
+                <div className="text-white text-sm">01 Nov 2026</div>
               </div>
               <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-orange-500/20">
                 <div className="text-3xl mb-2">🏃</div>

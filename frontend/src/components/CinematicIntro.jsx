@@ -134,7 +134,7 @@ export default function CinematicIntro() {
               textShadow: "0 0 60px rgba(255,179,106,0.5)",
             }}
           >
-            ZENITH 2026
+            ZENITH 2026-27
           </h1>
         </motion.div>
       )}

@@ -28,7 +28,7 @@ const Footer = () => {
               viewport={{once: true}}
               transition={{duration: 0.6, ease: "easeOut", delay: 0.1}}
             >
-              ZENITH 2026
+              ZENITH 2026-27
             </motion.h3>
 
             <motion.p
@@ -139,7 +139,7 @@ const Footer = () => {
               </motion.a>
 
               <motion.a
-                href="tel:+919356463943"
+                href="tel:+918956836055"
                 className="group relative"
                 whileHover={{scale: 1.1}}
                 whileTap={{scale: 0.95}}
@@ -179,7 +179,7 @@ const Footer = () => {
               </p>
               <p className="flex items-center justify-center gap-2">
                 <Phone size={14} className="text-[#ffb36a]" />
-                +91 93564 63943
+                +91 89568 36055
               </p>
             </motion.div>
 
@@ -236,7 +236,7 @@ const Footer = () => {
         >
           <div className="text-center space-y-4">
             <p className="text-gray-500 text-sm">
-              © 2026 SGGSIE&T Zenith. All rights reserved.
+              © 2026-27 SGGSIE&T Zenith. All rights reserved.
             </p>
             <p className="text-gray-400 text-sm">
               Made with <span className="text-red-500">❤️</span> by{" "}

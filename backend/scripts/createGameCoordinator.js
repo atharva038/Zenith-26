@@ -33,9 +33,9 @@ const createGameCoordinator = async () => {
 
     // Create a default game coordinator
     const coordinator = new GameCoordinator({
-      username: "coordinator",
-      email: "coordinator@zenith2026.com",
-      password: "coordinator123", // Password will be hashed by the pre-save hook
+      username: "SggsCoordinator",
+      email: "coordinator@sggsie.ac.in",
+      password: "SggsGame@2026", // Password will be hashed by the pre-save hook
       assignedSports: allSports, // Assign all sports by default
     });
 
@@ -43,9 +43,9 @@ const createGameCoordinator = async () => {
 
     console.log("\n✅ Game Coordinator Created Successfully!");
     console.log("\n📋 Coordinator Details:");
-    console.log("   Username: coordinator");
-    console.log("   Email: coordinator@zenith2026.com");
-    console.log("   Password: coordinator123");
+    console.log("   Username: SggsCoordinator");
+    console.log("   Email: coordinator@sggsie.ac.in");
+    console.log("   Password: SggsGame@2026");
     console.log("   Assigned Sports: All Sports");
     console.log("\n🔐 Login URL: http://localhost:5173/coordinator/login");
     console.log("\n⚠️  Please change the password after first login!");
@@ -55,8 +55,8 @@ const createGameCoordinator = async () => {
     if (error.code === 11000) {
       console.error("\n❌ Error: Coordinator already exists!");
       console.log("\nExisting coordinator credentials:");
-      console.log("   Username: coordinator");
-      console.log("   Email: coordinator@zenith2026.com");
+      console.log("   Username: SggsCoordinator");
+      console.log("   Email: coordinator@sggsie.ac.in");
     } else {
       console.error("\n❌ Error creating coordinator:", error.message);
     }

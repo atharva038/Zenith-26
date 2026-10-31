@@ -72,8 +72,32 @@ const Gallery = () => {
       setMedia([...allMedia, ...newLegacy]);
       setError(null);
     } catch (err) {
-      setError("Failed to load gallery. Please try again later.");
-      console.error("Gallery error:", err);
+      // Backend offline — fall back to showing legacy static images
+      console.warn("⚠️ Gallery: Backend offline, showing static legacy images:", err.message);
+      const legacyImageUrls = [
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739560719/gu3j07b5bqprmlmm0cdw.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739708282/pc4yrj3fx2son9kcbdt8.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739560886/hzy3iqhaf9cnjdqnsdsv.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739610534/mpoijufmccntq4ze73xx.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739611175/reebkxwvpixhanhggpgj.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739561632/dti2euykuc0zwrnwewz2.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739566239/sshcj5wb72fkdeaz1wqj.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739566239/aza9rjeznfgzy2jmdhv4.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739566237/isqbvnzikdqrsw0fypde.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739610646/tj4m2wxliai02jqrsmpi.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739611458/oieljrwcwffnpgmqk3om.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739611653/bo9onfg2i0xqke7czwxu.jpg",
+        "https://res.cloudinary.com/diztvedtn/image/upload/v1739734512/p1sefzpd1cep5xyzktyo.jpg",
+      ];
+      const fallbackImages = legacyImageUrls.map((url, idx) => ({
+        _id: `legacy-${idx}`,
+        type: "image",
+        secureUrl: url,
+      }));
+      setImages(fallbackImages);
+      setVideos([]);
+      setMedia(fallbackImages);
+      setError(null); // Don't show error — graceful degradation
     } finally {
       setLoading(false);
     }

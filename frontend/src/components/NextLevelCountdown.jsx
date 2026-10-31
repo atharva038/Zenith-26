@@ -5,7 +5,7 @@ import {motion} from "framer-motion";
  * NextLevelCountdown - A stunning, animated countdown timer
  * Features: Flip animations, glowing effects, particle effects, responsive design
  */
-const NextLevelCountdown = ({targetDate, eventName = "ZENITH 2026"}) => {
+const NextLevelCountdown = ({targetDate, eventName = "ZENITH 2026-27"}) => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -159,7 +159,7 @@ const NextLevelCountdown = ({targetDate, eventName = "ZENITH 2026"}) => {
         animate={{opacity: 1}}
         transition={{delay: 0.8}}
       >
-        20 - 22 FEBRUARY 2026 • SGGSIE&T NANDED
+        26 DECEMBER 2026 • SGGSIE&T NANDED
       </motion.p>
     </div>
   );

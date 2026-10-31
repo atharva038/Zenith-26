@@ -18,14 +18,15 @@ import MarathonPage from "./pages/MarathonPage";
 
 // Admin Pages
 import AdminLogin from "./pages/admin/AdminLogin";
-import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminMarathon from "./pages/admin/AdminMarathon";
+import AdminMarathonRefund from "./pages/admin/AdminMarathonRefund";
 import AdminWomenTournament from "./pages/admin/AdminWomenTournament";
 import AdminSportsRegistrations from "./pages/admin/AdminSportsRegistrations";
 import AdminOnSpotRegistration from "./pages/admin/AdminOnSpotRegistration";
 import AdminAdmins from "./pages/admin/AdminAdmins";
 import AdminGallery from "./pages/admin/AdminGallery";
 import AdminSettings from "./pages/admin/AdminSettings";
+import AdminAccommodation from "./pages/admin/AdminAccommodation";
 
 // Dev Portal
 import DevPortal from "./pages/dev/DevPortal";
@@ -119,11 +120,7 @@ function App() {
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route
                 path="/admin/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
+                element={<Navigate to="/admin/sports-registrations" replace />}
               />
 
               {/* Developer Portal Routes */}
@@ -175,6 +172,14 @@ function App() {
                 }
               />
               <Route
+                path="/admin/marathon/refund"
+                element={
+                  <ProtectedRoute>
+                    <AdminMarathonRefund />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/admin/women-tournament"
                 element={
                   <ProtectedRoute>
@@ -190,7 +195,16 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              {/* 🔒 HIDDEN: On-Spot Registration Route (Tournament Closed) */}
+              <Route
+                path="/admin/accommodation"
+                element={
+                  <ProtectedRoute>
+                    <AdminAccommodation />
+                  </ProtectedRoute>
+                }
+              />
+              
+              {/* On-Spot Registration Route (Tournament Closed) */}
               {/* <Route
                 path="/admin/onspot-registration"
                 element={

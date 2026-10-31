@@ -512,6 +512,147 @@ const AdminWomenTournament = () => {
     }
   };
 
+  // Download individual registration receipt
+  const downloadReceipt = (registration) => {
+    const doc = new jsPDF();
+    
+    // Header with official look
+    doc.setFillColor(236, 72, 153); // Pink
+    doc.rect(0, 0, 210, 50, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(28);
+    doc.setFont('helvetica', 'bold');
+    doc.text('ZENITH 2026', 105, 20, { align: 'center' });
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'normal');
+    doc.text('OFFICIAL REGISTRATION RECEIPT', 105, 30, { align: 'center' });
+    
+    doc.setFontSize(11);
+    doc.text("Women's Sports Tournament", 105, 38, { align: 'center' });
+    doc.text(registration.registrationNumber || 'N/A', 105, 45, { align: 'center' });
+    
+    // Reset text color
+    doc.setTextColor(0, 0, 0);
+    
+    let yPos = 60;
+    
+    // Participant Information
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('PARTICIPANT INFORMATION', 14, yPos);
+    yPos += 1;
+    doc.setLineWidth(0.5);
+    doc.setDrawColor(236, 72, 153);
+    doc.line(14, yPos, 196, yPos);
+    yPos += 7;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Name: ${registration.name || 'N/A'}`, 14, yPos);
+    yPos += 6;
+    doc.text(`Email: ${registration.email || 'N/A'}`, 14, yPos);
+    yPos += 6;
+    doc.text(`Mobile: ${registration.mobileNumber || 'N/A'}`, 14, yPos);
+    yPos += 6;
+    
+    const categoryLabel = registration.selectedCategory 
+      ? registration.selectedCategory.replace('category', 'Category ')
+      : 'N/A';
+    doc.text(`Category: ${categoryLabel}`, 14, yPos);
+    yPos += 10;
+    
+    // Selected Sports
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`SELECTED SPORTS (${registration.selectedSports?.length || 0})`, 14, yPos);
+    yPos += 1;
+    doc.line(14, yPos, 196, yPos);
+    yPos += 7;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    if (registration.selectedSports && registration.selectedSports.length > 0) {
+      registration.selectedSports.forEach((sport, index) => {
+        doc.text(`${index + 1}. ${sport}`, 20, yPos);
+        yPos += 5;
+      });
+      yPos += 5;
+    } else {
+      doc.text('No sports selected', 20, yPos);
+      yPos += 10;
+    }
+    
+    // Team Name (if applicable)
+    if (registration.category3TeamName) {
+      doc.setFontSize(13);
+      doc.setFont('helvetica', 'bold');
+      doc.text('TEAM INFORMATION', 14, yPos);
+      yPos += 1;
+      doc.line(14, yPos, 196, yPos);
+      yPos += 7;
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Team Name: ${registration.category3TeamName}`, 14, yPos);
+      yPos += 10;
+    }
+    
+    // Payment Information
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('PAYMENT INFORMATION', 14, yPos);
+    yPos += 1;
+    doc.line(14, yPos, 196, yPos);
+    yPos += 7;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.text(`Total Amount Paid: Rs. ${registration.totalAmount || 0}/-`, 14, yPos);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    yPos += 6;
+    doc.text(`Payment Screenshot: ${registration.paymentScreenshot ? 'Uploaded' : 'Not Uploaded'}`, 14, yPos);
+    yPos += 10;
+    
+    // Registration Details
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('REGISTRATION DETAILS', 14, yPos);
+    yPos += 1;
+    doc.line(14, yPos, 196, yPos);
+    yPos += 7;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Registration Date: ${new Date(registration.createdAt).toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    })}`, 14, yPos);
+    yPos += 8;
+    
+    // Status
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Registration Status: ${registration.status?.toUpperCase() || 'PENDING'}`, 14, yPos);
+    
+    // Footer
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'italic');
+    doc.setTextColor(100, 100, 100);
+    doc.text("This is an official digitally generated receipt from Zenith 2026 Women's Tournament", 105, 285, { align: 'center' });
+    doc.text(`Generated on: ${new Date().toLocaleString('en-IN')}`, 105, 290, { align: 'center' });
+    
+    // Save the PDF
+    const fileName = `Zenith_Women_${registration.registrationNumber || registration._id}.pdf`;
+    doc.save(fileName);
+    toast.success('Receipt downloaded successfully!');
+  };
+
   const getCategoryLabel = (category) => {
     const labels = {
       category1: "Category 1 - Individual Sports",
@@ -1293,12 +1434,23 @@ const AdminWomenTournament = () => {
                 <h2 className="text-2xl md:text-3xl font-bold text-white">
                   Registration Details
                 </h2>
-                <button
-                  onClick={() => setShowDetailsModal(false)}
-                  className="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-all"
-                >
-                  <span className="text-2xl leading-none">×</span>
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => downloadReceipt(selectedRegistration)}
+                    className="px-4 py-2 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 rounded-xl transition-all text-white text-sm font-medium flex items-center gap-2 shadow-lg hover:shadow-pink-500/50"
+                    title="Download Receipt"
+                  >
+                    <span className="text-lg">📄</span>
+                    <span className="hidden sm:inline">Download Receipt</span>
+                    <span className="sm:hidden">Receipt</span>
+                  </button>
+                  <button
+                    onClick={() => setShowDetailsModal(false)}
+                    className="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-all"
+                  >
+                    <span className="text-2xl leading-none">×</span>
+                  </button>
+                </div>
               </div>
 
               {/* Scrollable Content */}
